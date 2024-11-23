@@ -2392,7 +2392,7 @@ class Template {
 			
 			if( isset( $member['twitter'] ) && $member['twitter'] ) {
 				$socnets['twitter']['set']      = $member['twitter'];
-				$member['twitter']              = ( strpos( (string) $member['twitter'], 'twitter.com' ) === false ) ? 'https://twitter.com/' . trim(
+				$member['twitter']              = ( strpos( (string) $member['twitter'], 'x.com' ) === false ) ? 'https://x.com/' . trim(
 						(string) $member['twitter'],
 						'/'
 					) : $member['twitter'];

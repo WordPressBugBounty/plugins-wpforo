@@ -1573,6 +1573,14 @@ class Settings extends stdClass {
 						],
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/login-registration/#user-delete-method",
 					],
+					"send_email_after_user_delete"      => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Send Email to Admins After User Self Delete", "wpforo" ),
+						"label_original"       => "Send Email to Admins After User Self Delete",
+						"description"          => "",
+						"description_original" => "",
+						"docurl"               => "",
+					],
 					"use_our_register_url"              => [
 						"type"                 => "radio",
 						"label"                => esc_html__( "Replace Registration Page URL to Forum Registration Page URL", "wpforo" ),
@@ -1764,7 +1772,7 @@ class Settings extends stdClass {
 					require_once( WPFORO_DIR . '/admin/settings/email.php' );
 				},
 				"options"              => [
-					"from_name"                                    => [
+					"from_name"                                          => [
 						"type"                 => "text",
 						"label"                => esc_html__( "FROM Name", "wpforo" ),
 						"label_original"       => "FROM Name",
@@ -1772,7 +1780,7 @@ class Settings extends stdClass {
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/email-settings/#from-name-and-email-address",
 					],
-					"from_email"                                   => [
+					"from_email"                                         => [
 						"type"                 => "text",
 						"label"                => esc_html__( "FROM Email Address", "wpforo" ),
 						"label_original"       => "FROM Email Address",
@@ -1780,7 +1788,7 @@ class Settings extends stdClass {
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/email-settings/#from-name-and-email-address",
 					],
-					"admin_emails"                                 => [
+					"admin_emails"                                       => [
 						"type"                 => "text_,",
 						"label"                => esc_html__( "Forum Admins Email Addresses", "wpforo" ),
 						"label_original"       => "Forum Admins Email Addresses",
@@ -1788,7 +1796,7 @@ class Settings extends stdClass {
 						"description_original" => "Comma separated email addresses of forum administrators to get forum notifications. For example post report messages.",
 						"docurl"               => "",
 					],
-					"new_topic_notify"                             => [
+					"new_topic_notify"                                   => [
 						"type"                 => "radio",
 						"label"                => esc_html__( "Notify Admins via Email on New Topic", "wpforo" ),
 						"label_original"       => "Notify Admins via Email on New Topic",
@@ -1796,7 +1804,7 @@ class Settings extends stdClass {
 						"description_original" => "Send Notification emails to all email addresses (comma separated ) of forum administrators when a new Topic is created.",
 						"docurl"               => "",
 					],
-					"new_reply_notify"                             => [
+					"new_reply_notify"                                   => [
 						"type"                 => "radio",
 						"label"                => esc_html__( "Notify Admins via Email on New Post", "wpforo" ),
 						"label_original"       => "Notify Admins via Email on New Post",
@@ -1804,7 +1812,7 @@ class Settings extends stdClass {
 						"description_original" => "Send Notification emails to all email addresses (comma separated ) of forum administrators when a new Reply is created.",
 						"docurl"               => "",
 					],
-					"disable_new_user_admin_notification"          => [
+					"disable_new_user_admin_notification"                => [
 						"type"                 => "radio",
 						"label"                => esc_html__( "Stop Sending Emails to Admins on New User Registration", "wpforo" ),
 						"label_original"       => "Stop Sending Emails to Admins on New User Registration",
@@ -1815,7 +1823,7 @@ class Settings extends stdClass {
 						"description_original" => "If you have enabled this option, after registering, the admin will not receive an email notification for newly registered user.",
 						"docurl"               => "",
 					],
-					"report_email_subject"                         => [
+					"report_email_subject"                               => [
 						"type"                 => "text",
 						"label"                => esc_html__( "Report Message Subject", "wpforo" ),
 						"label_original"       => "Report Message Subject",
@@ -1823,7 +1831,7 @@ class Settings extends stdClass {
 						"description_original" => "",
 						"docurl"               => "",
 					],
-					"report_email_message"                         => [
+					"report_email_message"                               => [
 						"type"                 => "richeditor",
 						"media_buttons"        => true,
 						"label"                => esc_html__( "Report Message Body", "wpforo" ),
@@ -1841,7 +1849,7 @@ class Settings extends stdClass {
 						"description_original" => "[reporter] - Reporter user display name [message] - Reporter user message [post_url] - Reported post URL",
 						"docurl"               => "https://wpforo.com/community/faq/wpforo-email-shortcodes/",
 					],
-					"overwrite_new_user_notification_admin"        => [
+					"overwrite_new_user_notification_admin"              => [
 						"type"                 => "radio",
 						"label"                => esc_html__( "Overwrite WordPress New User Registration Email for Admins", "wpforo" ),
 						"label_original"       => "Overwrite WordPress New User Registration Email for Admins",
@@ -1849,7 +1857,7 @@ class Settings extends stdClass {
 						"description_original" => "",
 						"docurl"               => "",
 					],
-					"wp_new_user_notification_email_admin_subject" => [
+					"wp_new_user_notification_email_admin_subject"       => [
 						"type"                 => "text",
 						"label"                => esc_html__( "Message Subject", "wpforo" ),
 						"label_original"       => "Message Subject",
@@ -1857,7 +1865,7 @@ class Settings extends stdClass {
 						"description_original" => "",
 						"docurl"               => "",
 					],
-					"wp_new_user_notification_email_admin_message" => [
+					"wp_new_user_notification_email_admin_message"       => [
 						"type"                 => "richeditor",
 						"media_buttons"        => true,
 						"label"                => esc_html__( "Message Body", "wpforo" ),
@@ -1875,15 +1883,7 @@ class Settings extends stdClass {
 						"description_original" => "[blogname] - Website name [user_login] - Registered user login [user_email] - Registered user email",
 						"docurl"               => "",
 					],
-					"overwrite_new_user_notification"              => [
-						"type"                 => "radio",
-						"label"                => esc_html__( "Overwrite WordPress New User Registration Email for Users", "wpforo" ),
-						"label_original"       => "Overwrite WordPress New User Registration Email for Users",
-						"description"          => esc_html__( "", "wpforo" ),
-						"description_original" => "",
-						"docurl"               => "",
-					],
-					"wp_new_user_notification_email_subject"       => [
+					"after_user_delete_notification_email_admin_subject" => [
 						"type"                 => "text",
 						"label"                => esc_html__( "Message Subject", "wpforo" ),
 						"label_original"       => "Message Subject",
@@ -1891,7 +1891,43 @@ class Settings extends stdClass {
 						"description_original" => "",
 						"docurl"               => "",
 					],
-					"wp_new_user_notification_email_message"       => [
+					"after_user_delete_notification_email_admin_message" => [
+						"type"                 => "richeditor",
+						"media_buttons"        => true,
+						"label"                => esc_html__( "Message Body", "wpforo" ),
+						"label_original"       => "Message Body",
+						"description"          => sprintf(
+							'<ul class="wpf-email-shortcodes">
+                                <li>[user_login] - %1$s</li>
+                                <li>[user_email] - %2$s</li>
+                                <li>[user_userid] - %3$s</li>
+                                <li>[datetime] - %4$s</li>
+                           </ul>',
+							__( 'Deleted user login', 'wpforo' ),
+							__( 'Deleted user email', 'wpforo' ),
+							__( 'Deleted user id', 'wpforo' ),
+							__( 'Delete action date and time', 'wpforo' )
+						),
+						"description_original" => "[user_login] - Deleted user login [user_email] - Deleted user email [user_userid] - Deleted user id - Delete action date and time [datetime]",
+						"docurl"               => "",
+					],
+					"overwrite_new_user_notification"                    => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Overwrite WordPress New User Registration Email for Users", "wpforo" ),
+						"label_original"       => "Overwrite WordPress New User Registration Email for Users",
+						"description"          => esc_html__( "", "wpforo" ),
+						"description_original" => "",
+						"docurl"               => "",
+					],
+					"wp_new_user_notification_email_subject"             => [
+						"type"                 => "text",
+						"label"                => esc_html__( "Message Subject", "wpforo" ),
+						"label_original"       => "Message Subject",
+						"description"          => esc_html__( "", "wpforo" ),
+						"description_original" => "",
+						"docurl"               => "",
+					],
+					"wp_new_user_notification_email_message"             => [
 						"type"                 => "richeditor",
 						"media_buttons"        => true,
 						"label"                => esc_html__( "Message Body", "wpforo" ),
@@ -1907,7 +1943,7 @@ class Settings extends stdClass {
 						"description_original" => "[user_login] - Registered user login [set_password_url] - Link to open password reset form",
 						"docurl"               => "https://wpforo.com/community/faq/wpforo-email-shortcodes/",
 					],
-					"overwrite_reset_password_email"               => [
+					"overwrite_reset_password_email"                     => [
 						"type"                 => "radio",
 						"label"                => esc_html__( "Overwrite WordPress Reset Password Emails", "wpforo" ),
 						"label_original"       => "Overwrite WordPress Reset Password Emails",
@@ -1915,7 +1951,7 @@ class Settings extends stdClass {
 						"description_original" => "",
 						"docurl"               => "",
 					],
-					"reset_password_email_message"                 => [
+					"reset_password_email_message"                       => [
 						"type"                 => "richeditor",
 						"media_buttons"        => true,
 						"label"                => esc_html__( "Reset Password message body", "wpforo" ),
@@ -1931,7 +1967,7 @@ class Settings extends stdClass {
 						"description_original" => "[user_login] - Registered user login [reset_password_url] - Link to open password reset form",
 						"docurl"               => "https://wpforo.com/community/faq/wpforo-email-shortcodes/",
 					],
-					"after_user_approve_email_subject"             => [
+					"after_user_approve_email_subject"                   => [
 						"type"                 => "text",
 						"label"                => esc_html__( "Message Subject", "wpforo" ),
 						"label_original"       => "Message Subject",
@@ -1939,7 +1975,7 @@ class Settings extends stdClass {
 						"description_original" => "",
 						"docurl"               => "",
 					],
-					"after_user_approve_email_message"             => [
+					"after_user_approve_email_message"                   => [
 						"type"                 => "richeditor",
 						"media_buttons"        => true,
 						"label"                => esc_html__( "Message Body", "wpforo" ),
@@ -3814,6 +3850,7 @@ class Settings extends stdClass {
 			'manually_approval_contact_form'    => false,
 			'role_synch'                        => true,
 			'user_delete_method'                => 'soft',
+			'send_email_after_user_delete'      => true,
 			'use_our_register_url'              => true,
 			'use_our_login_url'                 => true,
 			'use_our_lostpassword_url'          => true,
@@ -4130,27 +4167,35 @@ class Settings extends stdClass {
 			'lowercase'     => false,
 		];
 		$this->_email         = [
-			'from_name'                                    => $blogname . ' - ' . __( 'Forum', 'wpforo' ),
-			'from_email'                                   => $adminemail,
-			'admin_emails'                                 => (array) $adminemail,
-			'new_topic_notify'                             => true,
-			'new_reply_notify'                             => false,
-			'disable_new_user_admin_notification'          => true,
-			'report_email_subject'                         => __( "Forum Post Report", 'wpforo' ),
-			'report_email_message'                         => __( "<strong>Report details:</strong>\n Reporter: [reporter], <br>\n Message: [message],<br>\n <br>\n [post_url]", 'wpforo' ),
-			'overwrite_new_user_notification_admin'        => true,
-			'wp_new_user_notification_email_admin_subject' => __( "[blogname] New User Registration", 'wpforo' ),
-			'wp_new_user_notification_email_admin_message' => __( "New user registration on your site [blogname]:\n\nUsername: [user_login]\n\nEmail: [user_email]\n", 'wpforo' ),
-			'overwrite_new_user_notification'              => true,
-			'wp_new_user_notification_email_subject'       => __( "[blogname] Your username and password info", 'wpforo' ),
-			'wp_new_user_notification_email_message'       => __( "Username: [user_login]\n\nTo set your password, visit the following address:\n\n[set_password_url]\n\n", 'wpforo' ),
-			'overwrite_reset_password_email'               => true,
-			'reset_password_email_message'                 => __(
+			'from_name'                                          => $blogname . ' - ' . __( 'Forum', 'wpforo' ),
+			'from_email'                                         => $adminemail,
+			'admin_emails'                                       => (array) $adminemail,
+			'new_topic_notify'                                   => true,
+			'new_reply_notify'                                   => false,
+			'disable_new_user_admin_notification'                => true,
+			'report_email_subject'                               => __( "Forum Post Report", 'wpforo' ),
+			'report_email_message'                               => __( "<strong>Report details:</strong>\n Reporter: [reporter], <br>\n Message: [message],<br>\n <br>\n [post_url]", 'wpforo' ),
+			'overwrite_new_user_notification_admin'              => true,
+			'wp_new_user_notification_email_admin_subject'       => __( "[blogname] New User Registration", 'wpforo' ),
+			'wp_new_user_notification_email_admin_message'       => __( "New user registration on your site [blogname]:\n\nUsername: [user_login]\n\nEmail: [user_email]\n", 'wpforo' ),
+			'after_user_delete_notification_email_admin_subject' => __( "User Self-Deleted Their Account", 'wpforo' ),
+			'after_user_delete_notification_email_admin_message' => __(
+				"This is to notify you that a user has successfully deleted their account from the website. Below are the details: \n\nUser ID: [user_userid]\n\nUsername: [user_login]\n\nEmail: [user_email]\n\nDeletion Date and Time: [datetime] \n",
+				'wpforo'
+			),
+			'overwrite_new_user_notification'                    => true,
+			'wp_new_user_notification_email_subject'             => __( "[blogname] Your username and password info", 'wpforo' ),
+			'wp_new_user_notification_email_message'             => __( "Username: [user_login]\n\nTo set your password, visit the following address:\n\n[set_password_url]\n\n", 'wpforo' ),
+			'overwrite_reset_password_email'                     => true,
+			'reset_password_email_message'                       => __(
 				"Hello! \n\n You asked us to reset your password for your account using the email address [user_login]. \n\n If this was a mistake, or you didn't ask for a password reset, just ignore this email and nothing will happen. \n\n To reset your password, visit the following address: \n\n [reset_password_url] \n\n Thanks!",
 				'wpforo'
 			),
-			'after_user_approve_email_subject'             => __( '[blogname] - Your Account Has been Approved', 'wpforo' ),
-			'after_user_approve_email_message'             => __( 'Hi [user_login] , Thank you for your registration. Your account has been approved. You can login here: [login_link]', 'wpforo' ),
+			'after_user_approve_email_subject'                   => __( '[blogname] - Your Account Has been Approved', 'wpforo' ),
+			'after_user_approve_email_message'                   => __(
+				'Hi [user_login] , Thank you for your registration. Your account has been approved. You can login here: [login_link]',
+				'wpforo'
+			),
 		];
 		$this->_subscriptions = [
 			'subscribe_confirmation'               => true,

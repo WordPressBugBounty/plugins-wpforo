@@ -5,14 +5,14 @@
 * Description: WordPress Forum plugin. wpForo is a full-fledged forum solution for your community. Comes with multiple modern forum layouts.
 * Author: gVectors Team
 * Author URI: https://gvectors.com/
-* Version: 2.4.0
+* Version: 2.4.1
 * Text Domain: wpforo
 * Domain Path: /languages
 */
 
 namespace wpforo;
 
-define( 'WPFORO_VERSION', '2.4.0' );
+define( 'WPFORO_VERSION', '2.4.1' );
 
 //Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;
@@ -353,12 +353,18 @@ final class wpforo {
 			}
 		} );
 		
-		if( is_admin() || strpos( (string) $_SERVER['REQUEST_URI'], '/wp-json/' ) === 0 || strpos( (string) $_SERVER['REQUEST_URI'], '/peepsoajax/' ) === 0 || preg_match(
+		if( is_admin() || strpos( (string) $_SERVER['REQUEST_URI'], '/peepsoajax/' ) === 0 || preg_match(
 				'#^/?(?:([^\s/?&=<>:\'\"*\\\|]*/)(?1)*)?[^\s/?&=<>:\'\"*\\\|]+\.(?:php|js|css|jpe?g|png|gif|bmp|webp|svg|tiff)/?(?:\?[^/]*)?$#iu',
 				(string) $_SERVER['REQUEST_URI']
 			) ) {
 			add_action( 'init', [ $this, 'init' ], 99 );
 			add_action( 'admin_init', [ $this, 'admin_init' ] );
+		} elseif( strpos( (string) $_SERVER['REQUEST_URI'], '/wp-json/' ) === 0 ) {
+			add_filter( 'rest_authentication_errors', function( $r ) {
+				$this->init();
+				
+				return $r;
+			},          9999 );
 		} else {
 			add_action( 'wp', [ $this, 'init' ], 99 );
 		}
@@ -444,6 +450,9 @@ final class wpforo {
 				'url//' => $this->folders['upload']['url//'] . "/" . trim( $this->fix_url_sep( (string) $folder ), '/' ),
 			];
 		}
+		
+		$this->folders = apply_filters( 'wpforo_working_folders', $this->folders );
+		
 		do_action( 'wpforo_after_init_folders', $this->folders );
 	}
 	

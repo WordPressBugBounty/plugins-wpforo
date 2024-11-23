@@ -137,6 +137,8 @@ class Members {
 		add_action( 'wpforo_after_delete_user', [ $this, 'after_delete_user' ], 11, 2 );
 		
 		add_action( 'wpforo_after_activate_user', [ $this, 'after_activate_user' ] );
+		
+		add_action( 'wpforo_after_front_delete_user', [ $this, 'after_front_delete_user' ] );
 	}
 	
 	public function init_list_table() {
@@ -168,6 +170,9 @@ class Members {
 		$member['questions']          = intval( $member['questions'] );
 		$member['answers']            = intval( $member['answers'] );
 		$member['comments']           = intval( $member['comments'] );
+		
+		sort( $member['secondary_groupids'], SORT_NUMERIC );
+		sort( $member['groupids'], SORT_NUMERIC );
 		
 		$member['reactions_in']            = array_map( 'intval', (array) ( wpforo_is_json( $member['reactions_in'] ) ? json_decode( $member['reactions_in'], true ) : $member['reactions_in'] ) );
 		$member['reactions_in']['__ALL__'] = 0;
@@ -818,7 +823,10 @@ class Members {
 			$member = $this->encode( [ $key => $value ] );
 			if( wpfkey( $member, $key ) ) {
 				$r = WPF()->db->update(
-					WPF()->tables->profiles, [ $key => $value ], [ 'userid' => $userid ], [ wpforo_db_data_format( $member[ $key ] ) ], [ '%d' ]
+					WPF()->tables->profiles,
+					[ $key => $value ],
+					[ 'userid' => $userid ],
+					[ wpforo_db_data_format( $member[ $key ] ) ], [ '%d' ]
 				);
 				
 				if( $r ) $this->reset( $userid );
@@ -1900,7 +1908,7 @@ class Members {
 			WPF()->current_usermeta                = $user_meta;
 			WPF()->current_user_groupid            = WPF()->current_user['groupid'];
 			WPF()->current_user_secondary_groupids = WPF()->current_user['secondary_groupids'];
-			WPF()->current_user_groupids           = array_unique( array_filter( array_merge( (array) WPF()->current_user_groupid, (array) WPF()->current_user_secondary_groupids ) ) );
+			WPF()->current_user_groupids           = WPF()->current_user['groupids'];
 			WPF()->current_user_status             = (string) wpfval( $user, 'status' );
 			$this->update_online_time();
 		} elseif( $guest = $this->get_guest_cookies() ) {
@@ -3816,5 +3824,30 @@ class Members {
 		$member['profile_url'] = wpfval( $member, 'profile_url' ) ?: $this->get_profile_url( $memberid );
 		
 		return $member;
+	}
+	
+	public function after_front_delete_user( $user ) {
+		if( $user['userid'] === WPF()->current_userid ) {
+			if( wpforo_setting( 'authorization', 'send_email_after_user_delete' ) ) {
+				$sbj = wpforo_setting( 'email', 'after_user_delete_notification_email_admin_subject' );
+				$sbj = str_replace(
+					[ '[datetime]', '[blogname]' ],
+					[ _wpforo_date( 0, 'mysql', 'wp' ), '[' . get_bloginfo( 'name' ) . ']' ],
+					$sbj
+				);
+				$sbj = wpforo_apply_email_shortcodes( $sbj, [], [], [], $user, '' );
+				
+				$msg = wpforo_setting( 'email', 'after_user_delete_notification_email_admin_message' );
+				$msg = str_replace(
+					[ '[datetime]', '[blogname]' ],
+					[ _wpforo_date( 0, 'mysql', 'wp' ), '[' . get_bloginfo( 'name' ) . ']' ],
+					$msg
+				);
+				$msg = wpforo_apply_email_shortcodes( $msg, [], [], [], $user, '' );
+				$msg = wpautop( $msg );
+				
+				wpforo_send_email( wpforo_setting( 'email', 'admin_emails' ), $sbj, $msg );
+			}
+		}
 	}
 }

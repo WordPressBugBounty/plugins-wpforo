@@ -108,11 +108,6 @@ class Topics {
 			
 			return false;
 		}
-		if( ! isset( $title ) || ! $title = wpforo_text( $title, 250, false, true, false, false, false ) ) {
-			WPF()->notice->add( 'Please insert required fields!', 'error' );
-			
-			return false;
-		}
 		
 		if( isset( $body ) ) $body = preg_replace( '#</pre>[\r\n\t\s\0]*<pre>#isu', "\r\n", (string) $body );
 		
@@ -148,16 +143,19 @@ class Topics {
 		$tags       = ( isset( $tags ) ? $tags : '' );
 		
 		$t_update = WPF()->db->update(
-			WPF()->tables->topics, [
-			'title'      => $title,
-			'type'       => $type,
-			'status'     => $status,
-			'private'    => $private,
-			'has_attach' => $has_attach,
-			'name'       => $name,
-			'email'      => $email,
-			'tags'       => $tags,
-		],  [ 'topicid' => $topicid ], [ '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%s' ], [ '%d' ]
+			WPF()->tables->topics,
+			[
+				'title'      => $title,
+				'type'       => $type,
+				'status'     => $status,
+				'private'    => $private,
+				'has_attach' => $has_attach,
+				'name'       => $name,
+				'email'      => $email,
+				'tags'       => $tags,
+			],
+			[ 'topicid' => $topicid ],
+			[ '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%s' ], [ '%d' ]
 		);
 		
 		if( isset( $topic['first_postid'] ) ) {
@@ -177,18 +175,21 @@ class Topics {
 		);
 		
 		$p_update = WPF()->db->update(
-			WPF()->tables->posts, [
-			'title'    => $title,
-			'body'     => $body,
-			'modified' => current_time(
-				'mysql',
-				1
-			),
-			'status'   => $status,
-			'private'  => $private,
-			'name'     => $name,
-			'email'    => $email,
-		],  [ 'postid' => intval( $topic['first_postid'] ) ], [ '%s', '%s', '%s', '%d', '%d', '%s', '%s' ], [ '%d' ]
+			WPF()->tables->posts,
+			[
+				'title'    => $title,
+				'body'     => $body,
+				'modified' => current_time(
+					'mysql',
+					1
+				),
+				'status'   => $status,
+				'private'  => $private,
+				'name'     => $name,
+				'email'    => $email,
+			],
+			[ 'postid' => intval( $topic['first_postid'] ) ],
+			[ '%s', '%s', '%s', '%d', '%d', '%s', '%s' ], [ '%d' ]
 		);
 		
 		if( $t_update !== false && $p_update !== false ) {
@@ -234,7 +235,7 @@ class Topics {
 		if( empty( $args ) && ! empty( $_REQUEST['thread'] ) ) $args = $_REQUEST['thread'];
 		if( $min = wpforo_setting( 'posting', 'topic_body_min_length' ) ) {
 			if( wpfkey( $args, 'body' ) && (int) $min > wpforo_length( $args['body'] ) ) {
-				WPF()->notice->add( 'The content is too short', 'error' );
+				WPF()->notice->add( 'The content is too short. It must be at least %1$d characters long.', 'error', $min );
 				
 				return false;
 			}
@@ -303,7 +304,7 @@ class Topics {
 			'mysql',
 			1
 		) );
-		$args['userid']  = ( isset( $args['userid'] ) ? intval( $args['userid'] ) : WPF()->current_userid );
+		$args['userid']  = ( isset( $args['userid'] ) && wpforo_current_user_is( 'admin' ) ? intval( $args['userid'] ) : WPF()->current_userid );
 		$args['name']    = ( isset( $args['name'] ) ? $args['name'] : '' );
 		$args['email']   = ( isset( $args['email'] ) ? $args['email'] : '' );
 		$args['tags']    = ( isset( $args['tags'] ) ? $args['tags'] : '' );
@@ -344,49 +345,47 @@ class Topics {
 		do_action( 'wpforo_before_add_topic', $args );
 		
 		if( WPF()->db->insert(
-			WPF()->tables->topics,
-			[
-				'title'      => stripslashes(
-					$title
-				),
-				'slug'       => $slug,
-				'forumid'    => $forum['forumid'],
-				'userid'     => $userid,
-				'type'       => $type,
-				'status'     => $status,
-				'private'    => $private,
-				'created'    => $created,
-				'modified'   => $created,
-				'last_post'  => 0,
-				'views'      => $views,
-				'posts'      => $posts,
-				'meta_key'   => $meta_key,
-				'meta_desc'  => $meta_desc,
-				'has_attach' => $has_attach,
-				'name'       => $name,
-				'email'      => $email,
-				'tags'       => $tags,
-			],
-			[
-				'%s',
-				'%s',
-				'%d',
-				'%d',
-				'%d',
-				'%d',
-				'%d',
-				'%s',
-				'%s',
-				'%d',
-				'%d',
-				'%d',
-				'%s',
-				'%s',
-				'%d',
-				'%s',
-				'%s',
-				'%s',
-			]
+			      WPF()->tables->topics, [
+			'title'      => stripslashes(
+				$title
+			),
+			'slug'       => $slug,
+			'forumid'    => $forum['forumid'],
+			'userid'     => $userid,
+			'type'       => $type,
+			'status'     => $status,
+			'private'    => $private,
+			'created'    => $created,
+			'modified'   => $created,
+			'last_post'  => 0,
+			'views'      => $views,
+			'posts'      => $posts,
+			'meta_key'   => $meta_key,
+			'meta_desc'  => $meta_desc,
+			'has_attach' => $has_attach,
+			'name'       => $name,
+			'email'      => $email,
+			'tags'       => $tags,
+		],        [
+				      '%s',
+				      '%s',
+				      '%d',
+				      '%d',
+				      '%d',
+				      '%d',
+				      '%d',
+				      '%s',
+				      '%s',
+				      '%d',
+				      '%d',
+				      '%d',
+				      '%s',
+				      '%s',
+				      '%d',
+				      '%s',
+				      '%s',
+				      '%s',
+			      ]
 		) ) {
 			$topicid = WPF()->db->insert_id;
 			$fields  = [
@@ -419,7 +418,10 @@ class Topics {
 			) ) {
 				$first_postid = WPF()->db->insert_id;
 				if( false !== WPF()->db->update(
-						WPF()->tables->topics, [ 'first_postid' => $first_postid, 'last_post' => $first_postid ], [ 'topicid' => $topicid ], [ '%d', '%d' ], [ '%d' ]
+						WPF()->tables->topics,
+						[ 'first_postid' => $first_postid, 'last_post' => $first_postid ],
+						[ 'topicid' => $topicid ],
+						[ '%d', '%d' ], [ '%d' ]
 					) ) {
 					$args['topicid']      = $topicid;
 					$args['first_postid'] = $first_postid;
@@ -537,7 +539,10 @@ class Topics {
 					);
 					if( $count ) {
 						WPF()->db->update(
-							WPF()->tables->tags, [ 'count' => $count + 1 ], [ 'tag' => $tag ], [ '%d' ], [ '%s' ]
+							WPF()->tables->tags,
+							[ 'count' => $count + 1 ],
+							[ 'tag' => $tag ],
+							[ '%d' ], [ '%s' ]
 						);
 					} else {
 						$this->add_tag( $tag, 1 );
@@ -557,7 +562,8 @@ class Topics {
 				"SELECT `tagid` FROM `" . WPF()->tables->tags . "` WHERE `tag` = '" . esc_sql( $tag ) . "'"
 			) ) {
 				$tagid = WPF()->db->insert(
-					WPF()->tables->tags, [ 'tag' => $tag, 'prefix' => 0, 'count' => intval( $count ) ], [ '%s', '%d', '%d' ]
+					WPF()->tables->tags,
+					[ 'tag' => $tag, 'prefix' => 0, 'count' => intval( $count ) ], [ '%s', '%d', '%d' ]
 				);
 			}
 		}
@@ -607,11 +613,15 @@ class Topics {
 						);
 						if( ! $count ) {
 							WPF()->db->insert(
-								WPF()->tables->tags, [ 'tag' => $tag, 'prefix' => 0, 'count' => 1 ], [ '%s', '%d', '%d' ]
+								WPF()->tables->tags,
+								[ 'tag' => $tag, 'prefix' => 0, 'count' => 1 ], [ '%s', '%d', '%d' ]
 							);
 						} elseif( empty( $old_tags ) || ! in_array( $tag, $old_tags ) ) {
 							WPF()->db->update(
-								WPF()->tables->tags, [ 'count' => ( $count + 1 ) ], [ 'tag' => $tag ], [ '%d' ], [ '%s' ]
+								WPF()->tables->tags,
+								[ 'count' => ( $count + 1 ) ],
+								[ 'tag' => $tag ],
+								[ '%d' ], [ '%s' ]
 							);
 						}
 						wpforo_clean_cache( 'tag', $tag );
@@ -621,7 +631,10 @@ class Topics {
 		} else {
 			if( ! empty( $old_tags ) && wpfval( $topic, 'topicid' ) ) {
 				WPF()->db->update(
-					WPF()->tables->topics, [ 'tags' => '' ], [ 'topicid' => $topic['topicid'] ], [ '%s' ], [ '%d' ]
+					WPF()->tables->topics,
+					[ 'tags' => '' ],
+					[ 'topicid' => $topic['topicid'] ],
+					[ '%s' ], [ '%d' ]
 				);
 				$this->remove_tags( $old_tags );
 			}
@@ -642,7 +655,10 @@ class Topics {
 					);
 				} else {
 					WPF()->db->update(
-						WPF()->tables->tags, [ 'count' => ( $count - 1 ) ], [ 'tag' => $tag ], [ '%d' ], [ '%s' ]
+						WPF()->tables->tags,
+						[ 'count' => ( $count - 1 ) ],
+						[ 'tag' => $tag ],
+						[ '%d' ], [ '%s' ]
 					);
 				}
 				wpforo_clean_cache( 'tag', $tag );
@@ -840,7 +856,8 @@ class Topics {
 					// If the search phrase is "es lorem du ipsum dolor", then SQL  becomes
 					// SELECT * FROM `wp_wpforo_topics` WHERE `title` REGEXP 'lorem|ipsum|dolor'
 					$words = array_filter(
-						explode( ' ', sanitize_text_field( $needle ) ), function( $word ) { return mb_strlen( (string) $word ) > 2; }
+						explode( ' ', sanitize_text_field( $needle ) ),
+						function( $word ) { return mb_strlen( (string) $word ) > 2; }
 					);
 					if( $words ) {
 						if( apply_filters( 'wpforo_suggested_topics_search_fields_method_regexp', false ) ) {
@@ -1068,43 +1085,41 @@ class Topics {
 			                                                                ) !== false ) ? 1 : 0 );
 			
 			if( WPF()->db->insert(
-				WPF()->tables->topics,
-				[
-					'title'      => stripslashes(
-						$title
-					),
-					'slug'       => $slug,
-					'forumid'    => $forumid,
-					'userid'     => $userid,
-					'type'       => $type,
-					'status'     => $status,
-					'private'    => $private,
-					'created'    => $created,
-					'modified'   => $created,
-					'last_post'  => 0,
-					'views'      => 0,
-					'posts'      => 1,
-					'has_attach' => $has_attach,
-					'name'       => $name,
-					'email'      => $email,
-				],
-				[
-					'%s',
-					'%s',
-					'%d',
-					'%d',
-					'%d',
-					'%d',
-					'%d',
-					'%s',
-					'%s',
-					'%d',
-					'%d',
-					'%d',
-					'%d',
-					'%s',
-					'%s',
-				]
+				      WPF()->tables->topics, [
+				'title'      => stripslashes(
+					$title
+				),
+				'slug'       => $slug,
+				'forumid'    => $forumid,
+				'userid'     => $userid,
+				'type'       => $type,
+				'status'     => $status,
+				'private'    => $private,
+				'created'    => $created,
+				'modified'   => $created,
+				'last_post'  => 0,
+				'views'      => 0,
+				'posts'      => 1,
+				'has_attach' => $has_attach,
+				'name'       => $name,
+				'email'      => $email,
+			],        [
+					      '%s',
+					      '%s',
+					      '%d',
+					      '%d',
+					      '%d',
+					      '%d',
+					      '%d',
+					      '%s',
+					      '%s',
+					      '%d',
+					      '%d',
+					      '%d',
+					      '%d',
+					      '%s',
+					      '%s',
+				      ]
 			) ) {
 				$args['topicid'] = $topicid = WPF()->db->insert_id;
 				
@@ -1299,11 +1314,14 @@ class Topics {
 		}
 		
 		if( $r = WPF()->db->update(
-			WPF()->tables->topics, [
-			'first_postid' => $first_postid,
-			'last_post'    => $last_post['postid'],
-			'modified'     => $last_post['created'],
-		],  [ 'topicid' => $topic['topicid'] ], [ '%d', '%d', '%s' ], [ '%d' ]
+			WPF()->tables->topics,
+			[
+				'first_postid' => $first_postid,
+				'last_post'    => $last_post['postid'],
+				'modified'     => $last_post['created'],
+			],
+			[ 'topicid' => $topic['topicid'] ],
+			[ '%d', '%d', '%s' ], [ '%d' ]
 		) ) {
 			wpforo_clean_cache( 'topic-first-post' );
 		}
@@ -1330,7 +1348,11 @@ class Topics {
 		}
 		
 		if( $r = WPF()->db->update(
-			WPF()->tables->topics, $data, [ 'topicid' => $topic['topicid'] ], $data_format, [ '%d' ]
+			WPF()->tables->topics,
+			$data,
+			[ 'topicid' => $topic['topicid'] ],
+			$data_format,
+			[ '%d' ]
 		) ) {
 			wpforo_clean_cache( 'topic-first-post', $topic['topicid'], $topic );
 		}
@@ -1437,7 +1459,10 @@ class Topics {
 		if( ! $topic = $this->get_topic( $topicid, false ) ) return false;
 		
 		if( $r = WPF()->db->update(
-			WPF()->tables->topics, [ 'status' => $status ], [ 'topicid' => $topicid ], [ '%d' ], [ '%d' ]
+			WPF()->tables->topics,
+			[ 'status' => $status ],
+			[ 'topicid' => $topicid ],
+			[ '%d' ], [ '%d' ]
 		) ) {
 			if( $status ) {
 				do_action( 'wpforo_topic_unapprove', $topic );
@@ -1464,11 +1489,17 @@ class Topics {
 	
 	public function wprivate( $topicid, $private ) {
 		WPF()->db->update(
-			WPF()->tables->topics, [ 'private' => $private ], [ 'topicid' => $topicid ], [ '%d' ], [ '%d' ]
+			WPF()->tables->topics,
+			[ 'private' => $private ],
+			[ 'topicid' => $topicid ],
+			[ '%d' ], [ '%d' ]
 		);
 		
 		WPF()->db->update(
-			WPF()->tables->posts, [ 'private' => $private ], [ 'topicid' => $topicid ], [ '%d' ], [ '%d' ]
+			WPF()->tables->posts,
+			[ 'private' => $private ],
+			[ 'topicid' => $topicid ],
+			[ '%d' ], [ '%d' ]
 		);
 		
 		do_action( 'wpforo_topic_private_update', $topicid, $private );
@@ -1681,7 +1712,8 @@ class Topics {
 					$access_filter = apply_filters( 'wpforo_topic_access_filter_cache', true );
 					if( $access_filter ) {
 						$object_cache['items'] = $this->access_filter(
-							$object_cache['items'], [
+							$object_cache['items'],
+							[
 								                      'groupids' => ( array_filter(
 									                      array_map( 'intval', (array) $permgroup )
 								                      ) ?: null ),
@@ -1705,7 +1737,8 @@ class Topics {
 		
 		if( ! empty( $forumids ) || ! $forumid ) {
 			$topics = $this->access_filter(
-				$topics, [
+				$topics,
+				[
 					       'groupids' => ( array_filter(
 						       array_map( 'intval', (array) $permgroup )
 					       ) ?: null ),
@@ -1826,7 +1859,10 @@ class Topics {
 		$tag_name = $this->sanitize_tag( $tag_name );
 		
 		if( false !== WPF()->db->update(
-				WPF()->tables->tags, [ 'tag' => $tag_name ], [ 'tagid' => intval( $tag_id ) ], [ '%s' ], [ '%d' ]
+				WPF()->tables->tags,
+				[ 'tag' => $tag_name ],
+				[ 'tagid' => intval( $tag_id ) ],
+				[ '%s' ], [ '%d' ]
 			) ) {
 			if( $old_tag ) {
 				if( $disconnect ) {
@@ -1842,7 +1878,10 @@ class Topics {
 						) . "', tags)"
 					);
 					WPF()->db->update(
-						WPF()->tables->tags, [ 'count' => intval( $count ) ], [ 'tag' => $tag_name ], [ '%d' ], [ '%s' ]
+						WPF()->tables->tags,
+						[ 'count' => intval( $count ) ],
+						[ 'tag' => $tag_name ],
+						[ '%d' ], [ '%s' ]
 					);
 				}
 			}
@@ -1898,7 +1937,10 @@ class Topics {
 						}
 						$tags = implode( ',', $tags );
 						WPF()->db->update(
-							WPF()->tables->topics, [ 'tags' => $tags ], [ 'topicid' => $topic['topicid'] ], [ '%s' ], [ '%d' ]
+							WPF()->tables->topics,
+							[ 'tags' => $tags ],
+							[ 'topicid' => $topic['topicid'] ],
+							[ '%s' ], [ '%d' ]
 						);
 					}
 				}

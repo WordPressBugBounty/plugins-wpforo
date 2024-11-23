@@ -1777,6 +1777,38 @@ $wpf(document).ready(function ($) {
 		}, 100);
 	});
 	
+	wpforo_wrap.on('click', '.wpforo-user-actions .wpforo-user-tools .wpf-ab-delete', {}, function (e) {
+		const a = $(this).closest('a');
+		if (a.length) {
+			const action_url = a[0].href;
+			if (action_url) {
+				e.preventDefault();
+				const pwd = prompt('Please confirm the account deletion by entering your account password.');
+				if (pwd) {
+					wpforo_load_show();
+					$.ajax({
+						type: 'POST',
+						data: {
+							pwd: pwd,
+							action: 'wpforo_confirm_current_user_password',
+							_wpfnonce: wpforo['nonces']['wpforo_confirm_current_user_password'],
+						},
+					}).done((r) => {
+						if (r.success) {
+							window.location.assign(action_url + '&pwd=' + pwd);
+						} else {
+							wpforo_notice_show('The password you entered is incorrect.', 'error');
+						}
+					}).always(function () {
+						wpforo_load_hide();
+					});
+				} else {
+					wpforo_notice_show('To permanently delete your account from this website, please enter your password for confirmation.', 'error');
+				}
+			}
+		}
+	});
+	
 });
 
 function wpforo_init_phrases () {

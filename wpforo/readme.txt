@@ -1,9 +1,9 @@
-=== wpForo Forum ===
+﻿=== wpForo Forum ===
 Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.1
-Tested up to: 6.6
-Stable tag: 2.4.0
+Tested up to: 6.7
+Stable tag: 2.4.1
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -179,10 +179,16 @@ IMPORTANT NOTES for UPDATE
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
 
-= wpForo Forum 2.4.0 | 14.09.2024 =
+= wpForo Forum 2.4.0 - 2.4.1 | 23.11.2024 =
 
 [wpForo Forum v2.4 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-2-4-is-released/)
 
+* Version 2.4.1
+* Compatibility: WordPress 6.7
+* Added: Request confirmation before deleting the account
+* Added: Email notification to admins when users delete their account
+* ---------
+* Version 2.4.0
 * Added: Export and Import of settings. Allows you to export and import different groups of settings separately.
 * Added: Automatically change a post status to unapproved when an eligible user report it.
 * Added: reCAPTCHA to the [Add Topic] form in stand-alone topic creation page (/add-topic/)

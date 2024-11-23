@@ -73,6 +73,7 @@ class Actions {
 			add_action( 'wp_ajax_nopriv_wpforo_get_member_template', [ $this, 'get_member_template' ] );
 			add_action( 'wp_ajax_wpforo_search_existed_topics', [ $this, 'search_existed_topics' ] );
 			add_action( 'wp_ajax_nopriv_wpforo_search_existed_topics', [ $this, 'search_existed_topics' ] );
+			add_action( 'wp_ajax_wpforo_confirm_current_user_password', [ $this, 'confirm_current_user_password' ] );
 		} else {
 			add_action( 'wpforo_actions', [ $this, 'check_dashboard_permissions' ], 1 );
 			add_action( 'wpforo_actions', [ $this, 'repair_lost_main_shortcode_page' ] );
@@ -1875,16 +1876,38 @@ class Actions {
 		wp_send_json_error();
 	}
 	
+	public function confirm_current_user_password() {
+		wpforo_verify_nonce( 'wpforo_confirm_current_user_password' );
+		$pwd = wpfval( $_POST, 'pwd' );
+		if( wp_check_password( $pwd, WPF()->current_user['user_pass'], WPF()->current_user['userid'] ) ) {
+			wp_send_json_success();
+		} else {
+			wp_send_json_error();
+		}
+	}
+	
 	public function user_delete() {
 		wpforo_verify_nonce( 'user_delete', 'full' );
 		if( WPF()->current_object['user'] && ( $action = WPF()->member->get_action( WPF()->current_object['user'], 'delete' ) ) && is_callable( $action['callback_for_can'] ) && call_user_func(
 				$action['callback_for_can']
 			) ) {
-			if( ! function_exists( 'wp_delete_user' ) ) require_once ABSPATH . "wp-admin/includes/user.php";
-			if( wp_delete_user( WPF()->current_object['user']['userid'] ) ) {
-				WPF()->notice->add( 'User successfully deleted', 'success' );
+			
+			if( $pwd = wpfval( $_GET, 'pwd' ) ) {
+				if( wp_check_password( $pwd, WPF()->current_user['user_pass'], WPF()->current_user['userid'] ) ) {
+					if( ! function_exists( 'wp_delete_user' ) ) require_once ABSPATH . "wp-admin/includes/user.php";
+					if( wp_delete_user( WPF()->current_object['user']['userid'] ) ) {
+						
+						do_action( 'wpforo_after_front_delete_user', WPF()->current_object['user'] );
+						
+						WPF()->notice->add( 'User successfully deleted', 'success' );
+					} else {
+						WPF()->notice->add( 'User delete error', 'error' );
+					}
+				} else {
+					WPF()->notice->add( 'User deletion error: The password you entered is incorrect.', 'error' );
+				}
 			} else {
-				WPF()->notice->add( 'User delete error', 'error' );
+				WPF()->notice->add( 'User delete error: missing argument.', 'error' );
 			}
 		} else {
 			WPF()->notice->add( 'Permission denied for this action', 'error' );

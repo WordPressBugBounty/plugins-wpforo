@@ -137,7 +137,7 @@ class Posts {
 		$post['title']    = $title = ( isset( $title ) ? wpforo_text( trim( (string) $title ), 250, false ) : '' );
 		$post['body']     = $body = ( isset( $body ) ? preg_replace( '#</pre>[\r\n\t\s\0]*<pre>#isu', "\r\n", (string) $body ) : '' );
 		$post['created']  = $created = ( isset( $created ) ? $created : current_time( 'mysql', 1 ) );
-		$post['userid']   = $userid = ( isset( $userid ) ? intval( $userid ) : WPF()->current_userid );
+		$post['userid']   = $userid = ( isset( $userid ) && wpforo_current_user_is( 'admin' ) ? wpforo_bigintval( $userid ) : WPF()->current_userid );
 		if( $root_exists ) {
 			$post['root'] = ( $parentid ) ? ( isset( $root ) ? intval( $root ) : $this->get_root( $parentid ) ) : - 1;
 		} else {
@@ -155,7 +155,7 @@ class Posts {
 		if( isset( $parentid ) ) $parentid = intval( $parentid );
 		if( isset( $title ) ) $title = sanitize_text_field( trim( $title ) );
 		if( isset( $created ) ) $created = sanitize_text_field( $created );
-		if( isset( $userid ) ) $userid = intval( $userid );
+		if( isset( $userid ) ) $userid = wpforo_bigintval( $userid );
 		if( isset( $body ) ) $body = wpforo_kses( trim( (string) $body ), 'post' );
 		$status  = ( isset( $status ) && $status ? 1 : 0 );
 		$private = ( isset( $topic['private'] ) && $topic['private'] ? 1 : 0 );

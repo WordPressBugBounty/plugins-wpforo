@@ -11,6 +11,7 @@ WPF()->settings->form_field( 'authorization', 'manually_approval' );
 WPF()->settings->form_field( 'authorization', 'manually_approval_contact_form' );
 WPF()->settings->form_field( 'authorization', 'role_synch' );
 WPF()->settings->form_field( 'authorization', 'user_delete_method' );
+WPF()->settings->form_field( 'authorization', 'send_email_after_user_delete' );
 WPF()->settings->form_field( 'authorization', 'use_our_register_url' );
 WPF()->settings->form_field( 'authorization', 'use_our_login_url' );
 WPF()->settings->form_field( 'authorization', 'use_our_lostpassword_url' );
@@ -18,9 +19,9 @@ WPF()->settings->form_field( 'authorization', 'custom_auth_urls' );
 WPF()->settings->form_field( 'authorization', 'custom_redirect_urls' );
 ?>
 
-<div class="wpf-subtitle">
-    <span class="dashicons dashicons-facebook"></span> <?php _e( 'Facebook API', 'wpforo' ) ?>
-</div>
+    <div class="wpf-subtitle">
+        <span class="dashicons dashicons-facebook"></span> <?php _e( 'Facebook API', 'wpforo' ) ?>
+    </div>
 
 <?php
 WPF()->settings->form_field( 'authorization', 'fb_api_config' );
