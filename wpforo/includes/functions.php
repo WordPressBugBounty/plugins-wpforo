@@ -3888,3 +3888,36 @@ function wpforo_check_for_svg( $file ) {
 	
 	return $file;
 }
+
+
+/**
+ * Custom function to replace is_numeric() function avoiding negative
+ * numbers to be considered as numeric. This is mostly used differentiating
+ * between ID and slugs. Sometimes slugs can be like "-12345".
+ *
+ * @param mixed $value
+ *
+ * @return bool
+ */
+function wpforo_is_id( $value ) {
+	return is_numeric( $value ) && (int) $value >= 0;
+}
+
+function is_avatar_url( string $url ): bool {
+	// Check if the string is a valid URL
+	if( filter_var( $url, FILTER_VALIDATE_URL ) ) {
+		// Make a HEAD request to check the Content-Type
+		$response = wp_remote_head( $url );
+		
+		if( ! is_wp_error( $response ) ) {
+			$content_type = wp_remote_retrieve_header( $response, 'content-type' );
+			
+			// Check if the Content-Type is an image
+			if( strpos( $content_type, 'image/' ) !== false ) {
+				return true; // The URL points to an image
+			}
+		}
+	}
+	
+	return false; // Not a valid avatar URL
+}

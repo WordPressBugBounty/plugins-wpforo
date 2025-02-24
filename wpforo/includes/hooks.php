@@ -1543,17 +1543,19 @@ function wpforo_admin_enqueue() {
 	] );
 	WPF()->settings->init_info();
 	wp_localize_script(
-		'wpforo-backend-js', 'wpforo', [
-			                   'ajax_url' => wpforo_get_ajax_url(),
-			                   'nonces'   => wpforo_generate_ajax_nonces(),
-			                   'board'    => [ 'has_more_boards' => is_wpforo_multiboard() ],
-			                   'settings' => [
-				                   'info' => [
-					                   'core'   => WPF()->settings->info->core,
-					                   'addons' => WPF()->settings->info->addons,
-				                   ],
-			                   ],
-		                   ]
+		'wpforo-backend-js',
+		'wpforo',
+		[
+			'ajax_url' => wpforo_get_ajax_url(),
+			'nonces'   => wpforo_generate_ajax_nonces(),
+			'board'    => [ 'has_more_boards' => is_wpforo_multiboard() ],
+			'settings' => [
+				'info' => [
+					'core'   => WPF()->settings->info->core,
+					'addons' => WPF()->settings->info->addons,
+				],
+			],
+		]
 	);
 	wp_register_style(
 		'wpforo-deactivation-css',
@@ -1783,7 +1785,7 @@ function wpforo_userform_to_wpuser_html_form( $wp_user ) {
                         <br/>
                         <p class="description"
                            style="font-weight: normal; font-size: 13px; line-height: 18px;"><?php _e(
-								'This user Usergroup is automatically changed according to current Role. If you want to disable Role-Usergroup synchronization and manage Usergroups and User Roles independently, please navigate to <b>Forums > Settings > Features</b> admin page and disable "Role-Usergroup Synchronization" option.',
+								'This user Usergroup is automatically changed according to current Role. If you want to disable Role-Usergroup synchronization and manage Usergroups and User Roles independently, please navigate to <b>Dashboard > wpForo > Settings > Login & Registration</b> admin page and disable "Role-Usergroup Synchronization" option.',
 								'wpforo'
 							); ?></p>
 					<?php else: ?>
@@ -2007,7 +2009,7 @@ function wpforo_avatar( $avatar, $id_or_email, $size, $default, $alt ) {
 		return $avatar;
 	}
 	$user = false;
-	if( is_numeric( $id_or_email ) ) {
+	if( wpforo_is_id( $id_or_email ) ) {
 		$id   = (int) $id_or_email;
 		$user = get_user_by( 'id', $id );
 	} elseif( is_object( $id_or_email ) ) {
@@ -2048,7 +2050,7 @@ function wpforo_pre_get_avatar_data( $args, $id_or_email ) {
 				$id_or_email = get_comment( $id_or_email );
 			}
 			// Process the user identifier.
-			if( is_numeric( $id_or_email ) ) {
+			if( wpforo_is_id( $id_or_email ) ) {
 				$user = get_user_by( 'id', absint( $id_or_email ) );
 			} elseif( is_string( $id_or_email ) ) {
 				if( ! strpos( (string) $id_or_email, '@md5.gravatar.com' ) ) {
@@ -2477,7 +2479,7 @@ function wpforo_new_user_notification_email( $wp_new_user_notification_email, $u
 add_filter( 'wp_new_user_notification_email', 'wpforo_new_user_notification_email', 999, 3 );
 
 function wpforo_get_wprp_url_pattern() {
-	return '#(?:<\s*)?https?://\S+?wp-login\.php\?action=rp&key=(?<key>[^?&=\s]+)\S+(?:\s*>)?#isu';
+	return '#(?:<\s*)?https?://\S+?wp-login\.php(?:[?&]action=rp|[?&]login=[^?&=\s]+)?[?&]key=(?<key>[^?&=\s]+)(?:[?&]action=rp|[?&]login=[^?&=\s]+)?(?:\s*>)?#isu';
 }
 
 function wpforo_synch_user_roles( $userid ) {

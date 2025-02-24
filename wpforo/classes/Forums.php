@@ -514,7 +514,7 @@ class Forums {
 			'type'    => 'all',
 		];
 		if( ! is_array( $args ) ) {
-			if( is_numeric( $args ) ) {
+			if( wpforo_is_id( $args ) ) {
 				$default['forumid'] = intval( $args );
 				if( $default['forumid'] === WPF()->current_object['forumid'] ) return WPF()->current_object['forum'];
 			} elseif( is_string( $args ) ) {
@@ -1169,7 +1169,7 @@ class Forums {
 	function get_forum_url( $forum ) {
 		
 		if( ! is_array( $forum ) ) {
-			if( is_numeric( $forum ) ) {
+			if( wpforo_is_id( $forum ) ) {
 				$forum = $this->get_forum( $forum );
 			} else {
 				$forum = [ 'slug' => $forum ];

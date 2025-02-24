@@ -330,7 +330,7 @@ class Boards {
 	 * @return array
 	 */
 	public function _get_board( $args ) {
-		if( is_numeric( $args ) ) $args = [ 'boardid_include' => (int) $args ];
+		if( wpforo_is_id( $args ) ) $args = [ 'boardid_include' => (int) $args ];
 		if( ! wpfkey( $args, 'orderby' ) ) $args['orderby'] = '`boardid` DESC';
 		if( ! wpfkey( $args, 'row_count' ) ) {
 			$args['offset']    = 0;

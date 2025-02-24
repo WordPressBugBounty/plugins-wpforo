@@ -383,7 +383,7 @@ class API {
 				$message      = [ 'success' => $user_id, 'method' => 'registration' ];
 			}
 		}
-		if( is_numeric( $user_id ) ) {
+		if( wpforo_is_id( $user_id ) ) {
 			wp_set_auth_cookie( $user_id, true );
 			if( ! $meta_updated ) update_user_meta( $user_id, '_fb_user_id', $user['fb_user_id'] );
 		}

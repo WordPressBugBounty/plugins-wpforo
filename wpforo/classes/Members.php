@@ -642,7 +642,7 @@ class Members {
 			
 			//Validate avatar_url
 			if( wpfval( $user, 'avatar_type' ) === 'remote' && wpfval( $user, 'avatar_url' ) ) {
-				if( empty( getimagesize( $user['avatar_url'] ) ) ) {
+				if( ! is_avatar_url( $user['avatar_url'] ) ) {
 					WPF()->notice->add( 'The avatar URL is not an image file.', 'error' );
 					
 					return false;
@@ -1255,7 +1255,7 @@ class Members {
 			'user_nicename' => '', // $user_nicename
 		];
 		
-		if( is_numeric( $args ) ) {
+		if( wpforo_is_id( $args ) ) {
 			$args = [ 'userid' => $args ];
 		} elseif( ! is_array( $args ) ) {
 			$args = [ 'user_nicename' => $args ];

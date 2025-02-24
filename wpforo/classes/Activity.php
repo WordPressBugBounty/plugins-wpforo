@@ -389,7 +389,7 @@ class Activity {
 	
 	private function delete( $where ): bool {
 		if( empty( $where ) ) return false;
-		if( is_numeric( $where ) ) $where = [ 'id' => $where ];
+		if( wpforo_is_id( $where ) ) $where = [ 'id' => $where ];
 		$where = (array) $where;
 		
 		$where = apply_filters( 'wpforo_activity_delete_where_filter', $where );

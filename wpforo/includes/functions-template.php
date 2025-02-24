@@ -1390,7 +1390,7 @@ add_action( 'wpforo_header_hook', 'wpforo_admin_note', 1 );
 
 function wpforo_topic_icon( $topic, $type = 'all', $color = true, $echo = true, $wrap = '%s' ) {
 	$html = '';
-	if( is_numeric( $topic ) ) $topic = wpforo_topic( $topic );
+	if( wpforo_is_id( $topic ) ) $topic = wpforo_topic( $topic );
 	if( $type == 'mixed' ) {
 		if( ! $icon = WPF()->tpl->icon( 'topic', $topic, false ) ) {
 			$icon = WPF()->tpl->icon_base( $topic['posts'] );
@@ -1426,7 +1426,7 @@ function wpforo_topic_icon( $topic, $type = 'all', $color = true, $echo = true, 
 
 function wpforo_topic_icons( $topic, $type = 'all' ) {
 	$icon = [];
-	if( is_numeric( $topic ) ) $topic = wpforo_topic( $topic );
+	if( wpforo_is_id( $topic ) ) $topic = wpforo_topic( $topic );
 	if( $type == 'mixed' ) {
 		$icon = WPF()->tpl->icon( 'topic', $topic, false );
 	} else {
@@ -1445,7 +1445,7 @@ function wpforo_topic_icons( $topic, $type = 'all' ) {
 }
 
 function wpforo_tags( $topic, $wrap = true, $type = 'medium', $count = false ) {
-	if( is_numeric( $topic ) && $topic > 0 ) {
+	if( wpforo_is_id( $topic ) && $topic > 0 ) {
 		$topic = wpforo_topic( $topic );
 	}
 	if( wpfval( $topic, 'tags' ) ) {
@@ -2873,4 +2873,105 @@ function _wpforo_main_wrap_classes(): array {
 
 function wpforo_main_wrap_classes(): void {
 	echo implode( ' ', _wpforo_main_wrap_classes() );
+}
+
+function wpforo_get_recent_page_title(): string {
+	$view = wpfval( WPF()->current_object['args'], 'view' );
+	switch( $view ) {
+		case 'unread':
+			$page_title = wpforo_phrase( 'Unread Posts', false );
+		break;
+		case 'no-replies':
+			$page_title = wpforo_phrase( 'Not Replied Topics', false );
+		break;
+		case 'solved':
+			$page_title = wpforo_phrase( 'Solved Topics', false );
+		break;
+		case 'unsolved':
+			$page_title = wpforo_phrase( 'Unsolved Topics', false );
+		break;
+		case 'closed':
+			$page_title = wpforo_phrase( 'Closed Topics', false );
+		break;
+		case 'opened':
+			$page_title = wpforo_phrase( 'Open Topics', false );
+		break;
+		case 'sticky':
+			$page_title = wpforo_phrase( 'Sticky Topics', false );
+		break;
+		case 'private':
+			$page_title = wpforo_phrase( 'Private Topics', false );
+		break;
+		case 'unapproved':
+			$page_title = wpforo_phrase( 'Unapproved Posts', false );
+		break;
+		default:
+			$page_title = wpforo_phrase( 'Recent Posts', false );
+		break;
+	}
+	
+	return apply_filters( 'wpforo_recent_posts_page_title', $page_title, WPF()->current_object['args'], $view );
+}
+
+function wpforo_get_rss_feed_links(): string {
+	if( wpforo_setting( 'rss', 'feed' ) ) {
+		return sprintf(
+			' <sep> &nbsp;|&nbsp;</sep>
+                    <span class="wpf-feed-forums">
+                        <a href="%1$s" title="%2$s" target="_blank">
+                            <span>%3$s</span> <i class="fas fa-rss wpfsx"></i>
+                        </a>
+                    </span>
+                    <sep> &nbsp;|&nbsp;</sep>
+                    <span class="wpf-feed-topics">
+                        <a href="%4$s" title="%5$s" target="_blank">
+                            <span>%6$s</span> <i class="fas fa-rss wpfsx"></i>
+                        </a>
+                    </span>',
+			WPF()->feed->rss2_url( false, 'forum' ),
+			wpforo_phrase( 'Forums RSS Feed', false ),
+			wpforo_phrase( 'Forums', false ),
+			WPF()->feed->rss2_url( false, 'topic' ),
+			wpforo_phrase( 'Topics RSS Feed', false ),
+			wpforo_phrase( 'Topics', false )
+		);
+	}
+	
+	return '';
+}
+
+function wpforo_rss_feed_links(): void {
+	echo wpforo_get_rss_feed_links();
+}
+
+function wpforo_get_recent_page_filter_selectbox(): string {
+	$filters = [
+		'recent'     => wpforo_phrase( 'Recent Posts', false ),
+		'unread'     => wpforo_phrase( 'Unread Posts', false ),
+		'no-replies' => wpforo_phrase( 'Not Replied Topics', false ),
+		'solved'     => wpforo_phrase( 'Solved Topics', false ),
+		'unsolved'   => wpforo_phrase( 'Unsolved Topics', false ),
+		'closed'     => wpforo_phrase( 'Closed Topics', false ),
+		'opened'     => wpforo_phrase( 'Open Topics', false ),
+		'sticky'     => wpforo_phrase( 'Sticky Topics', false ),
+	];
+	
+	// Add admin/moderator-specific filters
+	if( wpforo_current_user_is( 'admin' ) || wpforo_current_user_is( 'moderator' ) ) {
+		$filters['private']    = wpforo_phrase( 'Private Topics', false );
+		$filters['unapproved'] = wpforo_phrase( 'Unapproved Posts', false );
+	}
+	
+	$options_html = '';
+	foreach( $filters as $key => $value ) {
+		$options_html .= sprintf(
+			'<option value="?view=%1$s%2$s" %3$s>%4$s</option>',
+			$key !== 'recent' ? $key : '',
+			( wpfval( WPF()->current_object['args'], 'prefixid' ) ? sprintf( '&prefixid=%1$d', WPF()->current_object['args']['prefixid'] ) : '' ),
+			wpfo_check( wpfval( WPF()->current_object['args'], 'view' ), $key, 'selected', false ),
+			$value
+		);
+	}
+	
+	return sprintf( '<label><select onchange="window.location.assign(this.value)">%1$s</select></label>', $options_html );
 }

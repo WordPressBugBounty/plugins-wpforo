@@ -5,14 +5,14 @@
 * Description: WordPress Forum plugin. wpForo is a full-fledged forum solution for your community. Comes with multiple modern forum layouts.
 * Author: gVectors Team
 * Author URI: https://gvectors.com/
-* Version: 2.4.1
+* Version: 2.4.2
 * Text Domain: wpforo
 * Domain Path: /languages
 */
 
 namespace wpforo;
 
-define( 'WPFORO_VERSION', '2.4.1' );
+define( 'WPFORO_VERSION', '2.4.2' );
 
 //Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;
@@ -359,7 +359,7 @@ final class wpforo {
 			) ) {
 			add_action( 'init', [ $this, 'init' ], 99 );
 			add_action( 'admin_init', [ $this, 'admin_init' ] );
-		} elseif( strpos( (string) $_SERVER['REQUEST_URI'], '/wp-json/' ) === 0 ) {
+		} elseif( strpos( (string) $_SERVER['REQUEST_URI'], '/wp-json/' ) !== false ) {
 			add_filter( 'rest_authentication_errors', function( $r ) {
 				$this->init();
 				
@@ -1047,7 +1047,119 @@ final class wpforo {
 					$current_object['posts'] = $this->post->search( $args, $current_object['items_count'] );
 				}
 			} elseif( $this->current_object['template'] === 'recent' ) {
-				$current_object['items_per_page'] = wpforo_setting( 'topics', 'topics_per_page' );
+				$args                          = [];
+				$view                          = false;
+				$current_object['items_count'] = 0;
+				if( ! empty( WPF()->GET['view'] ) ) $view = sanitize_title( WPF()->GET['view'] );
+				if( ! empty( WPF()->GET['wpff'] ) ) $args['forumid'] = intval( WPF()->GET['wpff'] );
+				if( ! empty( WPF()->GET['prefixid'] ) ) {
+					$args['prefixid'] = intval( WPF()->GET['prefixid'] );
+				}
+				
+				$type = ( $view && $view !== 'unapproved' ? 'topics' : wpforo_setting( 'topics', 'recent_posts_type' ) );
+				if( $view === 'unapproved' ) $type = 'posts';
+				if( $view === 'prefix' ) $type = 'topics';
+				
+				if( ! WPF()->current_userid || ! WPF()->usergroup->can( 'aum' ) ) {
+					$args['private'] = 0;
+					$args['status']  = 0;
+				}
+				$days = apply_filters( 'wpforo_recent_posts_limit', 30 );
+				
+				$end_date = time() - ( intval( $days ) * 24 * 60 * 60 );
+				if( $type === 'topics' ) {
+					$current_object['items_per_page'] = wpforo_setting( 'topics', 'topics_per_page' );
+					
+					if( wpfval( $args, 'prefixid' ) ) $args['prefix'] = (int) wpfval( $args, 'prefixid' );
+					$args['where']     = "`modified` > '" . gmdate( 'Y-m-d H:i:s', $end_date ) . "'";
+					$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? sanitize_text_field( WPF()->GET['wpfob'] ) : 'modified';
+					$args['order']     = 'DESC';
+					$args['offset']    = ( $current_object['paged'] - 1 ) * $current_object['items_per_page'];
+					$args['row_count'] = $current_object['items_per_page'];
+					
+					switch( $view ) {
+						case 'unread':
+							$args['read'] = false;
+						break;
+						case 'no-replies':
+							$args['where']   = null;
+							$args['include'] = wpforo_get_not_replied_topicids();
+						break;
+						case 'solved':
+							$args['solved'] = 1;
+						break;
+						case 'unsolved':
+							$args['solved'] = 0;
+						break;
+						case 'closed':
+							$args['closed'] = 1;
+						break;
+						case 'opened':
+							$args['closed'] = 0;
+						break;
+						case 'sticky':
+							$args['type'] = 1;
+						break;
+						case 'private':
+							$args['private'] = 1;
+						break;
+						case 'unapproved':
+							$args['status'] = 1;
+						break;
+						case 'prefix':
+							$args['where'] = null;
+						break;
+					}
+					$topics = $view === 'no-replies' && empty( $args['include'] ) ? [] : WPF()->topic->get_topics( $args, $current_object['items_count'] );
+					if( $topics ) {
+						$intro_posts = wpforo_setting( 'topics', 'layout_extended_intro_posts_count' );
+						if( $intro_posts < 1 ) {
+							$intro_posts = null;
+						} else {
+							$intro_posts = ( $intro_posts > 1 ) ? ( $intro_posts - 1 ) : 0;
+						}
+						foreach( $topics as $key => $topic ) {
+							$topics[ $key ]['replies'] = [];
+							$topics[ $key ]['member']  = wpforo_member( $topic );
+							$topics[ $key ]['forum']   = wpforo_forum( $topic['forumid'] );
+							if( isset( $topic['last_post'] ) && $topic['last_post'] != 0 ) {
+								$topics[ $key ]['last_post']   = wpforo_post( $topic['last_post'] );
+								$topics[ $key ]['last_poster'] = wpforo_member( $topics[ $key ]['last_post'] );
+							}
+							if( isset( $topic['first_postid'] ) && $topic['first_postid'] != 0 ) {
+								$topics[ $key ]['first_post'] = wpforo_post( $topic['first_postid'] );
+								
+								$topics[ $key ]['first_poster'] = wpforo_member( $topics[ $key ]['first_post'] );
+								if( ! $view && apply_filters( 'wpforo_recent_topics_intro', true, $topic ) ) {
+									$topics[ $key ]['replies'] = WPF()->post->get_posts(
+										[ 'topicid' => $topic['topicid'], 'orderby' => '`is_first_post` ASC, `created` DESC, `postid` DESC', 'row_count' => $intro_posts ]
+									);
+								}
+							}
+							$topics[ $key ]['topic_url']     = wpforo_topic( $topic['topicid'], 'url' );
+							$topics[ $key ]['topic_posturl'] = ( $view === 'unread' && wpfval( $topics[ $key ]['last_post'], 'url' ) ) ? $topics[ $key ]['last_post']['url'] : WPF()->topic->get_url(
+								$topic['topicid']
+							);
+						}
+						$args['intro_posts'] = $intro_posts;
+					}
+					$current_object['topics'] = $topics;
+				} else {
+					$current_object['items_per_page'] = wpforo_setting( 'topics', 'posts_per_page' );
+					
+					if( $view !== 'unapproved' ) $args['where'] = "`created` > '" . gmdate( 'Y-m-d H:i:s', $end_date ) . "'";
+					$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? sanitize_text_field( WPF()->GET['wpfob'] ) : 'created';
+					$args['order']     = 'DESC';
+					$args['offset']    = ( $current_object['paged'] - 1 ) * $current_object['items_per_page'];
+					$args['row_count'] = $current_object['items_per_page'];
+					if( $view === 'unapproved' ) {
+						$args['status'] = 1;
+					}
+					$current_object['posts'] = WPF()->post->get_posts( $args, $current_object['items_count'] );
+				}
+				$args['view']           = $view;
+				$args['type']           = $type;
+				$current_object['args'] = $args;
 			} elseif( $this->current_object['template'] === 'tags' ) {
 				$current_object['items_per_page'] = wpforo_setting( 'tags', 'per_page' );
 				$args                             = [
@@ -1183,21 +1295,24 @@ final class wpforo {
 							if( ! in_array( $current_object['filter'], [ 'likes', 'dislikes' ], true ) ) $current_object['filter'] = 'bookmarks';
 							if( $current_object['filter'] === 'likes' ) {
 								$postids = $this->reaction->get_reactions_col(
-									'postid', [
+									'postid',
+									[
 										        'userid'       => $current_object['userid'],
 										        'type_include' => 'up',
 									        ]
 								);
 							} elseif( $current_object['filter'] === 'dislikes' ) {
 								$postids = $this->reaction->get_reactions_col(
-									'postid', [
+									'postid',
+									[
 										        'userid'       => $current_object['userid'],
 										        'type_include' => 'down',
 									        ]
 								);
 							} else {
 								$postids = $this->bookmark->get_bookmarks_col(
-									'postid', [
+									'postid',
+									[
 										        'userid'  => $current_object['userid'],
 										        'boardid' => $this->board->get_current( 'boardid' ),
 										        'status'  => true,

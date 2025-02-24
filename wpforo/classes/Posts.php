@@ -137,7 +137,7 @@ class Posts {
 		$post['title']    = $title = ( isset( $title ) ? wpforo_text( trim( (string) $title ), 250, false ) : '' );
 		$post['body']     = $body = ( isset( $body ) ? preg_replace( '#</pre>[\r\n\t\s\0]*<pre>#isu', "\r\n", (string) $body ) : '' );
 		$post['created']  = $created = ( isset( $created ) ? $created : current_time( 'mysql', 1 ) );
-		$post['userid']   = $userid = ( isset( $userid ) && wpforo_current_user_is( 'admin' ) ? wpforo_bigintval( $userid ) : WPF()->current_userid );
+		$post['userid']   = $userid = ( isset( $userid ) && wpforo_current_user_is( 'moderator' ) ? wpforo_bigintval( $userid ) : WPF()->current_userid );
 		if( $root_exists ) {
 			$post['root'] = ( $parentid ) ? ( isset( $root ) ? intval( $root ) : $this->get_root( $parentid ) ) : - 1;
 		} else {
@@ -231,7 +231,7 @@ class Posts {
 		
 		do_action( 'wpforo_start_edit_post', $args );
 		
-		if( ! isset( $args['postid'] ) || ! $args['postid'] || ! is_numeric( $args['postid'] ) ) {
+		if( ! isset( $args['postid'] ) || ! $args['postid'] || ! wpforo_is_id( $args['postid'] ) ) {
 			WPF()->notice->add( 'Cannot update post data', 'error' );
 			
 			return false;
@@ -310,7 +310,8 @@ class Posts {
 		$email   = isset( $email ) ? stripslashes( strip_tags( trim( (string) $email ) ) ) : stripslashes( (string) $post['email'] );
 		
 		if( false !== WPF()->db->update(
-				WPF()->tables->posts, [
+				WPF()->tables->posts,
+				[
 				'title'    => $title,
 				'body'     => $body,
 				'modified' => current_time(
@@ -320,7 +321,9 @@ class Posts {
 				'status'   => $status,
 				'name'     => $name,
 				'email'    => $email,
-			],  [ 'postid' => $postid ], [ '%s', '%s', '%s', '%d', '%s', '%s' ], [ '%d' ]
+			],
+				[ 'postid' => $postid ],
+				[ '%s', '%s', '%s', '%d', '%s', '%s' ], [ '%d' ]
 			) ) {
 			$post['topicid'] = $topicid;
 			$post['title']   = $title;
@@ -1260,7 +1263,7 @@ class Posts {
 	}
 	
 	public function get_short_url( $arg ) {
-		if( is_numeric( $arg ) ) {
+		if( wpforo_is_id( $arg ) ) {
 			$postid = $arg;
 		} elseif( wpfkey( $arg, 'postid' ) ) {
 			$postid = $arg['postid'];
@@ -2146,7 +2149,7 @@ class Posts {
 	}
 	
 	public function get_userids_for_forum( $forum, $childs = true, $check_permission = true ) {
-		if( is_numeric( $forum ) ) {
+		if( wpforo_is_id( $forum ) ) {
 			// The old and very heavy way to get forum userids, this way does
 			// lots of recursive SQL queries on each page load. There is no cache for this process.
 			// The solution has been added in 2.2.4 version by collecting all x participants

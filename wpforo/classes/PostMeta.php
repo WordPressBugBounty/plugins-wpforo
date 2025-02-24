@@ -129,7 +129,7 @@ class PostMeta {
 	 */
 	public function edit( $postmeta, $where ) {
 		if( empty( $postmeta ) || empty( $where ) ) return false;
-		if( is_numeric( $where ) ) $where = [ 'metaid' => $where ];
+		if( wpforo_is_id( $where ) ) $where = [ 'metaid' => $where ];
 		$postmeta = (array) $postmeta;
 		$where    = (array) $where;
 
@@ -162,7 +162,7 @@ class PostMeta {
 	 */
 	public function delete( $where ) {
 		if( empty( $where ) ) return false;
-		if( is_numeric( $where ) ) $where = [ 'metaid' => $where ];
+		if( wpforo_is_id( $where ) ) $where = [ 'metaid' => $where ];
 		$where = (array) $where;
 
 		$where = wpforo_array_ordered_intersect_key( $where, $this->default->postmeta_format );

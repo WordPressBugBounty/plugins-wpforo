@@ -1868,6 +1868,8 @@ function wpforo_tags_suggest () {
 		{
 			multiple: true,
 			multipleSep: ',',
+			delay: 1000,
+			minchars: 3,
 			resultsClass: 'wpf_ac_results',
 			selectClass: 'wpf_ac_over',
 			matchClass: 'wpf_ac_match',

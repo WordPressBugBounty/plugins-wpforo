@@ -112,7 +112,7 @@ class Permissions {
 	 * @return array access row by access key
 	 */
 	function get_access( $access ) {
-		if( is_numeric( $access ) ) {
+		if( wpforo_is_id( $access ) ) {
 			$access = intval( $access );
 		} else {
 			$access = sanitize_text_field( $access );
@@ -452,8 +452,8 @@ class Permissions {
 	public function user_can_edit_account( $owner = [], $user = [] ) {
 		if( ! $user ) $user = WPF()->current_user;
 		if( ! $owner ) $owner = WPF()->current_object['user'];
-		if( is_numeric( $owner ) ) $owner = WPF()->member->get_member( $owner );
-		if( is_numeric( $user ) ) $user = WPF()->member->get_member( $user );
+		if( wpforo_is_id( $owner ) ) $owner = WPF()->member->get_member( $owner );
+		if( wpforo_is_id( $user ) ) $user = WPF()->member->get_member( $user );
 		if( ! $user || ! $owner ) return false;
 		$is_users_same = wpforo_is_users_same( $user, $owner );
 		

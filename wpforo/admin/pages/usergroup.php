@@ -74,7 +74,8 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
                                 <span style="font-size: 16px; vertical-align: middle;"><?php echo $ug_role; ?></span> &nbsp;
 								<?php if( $group['groupid'] != 4 && $group['groupid'] != 1 ) : ?>
                                     <select name="wpf_synch_roles[<?php echo $group['groupid'] ?>]" style="background:#FDFDFD; display:inline; max-width: 80%;">
-										<?php $selected = ( wpfval( $group, 'role' ) ) ? $group['role'] : 'subscriber'; ?>
+                                        <option value="">-- <?php _e( 'Not Selected', 'wpforo' ) ?> --</option>
+										<?php $selected = ( wpfval( $group, 'role' ) ) ? $group['role'] : ''; ?>
 										<?php wp_dropdown_roles( $selected ); ?>
                                     </select>
 								<?php elseif( $group['groupid'] == 1 ): ?>
@@ -425,10 +426,11 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
                             <div style="display:block; float:left; width:20%; padding-bottom:15px;">
                                 <div class="wpf-label-big"><?php _e( 'User Role', 'wpforo' ) ?></div>
                                 <select name="usergroup[role]" style="background:#FDFDFD; display:block;">
+                                    <option value="">-- <?php _e( 'Not Selected', 'wpforo' ) ?> --</option>
 									<?php if( $role = wpfval( $_GET, 'role' ) ) {
 										$selected = sanitize_title( $role );
 									} else {
-										$selected = $group['role'] ? $group['role'] : 'subscriber';
+										$selected = $group['role'] ?: '';
 									}
 									wp_dropdown_roles( $selected ); ?>
                                 </select>

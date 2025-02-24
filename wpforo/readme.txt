@@ -1,9 +1,9 @@
-﻿=== wpForo Forum ===
+=== wpForo Forum ===
 Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.1
 Tested up to: 6.7
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -179,10 +179,17 @@ IMPORTANT NOTES for UPDATE
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
 
-= wpForo Forum 2.4.0 - 2.4.1 | 23.11.2024 =
+= wpForo Forum 2.4.0 - 2.4.2 | 24.02.2025 =
 
 [wpForo Forum v2.4 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-2-4-is-released/)
 
+* Version 2.4.2
+* Security: Fixed issue with manipulation and privilege escalation via hidden parameter
+* Fixed Bug: In some cases user couldn't see own private topics
+* Fixed Bug: Problem with topic slugs containing negative number (-1234)
+* Fixed Bug: Issue with x.com URL in users profile pages
+* Fixed Bug: Forum tree displaying issue related the secondary user-groups cache
+* ---------
 * Version 2.4.1
 * Compatibility: WordPress 6.7
 * Added: Request confirmation before deleting the account

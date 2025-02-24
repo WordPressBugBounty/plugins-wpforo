@@ -304,7 +304,7 @@ class Topics {
 			'mysql',
 			1
 		) );
-		$args['userid']  = ( isset( $args['userid'] ) && wpforo_current_user_is( 'admin' ) ? intval( $args['userid'] ) : WPF()->current_userid );
+		$args['userid']  = ( isset( $args['userid'] ) && wpforo_current_user_is( 'moderator' ) ? intval( $args['userid'] ) : WPF()->current_userid );
 		$args['name']    = ( isset( $args['name'] ) ? $args['name'] : '' );
 		$args['email']   = ( isset( $args['email'] ) ? $args['email'] : '' );
 		$args['tags']    = ( isset( $args['tags'] ) ? $args['tags'] : '' );
@@ -345,7 +345,8 @@ class Topics {
 		do_action( 'wpforo_before_add_topic', $args );
 		
 		if( WPF()->db->insert(
-			      WPF()->tables->topics, [
+			WPF()->tables->topics,
+			[
 			'title'      => stripslashes(
 				$title
 			),
@@ -366,26 +367,26 @@ class Topics {
 			'name'       => $name,
 			'email'      => $email,
 			'tags'       => $tags,
-		],        [
-				      '%s',
-				      '%s',
-				      '%d',
-				      '%d',
-				      '%d',
-				      '%d',
-				      '%d',
-				      '%s',
-				      '%s',
-				      '%d',
-				      '%d',
-				      '%d',
-				      '%s',
-				      '%s',
-				      '%d',
-				      '%s',
-				      '%s',
-				      '%s',
-			      ]
+		],  [
+				'%s',
+				'%s',
+				'%d',
+				'%d',
+				'%d',
+				'%d',
+				'%d',
+				'%s',
+				'%s',
+				'%d',
+				'%d',
+				'%d',
+				'%s',
+				'%s',
+				'%d',
+				'%s',
+				'%s',
+				'%s',
+			]
 		) ) {
 			$topicid = WPF()->db->insert_id;
 			$fields  = [
@@ -688,7 +689,7 @@ class Topics {
 				'topicid' => null,
 				'slug'    => '',
 			];
-		} elseif( is_numeric( $args ) ) {
+		} elseif( wpforo_is_id( $args ) ) {
 			$default = [
 				'topicid' => $args,
 				'slug'    => '',
@@ -808,7 +809,7 @@ class Topics {
 	}
 	
 	public function get_short_url( $arg ) {
-		if( is_numeric( $arg ) ) {
+		if( wpforo_is_id( $arg ) ) {
 			$topicid = $arg;
 		} elseif( wpfkey( $arg, 'topicid' ) ) {
 			$topicid = $arg['topicid'];
@@ -1085,7 +1086,8 @@ class Topics {
 			                                                                ) !== false ) ? 1 : 0 );
 			
 			if( WPF()->db->insert(
-				      WPF()->tables->topics, [
+				WPF()->tables->topics,
+				[
 				'title'      => stripslashes(
 					$title
 				),
@@ -1103,23 +1105,23 @@ class Topics {
 				'has_attach' => $has_attach,
 				'name'       => $name,
 				'email'      => $email,
-			],        [
-					      '%s',
-					      '%s',
-					      '%d',
-					      '%d',
-					      '%d',
-					      '%d',
-					      '%d',
-					      '%s',
-					      '%s',
-					      '%d',
-					      '%d',
-					      '%d',
-					      '%d',
-					      '%s',
-					      '%s',
-				      ]
+			],  [
+					'%s',
+					'%s',
+					'%d',
+					'%d',
+					'%d',
+					'%d',
+					'%d',
+					'%s',
+					'%s',
+					'%d',
+					'%d',
+					'%d',
+					'%d',
+					'%s',
+					'%s',
+				]
 			) ) {
 				$args['topicid'] = $topicid = WPF()->db->insert_id;
 				
@@ -1292,7 +1294,7 @@ class Topics {
 	
 	public function rebuild_first_last( $topic ) {
 		if( ! $topic ) return false;
-		if( is_numeric( $topic ) ) $topic = $this->get_topic( $topic );
+		if( wpforo_is_id( $topic ) ) $topic = $this->get_topic( $topic );
 		if( ! is_array( $topic ) || ! $topic ) return false;
 		
 		$sql = "SELECT `postid` FROM `" . WPF()->tables->posts . "` WHERE `topicid` = %d ORDER BY `is_first_post` DESC, `created` ASC, `postid` ASC LIMIT 1";
@@ -1331,7 +1333,7 @@ class Topics {
 	
 	public function rebuild_stats( $topic ) {
 		if( ! $topic ) return false;
-		if( is_numeric( $topic ) ) $topic = $this->get_topic( $topic );
+		if( wpforo_is_id( $topic ) ) $topic = $this->get_topic( $topic );
 		if( ! is_array( $topic ) || ! $topic ) return false;
 		
 		$posts = WPF()->post->get_count( [ 'topicid' => $topic['topicid'], 'status' => 0 ] );
@@ -1963,7 +1965,7 @@ class Topics {
 				'tagid' => null,
 				'tag'   => null,
 			];
-			if( is_numeric( $args ) ) {
+			if( wpforo_is_id( $args ) ) {
 				$args = [ 'tagid' => $args ];
 			} elseif( is_string( $args ) ) {
 				$args = [ 'tag' => $args ];
