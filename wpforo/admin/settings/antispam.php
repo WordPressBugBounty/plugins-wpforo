@@ -54,6 +54,7 @@
 						$color = '';
 						$file = $default_attachments_dir . DIRECTORY_SEPARATOR . $filename;
 						$extension = strtolower( (string) pathinfo( $filename, PATHINFO_EXTENSION ) );
+						if( filesize( $file ) === 0 ) continue;
 						if( ! $level = WPF()->moderation->spam_file( $filename ) ) continue;
 						if( $level == 2 ) $color = 'style="color:#EE9900;"';
 						if( $level == 3 ) $color = 'style="color:#FF0000;"';

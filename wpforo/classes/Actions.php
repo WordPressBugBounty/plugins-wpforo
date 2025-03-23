@@ -183,7 +183,9 @@ class Actions {
 	 */
 	public function do_actions() {
 		do_action( 'wpforo_actions' );
-		$wpforo_actions = array_unique( array_merge( (array) wpfval( $_POST, 'wpfaction' ), (array) wpfval( WPF()->GET, 'wpfaction' ) ) );
+		$wpforo_actions = array_unique(
+			array_merge( (array) wpfval( $_POST, 'wpfaction' ), (array) wpfval( WPF()->GET, 'wpfaction' ) )
+		);
 		if( ! empty( $wpforo_actions ) ) {
 			foreach( $wpforo_actions as $wpforo_action ) {
 				$wpforo_action = sanitize_title( $wpforo_action );
@@ -407,12 +409,17 @@ class Actions {
 	
 	public function profile_cover_upload() {
 		wpforo_verify_nonce( 'wpforo_profile_cover_upload' );
-		if( WPF()->current_object['user'] && WPF()->usergroup->can( 'upc' ) && WPF()->perm->user_can_edit_account( WPF()->current_object['user'] ) && ( $image_blob = wpfval(
+		if( WPF()->current_object['user'] && WPF()->usergroup->can( 'upc' ) && WPF()->perm->user_can_edit_account(
+				WPF()->current_object['user']
+			) && ( $image_blob = wpfval(
 				$_POST,
 				'image_blob'
 			) ) ) {
 			$data = explode( ',', $image_blob );
-			if( preg_match( '#^data:image/(?:png|jpe?g|gif);base64$#iu', (string) $data[0] ) && ( $file_content = isset( $data[1] ) ? base64_decode( $data[1] ) : '' ) ) {
+			if( preg_match(
+				    '#^data:image/(?:png|jpe?g|gif);base64$#iu',
+				    (string) $data[0]
+			    ) && ( $file_content = isset( $data[1] ) ? base64_decode( $data[1] ) : '' ) ) {
 				$file_basename = uniqid() . '_' . WPF()->current_object['user']['userid'] . '.jpg';
 				$file_dir      = WPF()->folders['covers']['dir'] . DIRECTORY_SEPARATOR . $file_basename;
 				$file_url      = WPF()->folders['covers']['url//'] . '/' . $file_basename;
@@ -428,7 +435,9 @@ class Actions {
 	public function profile_cover_delete() {
 		wpforo_verify_nonce( 'wpforo_profile_cover_delete' );
 		
-		if( WPF()->current_object['user'] && WPF()->usergroup->can( 'upc' ) && WPF()->perm->user_can_edit_account( WPF()->current_object['user'] ) ) {
+		if( WPF()->current_object['user'] && WPF()->usergroup->can( 'upc' ) && WPF()->perm->user_can_edit_account(
+				WPF()->current_object['user']
+			) ) {
 			WPF()->member->update_profile_field( WPF()->current_object['user']['userid'], 'cover', '' );
 			wp_send_json_success( [ 'background_url' => wpforo_setting( 'profiles', 'default_cover' ) ] );
 		}
@@ -437,9 +446,15 @@ class Actions {
 	
 	public function profiles_default_cover_upload() {
 		wpforo_verify_nonce( 'wpforo_profiles_default_cover_upload' );
-		if( ( wpforo_current_user_is( 'admin' ) || WPF()->usergroup->can( 'ms' ) ) && $image_blob = wpfval( $_POST, 'image_blob' ) ) {
+		if( ( wpforo_current_user_is( 'admin' ) || WPF()->usergroup->can( 'ms' ) ) && $image_blob = wpfval(
+				$_POST,
+				'image_blob'
+			) ) {
 			$data = explode( ',', $image_blob );
-			if( preg_match( '#^data:image/(?:png|jpe?g|gif);base64$#iu', $data[0] ) && ( $file_content = isset( $data[1] ) ? base64_decode( $data[1] ) : '' ) ) {
+			if( preg_match(
+				    '#^data:image/(?:png|jpe?g|gif);base64$#iu',
+				    $data[0]
+			    ) && ( $file_content = isset( $data[1] ) ? base64_decode( $data[1] ) : '' ) ) {
 				$file_basename = 'profiles_custom_default_cover.jpg';
 				$file_dir      = WPF()->folders['covers']['dir'] . DIRECTORY_SEPARATOR . $file_basename;
 				$file_url      = WPF()->folders['covers']['url//'] . '/' . $file_basename;
@@ -457,7 +472,9 @@ class Actions {
 		wpforo_verify_nonce( 'wpforo_get_topic_head_more_info' );
 		if( $topicid = wpforo_bigintval( wpfval( $_POST, 'topicid' ) ) ) {
 			if( ( $topic = WPF()->topic->get_topic( $topicid, false ) ) && WPF()->topic->view_access( $topic ) ) {
-				wp_send_json_success( [ 'html' => wpforo_topic_active_participants( $topicid ) . wpforo_topic_overview( $topicid ) ] );
+				wp_send_json_success(
+					[ 'html' => wpforo_topic_active_participants( $topicid ) . wpforo_topic_overview( $topicid ) ]
+				);
 			}
 		}
 		
@@ -484,13 +501,16 @@ class Actions {
 			if( ( $post = wpforo_post( $postid ) ) && WPF()->post->view_access( $post ) ) {
 				wp_send_json_success(
 					[
-						'title'   => '<i class="fas fa-user"></i> &nbsp;' . wpforo_phrase( 'Posted by ', false ) . ' ' . wpforo_member_link(
-								wpforo_member( $post ),
-								'',
-								20,
-								'',
+						'title'   => '<i class="fas fa-user"></i> &nbsp;' . wpforo_phrase(
+								'Posted by ',
 								false
-							) . '&nbsp;&bullet;&nbsp;' . ' ' . wpforo_date( $post['created'], 'ago', false ),
+							) . ' ' . wpforo_member_link(
+							             wpforo_member( $post ),
+							             '',
+							             20,
+							             '',
+							             false
+						             ) . '&nbsp;&bullet;&nbsp;' . ' ' . wpforo_date( $post['created'], 'ago', false ),
 						'content' => trim( (string) wpforo_content( $post, false ) ),
 					]
 				);
@@ -509,12 +529,15 @@ class Actions {
 			if( $userid = WPF()->member->create( $_POST ) ) {
 				if( wpforo_setting( 'authorization', 'redirect_url_after_register' ) ) {
 					$redirect_url = wpforo_setting( 'authorization', 'redirect_url_after_register' );
-				} elseif( ( $redirect_to = wpfval( $_GET, 'redirect_to' ) ) && wpforo_is_url_internal( urldecode( (string) $redirect_to ) ) ) {
+				} elseif( ( $redirect_to = wpfval( $_GET, 'redirect_to' ) ) && wpforo_is_url_internal(
+						urldecode( (string) $redirect_to )
+					) ) {
 					$redirect_url = urldecode( (string) $redirect_to );
 				} elseif( is_wpforo_url() ) {
 					$redirect_url = preg_replace( '#\?.*$#is', '', wpforo_get_request_uri() );
 				} else {
-					$redirect_url = ( wpforo_setting( 'authorization', 'user_register_email_confirm' ) ? wpforo_home_url() : WPF()->member->get_profile_url( $userid, 'account' ) );
+					$redirect_url = ( wpforo_setting( 'authorization', 'user_register_email_confirm' ) ? wpforo_home_url() : WPF(
+					)->member->get_profile_url( $userid, 'account' ) );
 				}
 				
 				wp_safe_redirect( $redirect_url );
@@ -541,7 +564,9 @@ class Actions {
 				update_user_meta( $user->ID, '_wpf_login_times', $wpf_login_times );
 				if( wpforo_setting( 'authorization', 'redirect_url_after_login' ) ) {
 					$redirect_url = wpforo_setting( 'authorization', 'redirect_url_after_login' );
-				} elseif( ( $redirect_to = wpfval( $_GET, 'redirect_to' ) ) && wpforo_is_url_internal( urldecode( (string) $redirect_to ) ) ) {
+				} elseif( ( $redirect_to = wpfval( $_GET, 'redirect_to' ) ) && wpforo_is_url_internal(
+						urldecode( (string) $redirect_to )
+					) ) {
 					$redirect_url = urldecode( (string) $redirect_to );
 				} elseif( is_wpforo_url() ) {
 					$redirect_url = preg_replace( '#\?.*$#is', '', wpforo_get_request_uri() );
@@ -604,7 +629,8 @@ class Actions {
 			exit();
 		}
 		
-		if( strlen( (string) $pass1 ) < WPF()->member->pass_min_length || strlen( (string) $pass1 ) > WPF()->member->pass_max_length ) {
+		if( strlen( (string) $pass1 ) < WPF()->member->pass_min_length || strlen( (string) $pass1 ) > WPF(
+			)->member->pass_max_length ) {
 			WPF()->notice->add( 'Password length must be between %d characters and %d characters.', 'error', [
 				WPF()->member->pass_min_length,
 				WPF()->member->pass_max_length,
@@ -647,7 +673,10 @@ class Actions {
 		if( wpfval( $_POST, 'member', 'userid' ) ) {
 			wpforo_verify_form();
 			$uid = intval( $_POST['member']['userid'] );
-			if( ! ( $uid === WPF()->current_userid || ( WPF()->usergroup->can( 'em' ) && WPF()->perm->user_can_manage_user( WPF()->current_userid, $uid ) ) ) ) {
+			if( ! ( $uid === WPF()->current_userid || ( WPF()->usergroup->can( 'em' ) && WPF()->perm->user_can_manage_user(
+						WPF()->current_userid,
+						$uid
+					) ) ) ) {
 				WPF()->notice->clear();
 				WPF()->notice->add( 'Permission denied', 'error' );
 				wp_safe_redirect( wpforo_get_request_uri() );
@@ -669,7 +698,10 @@ class Actions {
 		if( wpforo_setting( 'authorization', 'manually_approval_contact_form' ) && ( $msg = wpfval( $_POST, 'msg' ) ) ) {
 			$admin_emails = wpforo_setting( 'email', 'admin_emails' );
 			$admin_email  = wpfval( $admin_emails, 0 );
-			$sbj          = wpforo_phrase( 'Request for account approval', false ) . ' ( ' . wpfval( $_POST, 'user_login' ) . ' )';
+			$sbj          = wpforo_phrase( 'Request for account approval', false ) . ' ( ' . wpfval(
+					$_POST,
+					'user_login'
+				) . ' )';
 			
 			add_filter( 'wp_mail_content_type', 'wpforo_set_html_content_type', 999 );
 			if( @wpforo_send_email( $admin_email, $sbj, $msg, wpforo_admin_mail_headers() ) ) {
@@ -813,7 +845,13 @@ class Actions {
 						$append          = ( empty( $_POST['wpforo']['update_date_and_append'] ) ? 0 : 1 );
 						$to_target_title = ( empty( $_POST['wpforo']['to_target_title'] ) ? 0 : 1 );
 						$postids         = array_map( 'intval', $_POST['wpforo']['posts'] );
-						if( WPF()->topic->merge( $target, WPF()->current_object['topic'], $postids, $to_target_title, $append ) ) {
+						if( WPF()->topic->merge(
+							$target,
+							WPF()->current_object['topic'],
+							$postids,
+							$to_target_title,
+							$append
+						) ) {
 							$redirect_to = WPF()->topic->get_url( $target );
 						}
 					} else {
@@ -927,7 +965,14 @@ class Actions {
 				WPF()->notice->add( 'Synched Successfully!', 'success' );
 				wp_safe_redirect( admin_url( 'admin.php?page=wpforo-overview' ) );
 			} else {
-				wp_safe_redirect( htmlspecialchars_decode( wp_nonce_url( admin_url( 'admin.php?page=wpforo-overview&wpfaction=synch_user_profiles' ), 'wpforo_synch_user_profiles' ) ) );
+				wp_safe_redirect(
+					htmlspecialchars_decode(
+						wp_nonce_url(
+							admin_url( 'admin.php?page=wpforo-overview&wpfaction=synch_user_profiles' ),
+							'wpforo_synch_user_profiles'
+						)
+					)
+				);
 			}
 			exit();
 		}
@@ -970,7 +1015,9 @@ class Actions {
 		wpforo_set_max_execution_time();
 		wp_raise_memory_limit();
 		
-		$forumids = WPF()->db->get_col( "SELECT `forumid` FROM " . WPF()->tables->forums . " WHERE `is_cat` = 0 ORDER BY `forumid` ASC" );
+		$forumids = WPF()->db->get_col(
+			"SELECT `forumid` FROM " . WPF()->tables->forums . " WHERE `is_cat` = 0 ORDER BY `forumid` ASC"
+		);
 		if( ! empty( $forumids ) ) {
 			foreach( $forumids as $forumid ) {
 				WPF()->forum->rebuild_stats( $forumid );
@@ -1003,8 +1050,11 @@ class Actions {
 			wp_raise_memory_limit();
 			
 			$lastid   = (int) wpfval( $_GET, 'topic_lastid' );
-			$sql      = "SELECT `topicid` FROM " . WPF()->tables->topics . " WHERE `topicid` > %d ORDER BY `topicid` ASC LIMIT %d";
-			$topicids = WPF()->db->get_col( WPF()->db->prepare( $sql, $lastid, apply_filters( 'wpforo_rebuild_per_request', 200 ) ) );
+			$sql      = "SELECT `topicid` FROM " . WPF(
+				)->tables->topics . " WHERE `topicid` > %d ORDER BY `topicid` ASC LIMIT %d";
+			$topicids = WPF()->db->get_col(
+				WPF()->db->prepare( $sql, $lastid, apply_filters( 'wpforo_rebuild_per_request', 200 ) )
+			);
 			if( $topicids ) {
 				foreach( $topicids as $topicid ) {
 					$topic = WPF()->topic->get_topic( $topicid );
@@ -1014,7 +1064,11 @@ class Actions {
 				wp_safe_redirect(
 					htmlspecialchars_decode(
 						wp_nonce_url(
-							admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'dashboard' ) . '&wpfaction=reset_topics_stats&topic_lastid=' . end( $topicids ) ),
+							admin_url(
+								'admin.php?page=' . wpforo_prefix_slug(
+									'dashboard'
+								) . '&wpfaction=reset_topics_stats&topic_lastid=' . end( $topicids )
+							),
 							'wpforo_reset_topics_stat'
 						)
 					)
@@ -1052,14 +1106,23 @@ class Actions {
 			
 			$lastid  = (int) wpfval( $_GET, 'user_lastid' );
 			$sql     = "SELECT `userid` FROM " . WPF()->tables->profiles . " WHERE `userid` > %d ORDER BY `userid` ASC LIMIT %d";
-			$userids = WPF()->db->get_col( WPF()->db->prepare( $sql, $lastid, apply_filters( 'wpforo_rebuild_per_request', 200 ) ) );
+			$userids = WPF()->db->get_col(
+				WPF()->db->prepare( $sql, $lastid, apply_filters( 'wpforo_rebuild_per_request', 200 ) )
+			);
 			if( $userids ) {
 				foreach( $userids as $userid ) {
 					WPF()->member->rebuild_stats( $userid );
 				}
 				
 				wp_safe_redirect(
-					htmlspecialchars_decode( wp_nonce_url( admin_url( 'admin.php?page=wpforo-overview&wpfaction=reset_users_stats&user_lastid=' . end( $userids ) ), 'wpforo_reset_users_stat' ) )
+					htmlspecialchars_decode(
+						wp_nonce_url(
+							admin_url(
+								'admin.php?page=wpforo-overview&wpfaction=reset_users_stats&user_lastid=' . end( $userids )
+							),
+							'wpforo_reset_users_stat'
+						)
+					)
 				);
 			} else {
 				WPF()->notice->add( 'Updated Successfully!', 'success' );
@@ -1361,8 +1424,14 @@ class Actions {
 		if( ! wpfkey( $_POST, 'reset' ) ) {
 			if( $options = wpfval( $_POST, 'wpforo_tools_misc' ) ) {
 				$options['admin_note']        = wpforo_kses( $options['admin_note'] );
-				$options['admin_note_groups'] = ( wpfval( $_POST, 'wpforo_tools_misc', 'admin_note_groups' ) ) ? array_map( 'intval', $options['admin_note_groups'] ) : [];
-				$options['admin_note_pages']  = ( wpfval( $_POST, 'wpforo_tools_misc', 'admin_note_pages' ) ) ? array_map( 'sanitize_textarea_field', $options['admin_note_pages'] ) : [];
+				$options['admin_note_groups'] = ( wpfval( $_POST, 'wpforo_tools_misc', 'admin_note_groups' ) ) ? array_map(
+					'intval',
+					$options['admin_note_groups']
+				) : [];
+				$options['admin_note_pages']  = ( wpfval( $_POST, 'wpforo_tools_misc', 'admin_note_pages' ) ) ? array_map(
+					'sanitize_textarea_field',
+					$options['admin_note_pages']
+				) : [];
 				if( wpforo_update_option( 'tools_misc', $options ) ) {
 					wpforo_clean_cache( 'forum-soft' );
 					WPF()->notice->add( 'Settings successfully updated', 'success' );
@@ -1713,7 +1782,9 @@ class Actions {
 	 * phrase_edit_form action redirect to phrase list page when phraseid(s) not chosen
 	 */
 	public function phrase_edit_form() {
-		$phraseids = array_filter( array_map( 'intval', array_merge( (array) wpfval( $_GET, 'phraseid' ), (array) wpfval( $_GET, 'phraseids' ) ) ) );
+		$phraseids = array_filter(
+			array_map( 'intval', array_merge( (array) wpfval( $_GET, 'phraseid' ), (array) wpfval( $_GET, 'phraseids' ) ) )
+		);
 		if( ! $phraseids ) {
 			wp_safe_redirect( admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'phrases' ) ) );
 			exit();
@@ -1844,7 +1915,9 @@ class Actions {
 		WPF()->init_current_url( $href );
 		WPF()->init_current_object();
 		if( wpforo_is_member_template() ) {
-			if( ( $template = WPF()->tpl->get_template( WPF()->current_object['template'] ) ) && $template['type'] === 'callback' && is_callable( $template['callback_for_page'] ) ) {
+			if( ( $template = WPF()->tpl->get_template(
+					WPF()->current_object['template']
+				) ) && $template['type'] === 'callback' && is_callable( $template['callback_for_page'] ) ) {
 				ob_start();
 				echo call_user_func( $template['callback_for_page'], $template );
 				wp_send_json_success( [ 'html' => ob_get_clean() ] );
@@ -1861,7 +1934,13 @@ class Actions {
 		$title    = trim( (string) wpfval( $_POST, 'title' ) );
 		$topicids = WPF()->topic->search( $title, 'title' );
 		if( $topicids ) {
-			$topics = WPF()->topic->get_topics( [ 'include' => $topicids, 'row_count' => apply_filters( 'wpforo_suggested_topics_limit', 5 ), 'orderby' => 'created' ] );
+			$topics = WPF()->topic->get_topics(
+				[
+					'include'   => $topicids,
+					'row_count' => apply_filters( 'wpforo_suggested_topics_limit', 5 ),
+					'orderby'   => 'created',
+				]
+			);
 			if( $topics ) {
 				$topics = array_map( function( $topic ) {
 					$topic['url'] = WPF()->topic->get_url( $topic );
@@ -1888,9 +1967,12 @@ class Actions {
 	
 	public function user_delete() {
 		wpforo_verify_nonce( 'user_delete', 'full' );
-		if( WPF()->current_object['user'] && ( $action = WPF()->member->get_action( WPF()->current_object['user'], 'delete' ) ) && is_callable( $action['callback_for_can'] ) && call_user_func(
-				$action['callback_for_can']
-			) ) {
+		if( WPF()->current_object['user'] && ( $action = WPF()->member->get_action(
+				WPF()->current_object['user'],
+				'delete'
+			) ) && is_callable( $action['callback_for_can'] ) && call_user_func(
+			    $action['callback_for_can']
+		    ) ) {
 			
 			if( $pwd = wpfval( $_GET, 'pwd' ) ) {
 				if( wp_check_password( $pwd, WPF()->current_user['user_pass'], WPF()->current_user['userid'] ) ) {
@@ -2020,7 +2102,16 @@ class Actions {
 		if( ! empty( $_POST['usergroup'] ) ) {
 			$group   = WPF()->usergroup->fix_group( $_POST['usergroup'] );
 			$color   = wpfval( $group, 'wpfugc' ) ? '' : sanitize_text_field( $group['color'] );
-			$groupid = WPF()->usergroup->add( $group['name'], $group['cans'], $group['description'], $group['role'], $group['access'], $color, $group['visible'], $group['secondary'] );
+			$groupid = WPF()->usergroup->add(
+				$group['name'],
+				$group['cans'],
+				$group['description'],
+				$group['role'],
+				$group['access'],
+				$color,
+				$group['visible'],
+				$group['secondary']
+			);
 			if( $groupid ) wpforo_clean_cache( 'loop', $groupid );
 		}
 		
@@ -2043,7 +2134,17 @@ class Actions {
 		if( ! empty( $_POST['usergroup'] ) ) {
 			$group = WPF()->usergroup->fix_group( $_POST['usergroup'] );
 			$color = wpfval( $group, 'wpfugc' ) ? '' : sanitize_text_field( $group['color'] );
-			WPF()->usergroup->edit( $group['groupid'], $group['name'], $group['cans'], $group['description'], $group['role'], null, $color, $group['visible'], $group['secondary'] );
+			WPF()->usergroup->edit(
+				$group['groupid'],
+				$group['name'],
+				$group['cans'],
+				$group['description'],
+				$group['role'],
+				null,
+				$color,
+				$group['visible'],
+				$group['secondary']
+			);
 			wpforo_clean_cache( 'loop', $group['groupid'] );
 		}
 		
@@ -2183,7 +2284,9 @@ class Actions {
 		
 		$notice      = __( 'Theme file not readable', 'wpforo' );
 		$notice_type = 'error';
-		if( ( $theme = trim( sanitize_text_field( (string) wpfval( $_GET, 'theme' ) ) ) ) && WPF()->tpl->theme_exists( $theme ) ) {
+		if( ( $theme = trim( sanitize_text_field( (string) wpfval( $_GET, 'theme' ) ) ) ) && WPF()->tpl->theme_exists(
+				$theme
+			) ) {
 			$general                  = WPF()->settings->general;
 			$general['current_theme'] = $theme;
 			wpforo_update_option( 'wpforo_general', $general );
@@ -2294,10 +2397,14 @@ class Actions {
 			} elseif( isset( $data['deactivation_reason'] ) && ( $reason = trim( (string) $data['deactivation_reason'] ) ) ) {
 				$subject .= ' - ' . $reason;
 				$message = "<strong>Deactivation reason:</strong> " . $reason . "\r\n" . "<br/>";
-				if( isset( $data['deactivation_reason_desc'] ) && ( $reasonDesc = trim( (string) $data['deactivation_reason_desc'] ) ) ) {
+				if( isset( $data['deactivation_reason_desc'] ) && ( $reasonDesc = trim(
+						(string) $data['deactivation_reason_desc']
+					) ) ) {
 					$message .= "<strong>Deactivation reason description:</strong> " . $reasonDesc . "\r\n" . "<br/>";
 				}
-				if( isset( $data['deactivation_feedback_email'] ) && ( $feedback_email = trim( (string) $data['deactivation_feedback_email'] ) ) ) {
+				if( isset( $data['deactivation_feedback_email'] ) && ( $feedback_email = trim(
+						(string) $data['deactivation_feedback_email']
+					) ) ) {
 					$to      = 'support@wpforo.com';
 					$message .= "<strong>Feedback Email:</strong> " . $feedback_email . "\r\n" . "<br/>";
 				}
@@ -2323,7 +2430,10 @@ class Actions {
 			wpforo_delete_option( 'wpforo_base_slugs' );
 			WPF()->notice->add( 'Successfully Done', 'success' );
 		} else {
-			$slugs = wpforo_array_args_cast_and_merge( array_filter( array_map( 'sanitize_title', wp_unslash( $_POST['slugs'] ) ) ), WPF()->settings->_slugs );
+			$slugs = wpforo_array_args_cast_and_merge(
+				array_filter( array_map( 'sanitize_title', wp_unslash( $_POST['slugs'] ) ) ),
+				WPF()->settings->_slugs
+			);
 			$slugs = array_intersect_key( $slugs, WPF()->settings->_slugs );
 			$slugs = array_diff_key( $slugs, WPF()->tpl->templates );
 			if( $slugs == array_unique( $slugs ) ) {
@@ -2349,7 +2459,10 @@ class Actions {
 		if( wpfkey( $_POST, 'reset' ) ) {
 			wpforo_delete_option( 'wpforo_general' );
 		} else {
-			$general                  = wpforo_array_args_cast_and_merge( wp_unslash( $_POST['general'] ), WPF()->settings->_general );
+			$general                  = wpforo_array_args_cast_and_merge(
+				wp_unslash( $_POST['general'] ),
+				WPF()->settings->_general
+			);
 			$general['admin_bar']     = array_map( 'intval', (array) wpfval( $_POST['general'], 'admin_bar' ) );
 			$general['current_theme'] = WPF()->tpl->theme;
 			wpforo_update_option( 'wpforo_general', $general );
@@ -2372,7 +2485,10 @@ class Actions {
 			wpforo_delete_option( 'slugs' );
 			WPF()->notice->add( 'Successfully Done', 'success' );
 		} else {
-			$slugs = wpforo_array_args_cast_and_merge( array_filter( array_map( 'sanitize_title', wp_unslash( $_POST['slugs'] ) ) ), WPF()->settings->_slugs );
+			$slugs = wpforo_array_args_cast_and_merge(
+				array_filter( array_map( 'sanitize_title', wp_unslash( $_POST['slugs'] ) ) ),
+				WPF()->settings->_slugs
+			);
 			$slugs = array_intersect_key( $slugs, WPF()->tpl->templates );
 			if( $slugs == array_unique( $slugs ) ) {
 				foreach( $this->generate_option_names( 'slugs' ) as $option_name ) {
@@ -2445,10 +2561,26 @@ class Actions {
 		if( wpfkey( $_POST, 'reset' ) ) {
 			wpforo_delete_option( 'antispam' );
 		} else {
-			$antispam                     = wp_unslash( $_POST['antispam'] );
-			$antispam['limited_file_ext'] = array_unique( array_filter( preg_split( '#\s*\|\s*|\s*,\s*|\s+#', trim( sanitize_textarea_field( (string) wpfval( $antispam, 'limited_file_ext' ) ) ) ) ) );
-			$antispam['exclude_file_ext'] = array_unique( array_filter( preg_split( '#\s*\|\s*|\s*,\s*|\s+#', trim( sanitize_textarea_field( (string) wpfval( $antispam, 'exclude_file_ext' ) ) ) ) ) );
-			$antispam                     = wpforo_array_args_cast_and_merge( $antispam, WPF()->settings->_antispam );
+			$antispam                      = wp_unslash( $_POST['antispam'] );
+			$antispam['limited_file_ext']  = array_unique(
+				array_filter(
+					preg_split(
+						'#\s*\|\s*|\s*,\s*|\s+#',
+						trim( sanitize_textarea_field( (string) wpfval( $antispam, 'limited_file_ext' ) ) )
+					)
+				)
+			);
+			$antispam['exclude_file_ext']  = array_unique(
+				array_filter(
+					preg_split(
+						'#\s*\|\s*|\s*,\s*|\s+#',
+						trim( sanitize_textarea_field( (string) wpfval( $antispam, 'exclude_file_ext' ) ) )
+					)
+				)
+			);
+			$_antispam                     = WPF()->settings->_antispam;
+			$_antispam['limited_file_ext'] = $_antispam['exclude_file_ext'] = [];
+			$antispam                      = wpforo_array_args_cast_and_merge( $antispam, $_antispam );
 			foreach( $this->generate_option_names( 'antispam' ) as $option_name ) {
 				wpforo_update_option( $option_name, $antispam );
 			}
@@ -2470,22 +2602,51 @@ class Actions {
 		if( wpfkey( $_POST, 'reset' ) ) {
 			wpforo_delete_option( 'wpforo_authorization' );
 		} else {
-			$authorization = wpforo_array_args_cast_and_merge( wp_unslash( $_POST['authorization'] ), WPF()->settings->_authorization );
+			$authorization = wpforo_array_args_cast_and_merge(
+				wp_unslash( $_POST['authorization'] ),
+				WPF()->settings->_authorization
+			);
 			
 			if( preg_match( '#^https?://\S+$#iu', (string) $authorization['login_url'] ) ) $authorization['login_url'] = '';
 			if( preg_match( '#^https?://\S+$#iu', (string) $authorization['register_url'] ) ) $authorization['register_url'] = '';
-			if( preg_match( '#^https?://\S+$#iu', (string) $authorization['lost_password_url'] ) ) $authorization['lost_password_url'] = '';
+			if( preg_match(
+				'#^https?://\S+$#iu',
+				(string) $authorization['lost_password_url']
+			) ) {
+				$authorization['lost_password_url'] = '';
+			}
 			
-			if( ! preg_match( '#^https?://\S+$#iu', (string) $authorization['redirect_url_after_login'] ) ) $authorization['redirect_url_after_login'] = '';
-			if( ! preg_match( '#^https?://\S+$#iu', (string) $authorization['redirect_url_after_register'] ) ) $authorization['redirect_url_after_register'] = '';
-			if( ! preg_match( '#^https?://\S+$#iu', (string) $authorization['redirect_url_after_confirm_sbscrb'] ) ) $authorization['redirect_url_after_confirm_sbscrb'] = '';
+			if( ! preg_match(
+				'#^https?://\S+$#iu',
+				(string) $authorization['redirect_url_after_login']
+			) ) {
+				$authorization['redirect_url_after_login'] = '';
+			}
+			if( ! preg_match(
+				'#^https?://\S+$#iu',
+				(string) $authorization['redirect_url_after_register']
+			) ) {
+				$authorization['redirect_url_after_register'] = '';
+			}
+			if( ! preg_match(
+				'#^https?://\S+$#iu',
+				(string) $authorization['redirect_url_after_confirm_sbscrb']
+			) ) {
+				$authorization['redirect_url_after_confirm_sbscrb'] = '';
+			}
 			
 			$authorization['login_url']                         = esc_url_raw( (string) $authorization['login_url'] );
 			$authorization['register_url']                      = esc_url_raw( (string) $authorization['register_url'] );
 			$authorization['lost_password_url']                 = esc_url_raw( (string) $authorization['lost_password_url'] );
-			$authorization['redirect_url_after_login']          = esc_url_raw( (string) $authorization['redirect_url_after_login'] );
-			$authorization['redirect_url_after_register']       = esc_url_raw( (string) $authorization['redirect_url_after_register'] );
-			$authorization['redirect_url_after_confirm_sbscrb'] = esc_url_raw( (string) $authorization['redirect_url_after_confirm_sbscrb'] );
+			$authorization['redirect_url_after_login']          = esc_url_raw(
+				(string) $authorization['redirect_url_after_login']
+			);
+			$authorization['redirect_url_after_register']       = esc_url_raw(
+				(string) $authorization['redirect_url_after_register']
+			);
+			$authorization['redirect_url_after_confirm_sbscrb'] = esc_url_raw(
+				(string) $authorization['redirect_url_after_confirm_sbscrb']
+			);
 			$authorization['fb_api_id']                         = sanitize_text_field( (string) $authorization['fb_api_id'] );
 			$authorization['fb_api_secret']                     = sanitize_text_field( (string) $authorization['fb_api_secret'] );
 			$authorization['fb_redirect_url']                   = esc_url_raw( (string) $authorization['fb_redirect_url'] );
@@ -2562,13 +2723,31 @@ class Actions {
 			$email['from_email']                                   = sanitize_text_field( $email['from_email'] );
 			$email['report_email_subject']                         = sanitize_text_field( $email['report_email_subject'] );
 			$email['report_email_message']                         = wpforo_kses( $email['report_email_message'], 'email' );
-			$email['wp_new_user_notification_email_admin_subject'] = sanitize_text_field( $email['wp_new_user_notification_email_admin_subject'] );
-			$email['wp_new_user_notification_email_admin_message'] = wpforo_kses( $email['wp_new_user_notification_email_admin_message'], 'email' );
-			$email['wp_new_user_notification_email_subject']       = sanitize_text_field( $email['wp_new_user_notification_email_subject'] );
-			$email['wp_new_user_notification_email_message']       = wpforo_kses( $email['wp_new_user_notification_email_message'], 'email' );
-			$email['reset_password_email_message']                 = wpforo_kses( $email['reset_password_email_message'], 'email' );
-			$email['after_user_approve_email_subject']             = sanitize_text_field( $email['after_user_approve_email_subject'] );
-			$email['after_user_approve_email_message']             = wpforo_kses( $email['after_user_approve_email_message'], 'email' );
+			$email['wp_new_user_notification_email_admin_subject'] = sanitize_text_field(
+				$email['wp_new_user_notification_email_admin_subject']
+			);
+			$email['wp_new_user_notification_email_admin_message'] = wpforo_kses(
+				$email['wp_new_user_notification_email_admin_message'],
+				'email'
+			);
+			$email['wp_new_user_notification_email_subject']       = sanitize_text_field(
+				$email['wp_new_user_notification_email_subject']
+			);
+			$email['wp_new_user_notification_email_message']       = wpforo_kses(
+				$email['wp_new_user_notification_email_message'],
+				'email'
+			);
+			$email['reset_password_email_message']                 = wpforo_kses(
+				$email['reset_password_email_message'],
+				'email'
+			);
+			$email['after_user_approve_email_subject']             = sanitize_text_field(
+				$email['after_user_approve_email_subject']
+			);
+			$email['after_user_approve_email_message']             = wpforo_kses(
+				$email['after_user_approve_email_message'],
+				'email'
+			);
 			
 			wpforo_update_option( 'wpforo_email', $email );
 		}
@@ -2653,7 +2832,10 @@ class Actions {
 		if( wpfkey( $_POST, 'reset' ) ) {
 			wpforo_delete_option( 'notifications' );
 		} else {
-			$notifications = wpforo_array_args_cast_and_merge( wp_unslash( $_POST['notifications'] ), WPF()->settings->_notifications );
+			$notifications = wpforo_array_args_cast_and_merge(
+				wp_unslash( $_POST['notifications'] ),
+				WPF()->settings->_notifications
+			);
 			foreach( $this->generate_option_names( 'notifications' ) as $option_name ) {
 				wpforo_update_option( $option_name, $notifications );
 			}
@@ -2675,7 +2857,10 @@ class Actions {
 		if( wpfkey( $_POST, 'reset' ) ) {
 			wpforo_delete_option( 'posting' );
 		} else {
-			$posting                          = wpforo_array_args_cast_and_merge( wp_unslash( $_POST['posting'] ), WPF()->settings->_posting );
+			$posting                          = wpforo_array_args_cast_and_merge(
+				wp_unslash( $_POST['posting'] ),
+				WPF()->settings->_posting
+			);
 			$posting['max_upload_size']       = $posting['max_upload_size'] * 1024 * 1024;
 			$posting['edit_own_topic_durr']   = $posting['edit_own_topic_durr'] * 60;
 			$posting['delete_own_topic_durr'] = $posting['delete_own_topic_durr'] * 60;
@@ -2703,12 +2888,18 @@ class Actions {
 		if( wpfkey( $_POST, 'reset' ) ) {
 			wpforo_delete_option( 'wpforo_profiles' );
 		} else {
-			$profiles                             = wpforo_array_args_cast_and_merge( wp_unslash( $_POST['profiles'] ), WPF()->settings->_profiles );
+			$profiles                             = wpforo_array_args_cast_and_merge(
+				wp_unslash( $_POST['profiles'] ),
+				WPF()->settings->_profiles
+			);
 			$profiles['default_cover']            = WPF()->settings->profiles['default_cover'];
 			$profiles['default_title']            = sanitize_text_field( $profiles['default_title'] );
 			$profiles['online_status_timeout']    = $profiles['online_status_timeout'] * 60;
 			$profiles['title_groupids']           = array_map( 'intval', (array) wpfval( $_POST['profiles'], 'title_groupids' ) );
-			$profiles['title_secondary_groupids'] = array_map( 'intval', (array) wpfval( $_POST['profiles'], 'title_secondary_groupids' ) );
+			$profiles['title_secondary_groupids'] = array_map(
+				'intval',
+				(array) wpfval( $_POST['profiles'], 'title_secondary_groupids' )
+			);
 			wpforo_update_option( 'wpforo_profiles', $profiles );
 		}
 		
@@ -2728,7 +2919,10 @@ class Actions {
 		if( wpfkey( $_POST, 'reset' ) ) {
 			wpforo_delete_option( 'wpforo_rating' );
 		} else {
-			$rating                    = wpforo_array_args_cast_and_merge( wp_unslash( $_POST['rating'] ), WPF()->settings->_rating );
+			$rating                    = wpforo_array_args_cast_and_merge(
+				wp_unslash( $_POST['rating'] ),
+				WPF()->settings->_rating
+			);
 			$rating['rating_title_ug'] = array_map( 'intval', (array) wpfval( $_POST['rating'], 'rating_title_ug' ) );
 			$rating['rating_badge_ug'] = array_map( 'intval', (array) wpfval( $_POST['rating'], 'rating_badge_ug' ) );
 			wpforo_update_option( 'wpforo_rating', $rating );
@@ -2750,7 +2944,10 @@ class Actions {
 		if( wpfkey( $_POST, 'reset' ) ) {
 			wpforo_delete_option( 'wpforo_recaptcha' );
 		} else {
-			$recaptcha               = wpforo_array_args_cast_and_merge( wp_unslash( $_POST['recaptcha'] ), WPF()->settings->_recaptcha );
+			$recaptcha               = wpforo_array_args_cast_and_merge(
+				wp_unslash( $_POST['recaptcha'] ),
+				WPF()->settings->_recaptcha
+			);
 			$recaptcha['site_key']   = sanitize_text_field( $recaptcha['site_key'] );
 			$recaptcha['secret_key'] = sanitize_text_field( $recaptcha['secret_key'] );
 			wpforo_update_option( 'wpforo_recaptcha', $recaptcha );
@@ -2795,8 +2992,12 @@ class Actions {
 			wpforo_delete_option( 'seo' );
 		} else {
 			$seo             = wp_unslash( $_POST['seo'] );
-			$seo['dofollow'] = array_filter( preg_split( '#\s+#', sanitize_textarea_field( (string) wpfval( $seo, 'dofollow' ) ) ) );
-			$seo['noindex']  = array_filter( preg_split( '#\s+#', sanitize_textarea_field( (string) wpfval( $seo, 'noindex' ) ) ) );
+			$seo['dofollow'] = array_filter(
+				preg_split( '#\s+#', sanitize_textarea_field( (string) wpfval( $seo, 'dofollow' ) ) )
+			);
+			$seo['noindex']  = array_filter(
+				preg_split( '#\s+#', sanitize_textarea_field( (string) wpfval( $seo, 'noindex' ) ) )
+			);
 			$seo['noindex']  = array_map( 'esc_url_raw', $seo['noindex'] );
 			$seo             = wpforo_array_args_cast_and_merge( $seo, WPF()->settings->_seo );
 			foreach( $this->generate_option_names( 'seo' ) as $option_name ) {
@@ -2822,8 +3023,17 @@ class Actions {
 			wpforo_delete_option( 'social' );
 		} else {
 			$social                = wpforo_array_args_cast_and_merge( wp_unslash( $_POST['social'] ), WPF()->settings->_social );
-			$social['sb']          = wpforo_array_args_cast_and_merge( (array) wpfval( $_POST['social'], 'sb' ), array_map( '__return_false', WPF()->settings->_social['sb'] ) );
-			$social['sb_location'] = wpforo_array_args_cast_and_merge( (array) wpfval( $_POST['social'], 'sb_location' ), array_map( '__return_false', WPF()->settings->_social['sb_location'] ) );
+			$social['sb']          = wpforo_array_args_cast_and_merge(
+				(array) wpfval( $_POST['social'], 'sb' ),
+				array_map( '__return_false', WPF()->settings->_social['sb'] )
+			);
+			$social['sb_location'] = wpforo_array_args_cast_and_merge(
+				(array) wpfval( $_POST['social'], 'sb_location' ),
+				array_map(
+					'__return_false',
+					WPF()->settings->_social['sb_location']
+				)
+			);
 			foreach( $this->generate_option_names( 'social' ) as $option_name ) {
 				wpforo_update_option( $option_name, $social );
 			}

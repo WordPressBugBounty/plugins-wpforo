@@ -168,6 +168,8 @@ class Moderation {
 			if( $handle = opendir( $default_attachments_dir ) ) {
 				while( false !== ( $filename = readdir( $handle ) ) ) {
 					if( $filename == '.' || $filename == '..' ) continue;
+					$file = $default_attachments_dir . DIRECTORY_SEPARATOR . $filename;
+					if( filesize( $file ) === 0 ) continue;
 					$level = $this->spam_file( $filename );
 					if( $level > 2 ) {
 						$link   = '<a href="' . admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'tools' ) . '&tab=antispam#spam-files' ) . '"><strong>&gt;&gt;</strong></a>';

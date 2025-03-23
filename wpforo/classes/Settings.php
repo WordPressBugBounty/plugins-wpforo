@@ -4306,18 +4306,20 @@ class Settings extends stdClass {
 	}
 	
 	private function init_base() {
-		$this->general       = wpforo_get_option( 'wpforo_general', $this->_general );
-		$this->members       = wpforo_get_option( 'wpforo_members', $this->_members );
-		$this->profiles      = wpforo_get_option( 'wpforo_profiles', $this->_profiles );
-		$this->rating        = wpforo_get_option( 'wpforo_rating', $this->_rating );
-		$this->authorization = wpforo_get_option( 'wpforo_authorization', $this->_authorization );
-		$this->email         = wpforo_get_option( 'wpforo_email', $this->_email );
-		$this->antispam      = wpforo_get_option( 'wpforo_antispam', $this->_antispam );
-		$this->akismet       = wpforo_get_option( 'wpforo_akismet', $this->_akismet );
-		$this->recaptcha     = wpforo_get_option( 'wpforo_recaptcha', $this->_recaptcha );
-		$this->buddypress    = wpforo_get_option( 'wpforo_buddypress', $this->_buddypress );
-		$this->um            = wpforo_get_option( 'wpforo_um', $this->_um );
-		$this->legal         = wpforo_get_option( 'wpforo_legal', $this->_legal );
+		$this->general                 = wpforo_get_option( 'wpforo_general', $this->_general );
+		$this->members                 = wpforo_get_option( 'wpforo_members', $this->_members );
+		$this->profiles                = wpforo_get_option( 'wpforo_profiles', $this->_profiles );
+		$this->rating                  = wpforo_get_option( 'wpforo_rating', $this->_rating );
+		$this->authorization           = wpforo_get_option( 'wpforo_authorization', $this->_authorization );
+		$this->email                   = wpforo_get_option( 'wpforo_email', $this->_email );
+		$_antispam                     = $this->_antispam;
+		$_antispam['limited_file_ext'] = $_antispam['exclude_file_ext'] = [];
+		$this->antispam                = wpforo_get_option( 'wpforo_antispam', $_antispam );
+		$this->akismet                 = wpforo_get_option( 'wpforo_akismet', $this->_akismet );
+		$this->recaptcha               = wpforo_get_option( 'wpforo_recaptcha', $this->_recaptcha );
+		$this->buddypress              = wpforo_get_option( 'wpforo_buddypress', $this->_buddypress );
+		$this->um                      = wpforo_get_option( 'wpforo_um', $this->_um );
+		$this->legal                   = wpforo_get_option( 'wpforo_legal', $this->_legal );
 		
 		if( ( $this->profiles['profile'] === 'bp' && ! class_exists( 'BP_Component' ) ) || ( $this->profiles['profile'] === 'um' && ! function_exists( 'UM' ) ) ) {
 			$this->profiles['profile']       = 'default';

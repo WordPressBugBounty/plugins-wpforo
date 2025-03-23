@@ -560,7 +560,7 @@ function wpforo_add_meta_tags() {
 			$canonical = WPF()->canonical_url;
 		}
 		$noindex_urls = wpforo_setting( 'seo', 'noindex' );
-		$image        = wpforo_find_image_urls( '', true, 'og:image' );
+		$image        = '';
 		foreach( $noindex_urls as $noindex_url ) {
 			$noindex_url = strtok( $noindex_url, "#" );
 			if( strpos( (string) $noindex_url, '*' ) !== false ) {

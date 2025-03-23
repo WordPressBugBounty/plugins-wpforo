@@ -168,7 +168,7 @@ function wpforo_bp_forums_screen_topics() {
 								<?php $members = WPF()->topic->members( $topic['topicid'], 3 ); ?>
 								<?php if( ! empty( $members ) ): foreach( $members as $member ): ?>
 									<?php if( ! empty( $member ) ): ?>
-                                        <a href="<?php echo bp_core_get_user_domain( $member['userid'] ) ?>" title="<?php echo esc_attr( bp_core_get_user_displayname( $member['userid'] ) ); ?>"><?php echo wpforo_user_avatar( $member, 30 ) ?></a>
+                                        <a href="<?php echo bp_members_get_user_url( $member['userid'] ) ?>" title="<?php echo esc_attr( bp_core_get_user_displayname( $member['userid'] ) ); ?>"><?php echo wpforo_user_avatar( $member, 30 ) ?></a>
 									<?php endif; ?>
 								<?php endforeach; endif; ?>
                             </td>
@@ -641,7 +641,7 @@ function wpforo_bp_profile_url( $url = '', $member = [], $template = 'profile' )
 }
 
 function wpforo_bp_profile_domain( $member ) {
-	$user_domain = trim( (string) bp_core_get_user_domain( $member['userid'] ), '/' );
+	$user_domain = trim( (string) bp_members_get_user_url( $member['userid'] ), '/' );
 	// Get profile root slug and build current login user url //////////////////
 	$root_slug = 'members';
 	if( strpos( (string) $user_domain, '//' ) !== false ) {
@@ -650,11 +650,11 @@ function wpforo_bp_profile_domain( $member ) {
 				$root      = get_post_field( 'post_name', intval( $pages['members'] ) );
 				$root_slug = $root ?: $root_slug;
 			}
-			$username = bp_core_get_username( $member['userid'], $member['user_nicename'], $member['user_login'] );
+			$username = bp_members_get_user_slug( $member['userid'] );
 			if( bp_is_username_compatibility_mode() ) $username = rawurlencode( $username );
 			$after_domain = bp_core_enable_root_profiles() ? $username : $root_slug . '/' . $username;
-			$domain       = trailingslashit( bp_get_root_domain() . '/' . $after_domain );
-			$user_domain  = apply_filters( 'bp_core_get_user_domain', $domain, $member['userid'], $member['user_nicename'], $member['user_login'] );
+			$domain = trailingslashit( bp_get_root_url() . '/' . $after_domain );
+			$user_domain  = apply_filters( 'bp_members_get_user_url', $domain, $member['userid'], $member['user_nicename'], $member['user_login'] );
 		}
 	}
 

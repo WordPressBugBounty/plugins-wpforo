@@ -1,9 +1,9 @@
-=== wpForo Forum ===
+﻿=== wpForo Forum ===
 Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.1
 Tested up to: 6.7
-Stable tag: 2.4.2
+Stable tag: 2.4.3
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -179,12 +179,21 @@ IMPORTANT NOTES for UPDATE
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
 
-= wpForo Forum 2.4.0 - 2.4.2 | 24.02.2025 =
+= wpForo Forum 2.4.0 - 2.4.3 | 23.03.2025 =
 
 [wpForo Forum v2.4 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-2-4-is-released/)
 
-* Version 2.4.2
+* Version 2.4.3
+* Added: Discussion forum (DiscussionForumPosting) structured data for Google Search
 * Security: Fixed issue with manipulation and privilege escalation via hidden parameter
+* Fixed Bug: BuddyPress Integration problems related to deprecated functions
+* Fixed Bug: False positive spam file detection and notification in the dashboard
+* Fixed Bug: Problems related to PHP 8.4
+* Fixed Bug: Issues with saving antispam settings
+* Fixed Bug: More robust solution for "Arbitrary File Reading" problem by changing `wp_remote_get()` function to `wp_safe_remote_get()`
+* ---------
+* Version 2.4.2
+* Security: Unauthenticated Arbitrary File Read in update
 * Fixed Bug: In some cases user couldn't see own private topics
 * Fixed Bug: Problem with topic slugs containing negative number (-1234)
 * Fixed Bug: Issue with x.com URL in users profile pages

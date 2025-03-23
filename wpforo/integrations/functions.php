@@ -27,7 +27,7 @@ function wpforo_has_profile_plugin( $userid = 0 ) {
 			um_reset_user();
 		} // BuddyPress | Profile Page URL
 		elseif( class_exists( 'BuddyPress' ) ) {
-			$profile_url = bp_core_get_user_domain( $userid );
+			$profile_url = bp_members_get_user_url( $userid );
 		} // Users Ultra | Profile Page URL
 		elseif( class_exists( 'XooUserUltra' ) ) {
 			global $xoouserultra;

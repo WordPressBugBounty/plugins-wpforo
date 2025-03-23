@@ -3907,7 +3907,7 @@ function is_avatar_url( string $url ): bool {
 	// Check if the string is a valid URL
 	if( filter_var( $url, FILTER_VALIDATE_URL ) ) {
 		// Make a HEAD request to check the Content-Type
-		$response = wp_remote_head( $url );
+		$response = wp_safe_remote_head( $url );
 		
 		if( ! is_wp_error( $response ) ) {
 			$content_type = wp_remote_retrieve_header( $response, 'content-type' );
@@ -3920,4 +3920,32 @@ function is_avatar_url( string $url ): bool {
 	}
 	
 	return false; // Not a valid avatar URL
+}
+
+/**
+ * Function to generate image object for DiscussionForumPosting schema JSON-LD
+ *
+ * @param string $content
+ *
+ * @return string
+ */
+function wpforo_generate_scheme_image_object( $content ) {
+	$image = '';
+    if( function_exists( 'WPF_ATTACH' ) ) {
+	    $content = WPF_ATTACH()->tools->do_shortcodes( $content );
+    }
+    # TODO: Add support for secure URLs w/o image extensions
+    # Currently, only URLs with image extensions are supported
+    # by wpforo_find_image_urls() function.
+	$images = wpforo_find_image_urls( $content, false );
+	if ( ! empty( $images ) ) {
+		$image = '"image": [';
+		foreach ( $images as $img ) {
+			$image .= '{ "@type": "ImageObject", "url": "' . esc_url_raw( $img ) . '"},';
+		}
+		$image = trim( $image, ',' ) . '],';
+	} else {
+		$image = '"image": [],';
+    }
+    return $image;
 }

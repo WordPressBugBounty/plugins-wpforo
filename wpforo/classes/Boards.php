@@ -118,7 +118,9 @@ class Boards {
 		$board['excld_urls']    = array_values(
 			array_unique(
 				array_filter(
-					(array) ( wpforo_is_json( $board['excld_urls'] ) ? json_decode( $board['excld_urls'], true ) : ( is_scalar( $board['excld_urls'] ) ? array_map(
+					(array) ( wpforo_is_json( $board['excld_urls'] ) ? json_decode( $board['excld_urls'], true ) : ( is_scalar(
+						$board['excld_urls']
+					) ? array_map(
 						'trim',
 						wpforo_string2array(
 							sanitize_textarea_field(
@@ -131,7 +133,10 @@ class Boards {
 		);
 		
 		// -- START -- decode board settings
-		$board['settings']          = (array) ( wpforo_is_json( $board['settings'] ) ? json_decode( $board['settings'], true ) : ( is_scalar( $board['settings'] ) ? array_map(
+		$board['settings']          = (array) ( wpforo_is_json( $board['settings'] ) ? json_decode(
+			$board['settings'],
+			true
+		) : ( is_scalar( $board['settings'] ) ? array_map(
 			'trim',
 			wpforo_string2array(
 				sanitize_textarea_field(
@@ -149,7 +154,10 @@ class Boards {
 		
 		$all_modules      = array_map( '__return_true', wpforo_get_modules_info() );
 		$all_addons       = array_map( '__return_true', wpforo_get_addons_info() );
-		$modules          = (array) ( ( wpforo_is_json( $board['modules'] ) ) ? json_decode( $board['modules'], true ) : $board['modules'] );
+		$modules          = (array) ( ( wpforo_is_json( $board['modules'] ) ) ? json_decode(
+			$board['modules'],
+			true
+		) : $board['modules'] );
 		$modules          = array_merge( $all_modules, $all_addons, $modules );
 		$board['modules'] = array_map( function( $a ) { return (bool) intval( $a ); }, $modules );
 		
@@ -248,7 +256,8 @@ class Boards {
 	private function after_save_board( $boardid ) {
 		if( $board = $this->_get_board( (int) $boardid ) ) {
 			if( $board['status'] && $board['is_standalone'] ) {
-				$sql = "UPDATE `" . WPF()->tables->boards . "` SET `is_standalone` = 0 WHERE `is_standalone` = 1 AND `boardid` <> %d";
+				$sql = "UPDATE `" . WPF(
+					)->tables->boards . "` SET `is_standalone` = 0 WHERE `is_standalone` = 1 AND `boardid` <> %d";
 				WPF()->db->query( WPF()->db->prepare( $sql, $board['boardid'] ) );
 			}
 		}
@@ -274,7 +283,11 @@ class Boards {
 		$wheres = [];
 		
 		if( ! is_null( $args['title_like'] ) ) $wheres[] = "`title` LIKE '%" . WPF()->db->esc_like( $args['title_like'] ) . "%'";
-		if( ! is_null( $args['title_notlike'] ) ) $wheres[] = "`title` NOT LIKE '%" . WPF()->db->esc_like( $args['title_notlike'] ) . "%'";
+		if( ! is_null( $args['title_notlike'] ) ) {
+			$wheres[] = "`title` NOT LIKE '%" . WPF()->db->esc_like(
+					$args['title_notlike']
+				) . "%'";
+		}
 		
 		if( ! is_null( $args['locale_like'] ) ) {
 			$locale_like = "`locale` LIKE '%" . WPF()->db->esc_like( $args['locale_like'] ) . "%'";
@@ -305,14 +318,70 @@ class Boards {
 		if( ! is_null( $args['status'] ) ) $wheres[] = "`status` = '" . intval( $args['status'] ) . "'";
 		if( ! is_null( $args['is_standalone'] ) ) $wheres[] = "`is_standalone` = '" . intval( $args['is_standalone'] ) . "'";
 		
-		if( ! empty( $args['slug_include'] ) ) $wheres[] = "`slug` IN('" . implode( "','", array_map( function( $_i ) { return esc_sql( trim( $_i ) ); }, $args['slug_include'] ) ) . "')";
-		if( ! empty( $args['slug_exclude'] ) ) $wheres[] = "`slug` NOT IN(" . implode( "','", array_map( function( $_i ) { return esc_sql( trim( $_i ) ); }, $args['slug_exclude'] ) ) . "')";
+		if( ! empty( $args['slug_include'] ) ) {
+			$wheres[] = "`slug` IN('" . implode(
+					"','",
+					array_map(
+						function( $_i ) {
+							return esc_sql(
+								trim( $_i )
+							);
+						},
+						$args['slug_include']
+					)
+				) . "')";
+		}
+		if( ! empty( $args['slug_exclude'] ) ) {
+			$wheres[] = "`slug` NOT IN(" . implode(
+					"','",
+					array_map(
+						function( $_i ) {
+							return esc_sql(
+								trim( $_i )
+							);
+						},
+						$args['slug_exclude']
+					)
+				) . "')";
+		}
 		
-		if( ! empty( $args['boardid_include'] ) ) $wheres[] = "`boardid` IN(" . implode( ',', array_map( 'intval', $args['boardid_include'] ) ) . ")";
-		if( ! empty( $args['boardid_exclude'] ) ) $wheres[] = "`boardid` NOT IN(" . implode( ',', array_map( 'intval', $args['boardid_exclude'] ) ) . ")";
+		if( ! empty( $args['boardid_include'] ) ) {
+			$wheres[] = "`boardid` IN(" . implode(
+					',',
+					array_map(
+						'intval',
+						$args['boardid_include']
+					)
+				) . ")";
+		}
+		if( ! empty( $args['boardid_exclude'] ) ) {
+			$wheres[] = "`boardid` NOT IN(" . implode(
+					',',
+					array_map(
+						'intval',
+						$args['boardid_exclude']
+					)
+				) . ")";
+		}
 		
-		if( ! empty( $args['pageid_include'] ) ) $wheres[] = "`pageid` IN(" . implode( ',', array_map( 'wpforo_bigintval', $args['pageid_include'] ) ) . ")";
-		if( ! empty( $args['pageid_exclude'] ) ) $wheres[] = "`pageid` NOT IN(" . implode( ',', array_map( 'wpforo_bigintval', $args['pageid_exclude'] ) ) . ")";
+		if( ! empty( $args['pageid_include'] ) ) {
+			$wheres[] = "`pageid` IN(" . implode(
+					',',
+					array_map(
+						'wpforo_bigintval',
+						$args['pageid_include']
+					)
+				) . ")";
+		}
+		if( ! empty( $args['pageid_exclude'] ) ) {
+			$wheres[] = "`pageid` NOT IN(" . implode(
+					',',
+					array_map(
+						'wpforo_bigintval',
+						$args['pageid_exclude']
+					)
+				) . ")";
+		}
 		
 		$wheres = array_filter( $wheres );
 		
@@ -404,7 +473,9 @@ class Boards {
 		$get = wp_unslash( array_merge( WPF()->GET, $_GET ) );
 		if( is_numeric( $args ) ) $args = [ 'boardid' => intval( $args ) ];
 		$board = [];
-		if( is_null( $boardid = wpfval( $args, 'boardid' ) ) && is_null( $boardid = wpfval( $get, 'boardid' ) ) && is_null( $boardid = wpfval( $get, 'wpforo_boardid' ) ) ) {
+		if( is_null( $boardid = wpfval( $args, 'boardid' ) ) && is_null( $boardid = wpfval( $get, 'boardid' ) ) && is_null(
+				$boardid = wpfval( $get, 'wpforo_boardid' )
+			) ) {
 			if( wpforo_is_admin() ) {
 				if( preg_match( '#^wpforo-(?:(\d*)-)?#iu', (string) wpfval( $get, 'page' ), $match ) ) {
 					if( ! $boardid = (int) wpfval( $get, 'boardid' ) ) {
@@ -415,7 +486,10 @@ class Boards {
 				if( $slug = (string) wpfval( $args, 'slug' ) ) {
 					$args  = [
 						'slug_include' => $slug,
-						'locale_like'  => ( $locale = (string) wpfval( $args, 'locale' ) ) ? $locale : wpforo_get_site_default_locale(),
+						'locale_like'  => ( $locale = (string) wpfval(
+							$args,
+							'locale'
+						) ) ? $locale : wpforo_get_site_default_locale(),
 						'locale_empty' => true,
 						'status'       => true,
 						'orderby'      => "( `locale` = '' OR `locale` IS NULL ) ASC, `boardid` DESC",
@@ -434,7 +508,10 @@ class Boards {
 				if( ! $board && $slug = wpforo_get_url_route() ) {
 					$args  = [
 						'slug_include' => $slug,
-						'locale_like'  => ( $locale = (string) wpfval( $args, 'locale' ) ) ? $locale : wpforo_get_site_default_locale(),
+						'locale_like'  => ( $locale = (string) wpfval(
+							$args,
+							'locale'
+						) ) ? $locale : wpforo_get_site_default_locale(),
 						'locale_empty' => true,
 						'status'       => true,
 						'orderby'      => "( `locale` = '' OR `locale` IS NULL ) ASC, `boardid` DESC",
@@ -469,7 +546,10 @@ class Boards {
 		
 		$this->route      = ( ! $this->board['is_standalone'] ? $this->board['slug'] : '' );
 		$this->full_route = rtrim(
-			( strpos( (string) get_option( 'permalink_structure', '' ), 'index.php' ) !== false ? '/index.php/' : '/' ) . $this->route,
+			( strpos(
+				  (string) get_option( 'permalink_structure', '' ),
+				  'index.php'
+			  ) !== false ? '/index.php/' : '/' ) . $this->route,
 			'/\\'
 		);
 		## @TODO need to test with or without lang plugins
@@ -485,7 +565,7 @@ class Boards {
 	 *
 	 * @return mixed
 	 */
-	public function get_current( string $field = null ) {
+	public function get_current( $field = null ) {
 		if( is_null( $field ) ) return $this->board;
 		
 		return wpfval( $this->board, $field );

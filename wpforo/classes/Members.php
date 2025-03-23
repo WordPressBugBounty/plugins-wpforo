@@ -160,9 +160,17 @@ class Members {
 		$member['first_name']         = trim( strip_tags( (string) $member['first_name'] ) );
 		$member['last_name']          = trim( strip_tags( (string) $member['last_name'] ) );
 		$member['groupid']            = intval( $member['groupid'] );
-		$member['secondary_groupids'] = array_map( 'intval', (array) ( is_scalar( $member['secondary_groupids'] ) ? explode( ',', $member['secondary_groupids'] ) : $member['secondary_groupids'] ) );
+		$member['secondary_groupids'] = array_map(
+			'intval',
+			(array) ( is_scalar( $member['secondary_groupids'] ) ? explode(
+				',',
+				$member['secondary_groupids']
+			) : $member['secondary_groupids'] )
+		);
 		$member['secondary_groupids'] = array_diff( $member['secondary_groupids'], (array) $member['groupid'] );
-		$member['groupids']           = array_unique( array_filter( array_merge( (array) $member['groupid'], $member['secondary_groupids'] ) ) );
+		$member['groupids']           = array_unique(
+			array_filter( array_merge( (array) $member['groupid'], $member['secondary_groupids'] ) )
+		);
 		$member['avatar']             = preg_replace( '#^https?://#iu', '//', esc_url( (string) $member['avatar'] ) );
 		$member['cover']              = preg_replace( '#^https?://#iu', '//', esc_url( (string) $member['cover'] ) );
 		$member['topics']             = intval( $member['topics'] );
@@ -174,12 +182,24 @@ class Members {
 		sort( $member['secondary_groupids'], SORT_NUMERIC );
 		sort( $member['groupids'], SORT_NUMERIC );
 		
-		$member['reactions_in']            = array_map( 'intval', (array) ( wpforo_is_json( $member['reactions_in'] ) ? json_decode( $member['reactions_in'], true ) : $member['reactions_in'] ) );
+		$member['reactions_in']            = array_map(
+			'intval',
+			(array) ( wpforo_is_json( $member['reactions_in'] ) ? json_decode(
+				$member['reactions_in'],
+				true
+			) : $member['reactions_in'] )
+		);
 		$member['reactions_in']['__ALL__'] = 0;
 		foreach( $member['reactions_in'] as $r ) $member['reactions_in']['__ALL__'] += $r;
 		$member['reactions_in'] = array_merge( $reaction_types, $member['reactions_in'] );
 		
-		$member['reactions_out']            = array_map( 'intval', (array) ( wpforo_is_json( $member['reactions_out'] ) ? json_decode( $member['reactions_out'], true ) : $member['reactions_out'] ) );
+		$member['reactions_out']            = array_map(
+			'intval',
+			(array) ( wpforo_is_json( $member['reactions_out'] ) ? json_decode(
+				$member['reactions_out'],
+				true
+			) : $member['reactions_out'] )
+		);
 		$member['reactions_out']['__ALL__'] = 0;
 		foreach( $member['reactions_out'] as $r ) $member['reactions_out']['__ALL__'] += $r;
 		$member['reactions_out'] = array_merge( $reaction_types, $member['reactions_out'] );
@@ -188,7 +208,11 @@ class Members {
 		$member['points']        = $member['custom_points'] ?: $this->calc_points( $member );
 		$member['rating']        = $this->calc_rating( $member['points'] );
 		
-		$member['online_time']        = (int) ( $member['online_time'] && ! is_numeric( $member['online_time'] ) ? strtotime( (string) $member['online_time'] . ' GMT' ) : $member['online_time'] );
+		$member['online_time']        = (int) ( $member['online_time'] && ! is_numeric(
+			$member['online_time']
+		) ? strtotime(
+			(string) $member['online_time'] . ' GMT'
+		) : $member['online_time'] );
 		$member['is_email_confirmed'] = (bool) (int) $member['is_email_confirmed'];
 		$member['is_mention_muted']   = (bool) (int) $member['is_mention_muted'];
 		
@@ -196,7 +220,10 @@ class Members {
 		$member['profile_url'] = $this->get_profile_url( $member );
 		$member['dname']       = wpforo_user_dname( $member );
 		
-		$member['fields'] = (array) ( wpforo_is_json( $member['fields'] ) ? json_decode( $member['fields'], true ) : $member['fields'] );
+		$member['fields'] = (array) ( wpforo_is_json( $member['fields'] ) ? json_decode(
+			$member['fields'],
+			true
+		) : $member['fields'] );
 		//		$member           = wpforo_array_ordered_intersect_key( $member, $this->default->member );
 		
 		if( ! $member['userid'] ) $member['timezone'] = '';
@@ -251,10 +278,18 @@ class Members {
 				},
 			],
 			'ban'         => [
-				'label'                => ( $user['status'] === 'banned' ? wpforo_phrase( 'Unban User', false ) : wpforo_phrase( 'Ban User', false ) ),
+				'label'                => ( $user['status'] === 'banned' ? wpforo_phrase(
+					'Unban User',
+					false
+				) : wpforo_phrase(
+					'Ban User',
+					false
+				) ),
 				'ico'                  => '<svg height="12" width="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H392.6c-5.4-9.4-8.6-20.3-8.6-32V352c0-2.1 .1-4.2 .3-6.3c-31-26-71-41.7-114.6-41.7H178.3zM528 240c17.7 0 32 14.3 32 32v48H496V272c0-17.7 14.3-32 32-32zm-80 32v48c-17.7 0-32 14.3-32 32V480c0 17.7 14.3 32 32 32H608c17.7 0 32-14.3 32-32V352c0-17.7-14.3-32-32-32V272c0-44.2-35.8-80-80-80s-80 35.8-80 80z"/></svg>',
 				'callback_for_can'     => function() use ( $userid ) {
-					return $userid !== WPF()->current_userid && ( WPF()->usergroup->can( 'bm' ) || wpforo_current_user_is( 'admin' ) );
+					return $userid !== WPF()->current_userid && ( WPF()->usergroup->can(
+								'bm'
+							) || wpforo_current_user_is( 'admin' ) );
 				},
 				'callback_for_get_url' => function() use ( $userid ) {
 					return '';
@@ -270,8 +305,12 @@ class Members {
 				'label'                => wpforo_phrase( 'Delete Account', false ),
 				'ico'                  => '<svg height="12" width="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM471 143c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"/></svg>',
 				'callback_for_can'     => function() use ( $userid ) {
-					$self     = $userid === WPF()->current_userid && ! is_super_admin( $userid ) && apply_filters( 'wpforo_can_user_self_delete', true );
-					$not_self = $userid !== WPF()->current_userid && ( current_user_can( 'administrator' ) || WPF()->usergroup->can( 'dm' ) ) && WPF()->perm->user_can_manage_user(
+					$self     = $userid === WPF()->current_userid && ! is_super_admin( $userid ) && apply_filters(
+							'wpforo_can_user_self_delete',
+							true
+						);
+					$not_self = $userid !== WPF()->current_userid && ( current_user_can( 'administrator' ) || WPF(
+							)->usergroup->can( 'dm' ) ) && WPF()->perm->user_can_manage_user(
 							WPF()->current_userid,
 							$userid
 						);
@@ -279,7 +318,11 @@ class Members {
 					return $self || $not_self;
 				},
 				'callback_for_get_url' => function() use ( $userid ) {
-					return wp_nonce_url( trim( WPF()->member->get_profile_url( $userid ), '/' ) . '/?wpfaction=user_delete', 'user_delete', '_wpfnonce' );
+					return wp_nonce_url(
+						trim( WPF()->member->get_profile_url( $userid ), '/' ) . '/?wpfaction=user_delete',
+						'user_delete',
+						'_wpfnonce'
+					);
 				},
 				'confirm_msg'          => wpforo_phrase( 'Please confirm you want to do this action?', false ),
 			],
@@ -287,7 +330,10 @@ class Members {
 				'label'                => wpforo_phrase( 'Delete User in Dashboard', false ),
 				'ico'                  => '<svg height="12" width="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L381.9 274c48.5-23.2 82.1-72.7 82.1-130C464 64.5 399.5 0 320 0C250.4 0 192.4 49.3 178.9 114.9L38.8 5.1zM545.5 512H528L284.3 320h-59C136.2 320 64 392.2 64 481.3c0 17 13.8 30.7 30.7 30.7H545.3l.3 0z"/></svg>',
 				'callback_for_can'     => function() use ( $userid ) {
-					return ( current_user_can( 'administrator' ) && WPF()->perm->user_can_manage_user( WPF()->current_userid, $userid ) && $userid !== WPF()->current_userid );
+					return ( current_user_can( 'administrator' ) && WPF()->perm->user_can_manage_user(
+							WPF()->current_userid,
+							$userid
+						) && $userid !== WPF()->current_userid );
 				},
 				'callback_for_get_url' => function() use ( $userid ) {
 					return admin_url( wp_nonce_url( "users.php?action=delete&user=" . $userid, 'bulk-users' ) );
@@ -316,7 +362,8 @@ class Members {
 	
 	private function add_profile( $args ) {
 		if( ! $userid = wpforo_bigintval( wpfval( $args, 'userid' ) ) ) return false;
-		$sql = "INSERT IGNORE INTO `" . WPF()->tables->profiles . "` (`userid`, `title`, `groupid`, `timezone`, `about`) VALUES ( %d, %s, %d, %s, %s )";
+		$sql = "INSERT IGNORE INTO `" . WPF(
+			)->tables->profiles . "` (`userid`, `title`, `groupid`, `timezone`, `about`) VALUES ( %d, %s, %d, %s, %s )";
 		$sql = WPF()->db->prepare(
 			$sql,
 			$userid,
@@ -362,7 +409,9 @@ class Members {
 		}
 		
 		//Check file uploading custom fields and merge to $user array
-		$file_data   = isset( $_FILES['data']['name'] ) && $_FILES['data']['name'] && is_array( $_FILES['data']['name'] ) ? array_filter( $_FILES['data']['name'] ) : [];
+		$file_data   = isset( $_FILES['data']['name'] ) && $_FILES['data']['name'] && is_array(
+			$_FILES['data']['name']
+		) ? array_filter( $_FILES['data']['name'] ) : [];
 		$file_fields = WPF()->form->prepare_file_args( $file_data, $userid );
 		if( wpfval( $file_fields, 'fields' ) ) {
 			$user = array_merge( $file_fields['fields'], $user );
@@ -394,7 +443,9 @@ class Members {
 			return false;
 		}
 		
-		if( ! wpforo_setting( 'authorization', 'user_register_email_confirm' ) && ! empty( $user_fields ) && is_array( $user_fields ) && ! empty( $user_fields['user_pass1'] ) ) {
+		if( ! wpforo_setting( 'authorization', 'user_register_email_confirm' ) && ! empty( $user_fields ) && is_array(
+				$user_fields
+			) && ! empty( $user_fields['user_pass1'] ) ) {
 			
 			remove_action( 'register_new_user', 'wp_send_new_user_notifications' );
 			remove_action( 'register_new_user', 'wpforo_send_new_user_notifications' );
@@ -419,22 +470,44 @@ class Members {
 				
 				return false;
 			} elseif( ! validate_username( $user_login ) ) {
-				$errors->add( 'invalid_username', __( '<strong>ERROR</strong>: This username is invalid because it uses illegal characters. Please enter a valid username.' ) );
+				$errors->add(
+					'invalid_username',
+					__(
+						'<strong>ERROR</strong>: This username is invalid because it uses illegal characters. Please enter a valid username.'
+					)
+				);
 				WPF()->notice->add( 'Illegal character in username.', 'error' );
 				
 				return false;
-			} elseif( strlen( (string) $user_login ) < $this->login_min_length || strlen( (string) $user_login ) > $this->login_max_length ) {
-				WPF()->notice->add( 'Username length must be between %d characters and %d characters.', 'error', [ $this->login_min_length, $this->login_max_length ] );
+			} elseif( strlen( (string) $user_login ) < $this->login_min_length || strlen(
+				                                                                      (string) $user_login
+			                                                                      ) > $this->login_max_length ) {
+				WPF()->notice->add(
+					'Username length must be between %d characters and %d characters.',
+					'error',
+					[ $this->login_min_length, $this->login_max_length ]
+				);
 				
 				return false;
 			} elseif( username_exists( $sanitized_user_login ) ) {
-				$errors->add( 'username_exists', __( '<strong>ERROR</strong>: This username is already registered. Please choose another one.' ) );
+				$errors->add(
+					'username_exists',
+					__(
+						'<strong>ERROR</strong>: This username is already registered. Please choose another one.'
+					)
+				);
 				WPF()->notice->add( 'Username exists. Please insert another.', 'error' );
 				
 				return false;
 			} elseif( in_array( strtolower( $sanitized_user_login ), $illegal_user_logins ) ) {
-				$errors->add( 'invalid_username', __( '<strong>ERROR</strong>: Sorry, that username is not allowed.' ) );
-				WPF()->notice->add( 'ERROR: invalid_username. Sorry, that username is not allowed. Please insert another.', 'error' );
+				$errors->add(
+					'invalid_username',
+					__( '<strong>ERROR</strong>: Sorry, that username is not allowed.' )
+				);
+				WPF()->notice->add(
+					'ERROR: invalid_username. Sorry, that username is not allowed. Please insert another.',
+					'error'
+				);
 				
 				return false;
 			} elseif( $user_email == '' ) {
@@ -448,12 +521,23 @@ class Members {
 				
 				return false;
 			} elseif( email_exists( $user_email ) ) {
-				$errors->add( 'email_exists', __( '<strong>ERROR</strong>: This email is already registered, please choose another one.' ) );
+				$errors->add(
+					'email_exists',
+					__(
+						'<strong>ERROR</strong>: This email is already registered, please choose another one.'
+					)
+				);
 				WPF()->notice->add( 'Email address exists. Please insert another.', 'error' );
 				
 				return false;
-			} elseif( strlen( $user_pass1 ) < $this->pass_min_length || strlen( $user_pass1 ) > $this->pass_max_length ) {
-				WPF()->notice->add( 'Password length must be between %d characters and %d characters.', 'error', [ $this->pass_min_length, $this->pass_max_length ] );
+			} elseif( strlen( $user_pass1 ) < $this->pass_min_length || strlen(
+				                                                            $user_pass1
+			                                                            ) > $this->pass_max_length ) {
+				WPF()->notice->add(
+					'Password length must be between %d characters and %d characters.',
+					'error',
+					[ $this->pass_min_length, $this->pass_max_length ]
+				);
 				
 				return false;
 			} elseif( $user_pass1 != $user_pass2 ) {
@@ -481,9 +565,18 @@ class Members {
 					return $user_id;
 				}
 			}
-		} elseif( wpforo_setting( 'authorization', 'user_register_email_confirm' ) && ! empty( $user_fields['user_login'] ) && ! empty( $user_fields['user_email'] ) ) {
-			if( strlen( (string) $user_fields['user_login'] ) < $this->login_min_length || strlen( (string) $user_fields['user_login'] ) > $this->login_max_length ) {
-				WPF()->notice->add( 'Username length must be between %d characters and %d characters.', 'error', [ $this->login_min_length, $this->login_max_length ] );
+		} elseif( wpforo_setting(
+			          'authorization',
+			          'user_register_email_confirm'
+		          ) && ! empty( $user_fields['user_login'] ) && ! empty( $user_fields['user_email'] ) ) {
+			if( strlen( (string) $user_fields['user_login'] ) < $this->login_min_length || strlen(
+				                                                                               (string) $user_fields['user_login']
+			                                                                               ) > $this->login_max_length ) {
+				WPF()->notice->add(
+					'Username length must be between %d characters and %d characters.',
+					'error',
+					[ $this->login_min_length, $this->login_max_length ]
+				);
 				
 				return false;
 			}
@@ -570,7 +663,13 @@ class Members {
 				$data[ $form ] = $data;
 			}
 		}
-		if( wpfval( $data, 'userid' ) && ! wpfval( $data, $form, 'userid' ) ) $data[ $form ]['userid'] = $data['userid'];
+		if( wpfval( $data, 'userid' ) && ! wpfval(
+				$data,
+				$form,
+				'userid'
+			) ) {
+			$data[ $form ]['userid'] = $data['userid'];
+		}
 		
 		if( wpfval( $data, $form, 'userid' ) ) {
 			$result_user    = true;
@@ -594,7 +693,9 @@ class Members {
 			}
 			
 			//Check file uploading custom fields and merge to $user array
-			$file_data   = isset( $_FILES['data']['name'] ) && $_FILES['data']['name'] && is_array( $_FILES['data']['name'] ) ? array_filter( $_FILES['data']['name'], function( $key ) {
+			$file_data   = isset( $_FILES['data']['name'] ) && $_FILES['data']['name'] && is_array(
+				$_FILES['data']['name']
+			) ? array_filter( $_FILES['data']['name'], function( $key ) {
 				if( trim( (string) $key ) && ( $field = $this->get_field( $key ) ) ) {
 					if( wpfval( $field, 'type' ) === 'file' ) {
 						$mime_type          = wpfval( $_FILES, 'data', 'type', $key );
@@ -603,7 +704,12 @@ class Members {
 						$name               = wpfval( $_FILES, 'data', 'name', $key );
 						$ext                = pathinfo( $name, PATHINFO_EXTENSION );
 						$size               = intval( $field['fileSize'] );
-						$fileExtensions     = array_filter( (array) ( is_scalar( $field['fileExtensions'] ) ? explode( ',', trim( (string) $field['fileExtensions'] ) ) : $field['fileExtensions'] ) );
+						$fileExtensions     = array_filter(
+							(array) ( is_scalar( $field['fileExtensions'] ) ? explode(
+								',',
+								trim( (string) $field['fileExtensions'] )
+							) : $field['fileExtensions'] )
+						);
 						if( $fileExtensions ) {
 							if( in_array( $ext, $fileExtensions ) ) {
 								$extensions = explode( '|', array_search( $mime_type, $mime_types ) );
@@ -621,11 +727,14 @@ class Members {
 				}
 				
 				return false;
-			},                                                                                                                                ARRAY_FILTER_USE_KEY ) : [];
+			},                ARRAY_FILTER_USE_KEY ) : [];
 			$file_fields = WPF()->form->prepare_file_args( $file_data, $userid );
 			if( wpfval( $file_fields, 'fields' ) ) {
 				$user          = array_merge( $file_fields['fields'], $user );
-				$custom_fields = ( ! empty( $custom_fields ) ) ? array_merge( $custom_fields, $file_fields['fields'] ) : $file_fields['fields'];
+				$custom_fields = ( ! empty( $custom_fields ) ) ? array_merge(
+					$custom_fields,
+					$file_fields['fields']
+				) : $file_fields['fields'];
 			}
 			
 			//Hooks
@@ -689,11 +798,16 @@ class Members {
 			}
 			
 			if( $sgids = array_filter( array_map( 'intval', (array) wpfval( $user, 'secondary_groupids' ) ) ) ) {
-				$f = $this->get_field( 'secondary_groupids' );
-				if( WPF()->current_object['template'] === 'register' || ( WPF()->form->owner() && $f['isEditable'] ) || ( ! WPF()->form->owner() && in_array(
-							WPF()->current_user_groupid,
-							(array) $f['canEdit']
-						) ) || wpforo_current_user_is( 'admin' ) ) {
+				$participant_fields_list = $this->get_participant_fields_list( $form_fields, true );
+				$f                       = $this->get_field( 'secondary_groupids' );
+				if(
+					in_array( 'secondary_groupids', $participant_fields_list )
+					&& ( WPF()->current_object['template'] === 'register'
+					     || ( WPF()->form->owner() && $f['isEditable'] )
+					     || ( ! WPF()->form->owner() && in_array( WPF()->current_user_groupid, (array) $f['canEdit'] ) )
+					     || wpforo_current_user_is( 'admin' )
+					)
+				) {
 					if( ! empty( $sgids ) ) {
 						$secondary_groupids = WPF()->usergroup->get_secondary_groupids();
 						foreach( $sgids as $sgid ) {
@@ -801,7 +915,13 @@ class Members {
 		}
 		
 		if( ! empty( $user_fields ) && ! empty( $user_fields_types ) ) {
-			$result_user = WPF()->db->update( WPF()->db->users, $user_fields, [ 'ID' => $userid ], $user_fields_types, [ '%d' ] );
+			$result_user = WPF()->db->update(
+				WPF()->db->users,
+				$user_fields,
+				[ 'ID' => $userid ],
+				$user_fields_types,
+				[ '%d' ]
+			);
 			if( false === $result_user ) {
 				WPF()->notice->add( 'User data update failed', 'error' );
 				if( WPF()->db->last_error ) {
@@ -915,10 +1035,22 @@ class Members {
 			$profile_fields_types[]             = '%d';
 		}
 		
-		$profile_fields = apply_filters( 'wpforo_before_update_profile_fields', $profile_fields, $userid, $data, $check_permissions );
+		$profile_fields = apply_filters(
+			'wpforo_before_update_profile_fields',
+			$profile_fields,
+			$userid,
+			$data,
+			$check_permissions
+		);
 		
 		if( ! empty( $profile_fields ) ) {
-			$result_profile = WPF()->db->update( WPF()->tables->profiles, $profile_fields, [ 'userid' => intval( $userid ) ], $profile_fields_types, [ '%d' ] );
+			$result_profile = WPF()->db->update(
+				WPF()->tables->profiles,
+				$profile_fields,
+				[ 'userid' => intval( $userid ) ],
+				$profile_fields_types,
+				[ '%d' ]
+			);
 			if( false === $result_profile ) {
 				WPF()->notice->add( 'User profile update failed', 'error' );
 				if( WPF()->db->last_error ) {
@@ -1012,7 +1144,11 @@ class Members {
 			$upload_max_filesize = apply_filters( 'wpforo_avatar_upload_max_filesize', 2 * 1048576 );
 			if( $size > $upload_max_filesize ) {
 				WPF()->notice->clear();
-				WPF()->notice->add( 'Avatar image is too big maximum allowed size is %s', 'error', wpforo_print_size( $upload_max_filesize ) );
+				WPF()->notice->add(
+					'Avatar image is too big maximum allowed size is %s',
+					'error',
+					wpforo_print_size( $upload_max_filesize )
+				);
 				
 				return false;
 			}
@@ -1054,10 +1190,20 @@ class Members {
 						$image->resize( 150, 150, true );
 						$saved = $image->save( $avatar_path );
 						if( ! is_wp_error( $saved ) && $avatar_fname != $avatar_fname_orig ) {
-							if( defined( PHP_OS ) && strtoupper( substr( PHP_OS, 0, 3 ) ) !== 'WIN' ) unlink( $avatar_path_orig );
+							if( defined( PHP_OS ) && strtoupper( substr( PHP_OS, 0, 3 ) ) !== 'WIN' ) {
+								unlink(
+									$avatar_path_orig
+								);
+							}
 						}
 					}
-					WPF()->db->update( WPF()->tables->profiles, [ 'avatar' => WPF()->folders['avatars']['url//'] . "/" . $avatar_fname ], [ 'userid' => intval( $userid ) ], [ '%s' ], [ '%d' ] );
+					WPF()->db->update(
+						WPF()->tables->profiles,
+						[ 'avatar' => WPF()->folders['avatars']['url//'] . "/" . $avatar_fname ],
+						[ 'userid' => intval( $userid ) ],
+						[ '%s' ],
+						[ '%d' ]
+					);
 					$this->reset( $userid );
 					
 					return true;
@@ -1071,7 +1217,10 @@ class Members {
 	public function upload_files( $file_fields ) {
 		if( ! empty( $file_fields ) ) {
 			foreach( $file_fields as $field_name => $file_path ) {
-				if( wpfval( $_FILES, 'data', 'tmp_name', $field_name ) && ! move_uploaded_file( $_FILES['data']['tmp_name'][ $field_name ], $file_path ) ) {
+				if( wpfval( $_FILES, 'data', 'tmp_name', $field_name ) && ! move_uploaded_file(
+						$_FILES['data']['tmp_name'][ $field_name ],
+						$file_path
+					) ) {
 					WPF()->notice->add( 'Sorry, there was an error uploading attached file', 'error' );
 				}
 			}
@@ -1081,7 +1230,10 @@ class Members {
 	public function get_custom_field( $userid, $field_name ) {
 		$field_value = '';
 		if( $userid ) {
-			$sql    = WPF()->db->prepare( "SELECT `fields` FROM `" . WPF()->tables->profiles . "` WHERE userid = %d", $userid );
+			$sql    = WPF()->db->prepare(
+				"SELECT `fields` FROM `" . WPF()->tables->profiles . "` WHERE userid = %d",
+				$userid
+			);
 			$fields = WPF()->db->get_var( $sql );
 			if( $fields ) {
 				$data = (array) json_decode( $fields, true );
@@ -1100,7 +1252,10 @@ class Members {
 	public function get_custom_fields( $userid ) {
 		$data = [];
 		if( $userid ) {
-			$sql    = WPF()->db->prepare( "SELECT `fields` FROM `" . WPF()->tables->profiles . "` WHERE userid = %d", $userid );
+			$sql    = WPF()->db->prepare(
+				"SELECT `fields` FROM `" . WPF()->tables->profiles . "` WHERE userid = %d",
+				$userid
+			);
 			$fields = WPF()->db->get_var( $sql );
 			if( $fields ) {
 				$data = (array) json_decode( $fields, true );
@@ -1196,14 +1351,21 @@ class Members {
 				$groupid = WPF()->usergroup->default_groupid;
 			}
 		}
-		$insert_groupid  = ( isset( $_POST['wpforo_usergroup'] ) && ! wpforo_setting( 'authorization', 'role_synch' ) ) ? intval( $_POST['wpforo_usergroup'] ) : $groupid;
-		$insert_timezone = ( isset( $_POST['wpforo_usertimezone'] ) ) ? sanitize_text_field( $_POST['wpforo_usertimezone'] ) : '';
+		$insert_groupid  = ( isset( $_POST['wpforo_usergroup'] ) && ! wpforo_setting(
+				'authorization',
+				'role_synch'
+			) ) ? intval( $_POST['wpforo_usergroup'] ) : $groupid;
+		$insert_timezone = ( isset( $_POST['wpforo_usertimezone'] ) ) ? sanitize_text_field(
+			$_POST['wpforo_usertimezone']
+		) : '';
 		$about           = get_user_meta( $userid, 'description', true );
 		$return          = $this->add_profile( [
 			                                       'userid'   => wpforo_bigintval( $userid ),
 			                                       'groupid'  => intval( $insert_groupid ),
 			                                       'timezone' => sanitize_text_field( $insert_timezone ),
-			                                       'about'    => stripslashes( wpforo_kses( trim( (string) $about ), 'user_description' ) ),
+			                                       'about'    => stripslashes(
+				                                       wpforo_kses( trim( (string) $about ), 'user_description' )
+			                                       ),
 		                                       ] );
 		
 		if( $return !== false && ( $secondary_groupids = wpfval( $_POST, 'wpforo_secondary_groupids' ) ) ) {
@@ -1216,10 +1378,12 @@ class Members {
 	public function synchronize_users( $limit = null ) {
 		
 		if( is_multisite() ) {
-			$sql = "SELECT `user_id` FROM `" . WPF()->db->usermeta . "` WHERE `meta_key` LIKE '" . WPF()->blog_prefix . "capabilities' AND `user_id` NOT IN( SELECT `userid` FROM `" . WPF(
-				)->tables->profiles . "` ) ORDER BY `user_id` ASC";
+			$sql = "SELECT `user_id` FROM `" . WPF()->db->usermeta . "` WHERE `meta_key` LIKE '" . WPF(
+				)->blog_prefix . "capabilities' AND `user_id` NOT IN( SELECT `userid` FROM `" . WPF(
+			       )->tables->profiles . "` ) ORDER BY `user_id` ASC";
 		} else {
-			$sql = "SELECT `ID` as user_id FROM `" . WPF()->db->users . "` WHERE `ID` NOT IN( SELECT `userid` FROM `" . WPF()->tables->profiles . "` ) ORDER BY `ID` ASC";
+			$sql = "SELECT `ID` as user_id FROM `" . WPF()->db->users . "` WHERE `ID` NOT IN( SELECT `userid` FROM `" . WPF(
+				)->tables->profiles . "` ) ORDER BY `ID` ASC";
 		}
 		if( ! is_null( $limit ) ) {
 			$sql .= " LIMIT " . intval( $limit );
@@ -1237,8 +1401,8 @@ class Members {
 		
 		## -- START -- delete profiles where not participant on multisite blog
 		if( is_multisite() ) {
-			$sql = "DELETE FROM `" . WPF()->tables->profiles . "` WHERE `userid` NOT IN( SELECT `user_id` FROM `" . WPF()->db->usermeta . "` WHERE `meta_key` LIKE '" . WPF(
-				)->blog_prefix . "capabilities' )";
+			$sql = "DELETE FROM `" . WPF()->tables->profiles . "` WHERE `userid` NOT IN( SELECT `user_id` FROM `" . WPF(
+				)->db->usermeta . "` WHERE `meta_key` LIKE '" . WPF()->blog_prefix . "capabilities' )";
 			WPF()->db->query( $sql );
 		}
 		
@@ -1343,18 +1507,41 @@ class Members {
 		
 		$wheres = [];
 		if( ! empty( $include ) ) $wheres[] = " u.`ID` IN(" . implode( ', ', array_map( 'intval', $include ) ) . ")";
-		if( ! empty( $exclude ) ) $wheres[] = " u.`ID` NOT IN(" . implode( ', ', array_map( 'intval', $exclude ) ) . ")";
-		if( ! empty( $status ) ) $wheres[] = " p.`status` IN('" . implode( "','", array_map( 'esc_sql', array_map( 'sanitize_text_field', $status ) ) ) . "')";
-		if( ! empty( $groupids ) ) {
-			$wheres[] = " (p.`groupid` IN(" . implode( ', ', array_map( 'intval', $groupids ) ) . ") OR CONCAT(',', p.`secondary_groupids`, ',') REGEXP ',(" . implode(
-					'|',
-					array_map(
-						'intval',
-						$groupids
-					)
-				) . "),' )";
+		if( ! empty( $exclude ) ) {
+			$wheres[] = " u.`ID` NOT IN(" . implode(
+					', ',
+					array_map( 'intval', $exclude )
+				) . ")";
 		}
-		if( ! is_null( $groupid ) ) $wheres[] = " (p.`groupid` = " . intval( $groupid ) . " OR FIND_IN_SET(" . intval( $groupid ) . ", p.`secondary_groupids`) ) ";
+		if( ! empty( $status ) ) {
+			$wheres[] = " p.`status` IN('" . implode(
+					"','",
+					array_map(
+						'esc_sql',
+						array_map(
+							'sanitize_text_field',
+							$status
+						)
+					)
+				) . "')";
+		}
+		if( ! empty( $groupids ) ) {
+			$wheres[] = " (p.`groupid` IN(" . implode(
+					', ',
+					array_map( 'intval', $groupids )
+				) . ") OR CONCAT(',', p.`secondary_groupids`, ',') REGEXP ',(" . implode(
+				            '|',
+				            array_map(
+					            'intval',
+					            $groupids
+				            )
+			            ) . "),' )";
+		}
+		if( ! is_null( $groupid ) ) {
+			$wheres[] = " (p.`groupid` = " . intval( $groupid ) . " OR FIND_IN_SET(" . intval(
+					$groupid
+				) . ", p.`secondary_groupids`) ) ";
+		}
 		if( ! is_null( $online_time ) ) $wheres[] = " p.`online_time` > " . intval( $online_time );
 		
 		if( ! empty( $wheres ) ) {
@@ -1400,9 +1587,13 @@ class Members {
 				} else {
 					$needle = preg_quote( preg_quote( $needle ) );
 					if( in_array( $f['type'], [ 'text', 'search', 'textarea' ], true ) ) {
-						$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"[^\"]*" . esc_sql( $needle ) . "[^\"]*\"'";
+						$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"[^\"]*" . esc_sql(
+								$needle
+							) . "[^\"]*\"'";
 					} else {
-						$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"" . esc_sql( $needle ) . "\"'";
+						$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"" . esc_sql(
+								$needle
+							) . "\"'";
 					}
 				}
 			}
@@ -1447,21 +1638,29 @@ class Members {
 					if( in_array( $f['type'], [ 'text', 'search', 'textarea' ], true ) ) {
 						if( is_scalar( $needle ) ) {
 							$needle   = preg_quote( preg_quote( wpforo_encode( $needle ) ) );
-							$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"[^\"]*" . esc_sql( $needle ) . "[^\"]*\"'";
+							$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"[^\"]*" . esc_sql(
+									$needle
+								) . "[^\"]*\"'";
 						} elseif( is_array( $needle ) ) {
 							foreach( $needle as $n ) {
 								$n        = preg_quote( preg_quote( wpforo_encode( $n ) ) );
-								$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"[^\"]*" . esc_sql( $n ) . "[^\"]*\"'";
+								$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"[^\"]*" . esc_sql(
+										$n
+									) . "[^\"]*\"'";
 							}
 						}
 					} else {
 						if( is_scalar( $needle ) ) {
 							$needle   = preg_quote( preg_quote( wpforo_encode( $needle ) ) );
-							$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"" . esc_sql( $needle ) . "\"'";
+							$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"" . esc_sql(
+									$needle
+								) . "\"'";
 						} elseif( is_array( $needle ) ) {
 							foreach( $needle as $n ) {
 								$n        = preg_quote( preg_quote( wpforo_encode( $n ) ) );
-								$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"" . esc_sql( $n ) . "\"'";
+								$wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"" . esc_sql(
+										$n
+									) . "\"'";
 							}
 						}
 					}
@@ -1488,12 +1687,21 @@ class Members {
 			
 			return false;
 		}
-		if( ! WPF()->usergroup->can( 'bm' ) || ! WPF()->perm->user_can_manage_user( WPF()->current_userid, intval( $userid ) ) ) {
+		if( ! WPF()->usergroup->can( 'bm' ) || ! WPF()->perm->user_can_manage_user(
+				WPF()->current_userid,
+				intval( $userid )
+			) ) {
 			WPF()->notice->add( 'Permission denied for this action', 'error' );
 			
 			return false;
 		}
-		if( false !== WPF()->db->update( WPF()->tables->profiles, [ 'status' => 'banned' ], [ 'userid' => intval( $userid ) ], [ '%s' ], [ '%d' ] ) ) {
+		if( false !== WPF()->db->update(
+				WPF()->tables->profiles,
+				[ 'status' => 'banned' ],
+				[ 'userid' => intval( $userid ) ],
+				[ '%s' ],
+				[ '%d' ]
+			) ) {
 			do_action( 'wpforo_after_ban_user', $userid );
 			$this->reset( $userid );
 			WPF()->notice->add( 'User successfully banned from wpforo', 'success' );
@@ -1507,12 +1715,21 @@ class Members {
 	}
 	
 	public function unban( $userid ) {
-		if( ! WPF()->usergroup->can( 'bm' ) || ! WPF()->perm->user_can_manage_user( WPF()->current_userid, intval( $userid ) ) ) {
+		if( ! WPF()->usergroup->can( 'bm' ) || ! WPF()->perm->user_can_manage_user(
+				WPF()->current_userid,
+				intval( $userid )
+			) ) {
 			WPF()->notice->add( 'Permission denied for this action', 'error' );
 			
 			return false;
 		}
-		if( false !== WPF()->db->update( WPF()->tables->profiles, [ 'status' => 'active' ], [ 'userid' => intval( $userid ) ], [ '%s' ], [ '%d' ] ) ) {
+		if( false !== WPF()->db->update(
+				WPF()->tables->profiles,
+				[ 'status' => 'active' ],
+				[ 'userid' => intval( $userid ) ],
+				[ '%s' ],
+				[ '%d' ]
+			) ) {
 			do_action( 'wpforo_after_unban_user', $userid );
 			$this->reset( $userid );
 			WPF()->notice->add( 'User successfully unbanned from wpforo', 'success' );
@@ -1526,7 +1743,13 @@ class Members {
 	}
 	
 	public function activate( $userid ) {
-		if( false !== WPF()->db->update( WPF()->tables->profiles, [ 'status' => 'active' ], [ 'userid' => intval( $userid ) ], [ '%s' ], [ '%d' ] ) ) {
+		if( false !== WPF()->db->update(
+				WPF()->tables->profiles,
+				[ 'status' => 'active' ],
+				[ 'userid' => intval( $userid ) ],
+				[ '%s' ],
+				[ '%d' ]
+			) ) {
 			do_action( 'wpforo_after_activate_user', $userid );
 			$this->reset( $userid );
 			WPF()->notice->add( 'User successfully activated from wpforo', 'success' );
@@ -1540,7 +1763,13 @@ class Members {
 	}
 	
 	public function deactivate( $userid ) {
-		if( false !== WPF()->db->update( WPF()->tables->profiles, [ 'status' => 'inactive' ], [ 'userid' => intval( $userid ) ], [ '%s' ], [ '%d' ] ) ) {
+		if( false !== WPF()->db->update(
+				WPF()->tables->profiles,
+				[ 'status' => 'inactive' ],
+				[ 'userid' => intval( $userid ) ],
+				[ '%s' ],
+				[ '%d' ]
+			) ) {
 			do_action( 'wpforo_after_deactivate_user', $userid );
 			$this->reset( $userid );
 			WPF()->notice->add( 'User successfully deactivated from wpforo', 'success' );
@@ -1608,7 +1837,12 @@ class Members {
 			if( $cache && $cache_avatar && $avatar_url = WPF()->cache->get_item( $userid, 'avatar' ) ) {
 				return str_replace( '#', '', (string) $avatar_url );
 			}
-			$avatar_url = (string) WPF()->db->get_var( WPF()->db->prepare( "SELECT `avatar` FROM `" . WPF()->tables->profiles . "` WHERE `userid` = %d", wpforo_bigintval( $userid ) ) );
+			$avatar_url = (string) WPF()->db->get_var(
+				WPF()->db->prepare(
+					"SELECT `avatar` FROM `" . WPF()->tables->profiles . "` WHERE `userid` = %d",
+					wpforo_bigintval( $userid )
+				)
+			);
 		} else {
 			$avatar_url = (string) wpfval( $user, 'avatar' );
 			$userid     = wpforo_bigintval( wpfval( $user, 'userid' ) );
@@ -1631,12 +1865,19 @@ class Members {
 			$url   = apply_filters( 'wpforo_avatar_url', $url, $user );
 			$dname = ! is_scalar( $user ) ? wpforo_user_dname( $user ) : $this->get_member( $user )['dname'];
 			if( strpos( (string) $attr, 'alt=' ) === false ) $attr .= ' ' . sprintf( 'alt="%1$s"', esc_attr( $dname ) );
-			if( strpos( (string) $attr, 'title=' ) === false ) $attr .= ' ' . sprintf( 'title="%1$s"', esc_attr( $dname ) );
+			if( strpos( (string) $attr, 'title=' ) === false ) {
+				$attr .= ' ' . sprintf(
+						'title="%1$s"',
+						esc_attr( $dname )
+					);
+			}
 			if( strpos( (string) $attr, 'height=' ) === false ) $attr .= ' ' . sprintf( 'height="%1$d"', $size );
 			if( strpos( (string) $attr, 'width=' ) === false ) $attr .= ' ' . sprintf( 'width="%1$d"', $size );
 			$img = '<img class="avatar" src="' . esc_url( (string) $url ) . '" ' . $attr . ' >';
 		} else {
-			$userid = is_scalar( $user ) ? wpforo_bigintval( $user ) : ( wpforo_bigintval( wpfval( $user, 'userid' ) ) ?: (string) wpfval( $user, 'user_email' ) );
+			$userid = is_scalar( $user ) ? wpforo_bigintval( $user ) : ( wpforo_bigintval(
+				wpfval( $user, 'userid' )
+			) ?: (string) wpfval( $user, 'user_email' ) );
 			$img    = get_avatar( $userid, $size );
 			if( $attr ) $img = str_replace( '<img', '<img ' . $attr, $img );
 		}
@@ -1651,11 +1892,16 @@ class Members {
 	 * @return string
 	 */
 	public function get_profile_url( $arg, $template = 'profile', $ram_cache = true ) {
-		$user = is_scalar( $arg ) ? ( $ram_cache ? $this->get_member( intval( basename( (string) $arg ) ) ) : $this->_get_member(
+		$user = is_scalar( $arg ) ? ( $ram_cache ? $this->get_member(
+			intval( basename( (string) $arg ) )
+		) : $this->_get_member(
 			intval( basename( (string) $arg ) )
 		) ) ?: [ 'user_nicename' => basename( (string) $arg ) ] : $arg;
 		if( wpfkey( $user, 'userid' ) && wpfkey( $user, 'user_nicename' ) ) {
-			$user_slug = ( wpforo_setting( 'profiles', 'url_structure' ) === 'id' ? $user['userid'] : $user['user_nicename'] );
+			$user_slug = ( wpforo_setting(
+				               'profiles',
+				               'url_structure'
+			               ) === 'id' ? $user['userid'] : $user['user_nicename'] );
 			if( $template === 'profile' ) {
 				$profile_url = wpforo_url( $user_slug, 'member' );
 			} else {
@@ -1695,7 +1941,10 @@ class Members {
 		$topic_points   = intval( $member['topics'] ) * wpforo_setting( 'rating', 'topic_points' );
 		$post_points    = intval( $member['posts'] ) * wpforo_setting( 'rating', 'post_points' );
 		$like_points    = intval( wpfval( $member, 'reactions_in', 'up' ) ) * wpforo_setting( 'rating', 'like_points' );
-		$dislike_points = intval( wpfval( $member, 'reactions_in', 'down' ) ) * wpforo_setting( 'rating', 'dislike_points' );
+		$dislike_points = intval( wpfval( $member, 'reactions_in', 'down' ) ) * wpforo_setting(
+				'rating',
+				'dislike_points'
+			);
 		
 		$topic_points   = (float) apply_filters( 'wpforo_member_get_points_topic_points', $topic_points, $member );
 		$post_points    = (float) apply_filters( 'wpforo_member_get_points_post_points', $post_points, $member );
@@ -1755,7 +2004,12 @@ class Members {
 	}
 	
 	public function online_members_count( $duration = null ) {
-		if( ! ( $duration = intval( $duration ) ) ) $duration = (int) wpforo_setting( 'profiles', 'online_status_timeout' );
+		if( ! ( $duration = intval( $duration ) ) ) {
+			$duration = (int) wpforo_setting(
+				'profiles',
+				'online_status_timeout'
+			);
+		}
 		$online_timeframe = time() - $duration;
 		$key              = [ 'member', 'online_members_count', $online_timeframe ];
 		if( WPF()->ram_cache->exists( $key ) ) return WPF()->ram_cache->get( $key );
@@ -1835,13 +2089,19 @@ class Members {
 			if( $view == 'full' ) {
 				return str_repeat( ' <i class="' . $this->rating( $level, 'icon' ) . '"></i> ', $level );
 			} else {
-				return '<span>' . esc_html( $level ) . '</span> <i class="' . $this->rating( $level, 'icon' ) . '"></i>';
+				return '<span>' . esc_html( $level ) . '</span> <i class="' . $this->rating(
+						$level,
+						'icon'
+					) . '"></i>';
 			}
 		} elseif( $level > 5 && $level < 9 ) {
 			if( $view == 'full' ) {
 				return str_repeat( ' <i class="' . $this->rating( $level, 'icon' ) . '"></i> ', ( $level - 5 ) );
 			} else {
-				return '<span>' . esc_html( $level - 5 ) . '</span> <i class="' . $this->rating( $level, 'icon' ) . '"></i>';
+				return '<span>' . esc_html( $level - 5 ) . '</span> <i class="' . $this->rating(
+						$level,
+						'icon'
+					) . '"></i>';
 			}
 		}
 		
@@ -1850,13 +2110,19 @@ class Members {
 				if( $view == 'full' ) {
 					return str_repeat( ' <i class="' . $this->rating( $level, 'icon' ) . '"></i> ', ( $level - 8 ) );
 				} else {
-					return '<span>' . esc_html( $level - 8 ) . '</span> <i class="' . $this->rating( $level, 'icon' ) . '"></i>';
+					return '<span>' . esc_html( $level - 8 ) . '</span> <i class="' . $this->rating(
+							$level,
+							'icon'
+						) . '"></i>';
 				}
 			} elseif( $level < 15 ) {
 				if( $view == 'full' ) {
 					return str_repeat( ' <i class="' . $this->rating( $level, 'icon' ) . '"></i> ', ( $level - 11 ) );
 				} else {
-					return '<span>' . esc_html( $level - 11 ) . '</span> <i class="' . $this->rating( $level, 'icon' ) . '"></i>';
+					return '<span>' . esc_html( $level - 11 ) . '</span> <i class="' . $this->rating(
+							$level,
+							'icon'
+						) . '"></i>';
 				}
 			}
 		} else {
@@ -1927,19 +2193,30 @@ class Members {
 		
 		WPF()->usergroup->init_current();
 		
-		if( function_exists( 'wp_get_session_token' ) && function_exists( 'wp_parse_auth_cookie' ) ) WPF()->session_token = wp_get_session_token();
+		if( function_exists( 'wp_get_session_token' ) && function_exists( 'wp_parse_auth_cookie' ) ) {
+			WPF()->session_token = wp_get_session_token();
+		}
 		if( ! WPF()->session_token ) {
 			$secret_key          = defined( 'SECRET_KEY' ) && SECRET_KEY ? SECRET_KEY : 'wpforo';
 			WPF()->session_token = hash_hmac(
 				'sha256',
-				md5( (string) wpfval( $_SERVER, 'HTTP_USER_AGENT' ) ) . md5( (string) wpfval( $_SERVER, 'REMOTE_ADDR' ) ) . md5(
+				md5( (string) wpfval( $_SERVER, 'HTTP_USER_AGENT' ) ) . md5(
+					(string) wpfval( $_SERVER, 'REMOTE_ADDR' )
+				) . md5(
 					(string) wpfval( $_SERVER, 'SERVER_ADDR' )
 				),
 				$secret_key
 			);
 		}
 		
-		do_action( 'wpforo_after_init_current_user', WPF()->current_user, WPF()->current_usermeta, WPF()->current_user_groupid, WPF()->current_user_secondary_groupids, WPF()->current_user_groupids );
+		do_action(
+			'wpforo_after_init_current_user',
+			WPF()->current_user,
+			WPF()->current_usermeta,
+			WPF()->current_user_groupid,
+			WPF()->current_user_secondary_groupids,
+			WPF()->current_user_groupids
+		);
 	}
 	
 	public function blog_posts( $userid ) {
@@ -1952,7 +2229,11 @@ class Members {
 		global $wpdb;
 		if( ! $userid || ! $user_email ) return 0;
 		
-		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM " . $wpdb->comments . " WHERE `user_id` = " . intval( $userid ) . " OR `comment_author_email` = '" . esc_sql( $user_email ) . "'" );
+		return (int) $wpdb->get_var(
+			"SELECT COUNT(*) FROM " . $wpdb->comments . " WHERE `user_id` = " . intval(
+				$userid
+			) . " OR `comment_author_email` = '" . esc_sql( $user_email ) . "'"
+		);
 	}
 	
 	public function show_delete_form( $current_user, $userids ) {
@@ -1960,7 +2241,12 @@ class Members {
 		
 		$userids            = array_diff( $userids, [ $current_user->ID ] );
 		$users_have_content = false;
-		if( WPF()->db->get_var( "SELECT `postid` FROM `" . WPF()->tables->posts . "` WHERE `userid` IN( " . implode( ',', array_map( 'intval', $userids ) ) . " ) LIMIT 1" ) ) {
+		if( WPF()->db->get_var(
+			"SELECT `postid` FROM `" . WPF()->tables->posts . "` WHERE `userid` IN( " . implode(
+				',',
+				array_map( 'intval', $userids )
+			) . " ) LIMIT 1"
+		) ) {
 			$users_have_content = true;
 		}
 		?>
@@ -1973,10 +2259,14 @@ class Members {
                 <legend><?php _e( 'What should be done with wpForo content owned by this user?', 'wpforo' ); ?></legend>
 			<?php else : ?>
                 <fieldset>
-                <legend><?php _e( 'What should be done with wpForo content owned by these users?', 'wpforo' ); ?></legend>
+                <legend><?php _e(
+						'What should be done with wpForo content owned by these users?',
+						'wpforo'
+					); ?></legend>
 			<?php endif; ?>
             <ul style="list-style:none;">
-                <li><label><input type="radio" id="wpforo_delete_option0" name="wpforo_user_delete_option" value="delete">
+                <li><label><input type="radio" id="wpforo_delete_option0" name="wpforo_user_delete_option"
+                                  value="delete">
 						<?php _e( 'Delete all wpForo content.', 'wpforo' ); ?></label></li>
                 <li><input type="radio" id="wpforo_delete_option1" name="wpforo_user_delete_option" value="reassign">
                     <label for="wpforo_delete_option1"><?php _e( 'Attribute all content to:' ) ?></label>
@@ -2001,7 +2291,13 @@ class Members {
 	
 	public function autoban( $userid ) {
 		if( ! WPF()->usergroup->can( 'em' ) ) {
-			WPF()->db->update( WPF()->tables->profiles, [ 'status' => 'banned' ], [ 'userid' => intval( $userid ) ], [ '%s' ], [ '%d' ] );
+			WPF()->db->update(
+				WPF()->tables->profiles,
+				[ 'status' => 'banned' ],
+				[ 'userid' => intval( $userid ) ],
+				[ '%s' ],
+				[ '%d' ]
+			);
 		}
 	}
 	
@@ -2046,7 +2342,9 @@ class Members {
 	public function banned_count() {
 		$key = [ 'member', 'banned_count' ];
 		if( WPF()->ram_cache->exists( $key ) ) return WPF()->ram_cache->get( $key );
-		$var = (int) WPF()->db->get_var( "SELECT count(*) FROM `" . WPF()->tables->profiles . "` WHERE `status` = 'banned'" );
+		$var = (int) WPF()->db->get_var(
+			"SELECT count(*) FROM `" . WPF()->tables->profiles . "` WHERE `status` = 'banned'"
+		);
 		WPF()->ram_cache->set( $key, $var );
 		
 		return $var;
@@ -2090,7 +2388,13 @@ class Members {
 		if( $args['email'] && $args['email'] !== 'anonymous@example.com' ) {
 			if( $posts = $this->get_guest_posts( $args['email'] ) ) {
 				$args['posts'] = count( $posts );
-				if( $first_post_created = wpfval( $posts, 0, 'created' ) ) $args['user_registered'] = $first_post_created;
+				if( $first_post_created = wpfval(
+					$posts,
+					0,
+					'created'
+				) ) {
+					$args['user_registered'] = $first_post_created;
+				}
 			}
 		}
 		
@@ -2991,8 +3295,14 @@ class Members {
 			
 			$zone = str_replace( '_', ' ', $zone );
 			
-			$group       = function_exists( 'mb_substr' ) ? mb_substr( (string) $zone, 0, strpos( (string) $zone, '/' ) ) : substr( (string) $zone, 0, strpos( (string) $zone, '/' ) );
-			$index       = function_exists( 'mb_strlen' ) ? mb_strlen( (string) $group ) + 1 : strlen( (string) $group ) + 1;
+			$group       = function_exists( 'mb_substr' ) ? mb_substr(
+				(string) $zone,
+				0,
+				strpos( (string) $zone, '/' )
+			) : substr( (string) $zone, 0, strpos( (string) $zone, '/' ) );
+			$index       = function_exists( 'mb_strlen' ) ? mb_strlen( (string) $group ) + 1 : strlen(
+				                                                                                   (string) $group
+			                                                                                   ) + 1;
 			$optionValue = substr( (string) $zone, $index );
 			
 			if( strpos( (string) $optionValue, 'UTC' ) !== false ) {
@@ -3095,7 +3405,10 @@ class Members {
 	}
 	
 	public function get_register_fields( $only_defaults = false ) {
-		return $this->fields_structure_full_array( $this->get_register_fields_structure( $only_defaults ), ! wpforo_setting( 'authorization', 'user_register_email_confirm' ) );
+		return $this->fields_structure_full_array(
+			$this->get_register_fields_structure( $only_defaults ),
+			! wpforo_setting( 'authorization', 'user_register_email_confirm' )
+		);
 	}
 	
 	public function get_account_fields_structure( $only_defaults = false ) {
@@ -3236,13 +3549,42 @@ class Members {
 		return $names;
 	}
 	
+	public function get_participant_fields_list( $fields, $only_defaults = false ): array {
+		$names = [];
+		
+		foreach( $fields as $row ) {
+			foreach( $row as $col ) {
+				foreach( $col as $field ) {
+					if( $only_defaults && ! $field['isDefault'] ) continue;
+					$names[] = $field['name'];
+				}
+			}
+		}
+		
+		return $names;
+	}
+	
 	public function set_guest_cookies( $args ) {
 		if( ! wpforo_setting( 'legal', 'cookies' ) ) return;
 		if( isset( $args['name'] ) && isset( $args['email'] ) ) {
 			$comment_cookie_lifetime = apply_filters( 'comment_cookie_lifetime', 30000000 );
 			$secure                  = ( 'https' === parse_url( home_url(), PHP_URL_SCHEME ) );
-			setcookie( 'comment_author_' . COOKIEHASH, $args['name'], time() + $comment_cookie_lifetime, COOKIEPATH, COOKIE_DOMAIN, $secure );
-			setcookie( 'comment_author_email_' . COOKIEHASH, $args['email'], time() + $comment_cookie_lifetime, COOKIEPATH, COOKIE_DOMAIN, $secure );
+			setcookie(
+				'comment_author_' . COOKIEHASH,
+				$args['name'],
+				time() + $comment_cookie_lifetime,
+				COOKIEPATH,
+				COOKIE_DOMAIN,
+				$secure
+			);
+			setcookie(
+				'comment_author_email_' . COOKIEHASH,
+				$args['email'],
+				time() + $comment_cookie_lifetime,
+				COOKIEPATH,
+				COOKIE_DOMAIN,
+				$secure
+			);
 			
 			WPF()->current_user_display_name = $args['name'];
 			WPF()->current_user_email        = $args['email'];
@@ -3266,7 +3608,13 @@ class Members {
 	}
 	
 	public function set_is_email_confirmed( $userid, $status ) {
-		if( false !== WPF()->db->update( WPF()->tables->profiles, [ 'is_email_confirmed' => intval( $status ) ], [ 'userid' => wpforo_bigintval( $userid ) ], [ '%d' ], [ '%d' ] ) ) {
+		if( false !== WPF()->db->update(
+				WPF()->tables->profiles,
+				[ 'is_email_confirmed' => intval( $status ) ],
+				[ 'userid' => wpforo_bigintval( $userid ) ],
+				[ '%d' ],
+				[ '%d' ]
+			) ) {
 			WPF()->notice->add( 'Email has been confirmed', 'success' );
 			
 			return true;
@@ -3378,7 +3726,9 @@ class Members {
 	}
 	
 	public function after_register_new_user( $userid ) {
-		if( wpforo_setting( 'authorization', 'manually_approval' ) || (int) trim( (string) get_user_meta( $userid, 'default_password_nag', true ) ) ) {
+		if( wpforo_setting( 'authorization', 'manually_approval' ) || (int) trim(
+				(string) get_user_meta( $userid, 'default_password_nag', true )
+			) ) {
 			$this->update_profile_fields( $userid, [ 'status' => 'inactive' ], false );
 		}
 	}
@@ -3446,7 +3796,9 @@ class Members {
 			}
 			
 			if( $sqls ) {
-				return (int) WPF()->db->get_var( "SELECT SUM(`COUNT(*)`) FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp" );
+				return (int) WPF()->db->get_var(
+					"SELECT SUM(`COUNT(*)`) FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp"
+				);
 			}
 		}
 		
@@ -3472,7 +3824,9 @@ class Members {
 			}
 			
 			if( $sqls ) {
-				return (int) WPF()->db->get_var( "SELECT SUM(`COUNT(*)`) FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp" );
+				return (int) WPF()->db->get_var(
+					"SELECT SUM(`COUNT(*)`) FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp"
+				);
 			}
 		}
 		
@@ -3501,7 +3855,9 @@ class Members {
 			}
 			
 			if( $sqls ) {
-				return (int) WPF()->db->get_var( "SELECT SUM(`COUNT(*)`) FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp" );
+				return (int) WPF()->db->get_var(
+					"SELECT SUM(`COUNT(*)`) FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp"
+				);
 			}
 		}
 		
@@ -3532,7 +3888,9 @@ class Members {
 			}
 			
 			if( $sqls ) {
-				return (int) WPF()->db->get_var( "SELECT SUM(`COUNT(*)`) FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp" );
+				return (int) WPF()->db->get_var(
+					"SELECT SUM(`COUNT(*)`) FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp"
+				);
 			}
 		}
 		
@@ -3563,7 +3921,9 @@ class Members {
 			}
 			
 			if( $sqls ) {
-				return (int) WPF()->db->get_var( "SELECT SUM(`COUNT(*)`) FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp" );
+				return (int) WPF()->db->get_var(
+					"SELECT SUM(`COUNT(*)`) FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp"
+				);
 			}
 		}
 		
@@ -3589,7 +3949,13 @@ class Members {
 			}
 			
 			if( $sqls ) {
-				$r = (array) WPF()->db->get_results( "SELECT `type`, COUNT(`type`) as `count` FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp GROUP BY `type`", ARRAY_A );
+				$r = (array) WPF()->db->get_results(
+					"SELECT `type`, COUNT(`type`) as `count` FROM (" . implode(
+						' UNION ALL ',
+						$sqls
+					) . ") AS temp GROUP BY `type`",
+					ARRAY_A
+				);
 				foreach( $r as $_r ) $reactions_in[ $_r['type'] ] = intval( $_r['count'] );
 			}
 		}
@@ -3616,7 +3982,13 @@ class Members {
 			}
 			
 			if( $sqls ) {
-				$r = (array) WPF()->db->get_results( "SELECT `type`, COUNT(`type`) as `count` FROM (" . implode( ' UNION ALL ', $sqls ) . ") AS temp GROUP BY `type`", ARRAY_A );
+				$r = (array) WPF()->db->get_results(
+					"SELECT `type`, COUNT(`type`) as `count` FROM (" . implode(
+						' UNION ALL ',
+						$sqls
+					) . ") AS temp GROUP BY `type`",
+					ARRAY_A
+				);
 				foreach( $r as $_r ) $reactions_out[ $_r['type'] ] = intval( $_r['count'] );
 			}
 		}
@@ -3637,7 +4009,9 @@ class Members {
 		$comments      = $this->calc_approved_comments( $userid );
 		$reactions_in  = $this->calc_reactions_in( $userid );
 		$reactions_out = $this->calc_reactions_out( $userid );
-		$points        = $this->calc_points( compact( 'posts', 'topics', 'questions', 'answers', 'comments', 'reactions_in', 'reactions_out' ) );
+		$points        = $this->calc_points(
+			compact( 'posts', 'topics', 'questions', 'answers', 'comments', 'reactions_in', 'reactions_out' )
+		);
 		
 		if( WPF()->db->update(
 			WPF()->tables->profiles,
@@ -3709,7 +4083,12 @@ class Members {
 		$field_userid      = wpfval( $fields, 'userid' );
 		$field_post_userid = wpfval( $fields, 'post_userid' );
 		if( $field_userid || $field_post_userid ) {
-			$userids = [ $field_userid, $field_post_userid, wpfval( $where, 'userid' ), wpfval( $where, 'post_userid' ) ];
+			$userids = [
+				$field_userid,
+				$field_post_userid,
+				wpfval( $where, 'userid' ),
+				wpfval( $where, 'post_userid' ),
+			];
 			$userids = array_filter( $userids );
 			$userids = array_unique( $userids );
 			foreach( $userids as $userid ) $this->rebuild_stats( $userid );
@@ -3741,8 +4120,12 @@ class Members {
 			$login_url  = wpforo_login_url( '' );
 			$login_link = sprintf( '<a href="%1$s">%2$s</a>', $login_url, $blogname );
 			
-			$sbj = str_replace( [ '[blogname]', '[user_login]', '[login_link]', '[login_url]' ], [ $blogname, $user->user_login, $login_link, $login_url ], $sbj );
-			$msg = str_replace( [ '[blogname]', '[user_login]', '[login_link]', '[login_url]' ], [ $blogname, $user->user_login, $login_link, $login_url ], $msg );
+			$sbj = str_replace( [ '[blogname]', '[user_login]', '[login_link]', '[login_url]' ],
+			                    [ $blogname, $user->user_login, $login_link, $login_url ],
+			                    $sbj );
+			$msg = str_replace( [ '[blogname]', '[user_login]', '[login_link]', '[login_url]' ],
+			                    [ $blogname, $user->user_login, $login_link, $login_url ],
+			                    $msg );
 			wpforo_send_email( $user->user_email, $sbj, $msg );
 		}
 	}
@@ -3751,7 +4134,12 @@ class Members {
 		if( ! $arg ) $arg = WPF()->current_object['user'];
 		$url = rtrim( $this->get_profile_url( $arg, 'activity' ), '/' );
 		if( is_wpforo_multiboard() ) {
-			if( is_null( $boardid ) ) $boardid = wpfkey( WPF()->GET, 'boardid' ) ? (int) wpfval( WPF()->GET, 'boardid' ) : WPF()->board->get_current( 'boardid' );
+			if( is_null( $boardid ) ) {
+				$boardid = wpfkey( WPF()->GET, 'boardid' ) ? (int) wpfval(
+					WPF()->GET,
+					'boardid'
+				) : WPF()->board->get_current( 'boardid' );
+			}
 			if( $filter ) {
 				$url .= sprintf( '/?boardid=%1$d&filter=%2$s', $boardid, $filter );
 			} else {
@@ -3768,7 +4156,12 @@ class Members {
 		if( ! $arg ) $arg = WPF()->current_object['user'];
 		$url = rtrim( $this->get_profile_url( $arg, 'favored' ), '/' );
 		if( is_wpforo_multiboard() ) {
-			if( is_null( $boardid ) ) $boardid = wpfkey( WPF()->GET, 'boardid' ) ? (int) wpfval( WPF()->GET, 'boardid' ) : WPF()->board->get_current( 'boardid' );
+			if( is_null( $boardid ) ) {
+				$boardid = wpfkey( WPF()->GET, 'boardid' ) ? (int) wpfval(
+					WPF()->GET,
+					'boardid'
+				) : WPF()->board->get_current( 'boardid' );
+			}
 			if( $filter ) {
 				$url .= sprintf( '/?boardid=%1$d&filter=%2$s', $boardid, $filter );
 			} else {
@@ -3803,16 +4196,34 @@ class Members {
 		
 		if( empty( $member ) ) {
 			
-			WPF()->db->query( "DELETE p FROM `" . WPF()->tables->profiles . "` p LEFT JOIN `" . WPF()->db->users . "` u ON u.ID = p.userid  WHERE u.ID IS NULL" );
+			WPF()->db->query(
+				"DELETE p FROM `" . WPF()->tables->profiles . "` p LEFT JOIN `" . WPF(
+				)->db->users . "` u ON u.ID = p.userid  WHERE u.ID IS NULL"
+			);
 			
 			$memberid = WPF()->db->get_var( $sql );
 			$member   = wpforo_member( $memberid );
 			
 			if( empty( $member ) ) {
 				if( $status_filter ) {
-					$members = $this->get_members( [ 'orderby' => 'userid', 'status' => [ 'active' ], 'order' => 'DESC', 'row_count' => 1, 'groupids' => $visible_usergroup_ids ] );
+					$members = $this->get_members(
+						[
+							'orderby'   => 'userid',
+							'status'    => [ 'active' ],
+							'order'     => 'DESC',
+							'row_count' => 1,
+							'groupids'  => $visible_usergroup_ids,
+						]
+					);
 				} else {
-					$members = $this->get_members( [ 'orderby' => 'userid', 'order' => 'DESC', 'row_count' => 1, 'groupids' => $visible_usergroup_ids ] );
+					$members = $this->get_members(
+						[
+							'orderby'   => 'userid',
+							'order'     => 'DESC',
+							'row_count' => 1,
+							'groupids'  => $visible_usergroup_ids,
+						]
+					);
 				}
 				if( isset( $members[0] ) && ! empty( $members[0] ) ) {
 					$member = $members[0];
