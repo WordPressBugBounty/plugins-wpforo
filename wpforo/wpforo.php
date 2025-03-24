@@ -5,14 +5,14 @@
 * Description: WordPress Forum plugin. wpForo is a full-fledged forum solution for your community. Comes with multiple modern forum layouts.
 * Author: gVectors Team
 * Author URI: https://gvectors.com/
-* Version: 2.4.3
+* Version: 2.4.4
 * Text Domain: wpforo
 * Domain Path: /languages
 */
 
 namespace wpforo;
 
-define( 'WPFORO_VERSION', '2.4.3' );
+define( 'WPFORO_VERSION', '2.4.4' );
 
 //Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;

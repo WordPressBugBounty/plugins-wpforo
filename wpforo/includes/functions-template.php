@@ -2736,7 +2736,7 @@ function wpforo_schema( $forum, $topic, $post, $type = '' ) {
                 foreach ( $posts as $key => $post ) {
                     if ( $paged === 1 && $key == 0 ) continue;
                     $post_member = wpforo_member( $post['userid'] );
-	                $post_text = wpforo_text( sanitize_text_field( $post['body'] ), 5000, false );
+	                $post_text = wpforo_text( stripslashes( sanitize_text_field( $post['body'] ) ), 5000, false );
 	                $post_images = wpforo_generate_scheme_image_object( $post['body'] );
                     if( !$post_text && !$post_images ) continue;
                     $topic_posts .= '{
@@ -2756,7 +2756,7 @@ function wpforo_schema( $forum, $topic, $post, $type = '' ) {
                             }
                         },';
                 }
-                $topic_posts = trim( $topic_posts, ',' ) . ']';
+                $topic_posts = ',' . trim( $topic_posts, ',' ) . ']';
             }
 
             $topic_images = wpforo_generate_scheme_image_object( $topic_post['body'] );
@@ -2767,7 +2767,7 @@ function wpforo_schema( $forum, $topic, $post, $type = '' ) {
                   "@type": "DiscussionForumPosting",
                   "mainEntityOfPage": "' . esc_url_raw($topic['url']) . '",
                   "headline": "' . esc_attr( $topic_post['title'] ) . '",
-                  "text": "' . esc_attr( wpforo_text( sanitize_text_field( $topic_post['body'] ), 5000, false ) ) . '",
+                  "text": "' . esc_attr( wpforo_text( stripslashes( sanitize_text_field( $topic_post['body'] ) ), 5000, false ) ) . '",
                   ' . $topic_images . '
                   "url": "' . esc_url_raw($topic['url']) . '",
                   "author": {
@@ -2785,7 +2785,7 @@ function wpforo_schema( $forum, $topic, $post, $type = '' ) {
                     "@type": "InteractionCounter",
                     "interactionType": "https://schema.org/LikeAction",
                     "userInteractionCount": ' . intval($topic['posts']) . '
-                  },
+                  }
                   ' . $topic_posts . '
                 }
               </script>';

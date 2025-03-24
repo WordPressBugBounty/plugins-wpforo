@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.1
 Tested up to: 6.7
-Stable tag: 2.4.3
+Stable tag: 2.4.4
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -179,11 +179,11 @@ IMPORTANT NOTES for UPDATE
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
 
-= wpForo Forum 2.4.0 - 2.4.3 | 23.03.2025 =
+= wpForo Forum 2.4.0 - 2.4.4 | 24.03.2025 =
 
 [wpForo Forum v2.4 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-2-4-is-released/)
 
-* Version 2.4.3
+* Version 2.4.3 - 2.4.4
 * Added: Discussion forum (DiscussionForumPosting) structured data for Google Search
 * Security: Fixed issue with manipulation and privilege escalation via hidden parameter
 * Fixed Bug: BuddyPress Integration problems related to deprecated functions
