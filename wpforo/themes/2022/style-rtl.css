@@ -2081,6 +2081,15 @@ body.wpf-dark #wpforo-dialog-extra-wrap #wpforo-dialog{background-color: #000; c
     #wpforo #wpforo-wrap .wpfl-3 .wpforo-last-topic-bottom{display:block;}
     #wpforo #wpforo-wrap .wpfl-3 .wpforo-last-topic-bottom .wpforo-tags{margin: 0 5px;}
 
+    #wpforo #wpforo-wrap .wpfl-3 .wpforo-post .wpf-left { width: 30px; padding: 25px 0 10px 10px; border-left: none !important;}
+    #wpforo #wpforo-wrap .wpfl-3 .wpf-positive,
+    #wpforo #wpforo-wrap .wpfl-3 .wpf-negative {font-size: 20px;}
+    #wpforo #wpforo-wrap .wpfl-3 .wpf-vote-number {font-size: 22px; line-height: 24px;}
+    #wpforo #wpforo-wrap .wpfl-3 .wpforo-post .wpf-left .wpf-toggle-not-answer,
+    #wpforo #wpforo-wrap .wpfl-3 .wpforo-post .wpf-left .wpf-toggle-answer {font-size: 22px;}
+    #wpforo #wpforo-wrap .wpfl-3 .wpforo-post .wpf-right {width: calc(100% - 38px);}
+    #wpforo #wpforo-wrap .wpfl-3 .wpforo-post .wpf-right .wpforo-post-author { padding-right: 10px; }
+
     #wpforo #wpforo-wrap .wpfl-4 .wpf-child-post .wpf-reply-head .wpf-post-date{text-align: right; width: 70%;}
     #wpforo #wpforo-wrap .wpfl-4 .wpforo-topic-meta {margin-right: 0;}
     #wpforo #wpforo-wrap .wpfl-4.wpforo-tags .wpf-tags-title {float: right;}

@@ -3944,8 +3944,26 @@ function wpforo_generate_scheme_image_object( $content ) {
 			$image .= '{ "@type": "ImageObject", "url": "' . esc_url_raw( $img ) . '"},';
 		}
 		$image = trim( $image, ',' ) . '],';
-	} else {
-		$image = '"image": [],';
-    }
+	}
     return $image;
+}
+
+function wpforo_generate_scheme_author_object( $user_id ) {
+	$author = '';
+	$post_member = wpforo_member( $user_id );
+	$author_posts = wpfval($post_member, 'posts') ? $post_member['posts'] : 1;
+	$author_name = wpfval($post_member, 'display_name') ? $post_member['display_name'] : 'Guest';
+	$author_url = wpfval($post_member, 'profile_url') ? '
+	                    "url": "' . esc_url_raw( $post_member['profile_url'] ) . '",' : '';
+	$author = ',
+                   "author": {
+                        "@type": "Person",
+                        "name": "' . esc_attr( $author_name ) . '",' . $author_url . '
+                        "agentInteractionStatistic": {
+                            "@type": "InteractionCounter",
+                            "interactionType": "https://schema.org/WriteAction",
+                            "userInteractionCount": ' . intval( $author_posts ) . '
+                        }
+                    }';
+    return $author;
 }

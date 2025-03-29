@@ -2730,35 +2730,24 @@ function wpforo_schema( $forum, $topic, $post, $type = '' ) {
             $paged = WPF()->current_object['paged'];
             $posts = WPF()->current_object['posts'];
             $topic_post = wpforo_post( $topic['first_postid'] );
-            $topic_member = wpforo_member( $topic['userid'] );
             if ( $paged > 1  || ( $paged === 1 && count( $posts ) > 1 ) ) {
                 $topic_posts .= '"comment": [';
                 foreach ( $posts as $key => $post ) {
                     if ( $paged === 1 && $key == 0 ) continue;
-                    $post_member = wpforo_member( $post['userid'] );
 	                $post_text = wpforo_text( stripslashes( sanitize_text_field( $post['body'] ) ), 5000, false );
-	                $post_images = wpforo_generate_scheme_image_object( $post['body'] );
+	                $post_author = wpforo_generate_scheme_author_object( $post['userid'] );
+                    $post_images = wpforo_generate_scheme_image_object( $post['body'] );
                     if( !$post_text && !$post_images ) continue;
                     $topic_posts .= '{
-                            "@type": "Comment",
-                            "text": "' . esc_attr( $post_text ) . '",
-                            ' . $post_images . '
-                            "datePublished": "' . gmdate( 'Y-m-d\TH:i:s\Z', strtotime( $post['created'] ) ) . '",
-                            "author": {
-                                "@type": "Person",
-                                "name": "' . esc_attr( $post_member['display_name'] ) . '",
-                                "url": "' . esc_url_raw( $post_member['profile_url'] ) . '",
-                                "agentInteractionStatistic": {
-                                    "@type": "InteractionCounter",
-                                    "interactionType": "https://schema.org/WriteAction",
-                                    "userInteractionCount": ' . intval( $post_member['posts'] ) . '
-                                }
-                            }
-                        },';
+                   "@type": "Comment",
+                   "text": "' . esc_attr( $post_text ) . '",' . $post_images . '
+                   "datePublished": "' . gmdate( 'Y-m-d\TH:i:s\Z', strtotime( $post['created'] ) ) . '"' . $post_author . '
+                 },';
                 }
                 $topic_posts = ',' . trim( $topic_posts, ',' ) . ']';
             }
 
+	        $topic_author = wpforo_generate_scheme_author_object( $topic['userid'] );
             $topic_images = wpforo_generate_scheme_image_object( $topic_post['body'] );
             $schema .= '
             <script type="application/ld+json">
@@ -2767,19 +2756,8 @@ function wpforo_schema( $forum, $topic, $post, $type = '' ) {
                   "@type": "DiscussionForumPosting",
                   "mainEntityOfPage": "' . esc_url_raw($topic['url']) . '",
                   "headline": "' . esc_attr( $topic_post['title'] ) . '",
-                  "text": "' . esc_attr( wpforo_text( stripslashes( sanitize_text_field( $topic_post['body'] ) ), 5000, false ) ) . '",
-                  ' . $topic_images . '
-                  "url": "' . esc_url_raw($topic['url']) . '",
-                  "author": {
-                    "@type": "Person",
-                    "name": "' . esc_attr($topic_member['display_name']) . '",
-                    "url": "' . esc_url_raw($topic_member['profile_url']) . '",
-                    "agentInteractionStatistic": {
-                      "@type": "InteractionCounter",
-                      "interactionType": "https://schema.org/WriteAction",
-                      "userInteractionCount": ' . intval($topic_member['posts']) . '
-                    }
-                  },
+                  "text": "' . esc_attr( wpforo_text( stripslashes( sanitize_text_field( $topic_post['body'] ) ), 5000, false ) ) . '",' . $topic_images . '
+                  "url": "' . esc_url_raw($topic['url']) . '"' . $topic_author . ',
                   "datePublished": "' . gmdate( 'Y-m-d\TH:i:s\Z', strtotime( $topic_post['created'] ) ) . '",
                   "interactionStatistic": {
                     "@type": "InteractionCounter",
