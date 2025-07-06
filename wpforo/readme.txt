@@ -2,8 +2,8 @@
 Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.1
-Tested up to: 6.7
-Stable tag: 2.4.5
+Tested up to: 6.8
+Stable tag: 2.4.6
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -179,10 +179,17 @@ IMPORTANT NOTES for UPDATE
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
 
-= wpForo Forum 2.4.0 - 2.4.5 | 29.03.2025 =
+= wpForo Forum 2.4.0 - 2.4.6 | 06.07.2025 =
 
 [wpForo Forum v2.4 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-2-4-is-released/)
 
+* Version 2.4.6
+* Security: Fixed XSS vulnerability, Stored Cross-Site Scripting
+* Updated: Hooks to manage the email sending test and error report in the tools
+* Fixed Bug: Text domain loading issue
+* Fixed Bug: Link RSS Module and RSS Settings to disable if the module is disabled
+* Fixed Bug: PHP Warning: Undefined array key max-number-value when wpForo is integrated with Profile Builder plugin.
+* ---------
 * Version 2.4.5
 * Fixed Bug: Q&A forum layout threads issue on mobile devices
 * Fixed Bug: Warning: Trying to access array offset on null in ../functions-template.php

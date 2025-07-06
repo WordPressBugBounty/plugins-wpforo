@@ -5,14 +5,14 @@
 * Description: WordPress Forum plugin. wpForo is a full-fledged forum solution for your community. Comes with multiple modern forum layouts.
 * Author: gVectors Team
 * Author URI: https://gvectors.com/
-* Version: 2.4.5
+* Version: 2.4.6
 * Text Domain: wpforo
 * Domain Path: /languages
 */
 
 namespace wpforo;
 
-define( 'WPFORO_VERSION', '2.4.5' );
+define( 'WPFORO_VERSION', '2.4.6' );
 
 //Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;
@@ -894,7 +894,7 @@ final class wpforo {
 				}
 			}
 			
-			if( $this->current_userid && in_array( $this->current_object['template'], [ 'register', 'login', 'lostpassword' ], true ) ) wpforo_redirect_to();
+			if( $this->current_userid && in_array( $this->current_object['template'], [ 'register', 'login', 'lostpassword' ], true ) && ! wpforo_is_admin() ) wpforo_redirect_to();
 		}
 		$wpf_url_parse = array_reverse( $wpf_url_parse );
 		
@@ -1297,26 +1297,26 @@ final class wpforo {
 								$postids = $this->reaction->get_reactions_col(
 									'postid',
 									[
-										        'userid'       => $current_object['userid'],
-										        'type_include' => 'up',
-									        ]
+										'userid'       => $current_object['userid'],
+										'type_include' => 'up',
+									]
 								);
 							} elseif( $current_object['filter'] === 'dislikes' ) {
 								$postids = $this->reaction->get_reactions_col(
 									'postid',
 									[
-										        'userid'       => $current_object['userid'],
-										        'type_include' => 'down',
-									        ]
+										'userid'       => $current_object['userid'],
+										'type_include' => 'down',
+									]
 								);
 							} else {
 								$postids = $this->bookmark->get_bookmarks_col(
 									'postid',
 									[
-										        'userid'  => $current_object['userid'],
-										        'boardid' => $this->board->get_current( 'boardid' ),
-										        'status'  => true,
-									        ]
+										'userid'  => $current_object['userid'],
+										'boardid' => $this->board->get_current( 'boardid' ),
+										'status'  => true,
+									]
 								);
 							}
 							

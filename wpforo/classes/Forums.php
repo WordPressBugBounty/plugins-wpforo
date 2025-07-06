@@ -109,7 +109,7 @@ class Forums {
 		$args['slug'] = ( $ss = trim( sanitize_title( (string) wpfval( $args, 'slug' ) ) ) ) ? $ss : ( ( $st = trim( sanitize_title( $args['title'] ) ) ) ? $st : md5( time() ) );
 		$args['slug'] = $this->unique_slug( $args['slug'], $args['parentid'] );
 		
-		$args['description'] = wpforo_kses( stripslashes( (string) wpfval( $args, 'description' ) ) );
+		$args['description'] = trim( wpforo_kses( stripslashes( (string) wpfval( $args, 'description' ) ) ) );
 		
 		$group_access_relation = WPF()->usergroup->get_usergroup_access_relation();
 		$args['permission']    = ( (array) wpfval( $args, 'permission' ) ) + $group_access_relation;
@@ -145,7 +145,8 @@ class Forums {
 		if( ! $args ) return false;
 		
 		if( WPF()->db->insert(
-			WPF()->tables->forums, [
+			WPF()->tables->forums,
+			[
 			'title'        => $args['title'],
 			'slug'         => $args['slug'],
 			'description'  => $args['description'],
@@ -267,7 +268,8 @@ class Forums {
 		if( ! $args ) return false;
 		
 		if( false !== WPF()->db->update(
-				WPF()->tables->forums, [
+				WPF()->tables->forums,
+				[
 				'title'        => $args['title'],
 				'slug'         => $args['slug'],
 				'description'  => $args['description'],
@@ -282,7 +284,9 @@ class Forums {
 				'is_cat'       => $args['is_cat'],
 				'layout'       => $args['layout'],
 				'color'        => $args['color'],
-			],  [ 'forumid' => $args['forumid'] ], [ '%s', '%s', '%s', '%d', '%s', '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%s' ], [ '%d' ]
+			],
+				[ 'forumid' => $args['forumid'] ],
+				[ '%s', '%s', '%s', '%d', '%s', '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%s' ], [ '%d' ]
 			) ) {
 			if( $childs = $this->get_childs( $args['forumid'] ) ) {
 				$sql = "UPDATE `" . WPF()->tables->forums . "` SET `layout` = " . $args['layout'] . " WHERE `forumid` IN(" . implode( ',', $childs ) . ")";

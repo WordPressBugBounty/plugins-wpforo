@@ -2136,7 +2136,7 @@ function wpforo_kses( $string = '', $key = 'post' ) {
 			'fence',
 			'frame',
 			'height',
-			'href',
+			//			'href',
 			'id',
 			'largeop',
 			'length',
@@ -2175,7 +2175,7 @@ function wpforo_kses( $string = '', $key = 'post' ) {
 			'xmlns',
 			
 			// XML
-			'xlink:href',
+			//			'xlink:href',
 			'xml:id',
 			'xlink:title',
 			'xml:space',
@@ -3931,31 +3931,32 @@ function is_avatar_url( string $url ): bool {
  */
 function wpforo_generate_scheme_image_object( $content ) {
 	$image = '';
-    if( function_exists( 'WPF_ATTACH' ) ) {
-	    $content = WPF_ATTACH()->tools->do_shortcodes( $content );
-    }
-    # TODO: Add support for secure URLs w/o image extensions
-    # Currently, only URLs with image extensions are supported
-    # by wpforo_find_image_urls() function.
+	if( function_exists( 'WPF_ATTACH' ) ) {
+		$content = WPF_ATTACH()->tools->do_shortcodes( $content );
+	}
+	# TODO: Add support for secure URLs w/o image extensions
+	# Currently, only URLs with image extensions are supported
+	# by wpforo_find_image_urls() function.
 	$images = wpforo_find_image_urls( $content, false );
-	if ( ! empty( $images ) ) {
+	if( ! empty( $images ) ) {
 		$image = '"image": [';
-		foreach ( $images as $img ) {
+		foreach( $images as $img ) {
 			$image .= '{ "@type": "ImageObject", "url": "' . esc_url_raw( $img ) . '"},';
 		}
 		$image = trim( $image, ',' ) . '],';
 	}
-    return $image;
+	
+	return $image;
 }
 
 function wpforo_generate_scheme_author_object( $user_id ) {
-	$author = '';
-	$post_member = wpforo_member( $user_id );
-	$author_posts = wpfval($post_member, 'posts') ? $post_member['posts'] : 1;
-	$author_name = wpfval($post_member, 'display_name') ? $post_member['display_name'] : 'Guest';
-	$author_url = wpfval($post_member, 'profile_url') ? '
+	$author       = '';
+	$post_member  = wpforo_member( $user_id );
+	$author_posts = wpfval( $post_member, 'posts' ) ? $post_member['posts'] : 1;
+	$author_name  = wpfval( $post_member, 'display_name' ) ? $post_member['display_name'] : 'Guest';
+	$author_url   = wpfval( $post_member, 'profile_url' ) ? '
 	                    "url": "' . esc_url_raw( $post_member['profile_url'] ) . '",' : '';
-	$author = ',
+	$author       = ',
                    "author": {
                         "@type": "Person",
                         "name": "' . esc_attr( $author_name ) . '",' . $author_url . '
@@ -3965,5 +3966,6 @@ function wpforo_generate_scheme_author_object( $user_id ) {
                             "userInteractionCount": ' . intval( $author_posts ) . '
                         }
                     }';
-    return $author;
+	
+	return $author;
 }

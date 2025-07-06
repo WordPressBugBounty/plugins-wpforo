@@ -283,10 +283,11 @@ function wpforo_issues() {
 	}
 	#########################################################
 	//Email Issues //////////////////////////////////////////
-	$email   = "test@example.com";
 	$subject = "Email Test";
 	$message = "This is a mail testing email function on server";
-	if( ! wp_mail( $email, $subject, $message ) ) {
+	$send_to = apply_filters( 'wpforo_check_wp_mail_send_to', "test@example.com" );
+	$check_mail = apply_filters( 'wpforo_check_wp_mail', false );
+	if( $check_mail && ! wp_mail( $send_to, $subject, $message ) ) {
 		$issues['email']['wp_mail']['level']    = 3;
 		$issues['email']['wp_mail']['message']  = __( 'WordPress Email sending function wp_mail() doesn\'t work!', 'wpforo' );
 		$issues['email']['wp_mail']['solution'] = __( 'In most cases this is a server issue. We recommend you contact to your hosting service support team or open a support topic in wordpress.org support forum. Also there are many good articles regarding this issue in web. For example ', 'wpforo' ) . ' - <a href="https://www.wpbeginner.com/wp-tutorials/how-to-fix-wordpress-not-sending-email-issue/">' . __( 'How to Fix WordPress Not Sending Email Issue', 'wpforo' ) . '</a>';

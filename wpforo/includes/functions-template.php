@@ -2026,7 +2026,7 @@ function wpforo_feed_link( $type = 'topic' ) {
 	$nofollow = apply_filters( 'wpforo_feed_link_nofollow', false );
 	$nofollow = ( $nofollow ) ? ' rel="nofollow" ' : '';
 	
-	if( wpforo_setting( 'rss', 'feed' ) ): ?>
+	if( wpforo_is_module_enabled( 'rss' ) && wpforo_setting( 'rss', 'feed' ) ): ?>
 		
 		<?php if( $type === 'topic' && wpforo_setting( 'rss', 'feed_topic' ) ): ?>
             <a href="<?php WPF()->feed->rss2_url(); ?>" <?php echo $nofollow ?>
@@ -2196,6 +2196,7 @@ function wpforo_forum_title( $forum, $before = '', $after = '', $echo = true ) {
 function wpforo_forum_description( $forum, $before = '', $after = '', $echo = true ) {
 	$description = is_array( $forum ) ? (string) wpfval( $forum, 'description' ) : $forum;
 	$description = apply_filters( 'wpforo_forum_description', $description, $forum );
+	$description = trim( $description );
 	if( $description ) $description = $before . $description . $after;
 	if( $echo ) echo $description;
 	
@@ -2609,7 +2610,7 @@ function wpforo_topic_title( $topic, $url, $structure = '{i}{au}{t}{/a}{n}{v}', 
 		];
 		$components = apply_filters( 'wpforo_topic_title_components', $components, $topic );
 		$html       = strtr( $structure, $components );
-		$html       = apply_filters( 'wpforo_topic_title_html', $html );
+		$html       = apply_filters( 'wpforo_topic_title_html', $html, $topic, $structure, $components );
 	}
 	if( ! $echo ) return $html;
 	echo $html;
@@ -2724,50 +2725,52 @@ function wpforo_schema( $forum, $topic, $post, $type = '' ) {
                 }
             }
         </script>';
-		}
-        elseif ( wpfval( $topic, 'topicid' ) ) {
-	        $topic_posts = '';
-            $paged = WPF()->current_object['paged'];
-            $posts = WPF()->current_object['posts'];
-            $topic_post = wpforo_post( $topic['first_postid'] );
-            if ( $paged > 1  || ( $paged === 1 && count( $posts ) > 1 ) ) {
-                $topic_posts .= '"comment": [';
-                foreach ( $posts as $key => $post ) {
-                    if ( $paged === 1 && $key == 0 ) continue;
-	                $post_text = wpforo_text( stripslashes( sanitize_text_field( $post['body'] ) ), 5000, false );
-	                $post_author = wpforo_generate_scheme_author_object( $post['userid'] );
-                    $post_images = wpforo_generate_scheme_image_object( $post['body'] );
-                    if( !$post_text && !$post_images ) continue;
-                    $topic_posts .= '{
+		} elseif( wpfval( $topic, 'topicid' ) ) {
+			$topic_posts = '';
+			$paged       = WPF()->current_object['paged'];
+			$posts       = WPF()->current_object['posts'];
+			$topic_post  = wpforo_post( $topic['first_postid'] );
+			if( $paged > 1 || ( $paged === 1 && count( $posts ) > 1 ) ) {
+				$topic_posts .= '"comment": [';
+				foreach( $posts as $key => $post ) {
+					if( $paged === 1 && $key == 0 ) continue;
+					$post_text   = wpforo_text( stripslashes( sanitize_text_field( $post['body'] ) ), 5000, false );
+					$post_author = wpforo_generate_scheme_author_object( $post['userid'] );
+					$post_images = wpforo_generate_scheme_image_object( $post['body'] );
+					if( ! $post_text && ! $post_images ) continue;
+					$topic_posts .= '{
                    "@type": "Comment",
                    "text": "' . esc_attr( $post_text ) . '",' . $post_images . '
                    "datePublished": "' . gmdate( 'Y-m-d\TH:i:s\Z', strtotime( $post['created'] ) ) . '"' . $post_author . '
                  },';
-                }
-                $topic_posts = ',' . trim( $topic_posts, ',' ) . ']';
-            }
-
-	        $topic_author = wpforo_generate_scheme_author_object( $topic['userid'] );
-            $topic_images = wpforo_generate_scheme_image_object( $topic_post['body'] );
-            $schema .= '
+				}
+				$topic_posts = ',' . trim( $topic_posts, ',' ) . ']';
+			}
+			
+			$topic_author = wpforo_generate_scheme_author_object( $topic['userid'] );
+			$topic_images = wpforo_generate_scheme_image_object( $topic_post['body'] );
+			$topic_text   = wpforo_text( stripslashes( sanitize_text_field( $topic_post['body'] ) ), 5000, false );
+			if( $topic_text || $topic_images ) {
+				$schema .= '
             <script type="application/ld+json">
                 {
                   "@context": "https://schema.org",
                   "@type": "DiscussionForumPosting",
-                  "mainEntityOfPage": "' . esc_url_raw($topic['url']) . '",
+                  "mainEntityOfPage": "' . esc_url_raw( $topic['url'] ) . '",
                   "headline": "' . esc_attr( $topic_post['title'] ) . '",
-                  "text": "' . esc_attr( wpforo_text( stripslashes( sanitize_text_field( $topic_post['body'] ) ), 5000, false ) ) . '",' . $topic_images . '
-                  "url": "' . esc_url_raw($topic['url']) . '"' . $topic_author . ',
+                  "text": "' . esc_attr( $topic_text ) . '",' . $topic_images . '
+                  "url": "' . esc_url_raw( $topic['url'] ) . '"' . $topic_author . ',
                   "datePublished": "' . gmdate( 'Y-m-d\TH:i:s\Z', strtotime( $topic_post['created'] ) ) . '",
                   "interactionStatistic": {
                     "@type": "InteractionCounter",
                     "interactionType": "https://schema.org/LikeAction",
-                    "userInteractionCount": ' . intval($topic['posts']) . '
+                    "userInteractionCount": ' . intval( $topic['posts'] ) . '
                   }
                   ' . $topic_posts . '
                 }
               </script>';
-        }
+			}
+		}
 	}
 	
 	return $schema;
