@@ -15,7 +15,7 @@
 
 	foreach($posts as $key => $post) : ?>
 
-		<?php $member = wpforo_member($post); $post_url = wpforo_post($post['postid'],'url'); ?>
+  <?php $member = wpforo_member($post); $wpf_is_anon = function_exists('wpforo_is_anonymous_mask_member') ? wpforo_is_anonymous_mask_member($member) : false; $post_url = wpforo_post($post['postid'],'url'); ?>
 	  	<div id="post-<?php echo wpforo_bigintval($post['postid']) ?>" data-postid="<?php echo wpforo_bigintval($post['postid']) ?>" data-userid="<?php echo wpforo_bigintval($member['userid']) ?>" data-mention="<?php echo esc_attr( ( wpforo_setting( 'profiles', 'mention_nicknames' ) ? $member['user_nicename'] : '' ) ) ?>" data-isowner="<?php echo esc_attr( (int) (bool) wpforo_is_owner($member['userid']) ) ?>" class="post-wrap wpfn-<?php echo ($key+1); ?><?php if( $post['is_first_post'] ) echo ' wpfp-first' ?>">
           <?php wpforo_share_toggle($post_url, $post['body']); ?>
 	      <div class="wpforo-post wpfcl-1">
@@ -25,21 +25,22 @@
 	            <?php endif ?>
                 <div class="author-data">
                     <div class="author-name"><span><?php WPF()->member->show_online_indicator($member['userid']) ?></span>&nbsp;<?php wpforo_member_link($member); ?></div>
-                    <?php wpforo_member_nicename($member, '@'); ?>
+                    <?php if( empty($wpf_is_anon) ) { wpforo_member_nicename($member, '@'); } ?>
+                    <?php if( (int) wpfval($member, 'userid') ) : ?>
                     <div class="author-title"><?php wpforo_member_title($member) ?></div>
                     <?php wpforo_member_badge($member) ?>
-                    <div class="author-joined"><?php wpforo_phrase('Joined') ?>: <?php wpforo_date($member['user_registered']); ?></div>
-                    <div class="author-posts"><?php wpforo_phrase('Posts') ?>: <?php echo intval($member['posts']) ?></div>
+                    <?php endif; ?>
+                    <?php if( empty($wpf_is_anon) ): ?><div class="author-joined"><?php wpforo_phrase('Joined') ?>: <?php wpforo_date($member['user_registered']); ?></div><?php endif; ?>
+                    <?php if( empty($wpf_is_anon) ): ?><div class="author-posts"><?php wpforo_phrase('Posts') ?>: <?php echo intval($member['posts']) ?></div><?php endif; ?>
 	            </div>
                 <div class="wpf-clear"></div>
-                <div id="wpforo-memberinfo-toggle-<?php echo intval($post['postid']) ?>" class="wpforo-membertoggle" title="<?php wpforo_phrase('More') ?>">
-                	<i class="fas fa-caret-down" aria-hidden="true"></i>
-                </div>
             	<div id="wpforo-memberinfo-<?php echo intval($post['postid']) ?>" class="wpforo-memberinfo">
-                	<div class="wpf-member-profile-buttons">
+                		<?php if( (int) wpfval($member, 'userid') ) : ?>
+                		<div class="wpf-member-profile-buttons">
                         <?php WPF()->tpl->member_buttons($member) ?>
                         <?php WPF()->tpl->member_social_buttons($member) ?>
                     </div>
+                    <?php endif; ?>
                 </div>
 		        <?php do_action( 'wpforo_post_left_end', $post, $topic, $forum, 1 ); ?>
 	        </div><!-- left -->

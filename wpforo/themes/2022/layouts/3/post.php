@@ -14,7 +14,7 @@
 
 		<div class="wpforo-qa-item-wrap">
             <?php if($post['parentid'] == 0): ?>
-                <?php $member = wpforo_member($post); $post_url = wpforo_post($post['postid'],'url'); ?>
+                <?php $member = wpforo_member($post); $wpf_is_anon = function_exists('wpforo_is_anonymous_mask_member') ? wpforo_is_anonymous_mask_member($member) : false; $post_url = wpforo_post($post['postid'],'url'); ?>
                 <div id="post-<?php echo wpforo_bigintval($post['postid']) ?>" data-postid="<?php echo wpforo_bigintval($post['postid']) ?>" data-userid="<?php echo wpforo_bigintval($member['userid']) ?>" data-mention="<?php echo esc_attr( ( wpforo_setting( 'profiles', 'mention_nicknames' ) ? $member['user_nicename'] : '') ) ?>" data-isowner="<?php echo esc_attr( (int) (bool) wpforo_is_owner($member['userid']) ) ?>" class="post-wrap wpfn-<?php echo ($key+1); ?><?php if( !$post['is_first_post'] ) echo ' wpf-answer-wrap'; else echo ' wpfp-first'; ?>" <?php echo ($key == 1) ? ' style="border-top:none;" ' : ''; ?>>
                     <?php wpforo_share_toggle($post_url, $post['body']); ?>
                     <div class="wpforo-post wpfcl-1">
@@ -53,7 +53,7 @@
                                 <div class="wpforo-post-author-details">
                                     <div class="wpforo-post-author-name">
                                         <?php wpforo_member_link($member, '', 0, 'wpf-pa-name'); ?>&nbsp;<span class="wpf-pa-online"><?php WPF()->member->show_online_indicator($member['userid']) ?></span>
-                                        <?php wpforo_member_nicename($member, '@'); ?>
+                                        <?php if( empty($wpf_is_anon) ) { wpforo_member_nicename($member, '@'); } ?>
                                     </div>
                                     <div class="wpforo-post-author-data">
                                         <div>
@@ -65,10 +65,12 @@
                                         </div>
                                     </div>
                                     <div class="wpforo-post-author-stat">
-                                        <span class="author-posts"><?php echo intval($member['posts']) ?> <?php wpforo_phrase('Posts') ?></span><br />
+                                        <?php if( empty($wpf_is_anon) ): ?><span class="author-posts"><?php echo intval($member['posts']) ?> <?php wpforo_phrase('Posts') ?></span><br /><?php endif; ?>
+                                        <?php if( empty($wpf_is_anon) ): ?>
                                         <span class="author-stat-item"><i class="fas fa-question-circle wpfcl-6" title="<?php wpforo_phrase('Questions') ?>"></i><?php echo intval($member['questions']) ?></span>
                                         <span class="author-stat-item"><i class="fas fa-check-square wpfcl-5" title="<?php wpforo_phrase('Answers') ?>"></i><?php echo intval($member['answers']) ?></span>
                                         <span class="author-stat-item"><i class="fas fa-comment wpfcl-0" title="<?php wpforo_phrase('Comments') ?>"></i><?php echo intval($member['comments']) ?></span>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>

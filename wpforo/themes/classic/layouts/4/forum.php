@@ -21,7 +21,7 @@ $args        = [ 'row_count' => wpforo_setting( 'forums', 'layout_threaded_intro
 $topics      = WPF()->topic->get_topics( $args, $items_count );
 $load_more   = $items_count >= wpforo_setting( 'forums', 'layout_threaded_intro_topics_count' );
 if( ! wpforo_setting( 'forums', 'layout_threaded_display_subforums' ) ) {
-	$args   = [ 'parentid' => $cat['forumid'] ];
+	$args = [ 'parentid' => $cat['forumid'] ];
 	$childs = WPF()->forum->get_child_forums( $cat['forumid'] );
 }
 $childs = apply_filters( 'wpforo_forum_list_threaded_layout', $childs );
@@ -29,22 +29,28 @@ $childs = apply_filters( 'wpforo_forum_list_threaded_layout', $childs );
 
 <div id="wpf-cat-<?php echo $cat['forumid'] ?>" class="wpfl-4 wpforo-section">
     <div class="wpforo-category">
-        <div class="cat-title" title="<?php echo esc_attr( $cat['description'] ); ?>"><?php echo esc_html( $cat['title'] ); ?></div>
+        <div class="cat-title" title="<?php echo esc_attr( strip_tags( $cat['description'] ) ); ?>"><?php echo esc_html( $cat['title'] ); ?></div>
     </div>
     <div class="wpf-head-bar">
         <div id="wpf-buttons-<?php echo $cat['forumid'] ?>" class="wpf-head-bar-left wpf-load-threads">
-            <span class="wpf-forums"><i class="fas <?php echo( wpforo_setting( 'forums', 'layout_threaded_intro_topics_toggle' ) ? 'fa-chevron-up' : 'fa-chevron-down' ) ?>"></i> <?php wpforo_phrase( 'Forums' ) ?></span>
+            <span class="wpf-forums"><i class="fas <?php echo( wpforo_setting( 'forums', 'layout_threaded_intro_topics_toggle' ) ? 'fa-chevron-up' : 'fa-chevron-down' ) ?>"></i> <?php wpforo_phrase(
+					'Forums'
+				) ?></span>
 			<?php if( wpforo_setting( 'forums', 'layout_threaded_filter_buttons' ) ): ?>
-                <a class="wpf-threads-filter wpf-newest wpf-active" data-filter="newest" wpf-tooltip="<?php echo esc_attr( wpforo_phrase( 'Newest', false ) ) ?>" wpf-tooltip-position="top"><i class="fas fa-clock"></i></a>
-                <a class="wpf-threads-filter wpf-hottest" data-filter="hottest" wpf-tooltip="<?php echo esc_attr( wpforo_phrase( 'Popular', false ) ) ?>" wpf-tooltip-position="top"><i class="fa-solid fa-fire-flame-curved"></i></a>
-                <a class="wpf-threads-filter wpf-solved" data-filter="solved" wpf-tooltip="<?php echo esc_attr( wpforo_phrase( 'Resolved', false ) ) ?>" wpf-tooltip-position="top"><i class="fas fa-check-circle"></i></a>
-                <a class="wpf-threads-filter wpf-unsolved" data-filter="unsolved" wpf-tooltip="<?php echo esc_attr( wpforo_phrase( 'Unsolved', false ) ) ?>" wpf-tooltip-position="top"><i class="fas fa-times-circle"></i></a>
+                <a class="wpf-threads-filter wpf-newest wpf-active" data-filter="newest" wpf-tooltip="<?php echo esc_attr( wpforo_phrase( 'Newest', false ) ) ?>" wpf-tooltip-position="top"><i
+                            class="fas fa-clock"></i></a>
+                <a class="wpf-threads-filter wpf-hottest" data-filter="hottest" wpf-tooltip="<?php echo esc_attr( wpforo_phrase( 'Popular', false ) ) ?>" wpf-tooltip-position="top"><i
+                            class="fa-solid fa-fire-flame-curved"></i></a>
+                <a class="wpf-threads-filter wpf-solved" data-filter="solved" wpf-tooltip="<?php echo esc_attr( wpforo_phrase( 'Resolved', false ) ) ?>" wpf-tooltip-position="top"><i
+                            class="fas fa-check-circle"></i></a>
+                <a class="wpf-threads-filter wpf-unsolved" data-filter="unsolved" wpf-tooltip="<?php echo esc_attr( wpforo_phrase( 'Unsolved', false ) ) ?>" wpf-tooltip-position="top"><i
+                            class="fas fa-times-circle"></i></a>
 			<?php endif; ?>
         </div>
 		<?php wpforo_template_add_topic_button( $cat['forumid'] ); ?>
         <div class="wpf-clear"></div>
     </div>
-
+	
 	<?php wpforo_template_topic_portable_form( $cat['forumid'] ); ?>
 
     <div id="wpf-forums-<?php echo $cat['forumid'] ?>" class="wpf-cat-forums" style="display: <?php echo( wpforo_setting( 'forums', 'layout_threaded_intro_topics_toggle' ) ? 'block' : 'none' ) ?>;">
@@ -57,11 +63,15 @@ $childs = apply_filters( 'wpforo_forum_list_threaded_layout', $childs );
                         <span class="wpf-circle wpf-s" style="border: 1px dashed <?php echo $forum['color'] ?>; color: <?php echo $forum['color'] ?>; display: inline-flex;">
                             <i class="<?php echo $forum['icon'] ?>"></i>
                         </span>
-						<?php $forum_description = ( wpfval( $forum, 'description' ) ) ? 'wpf-tooltip="' . esc_attr( strip_tags( (string) $forum['description'] ) ) . '"  wpf-tooltip-size="long"' : ''; ?>
+						<?php $forum_description = ( wpfval( $forum, 'description' ) ) ? 'wpf-tooltip="' . esc_attr(
+								strip_tags( (string) $forum['description'] )
+							) . '"  wpf-tooltip-size="long"' : ''; ?>
                         <a href="<?php echo esc_url( (string) $forum['url'] ); ?>" <?php echo $forum_description ?>>
 							<?php echo esc_html( $forum['title'] ); ?>
                         </a>
-                        <span class="wpf-forum-item-stat">&nbsp;<?php echo '<span wpf-tooltip="' . esc_attr( wpforo_phrase( 'Threads', false ) ) . '">' . wpforo_print_number( $forum['topics'] ) . '</span> <sep>/</sep> <span wpf-tooltip="' . esc_attr( wpforo_phrase( 'Posts', false ) ) . '">' . wpforo_print_number( $forum['posts'] ) . '</span>' ?></span>
+                        <span class="wpf-forum-item-stat">&nbsp;<?php echo '<span wpf-tooltip="' . esc_attr( wpforo_phrase( 'Threads', false ) ) . '">' . wpforo_print_number(
+									$forum['topics']
+								) . '</span> <sep>/</sep> <span wpf-tooltip="' . esc_attr( wpforo_phrase( 'Posts', false ) ) . '">' . wpforo_print_number( $forum['posts'] ) . '</span>' ?></span>
                     </div>
 				<?php endforeach; ?>
 			<?php else: ?>

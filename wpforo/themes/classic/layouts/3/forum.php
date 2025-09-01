@@ -15,32 +15,34 @@ if( ! defined( 'ABSPATH' ) ) exit;
 
 <div class="wpfl-3 wpforo-section">
     <div class="wpforo-category">
-        <div class="cat-title" title="<?php echo esc_attr( $cat['description'] ); ?>"><?php echo esc_html( $cat['title'] ); ?></div>
+        <div class="cat-title" title="<?php echo esc_attr( strip_tags( $cat['description'] ) ); ?>"><?php echo esc_html( $cat['title'] ); ?></div>
         <div class="cat-stat-posts"><?php wpforo_phrase( 'Posts' ) ?></div>
         <div class="cat-stat-answers"><?php wpforo_phrase( 'Answers' ) ?></div>
         <div class="cat-stat-questions"><?php wpforo_phrase( 'Questions' ) ?></div>
         <br class="wpf-clear"/>
     </div>
-
+	
 	<?php
-    $forum_list = false;
-    foreach( $forums as $key => $forum ) :
+	$forum_list = false;
+	foreach( $forums as $key => $forum ) :
 		if( ! WPF()->perm->forum_can( 'vf', $forum['forumid'] ) ) continue;
-
-        $forum_list = true;
-
+		
+		$forum_list = true;
+		
 		$sub_forums     = WPF()->forum->get_forums( [ "parentid" => $forum['forumid'], "type" => 'forum' ] );
 		$has_sub_forums = is_array( $sub_forums ) && ! empty( $sub_forums );
-
-		$topics     = WPF()->topic->get_topics( [ "forumid" => $forum['forumid'], "orderby" => "type, modified", "order" => "DESC", "row_count" => wpforo_setting( 'forums', 'layout_qa_intro_topics_count' ) ] );
+		
+		$topics     = WPF()->topic->get_topics(
+			[ "forumid" => $forum['forumid'], "orderby" => "type, modified", "order" => "DESC", "row_count" => wpforo_setting( 'forums', 'layout_qa_intro_topics_count' ) ]
+		);
 		$has_topics = is_array( $topics ) && ! empty( $topics );
-
+		
 		$data   = wpforo_forum( $forum['forumid'], 'childs' );
 		$counts = wpforo_forum( $forum['forumid'], 'counts' );
-
+		
 		$forum_url    = wpforo_forum( $forum['forumid'], 'url' );
 		$topic_toglle = wpforo_setting( 'forums', 'layout_qa_intro_topics_toggle' );
-
+		
 		if( ! empty( $forum['icon'] ) ) {
 			$forum['icon'] = trim( (string) $forum['icon'] );
 			if( strpos( $forum['icon'], ' ' ) === false ) $forum['icon'] = 'fas ' . $forum['icon'];
@@ -54,13 +56,13 @@ if( ! defined( 'ABSPATH' ) ) exit;
                 <div class="wpforo-forum-info">
                     <h3 class="wpforo-forum-title"><a href="<?php echo esc_url( (string) $forum_url ) ?>"><?php echo esc_html( $forum['title'] ); ?></a> <?php wpforo_viewing( $forum ); ?></h3>
                     <div class="wpforo-forum-description"><?php echo $forum['description'] ?></div>
-
+					
 					<?php if( $has_sub_forums ) : ?>
 
                         <div class="wpforo-subforum">
                             <ul>
                                 <li class="first"><?php wpforo_phrase( 'Subforums' ) ?>:</li>
-
+								
 								<?php foreach( $sub_forums as $sub_forum ) :
 									if( ! WPF()->perm->forum_can( 'vf', $sub_forum['forumid'] ) ) continue;
 									if( ! empty( $sub_forum['icon'] ) ) {
@@ -69,23 +71,27 @@ if( ! defined( 'ABSPATH' ) ) exit;
 									}
 									$sub_forum_icon = ( isset( $sub_forum['icon'] ) && $sub_forum['icon'] ) ? $sub_forum['icon'] : 'fas fa-comments'; ?>
 
-                                    <li class="<?php wpforo_unread( $sub_forum['forumid'], 'forum' ) ?>"><i class="<?php echo esc_attr( $sub_forum_icon ) ?> wpfcl-0"></i>&nbsp;<a href="<?php echo esc_url( (string) wpforo_forum( $sub_forum['forumid'], 'url' ) ) ?>"><?php echo esc_html( $sub_forum['title'] ); ?></a> <?php wpforo_viewing( $sub_forum ); ?></li>
-
+                                    <li class="<?php wpforo_unread( $sub_forum['forumid'], 'forum' ) ?>"><i class="<?php echo esc_attr( $sub_forum_icon ) ?> wpfcl-0"></i>&nbsp;<a
+                                                href="<?php echo esc_url( (string) wpforo_forum( $sub_forum['forumid'], 'url' ) ) ?>"><?php echo esc_html(
+												$sub_forum['title']
+											); ?></a> <?php wpforo_viewing( $sub_forum ); ?></li>
+								
 								<?php endforeach; ?>
 
                             </ul>
                             <br class="wpf-clear"/>
                         </div><!-- wpforo-subforum -->
-
+					
 					<?php endif; ?>
-
+					
 					<?php if( $has_topics ) : ?>
 
                         <div class="wpforo-forum-footer">
                             <span class="wpfcl-5"><?php wpforo_phrase( 'Recent Questions' ) ?></span> &nbsp;
-                            <i id="img-arrow-<?php echo intval( $forum['forumid'] ) ?>" class="topictoggle fas fa-chevron-<?php echo( $topic_toglle == 1 ? 'up' : 'down' ); ?>" style="color: rgb(67, 166, 223);font-size: 14px; cursor: pointer;"></i> &nbsp;&nbsp;
+                            <i id="img-arrow-<?php echo intval( $forum['forumid'] ) ?>" class="topictoggle fas fa-chevron-<?php echo( $topic_toglle == 1 ? 'up' : 'down' ); ?>"
+                               style="color: rgb(67, 166, 223);font-size: 14px; cursor: pointer;"></i> &nbsp;&nbsp;
                         </div>
-
+					
 					<?php endif ?>
 
                 </div><!-- wpforo-forum-info -->
@@ -94,8 +100,8 @@ if( ! defined( 'ABSPATH' ) ) exit;
                 <div class="wpforo-forum-stat-answers"><?php echo wpforo_print_number( WPF()->topic->get_sum_answer( $data ) ) ?></div>
                 <div class="wpforo-forum-stat-posts"><?php echo wpforo_print_number( $counts['posts'] ) ?></div>
             </div><!-- wpforo-forum -->
-
-
+			
+			
 			<?php if( $has_topics ) : ?>
 
                 <div class="wpforo-last-topics-<?php echo intval( $forum['forumid'] ) ?>" style="display: <?php echo( $topic_toglle ? 'block' : 'none' ); ?>;">
@@ -135,7 +141,8 @@ if( ! defined( 'ABSPATH' ) ) exit;
 							<?php if( intval( $forum['topics'] ) > wpforo_setting( 'forums', 'layout_qa_intro_topics_count' ) ): ?>
                                 <li>
                                     <div class="wpforo-last-topic-title wpf-vat">
-                                        <a href="<?php echo esc_url( (string) $forum_url ) ?>"><?php wpforo_phrase( 'view all questions', true, 'lower' ); ?> <i class="fas fa-angle-right" aria-hidden="true"></i></a>
+                                        <a href="<?php echo esc_url( (string) $forum_url ) ?>"><?php wpforo_phrase( 'view all questions', true, 'lower' ); ?> <i class="fas fa-angle-right"
+                                                                                                                                                                 aria-hidden="true"></i></a>
                                     </div>
                                 </li>
 							<?php endif ?>
@@ -143,16 +150,16 @@ if( ! defined( 'ABSPATH' ) ) exit;
                     </div><!-- wpforo-last-topics-list -->
                     <br class="wpf-clear"/>
                 </div><!-- wpforo-last-topics -->
-
+			
 			<?php endif; ?>
 
         </div><!-- forum-wrap -->
-
+		
 		<?php do_action( 'wpforo_loop_hook', $key ) ?>
-
+	
 	<?php endforeach; ?> <!-- $forums as $forum -->
-
-	<?php if( !$forum_list ): ?>
+	
+	<?php if( ! $forum_list ): ?>
 		<?php do_action( 'wpforo_forum_loop_no_forums', $cat ); ?>
 	<?php endif; ?>
 

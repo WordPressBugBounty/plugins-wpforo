@@ -20,17 +20,17 @@ $members = WPF()->current_object['members'];
                 </tr>
 				<?php if( ! empty( $members ) ) : ?>
 					<?php $bg = false;
-					foreach( $members as $member ) : ?>
+					foreach( $members as $member ) : $wpf_is_anon = function_exists('wpforo_is_anonymous_mask_member') ? wpforo_is_anonymous_mask_member($member) : false; ?>
                         <tr<?php echo( $bg ? ' style="background:#F7F7F7"' : '' ) ?>>
 							<?php if( WPF()->usergroup->can( 'va' ) && wpforo_setting( 'profiles', 'avatars' ) ): ?>
                                 <td class="wpf-members-avatar"><?php echo wpforo_user_avatar( $member ); ?></td>
 							<?php endif; ?>
                             <td class="wpf-members-info">
                                 <span style="font-size:16px;"><?php WPF()->member->show_online_indicator( $member['userid'] ) ?>&nbsp;</span>
-								<?php wpforo_member_link( $member, '', 50, ' wpf-member-name ' ); ?> <?php wpforo_member_nicename( $member, '@' ); ?>
+ 							<?php wpforo_member_link( $member, '', 50, ' wpf-member-name ' ); ?> <?php if( empty($wpf_is_anon) ) { wpforo_member_nicename( $member, '@' ); } ?>
 								<?php do_action( 'wpforo_after_member_badge', $member ) ?><br>
 								<?php $enabled_for_usergroup = in_array( $member['groupid'], wpforo_setting( 'rating', 'rating_badge_ug' ), true ); ?>
-                                <span class="wpf-member-info wpfcl-1"> <i class="fas fa-users" title="<?php wpforo_phrase( 'Usergroup' ) ?>"></i>&nbsp; <?php wpforo_phrase( $member['group_name'] ) ?> | <?php if( wpforo_setting( 'rating', 'rating' ) && $enabled_for_usergroup ): ?><i class="fas fa-star" title="<?php wpforo_phrase( 'Rating' ) ?>"></i>&nbsp;<?php echo $member['rating']['level'] ?>/10  |<?php endif; ?> <?php wpforo_phrase( 'Posts' ) ?>: <?php echo intval( $member['posts'] ) ?></span> |
+                        								<span class="wpf-member-info wpfcl-1"> <i class="fas fa-users" title="<?php wpforo_phrase( 'Usergroup' ) ?>"></i>&nbsp; <?php wpforo_phrase( $member['group_name'] ) ?> | <?php if( wpforo_setting( 'rating', 'rating' ) && $enabled_for_usergroup ): ?><i class="fas fa-star" title="<?php wpforo_phrase( 'Rating' ) ?>"></i>&nbsp;<?php echo $member['rating']['level'] ?>/10  |<?php endif; ?> <?php if( empty($wpf_is_anon) ): ?><?php wpforo_phrase( 'Posts' ) ?>: <?php echo intval( $member['posts'] ) ?><?php endif; ?></span> |
                                 <div class="wpf-member-profile-buttons" style="display:inline-block;">
 									<?php wpforo_member_buttons( $member ) ?>
                                 </div>

@@ -24,7 +24,7 @@ function wpforo_classic_reply_form_head( $string, $args ) {
 	if( $args['layout'] === 3 && WPF()->tpl->layout_exists( 3 ) ) {
 		$string = wpforo_phrase( 'Your Answer', false, 'default' );
 	}
-	
+
 	return $string;
 }
 
@@ -35,7 +35,7 @@ function wpforo_forum_layout_editors( $settings, $editor ) {
 		$settings['tinymce']['toolbar1'] = 'fontsizeselect,bold,italic,underline,forecolor,bullist,numlist,alignleft,aligncenter,alignright,link,unlink,blockquote,pre,wpf_spoil,pastetext,source_code,emoticons';
 		$settings['editor_height']       = 100;
 	}
-	
+
 	return $settings;
 }
 
@@ -49,7 +49,7 @@ function wpforo_get_topic_overview_chunk( $topicid, $row_count = 5, $offset = 0 
 		$posts                                       = WPF()->post->get_posts( [ 'root' => $root['postid'] ] );
 		foreach( $posts as $post ) $tree[ wpforo_bigintval( $post['postid'] ) ] = wpforo_bigintval( $post['parentid'] );
 	}
-	
+
 	return [ 'html' => ( $tree ? wpforo_thread_tree( 0, $tree ) : '' ), 'roots_count' => intval( $roots_count ), 'nomore' => ! ( $roots_count > ( $offset + $row_count ) ) ];
 }
 
@@ -128,7 +128,7 @@ function wpforo_topic_active_participants( $topicid ) {
 			);
 		}
 	}
-	
+
 	return sprintf(
 		'<div class="wpf-tmi wpf-tmi-users"><h3>%1$s</h3><div class="wpf-tmi-users-data">%2$s</div></div>',
 		wpforo_phrase( 'Active Participants', false ),
@@ -140,7 +140,7 @@ function wpforo_topic_overview( $topicid ) {
 	if( ! ( $first_postid = wpforo_bigintval( wpforo_topic( $topicid, 'first_postid' ) ) ) ) return '';
 	$chunk_size = apply_filters( 'wpforo_topic_overview_chunk_size', 5 );
 	$chunk      = wpforo_get_topic_overview_chunk( $topicid, $chunk_size );
-	
+
 	return sprintf(
 		'<div class="wpf-tmi wpf-tmi-overview">
             <h3>%1$s</h3>
@@ -198,7 +198,7 @@ function wpforo_thread_tree( $root, $tree, $level = 1 ) {
 		}
 		$html .= '</ul>';
 	}
-	
+
 	return $html;
 }
 
@@ -207,9 +207,9 @@ function wpforo_thread_tree_item( $postid, $level, $post = [], $member = [] ) {
 	if( $level < 0 ) $level = 0;
 	$repeate = $level - 1;
 	if( $repeate < 0 ) $repeate = 0;
-	if( empty( $post ) ) $post = wpforo_post( $postid );
-	if( empty( $member ) ) $member = wpforo_member( $post['userid'] );
-	
+	if( empty( $post ) ) if( ! $post = wpforo_post( $postid ) ) return '';
+	if( empty( $member ) ) $member = wpforo_member( $post );
+
 	return '<li><div class="wpf-tmi-item">' . ( $level > 0 ? '<span class="wpf-tmi-boxh"> &boxur; &boxh;</span>' : '' ) . str_repeat(
 			'<span class="wpf-tmi-boxh"> &boxhu; &boxh;</span>',
 			$repeate

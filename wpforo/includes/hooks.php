@@ -33,8 +33,8 @@ add_action( 'show_admin_bar', function( $show_admin_bar ) {
 			(array) WPF()->wp_current_user->roles
 		) ) {
 		$show_admin_bar = (bool) array_intersect(
-			WPF()->current_user_groupids,
-			wpforo_setting( 'general', 'admin_bar' )
+			(array) WPF()->current_user_groupids,
+			(array) wpforo_setting( 'general', 'admin_bar' )
 		);
 	}
 	
@@ -1123,6 +1123,7 @@ function wpforo_topic_portable_form() {
 		WPF()->form->current['varname'] = 'thread';
 		ob_start();
 		WPF()->tpl->topic_form( $forumid );
+		do_action( 'wpforo_topic_portable_form_extra_html', $forumid );
 		$html = trim( (string) ob_get_clean() );
 	}
 	if( $html ) {

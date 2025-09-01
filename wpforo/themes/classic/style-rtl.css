@@ -138,6 +138,9 @@ RTL Style of Classic Theme
 #wpforo #wpforo-wrap a:hover{text-decoration: none;}
 #wpforo #wpforo-wrap a:active {text-decoration: none;}
 #wpforo #wpforo-wrap a{direction: rtl; unicode-bidi: embed; border:none; cursor: pointer;}
+/* Disable hover effect for guest display-name links (RTL) */
+#wpforo #wpforo-wrap a.is_guest { pointer-events: auto; cursor: text !important; }
+#wpforo #wpforo-wrap a.is_guest:hover { text-decoration: none; color: inherit; }
 
 #wpforo #wpforo-wrap .wpflink { cursor: pointer}
 

@@ -1965,6 +1965,13 @@ class Actions {
 		}
 	}
 	
+	/**
+	 * Handle frontend user delete action
+	 *
+	 * Fires two hooks:
+	 * - wpforo_before_front_delete_user: before the user is deleted, passes the current user array
+	 * - wpforo_after_front_delete_user: after the user is deleted, passes the (previous) user array
+	 */
 	public function user_delete() {
 		wpforo_verify_nonce( 'user_delete', 'full' );
 		if( WPF()->current_object['user'] && ( $action = WPF()->member->get_action(
@@ -1976,6 +1983,8 @@ class Actions {
 			
 			if( $pwd = wpfval( $_GET, 'pwd' ) ) {
 				if( wp_check_password( $pwd, WPF()->current_user['user_pass'], WPF()->current_user['userid'] ) ) {
+					// Fire an action before the frontend user deletion happens so integrators can capture user data
+					do_action( 'wpforo_before_front_delete_user', WPF()->current_object['user'] );
 					if( ! function_exists( 'wp_delete_user' ) ) require_once ABSPATH . "wp-admin/includes/user.php";
 					if( wp_delete_user( WPF()->current_object['user']['userid'] ) ) {
 						

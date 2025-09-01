@@ -312,16 +312,16 @@ class Posts {
 		if( false !== WPF()->db->update(
 				WPF()->tables->posts,
 				[
-				'title'    => $title,
-				'body'     => $body,
-				'modified' => current_time(
-					'mysql',
-					1
-				),
-				'status'   => $status,
-				'name'     => $name,
-				'email'    => $email,
-			],
+					'title'    => $title,
+					'body'     => $body,
+					'modified' => current_time(
+						'mysql',
+						1
+					),
+					'status'   => $status,
+					'name'     => $name,
+					'email'    => $email,
+				],
 				[ 'postid' => $postid ],
 				[ '%s', '%s', '%s', '%d', '%s', '%s' ], [ '%d' ]
 			) ) {
@@ -2209,12 +2209,14 @@ class Posts {
 		$sql = WPF()->db->prepare( $sql, $topicid );
 		if( $limit = intval( $limit ) ) $sql .= " LIMIT $limit";
 		
-		return array_map( function( $row ) {
+		$users_stats_for_topic = array_map( function( $row ) {
 			$row['userid'] = wpforo_bigintval( $row['userid'] );
 			$row['posts']  = intval( $row['posts'] );
 			
 			return $row;
 		}, (array) WPF()->db->get_results( $sql, ARRAY_A ) );
+		
+		return apply_filters( 'wpforo_get_users_stats_for_topic', $users_stats_for_topic, $topicid, $limit );
 	}
 	
 	public function get_first_level_replies( $topicid, $row_count = 0, $offset = 0 ) {

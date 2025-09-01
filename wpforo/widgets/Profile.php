@@ -56,7 +56,7 @@ class Profile extends WP_Widget {
                                 <div class="wpf-prof-name">
 									<?php WPF()->member->show_online_indicator( $member['userid'] ) ?>
 									<?php echo wpfval( $member, 'display_name' ) ? esc_html( $member['display_name'] ) : esc_html( urldecode( (string) $member['nicename'] ) ) ?>
-									<?php wpforo_member_nicename( $member, '@' ); ?>
+									<?php if( function_exists('wpforo_is_anonymous_mask_member') && ! wpforo_is_anonymous_mask_member($member) ) { wpforo_member_nicename( $member, '@' ); } ?>
                                 </div>
                             </div>
 						<?php endif; ?>

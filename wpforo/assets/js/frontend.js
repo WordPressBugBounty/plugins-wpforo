@@ -731,14 +731,17 @@ $wpf(document).ready(function ($) {
 	
 	wpforo_wrap.on('click', '#add_wpftopic:not(.not_reg_user)', function () {
 		var form = $('.wpf-topic-create');
-		var stat = form.is(':hidden');
-		form.slideToggle('slow');
-		wpforo_editor.set_content('');
-		$('[name="thread[title]"]').trigger('focus');
-		var add_wpftopic = '<i class="fas fa-times" aria-hidden="true"></i>';
-		if (!stat) add_wpftopic = $('input[type="submit"]', form).val();
-		$(this).html(add_wpftopic);
-		$('html').scrollTop(($(this).offset().top - 35));
+		$(this).attr('disabled', 'disabled');
+		form.slideToggle('slow', () => {
+			var stat = form.is(':hidden');
+			if (!window.add_wpftopic_phrase) window.add_wpftopic_phrase = $(this).html();
+			var add_wpftopic = (stat ? window.add_wpftopic_phrase : '<i class="fas fa-times" aria-hidden="true"></i>');
+			$(this).html(add_wpftopic);
+			wpforo_editor.set_content('');
+			$('[name="thread[title]"]').trigger('focus');
+			$('html').scrollTop(($(this).offset().top - 35));
+			$(this).removeAttr('disabled');
+		});
 	});
 	
 	wpforo_wrap.on('click', '.wpf-answer-button .wpf-button:not(.not_reg_user)', function () {

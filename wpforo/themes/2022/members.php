@@ -12,7 +12,7 @@ $members = WPF()->current_object['members'];
         <div class="wpforo-members">
 
             <?php if( ! empty( $members ) ) : ?>
-                <?php foreach( $members as $member ) : ?>
+                <?php foreach( $members as $member ) : $wpf_is_anon = function_exists('wpforo_is_anonymous_mask_member') ? wpforo_is_anonymous_mask_member($member) : false; ?>
 
                 <div class="wpforo-member">
                     <div class="wpforo-member-bg wpfbg-9" <?php wpforo_profile_head_attrs( $member ) ?>>&nbsp;</div>
@@ -40,13 +40,15 @@ $members = WPF()->current_object['members'];
                         <div class="wpforo-member-info-after-reputation">
                             <?php do_action( 'wpforo_after_member_reputation', $member ) ?>
                         </div>
+                        <?php if( empty($wpf_is_anon) ): ?>
                         <div class="wpforo-member-joined">
                             <?php wpforo_phrase('Joined:') ?> <?php wpforo_date( $member['user_registered'], 'date' ) ?>
                         </div>
+                        <?php endif; ?>
                         <div class="wpforo-member-stat">
                             <span class="wpfm-sb"><?php wpforo_phrase('Topics') ?>: <?php echo intval($member['topics']) ?></span>
                              &nbsp;
-                            <span class="wpfm-sb"><?php wpforo_phrase('Posts') ?>: <?php echo intval($member['posts']) ?></span>
+                            <?php if( empty($wpf_is_anon) ): ?><span class="wpfm-sb"><?php wpforo_phrase('Posts') ?>: <?php echo intval($member['posts']) ?></span><?php endif; ?>
                         </div>
                         <div class="wpforo-member-social">
                             <?php if( wpfval($member, 'fields') ): ?>

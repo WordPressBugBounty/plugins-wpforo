@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.1
 Tested up to: 6.8
-Stable tag: 2.4.6
+Stable tag: 2.4.7
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -179,10 +179,19 @@ IMPORTANT NOTES for UPDATE
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
 
-= wpForo Forum 2.4.0 - 2.4.6 | 06.07.2025 =
+= wpForo Forum 2.4.0 - 2.4.7 | 08.29.2025 =
 
 [wpForo Forum v2.4 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-2-4-is-released/)
 
+* Version 2.4.7
+* Removed: Unnecessary profile buttons of guest posters
+* Removed: HTML tags from category description
+* Security: Fixed IDOR vulnerability, Insecure Direct Object References
+* Addon Support: The rich editor is modified to allow aligning (left,right,center) gif and inline attachment objects
+* Addon Support: Supports displaying voters on poll result
+* Fixed Bug: PHP Error on the activation process of a user registration. Fatal error: Uncaught TypeError: array_intersect(): Argument #1 ($array) must be of type array, null given in /wp-content/plugins/wpforo/includes/hooks.php:37
+* Fixed Bug: Missing user information in the admin email when user deletes own account
+* ---------
 * Version 2.4.6
 * Security: Fixed XSS vulnerability, Stored Cross-Site Scripting
 * Updated: Hooks to manage the email sending test and error report in the tools

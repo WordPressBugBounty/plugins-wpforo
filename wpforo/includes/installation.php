@@ -6,67 +6,67 @@ function wpforo_activation() {
 	#################################################################
 	// Create wpForo Tables /////////////////////////////////////////
 	wpforo_create_tables();
-	
+
 	#################################################################
 	// Alter wpForo Tables //////////////////////////////////////////
 	wpforo_alter_tables();
-	
+
 	#################################################################
 	// Permalink Settings ///////////////////////////////////////////
 	wpforo_fix_wp_permalink_structure();
-	
+
 	#################################################################
 	// Access Sets //////////////////////////////////////////////////
 	wpforo_import_default_accesses();
-	
+
 	#################################################################
 	// fix already installed options ////////////////////////////////
 	wpforo_fix_installed_options();
-	
+
 	#################################################################
 	// synchronize users ////////////////////////////////////////////
 	WPF()->member->synchronize_users( 100 );
 	WPF()->member->init_current_user();
 	WPF()->member->clear_db_cache();
-	
+
 	#################################################################
 	// Importing Language Packs and Phrases /////////////////////////
 	WPF()->phrase->xml_import( 'english.xml' );
 	WPF()->phrase->clear_cache();
-	
+
 	#################################################################
 	// Creating Forum Page //////////////////////////////////////////
 	wpforo_create_forum_page();
-	
+
 	#################################################################
 	// Forum Navigation and Menu ////////////////////////////////////
 	wpforo_import_default_menus();
-	
+
 	#################################################################
 	// Boards ////////////////////////////////////////////////////
 	wpforo_import_default_board();
-	
+
 	#################################################################
 	// Usergroup ////////////////////////////////////////////////////
 	wpforo_import_default_usergroups();
-	
+
 	#################################################################
 	// Forums ////////////////////////////////////////////////////
 	wpforo_import_default_forums();
-	
+
 	#################################################################
 	// UPDATE THEME OPTIONS  ////////////////////////////////////////
 	wpforo_update_theme_options();
-	
+
 	#################################################################
 	// wpForo Upgrade ///////////////////////////////
 	wpforo_upgrade();
-	
+
 	#################################################################
 	// UPDATE VERSION - END /////////////////////////////////////////
 	wpforo_update_option( 'version', WPFORO_VERSION );
 	WPF()->notice->clear();
-	
+
 	#################################################################
 	// DELETE ALL CAHCES /////////////////////////////////////////
 	wpforo_clean_cache();
@@ -100,14 +100,14 @@ function wpforo_alter_tables() {
 	if( ! wpforo_db_check( [ 'table' => WPF()->tables->languages, 'col' => 'status', 'check' => 'col_exists' ] ) ) {
 		@WPF()->db->query( "ALTER TABLE `" . WPF()->tables->languages . "` ADD COLUMN `status` TINYINT(1) NOT NULL DEFAULT 1" );
 	}
-	
+
 	#################################################################
 	// ADD `package` field in `phrases` TABLE //////////////////////////////////////////////
 	if( ! wpforo_db_check( [ 'table' => WPF()->tables->phrases, 'col' => 'package', 'check' => 'col_exists' ] ) ) {
 		@WPF()->db->query( "ALTER TABLE `" . WPF()->tables->phrases . "` ADD `package` VARCHAR(255) NOT NULL DEFAULT 'wpforo'" );
 	}
 	//	WPF()->phrase->clear_cache();
-	
+
 	#################################################################
 	// ADD `private` field in TOPIC TABLE  ///////////////////////////
 	if( ! wpforo_db_check( [ 'table' => WPF()->tables->topics, 'col' => 'private', 'check' => 'col_exists' ] ) ) {
@@ -281,7 +281,7 @@ function wpforo_alter_tables() {
 		    ADD COLUMN `cover_height` INT(4) UNSIGNED NOT NULL DEFAULT 150"
 		);
 	}
-	
+
 	#################################################################
 	//rename column from cat_layout to layout in forums table ////////////
 	if( wpforo_db_check( [ 'table' => WPF()->tables->forums, 'col' => 'cat_layout', 'check' => 'col_exists' ] ) ) {
@@ -316,14 +316,14 @@ function wpforo_alter_tables() {
 	if( ! wpforo_db_check( [ 'table' => WPF()->tables->activity, 'col' => 'new', 'check' => 'col_exists' ] ) ) {
 		@WPF()->db->query( "ALTER TABLE `" . WPF()->tables->activity . "` ADD `new` TINYINT NOT NULL DEFAULT '0' AFTER `permalink`, ADD KEY `itemtype_userid_new` (`itemtype`, `userid`, `new`)" );
 	}
-	
+
 	#################################################################
 	// Change `last_userid` type in forums TABLE  ///////////////////
 	if( strtolower( (string) wpforo_db_check( [ 'table' => WPF()->tables->forums, 'col' => 'last_userid', 'check' => 'col_type' ] ) ) !== 'varchar(255)' ) {
 		@WPF()->db->query( "ALTER TABLE `" . WPF()->tables->forums . "` CHANGE `last_userid` `last_userid` VARCHAR(255) NOT NULL" );
 		@WPF()->db->query( "ALTER TABLE `" . WPF()->tables->forums . "` ADD KEY `last_userid` (`last_userid`(191));" );
 	}
-	
+
 	################################################################
 	// likes and votes Table to new reactions table ////////////////
 	if( wpforo_db_check( [ 'table' => wpforo_fix_table_name( 'votes' ), 'check' => 'table_exists' ] ) ) {
@@ -335,7 +335,7 @@ function wpforo_alter_tables() {
 		$sql = "DROP TABLE `" . wpforo_fix_table_name( 'votes' ) . "`";
 		WPF()->db->query( $sql );
 	}
-	
+
 	if( wpforo_db_check( [ 'table' => wpforo_fix_table_name( 'likes' ), 'check' => 'table_exists' ] ) ) {
 		$sql = "INSERT IGNORE INTO `" . WPF()->tables->reactions . "` (
 			SELECT NULL, `userid`, `postid`, `post_userid`, 1, 'up', NULL, NULL
@@ -345,11 +345,11 @@ function wpforo_alter_tables() {
 		$sql = "DROP TABLE `" . wpforo_fix_table_name( 'likes' ) . "`";
 		WPF()->db->query( $sql );
 	}
-	
+
 	if( ! wpforo_db_check( [ 'table' => WPF()->tables->reactions, 'col' => 'performance', 'check' => 'key_exists' ] ) ) {
 		@WPF()->db->query( "ALTER TABLE `" . WPF()->tables->reactions . "` ADD KEY `performance` (`postid`,`post_userid`,`type`)" );
 	}
-	
+
 	################################################################
 	// profiles table fields fixing ////////////////////////////////
 	if( wpforo_db_check( [ 'table' => WPF()->tables->profiles, 'col' => 'facebook', 'check' => 'col_exists' ] ) ) {
@@ -375,7 +375,7 @@ function wpforo_alter_tables() {
 				);
 			}
 		}
-		
+
 		@WPF()->db->query(
 			"ALTER TABLE `" . WPF()->tables->profiles . "`
 			DROP COLUMN `username`,
@@ -404,18 +404,18 @@ function wpforo_alter_tables() {
 			ADD COLUMN `is_mention_muted` TINYINT(1) NOT NULL DEFAULT 0 AFTER `is_email_confirmed`"
 		);
 	}
-	
+
 	WPF()->db->query( "TRUNCATE TABLE `" . WPF()->tables->visits . "`" );
 }
 
 function wpforo_board_repair( $boardid ) {
 	if( ! wpforo_is_admin() ) return;
 	if( ! current_user_can( 'activate_plugins' ) ) return;
-	
+
 	WPF()->change_board( $boardid );
-	
+
 	wpforo_activation();
-	
+
 	foreach( wpforo_get_addons_info() as $key => $addon ) {
 		if( ( $addon['base'] || wpforo_is_module_enabled( $key ) ) && is_callable( wpfval( $addon, 'install_func' ) ) ) {
 			call_user_func( $addon['install_func'] );
@@ -426,18 +426,18 @@ function wpforo_board_repair( $boardid ) {
 function wpforo_board_uninstall( $boardid ) {
 	if( ! wpforo_is_admin() ) return;
 	if( ! current_user_can( 'activate_plugins' ) ) return;
-	
+
 	WPF()->change_board( $boardid );
 	WPF()->board->delete( $boardid );
 	foreach( WPF()->_tables as $table ) WPF()->db->query( "DROP TABLE IF EXISTS `" . wpforo_fix_table_name( $table ) . "`" );
-	
+
 	WPF()->db->query(
 		"DELETE FROM `" . WPF()->db->options . "`
         WHERE `option_name` LIKE 'widget_wpforo_widget_%'
         OR `option_name` REGEXP '^" . wpforo_prefix() . "'"
 	);
 	WPF()->db->query( "DELETE FROM `" . WPF()->db->usermeta . "` WHERE `meta_key` REGEXP '^" . wpforo_prefix() . "'" );
-	
+
 	wpforo_remove_directory( WPF()->folders['upload']['dir'] );
 }
 
@@ -514,7 +514,7 @@ function wpforo_cache_information() {
 		           'Please exclude the forum page from your cache plugin! wpForo has a built-in cache system. It does dynamic cache of all forum pages, which will be affected by your cache plugin and the forum data will not be updated on the front-end. The user login and logout actions will also be corrupted.',
 		           'wpforo'
 	           ) . '<br />' . implode( '<br>', $plugin_steps );
-	
+
 	echo '<div class="' . $class . '" style="padding:15px 20px;"><h2 style="margin:0;">' . esc_html(
 			$header
 		) . ' </h2><p style="font-size:15px;margin:10px 0;">' . $message . '</p><hr /><p style="margin:0;color:#dd0000; font-size:14px;">' . $note . '</p><p style="margin:0;font-size:12px;">' . $info . '</p></div>';
@@ -528,7 +528,7 @@ function wpforo_get_shortcode_pageid( $exclude = [] ) {
         AND `post_status` LIKE 'publish'
         AND `post_type` IN('" . implode( "','", wpforo_get_blog_content_types() ) . "')";
 	if( $exclude ) $sql .= " AND `ID` NOT IN(" . implode( ',', $exclude ) . ")";
-	
+
 	return WPF()->db->get_var( $sql );
 }
 
@@ -563,7 +563,7 @@ function wpforo_create_forum_page() {
 			wpforo_update_option( 'wpforo_pageid', $page_id );
 		}
 	}
-	
+
 	flush_rewrite_rules( false );
 	nocache_headers();
 }
@@ -620,7 +620,7 @@ function wpforo_import_default_menus() {
 			'menu-item-parent-id' => 0,
 			'menu-item-position'  => 0,
 		] );
-		
+
 		$id['wpforo-members'] = wp_update_nav_menu_item( $menu_id, 0, [
 			'menu-item-title'     => wpforo_phrase( 'Members', false ),
 			'menu-item-classes'   => 'wpforo-members',
@@ -629,7 +629,7 @@ function wpforo_import_default_menus() {
 			'menu-item-parent-id' => 0,
 			'menu-item-position'  => 0,
 		] );
-		
+
 		$id['wpforo-recent'] = wp_update_nav_menu_item( $menu_id, 0, [
 			'menu-item-title'     => wpforo_phrase( 'Recent Posts', false ),
 			'menu-item-classes'   => 'wpforo-recent',
@@ -638,7 +638,7 @@ function wpforo_import_default_menus() {
 			'menu-item-parent-id' => 0,
 			'menu-item-position'  => 0,
 		] );
-		
+
 		$id['wpforo-profile'] = wp_update_nav_menu_item( $menu_id, 0, [
 			'menu-item-title'     => wpforo_phrase( 'My Profile', false ),
 			'menu-item-classes'   => 'wpforo-profile',
@@ -647,7 +647,7 @@ function wpforo_import_default_menus() {
 			'menu-item-parent-id' => 0,
 			'menu-item-position'  => 0,
 		] );
-		
+
 		if( isset( $id['wpforo-profile'] ) && $id['wpforo-profile'] ) {
 			$id['wpforo-profile-account']       = wp_update_nav_menu_item( $menu_id, 0, [
 				'menu-item-title'     => wpforo_phrase( 'Account', false ),
@@ -674,7 +674,7 @@ function wpforo_import_default_menus() {
 				'menu-item-position'  => 2,
 			] );
 		}
-		
+
 		$id['wpforo-register'] = wp_update_nav_menu_item( $menu_id, 0, [
 			'menu-item-title'     => wpforo_phrase( 'Register', false ),
 			'menu-item-classes'   => 'wpforo-register',
@@ -683,7 +683,7 @@ function wpforo_import_default_menus() {
 			'menu-item-parent-id' => 0,
 			'menu-item-position'  => 0,
 		] );
-		
+
 		$id['wpforo-login'] = wp_update_nav_menu_item( $menu_id, 0, [
 			'menu-item-title'     => wpforo_phrase( 'Login', false ),
 			'menu-item-classes'   => 'wpforo-login',
@@ -692,7 +692,7 @@ function wpforo_import_default_menus() {
 			'menu-item-parent-id' => 0,
 			'menu-item-position'  => 0,
 		] );
-		
+
 		$id['wpforo-logout'] = wp_update_nav_menu_item( $menu_id, 0, [
 			'menu-item-title'     => wpforo_phrase( 'Logout', false ),
 			'menu-item-classes'   => 'wpforo-logout',
@@ -701,7 +701,7 @@ function wpforo_import_default_menus() {
 			'menu-item-parent-id' => 0,
 			'menu-item-position'  => 0,
 		] );
-		
+
 		if( ! has_nav_menu( $menu_location ) ) {
 			$locations = get_theme_mod( 'nav_menu_locations' );
 			if( empty( $locations ) ) $locations = [];
@@ -750,9 +750,7 @@ function wpforo_import_default_accesses() {
 		'aot'  => 0,
 		'cot'  => 0,
 		'mt'   => 0,
-		'ccp'  => 0,
-		'cvp'  => 0,
-		'cvpr' => 0,
+		// Poll-related permissions moved to wpForo Polls plugin
 	];
 	$cans_r = [
 		'vf'   => 1,
@@ -792,9 +790,7 @@ function wpforo_import_default_accesses() {
 		'aot'  => 0,
 		'cot'  => 0,
 		'mt'   => 0,
-		'ccp'  => 0,
-		'cvp'  => 0,
-		'cvpr' => 1,
+		// Poll-related permissions moved to wpForo Polls plugin
 	];
 	$cans_s = [
 		'vf'   => 1,
@@ -834,9 +830,7 @@ function wpforo_import_default_accesses() {
 		'aot'  => 1,
 		'cot'  => 0,
 		'mt'   => 0,
-		'ccp'  => 1,
-		'cvp'  => 1,
-		'cvpr' => 1,
+		// Poll-related permissions moved to wpForo Polls plugin
 	];
 	$cans_m = [
 		'vf'   => 1,
@@ -876,9 +870,7 @@ function wpforo_import_default_accesses() {
 		'aot'  => 1,
 		'cot'  => 1,
 		'mt'   => 1,
-		'ccp'  => 1,
-		'cvp'  => 1,
-		'cvpr' => 1,
+		// Poll-related permissions moved to wpForo Polls plugin
 	];
 	$cans_a = [
 		'vf'   => 1,
@@ -918,11 +910,9 @@ function wpforo_import_default_accesses() {
 		'aot'  => 1,
 		'cot'  => 1,
 		'mt'   => 1,
-		'ccp'  => 1,
-		'cvp'  => 1,
-		'cvpr' => 1,
+		// Poll-related permissions moved to wpForo Polls plugin
 	];
-	
+
 	//Add new Accesses in this array to add those in custom Accesses created by forum admin
 	$cans_default = [
 		'sb'   => 1,
@@ -930,9 +920,7 @@ function wpforo_import_default_accesses() {
 		'p'    => 0,
 		'op'   => 1,
 		'vp'   => 0,
-		'ccp'  => 0,
-		'cvp'  => 0,
-		'cvpr' => 1,
+		// Poll-related permissions moved to wpForo Polls plugin
 		'aot'  => 1,
 		'tag'  => 1,
 		'ocr'  => 0,
@@ -941,7 +929,7 @@ function wpforo_import_default_accesses() {
 		'vop'  => 1,
 		'vlp'  => 1,
 	];
-	
+
 	$sql      = "SELECT * FROM `" . WPF()->tables->accesses . "`";
 	$accesses = WPF()->db->get_results( $sql, ARRAY_A );
 	if( empty( $accesses ) ) {
@@ -950,7 +938,7 @@ function wpforo_import_default_accesses() {
 		$cans_s = serialize( $cans_s );
 		$cans_m = serialize( $cans_m );
 		$cans_a = serialize( $cans_a );
-		
+
 		$sql = "INSERT IGNORE INTO `" . WPF()->tables->accesses . "`
 			(`access`, `title`, cans) VALUES
 			('no_access', 'No access', '" . $cans_n . "'),
@@ -958,7 +946,7 @@ function wpforo_import_default_accesses() {
 			('standard', 'Standard access', '" . $cans_s . "'),
 			('moderator', 'Moderator access', '" . $cans_m . "'),
 			('full', 'Full access', '" . $cans_a . "')";
-		
+
 		WPF()->db->query( $sql );
 	} else {
 		foreach( $accesses as $access ) {
@@ -1178,7 +1166,7 @@ function wpforo_import_default_usergroups() {
 		'caa'          => 1,
 		'vt_add_topic' => 1,
 	];
-	
+
 	//Add new Cans in this array to add those in custom Usergroup created by forum admin
 	$cans_defaults = [
 		'mf'           => 0,
@@ -1193,7 +1181,7 @@ function wpforo_import_default_usergroups() {
 		'vt_add_topic' => 1,
 		'upc'          => 1,
 	];
-	
+
 	$sql = "SELECT * FROM `" . WPF()->tables->usergroups . "`";
 	if( ! $usergroups = WPF()->db->get_results( $sql, ARRAY_A ) ) {
 		WPF()->usergroup->add( 'Admin', $cans_admin, '', 'administrator', 'full', '#FF3333' );
@@ -1268,7 +1256,7 @@ function wpforo_fix_installed_options() {
 			wpforo_update_option( 'features', array_map( 'intval', $features ) );
 		}
 	}
-	
+
 	#################################################################
 	// CHECK Addon Notice /////////////////////////////////////////
 	$lastHash = get_option( 'wpforo_addon_note_dismissed' );
@@ -1276,7 +1264,7 @@ function wpforo_fix_installed_options() {
 	if( $lastHash && $first === 'true' ) {
 		update_option( 'wpforo_addon_note_first', 'false' );
 	}
-	
+
 	#################################################################
 	// AVOID PLUGIN CONFLICTS ///////////////////////////////////////
 	/* Autoptimize *************************************************/
@@ -1288,7 +1276,7 @@ function wpforo_fix_installed_options() {
 			autoptimizeCache::clearall();
 		}
 	}
-	
+
 	#################################################################
 	// Adding #wpforo to custom css /////////////////////////////////
 	if( $style_options = wpforo_get_option( 'style_options', [], false ) ) {
@@ -1350,12 +1338,12 @@ function wpforo_update_db() {
 function wpforo_db_check( $args = [] ) {
 	$key = [ 'wpforo_db_check', $args ];
 	if( WPF()->ram_cache->exists( $key ) ) return WPF()->ram_cache->get( $key );
-	
+
 	global $wpdb;
-	
+
 	$col   = esc_sql( trim( (string) wpfval( $args, 'col' ) ) );
 	$table = esc_sql( trim( (string) wpfval( $args, 'table' ) ) );
-	
+
 	$result = null;
 	switch( trim( (string) wpfval( $args, 'check' ) ) ) {
 		case 'table_exists':
@@ -1376,9 +1364,9 @@ function wpforo_db_check( $args = [] ) {
 			$result = wpfval( $c, 'Type' );
 		break;
 	}
-	
+
 	WPF()->ram_cache->set( $key, $result );
-	
+
 	return $result;
 }
 
@@ -1454,12 +1442,12 @@ function wpforo_database_check() {
 			}
 		}
 	}
-	
+
 	$first_board = WPF()->db->get_row( "SELECT `boardid` FROM `" . WPF()->tables->boards . "` WHERE `boardid` = 0", ARRAY_A );
 	if( empty( $first_board ) ) {
 		$_table_diffs['data']['default_board'] = 'no';
 	}
-	
+
 	return $_table_diffs;
 }
 
@@ -1482,7 +1470,7 @@ function wpforo_database_parse() {
 			}
 		}
 	}
-	
+
 	return $_tables;
 }
 
@@ -1562,12 +1550,12 @@ function wpforo_database_fixer( $problems ) {
 			//Other data checking here...
 		}
 	}
-	
+
 	return $SQL;
 }
 
 function wpforo_add_unique_key( $table, $primary_key, $unique_key_name = '', $unique_fields = '' ) {
-	
+
 	$table               = esc_sql( trim( (string) $table ) );
 	$primary_key         = esc_sql( trim( (string) $primary_key ) );
 	$unique_fields       = esc_sql( trim( (string) $unique_fields, ',' ) );
@@ -1576,7 +1564,7 @@ function wpforo_add_unique_key( $table, $primary_key, $unique_key_name = '', $un
 	$sql                 = "SELECT GROUP_CONCAT(`$primary_key`) duplicated_row_ids,
                 COUNT(*) duplication_count FROM
                     `$table` GROUP BY $unique_fields_clean HAVING  duplication_count > 1";
-	
+
 	$rows = WPF()->db->get_results( $sql, ARRAY_A );
 	if( ! empty( $rows ) ) {
 		foreach( $rows as $row ) {
