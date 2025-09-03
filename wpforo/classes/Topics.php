@@ -347,27 +347,28 @@ class Topics {
 		if( WPF()->db->insert(
 			WPF()->tables->topics,
 			[
-			'title'      => stripslashes(
-				$title
-			),
-			'slug'       => $slug,
-			'forumid'    => $forum['forumid'],
-			'userid'     => $userid,
-			'type'       => $type,
-			'status'     => $status,
-			'private'    => $private,
-			'created'    => $created,
-			'modified'   => $created,
-			'last_post'  => 0,
-			'views'      => $views,
-			'posts'      => $posts,
-			'meta_key'   => $meta_key,
-			'meta_desc'  => $meta_desc,
-			'has_attach' => $has_attach,
-			'name'       => $name,
-			'email'      => $email,
-			'tags'       => $tags,
-		],  [
+				'title'      => stripslashes(
+					$title
+				),
+				'slug'       => $slug,
+				'forumid'    => $forum['forumid'],
+				'userid'     => $userid,
+				'type'       => $type,
+				'status'     => $status,
+				'private'    => $private,
+				'created'    => $created,
+				'modified'   => $created,
+				'last_post'  => 0,
+				'views'      => $views,
+				'posts'      => $posts,
+				'meta_key'   => $meta_key,
+				'meta_desc'  => $meta_desc,
+				'has_attach' => $has_attach,
+				'name'       => $name,
+				'email'      => $email,
+				'tags'       => $tags,
+			],
+			[
 				'%s',
 				'%s',
 				'%d',
@@ -1088,24 +1089,25 @@ class Topics {
 			if( WPF()->db->insert(
 				WPF()->tables->topics,
 				[
-				'title'      => stripslashes(
-					$title
-				),
-				'slug'       => $slug,
-				'forumid'    => $forumid,
-				'userid'     => $userid,
-				'type'       => $type,
-				'status'     => $status,
-				'private'    => $private,
-				'created'    => $created,
-				'modified'   => $created,
-				'last_post'  => 0,
-				'views'      => 0,
-				'posts'      => 1,
-				'has_attach' => $has_attach,
-				'name'       => $name,
-				'email'      => $email,
-			],  [
+					'title'      => stripslashes(
+						$title
+					),
+					'slug'       => $slug,
+					'forumid'    => $forumid,
+					'userid'     => $userid,
+					'type'       => $type,
+					'status'     => $status,
+					'private'    => $private,
+					'created'    => $created,
+					'modified'   => $created,
+					'last_post'  => 0,
+					'views'      => 0,
+					'posts'      => 1,
+					'has_attach' => $has_attach,
+					'name'       => $name,
+					'email'      => $email,
+				],
+				[
 					'%s',
 					'%s',
 					'%d',
@@ -1694,9 +1696,13 @@ class Topics {
 			if( $item_count_sql ) $items_count = WPF()->db->get_var( $item_count_sql );
 		}
 		
-		$sql .= " ORDER BY " . str_replace( ',', ' ' . esc_sql( $order ) . ',', esc_sql( $orderby ) ) . " " . esc_sql(
-				$order
-			);
+		if( $order === 'RAND' ) {
+			$sql .= " ORDER BY RAND()";
+		} else {
+			$sql .= " ORDER BY " . str_replace( ',', ' ' . esc_sql( $order ) . ',', esc_sql( $orderby ) ) . " " . esc_sql(
+					$order
+				);
+		}
 		
 		if( ! is_null( $row_count ) ) {
 			if( ! is_null( $offset ) ) {
@@ -1716,10 +1722,10 @@ class Topics {
 						$object_cache['items'] = $this->access_filter(
 							$object_cache['items'],
 							[
-								                      'groupids' => ( array_filter(
-									                      array_map( 'intval', (array) $permgroup )
-								                      ) ?: null ),
-							                      ]
+								'groupids' => ( array_filter(
+									array_map( 'intval', (array) $permgroup )
+								) ?: null ),
+							]
 						);
 						
 						return apply_filters( 'wpforo_get_topics', $object_cache['items'] );
@@ -1741,10 +1747,10 @@ class Topics {
 			$topics = $this->access_filter(
 				$topics,
 				[
-					       'groupids' => ( array_filter(
-						       array_map( 'intval', (array) $permgroup )
-					       ) ?: null ),
-				       ]
+					'groupids' => ( array_filter(
+						array_map( 'intval', (array) $permgroup )
+					) ?: null ),
+				]
 			);
 		}
 		

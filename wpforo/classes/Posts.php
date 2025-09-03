@@ -517,15 +517,18 @@ class Posts {
 		
 		if( $args['row_count'] === 0 ) return [];
 		if( $args['forumid'] && $args['check_private'] && ! WPF()->perm->forum_can( 'vf', $args['forumid'] ) ) return [];
-		if( strtoupper( (string) $args['order'] ) != 'DESC' && strtoupper( (string) $args['order'] ) != 'ASC' ) $args['order'] = '';
+		if( strtoupper( (string) $args['order'] ) !== 'DESC' && strtoupper( (string) $args['order'] ) !== 'ASC' && strtoupper( (string) $args['order'] ) !== 'RAND' ) $args['order'] = '';
 		if( ! wpforo_root_exist() && ! is_null( $args['root'] ) ) {
 			$args['parentid'] = $args['root'];
 			$args['root']     = null;
 		}
 		
 		$wheres = $this->get_posts_conditions( $args );
-		
-		$ordering = ( $args['orderby'] ? " ORDER BY " . esc_sql( $args['orderby'] . ' ' . $args['order'] ) : '' );
+		if( $args['order'] === 'RAND' ) {
+			$ordering = " ORDER BY RAND()";
+		} else {
+			$ordering = ( $args['orderby'] ? " ORDER BY " . esc_sql( $args['orderby'] . ' ' . $args['order'] ) : '' );
+		}
 		$limiting = ( $args['row_count'] ? " LIMIT " . intval( $args['offset'] ) . "," . intval( $args['row_count'] ) : '' );
 		
 		if( $limit_per_topic = intval( $args['limit_per_topic'] ) ) {

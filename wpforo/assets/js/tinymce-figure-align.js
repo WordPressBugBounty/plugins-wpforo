@@ -109,17 +109,52 @@
         function setAlign(align) {
             var node = editor.selection.getNode();
             var figure = editor.dom.getParent(node, 'figure') || (isFigure(node) ? node : null);
-            if (!figure) return;
+            if (!figure) return false;
             editor.dom.removeClass(figure, 'alignleft');
             editor.dom.removeClass(figure, 'aligncenter');
             editor.dom.removeClass(figure, 'alignright');
             if (align) editor.dom.addClass(figure, 'align' + align);
             editor.nodeChanged();
+            return true;
         }
 
-        editor.addCommand('JustifyLeft', function () { setAlign('left'); });
-        editor.addCommand('JustifyCenter', function () { setAlign('center'); });
-        editor.addCommand('JustifyRight', function () { setAlign('right'); });
-        editor.addCommand('wpAlignNone', function () { setAlign(''); });
+        function isFigureSelected() {
+            var node = editor.selection.getNode();
+            return !!(editor.dom.getParent(node, 'figure') || isFigure(node));
+        }
+
+        function alignText(side) {
+            if (side) {
+                editor.formatter.toggle('align' + side);
+            }
+        }
+
+        function alignNoneText() {
+            editor.formatter.remove('alignleft');
+            editor.formatter.remove('aligncenter');
+            editor.formatter.remove('alignright');
+            editor.nodeChanged();
+        }
+
+        editor.addCommand('JustifyLeft', function () {
+            if (!setAlign('left')) {
+                alignText('left');
+            }
+        });
+        editor.addCommand('JustifyCenter', function () {
+            if (!setAlign('center')) {
+                alignText('center');
+            }
+        });
+        editor.addCommand('JustifyRight', function () {
+            if (!setAlign('right')) {
+                alignText('right');
+            }
+        });
+        editor.addCommand('wpAlignNone', function () {
+            if (!setAlign('')) {
+                alignNoneText();
+            }
+        });
     });
 })();
