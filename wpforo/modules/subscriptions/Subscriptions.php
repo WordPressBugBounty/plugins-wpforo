@@ -205,7 +205,7 @@ class Subscriptions {
 		if( ! $all ) array_push( $types, 'forums', 'forums-topics' );
 		$sql = "DELETE FROM `" . WPF()->tables->subscribes . "` WHERE `type` IN('" . implode( "','", $types ) . "') AND " . $where;
 		if( ! $all && $data ) {
-			$forumids = array_keys( $data );
+			$forumids = array_map('intval', array_keys( $data ));
 			$sql      .= " AND `itemid` NOT IN(" . implode( ',', $forumids ) . ")";
 		}
 		WPF()->db->query( $sql );

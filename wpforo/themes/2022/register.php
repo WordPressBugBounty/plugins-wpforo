@@ -3,12 +3,13 @@
 if( ! defined( 'ABSPATH' ) ) exit;
 
 $fields = wpforo_register_fields();
+$form_action = wpforo_get_current_language_url();
 ?>
 
 <p id="wpforo-title"><?php wpforo_phrase( 'Forum - Registration' ) ?></p>
 
 <?php if( wpforo_setting( 'authorization', 'user_register' ) ): ?>
-    <form name="wpfreg" action="" enctype="multipart/form-data" method="POST">
+    <form name="wpfreg" action="<?php echo esc_url( $form_action ); ?>" enctype="multipart/form-data" method="POST">
         <div class="wpforo-register-wrap wpfbg-9">
             <div class="wpforo-register-content">
                 <h3><?php wpforo_phrase( 'Join us today!' ) ?></h3>

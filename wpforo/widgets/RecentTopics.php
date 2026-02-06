@@ -118,6 +118,27 @@ class RecentTopics extends WP_Widget {
         $_POST      = wp_unslash( $_POST );
         $instance   = json_decode( (string) wpfval( $_POST, 'instance' ), true );
         $topic_args = json_decode( (string) wpfval( $_POST, 'topic_args' ), true );
+
+        // SECURITY FIX: Sanitize and validate all user-controlled parameters
+        if( is_array( $topic_args ) ) {
+            // Remove dangerous 'where' parameter
+            unset( $topic_args['where'] );
+
+            // Validate 'orderby' parameter against whitelist
+            if( isset( $topic_args['orderby'] ) ) {
+                if( ! key_exists( $topic_args['orderby'], $this->orderby_fields ) ) {
+                    $topic_args['orderby'] = $this->default_instance['orderby'];
+                }
+            }
+
+            // Validate 'order' parameter against whitelist
+            if( isset( $topic_args['order'] ) ) {
+                if( ! key_exists( $topic_args['order'], $this->order_fields ) ) {
+                    $topic_args['order'] = $this->default_instance['order'];
+                }
+            }
+        }
+
         wp_send_json_success( [ 'html' => $this->get_widget( $instance, $topic_args ) ] );
     }
 

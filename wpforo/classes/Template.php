@@ -1523,8 +1523,12 @@ class Template {
 
     public function member_search_form() {
         do_action( 'wpforo_member_search_form_start' );
+        $boardid = ( is_callable( [ WPF()->board, 'get_current' ] ) ? WPF()->board->get_current( 'boardid' ) : 0 );
         ?>
         <form action="<?php echo wpforo_members_url() ?>" method="get">
+            <?php if( $boardid ): ?>
+                <input type="hidden" name="boardid" value="<?php echo intval($boardid) ?>" />
+            <?php endif; ?>
             <?php do_action( 'wpforo_member_search_form_before_fields' ); ?>
             <?php wpforo_make_hidden_fields_from_url( wpforo_home_url() ) ?>
             <?php wpforo_fields( wpforo_search_fields() ); ?>
@@ -1919,6 +1923,12 @@ class Template {
                             }
                         }
                     }
+                break;
+                case 'custom-top':
+                    $button_html = apply_filters( 'wpforo_template_buttons_top', $button_html, $button, $forum, $topic, $post );
+                break;
+                case 'custom-bottom':
+                    $button_html = apply_filters( 'wpforo_template_buttons_bottom', $button_html, $button, $forum, $topic, $post );
                 break;
                 default:
                     $bh = apply_filters( 'wpforo_template_buttons', '', $button, $forum, $topic, $post );

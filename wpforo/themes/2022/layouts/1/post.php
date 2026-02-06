@@ -51,7 +51,7 @@
                     <?php endif; ?>
                     <?php wpforo_topic_starter($topic, $post) ?>
                     <span class="wpf-post-date"><?php wpforo_date($post['created'], 'd/m/Y g:i a'); ?></span> &nbsp;
-		            <?php wpforo_post_buttons( 'icon', array('bookmark', 'report', 'link'), $forum, $topic, $post ); ?>
+		            <?php wpforo_post_buttons( 'icon', array('custom-top', 'bookmark', 'report', 'link'), $forum, $topic, $post ); ?>
                     <?php wpforo_share_toggle($post_url, $post['body'], 'top'); ?>
 	            </div><!-- wpforo-post-content-top -->
 	            <div class="wpforo-post-content">
@@ -67,7 +67,7 @@
 	        <div class="bottom">
                 <?php do_action( 'wpforo_post_bottom_start', $post, $topic, $forum, 1 ); ?>
 	            <div class="bright">
-	            	<?php wpforo_post_buttons( 'icon-text', [ 'reply', 'quote', 'approved', 'edit', 'delete' ], $forum, $topic, $post ); ?>
+	            	<?php wpforo_post_buttons( 'icon-text', [ 'custom-bottom', 'reply', 'quote', 'approved', 'edit', 'delete' ], $forum, $topic, $post ); ?>
                 </div>
 	            <div class="wpf-clear"></div>
 	        </div><!-- bottom -->

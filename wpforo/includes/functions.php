@@ -612,9 +612,7 @@ function wpforo_is_admin( $url = '' ) {
 
 function _is_wpforo_page( $url = '' ) {
 	if( ! $url ) $url = wpforo_get_request_uri();
-	$result = ( ! ( wpforo_is_admin( $url ) || ( is_wpforo_exclude_url( $url ) && ! is_wpforo_url( $url ) && ! is_wpforo_shortcode_page( $url ) ) ) && ( is_wpforo_url(
-		                                                                                                                                                     $url
-	                                                                                                                                                     ) || is_wpforo_shortcode_page( $url ) ) );
+	$result = ( ! ( wpforo_is_admin( $url ) || ( is_wpforo_exclude_url( $url ) && ! is_wpforo_url( $url ) && ! is_wpforo_shortcode_page( $url ) ) ) && ( is_wpforo_url( $url ) || is_wpforo_shortcode_page( $url ) ) );
 
 	return apply_filters( 'is_wpforo_page', $result, $url );
 }
@@ -3975,4 +3973,40 @@ function wpforo_generate_scheme_author_object( $user_id ) {
                     }';
 
 	return $author;
+}
+
+/**
+ * Get wpForo home URL for a specific language/locale
+ *
+ * @param string $language Language code (e.g., 'de_DE', 'en_US', 'fr_FR')
+ * @return string Forum home URL for the specified language
+ */
+function wpforo_get_home_url_for_language( $language ) {
+    $sql = WPF()->db->prepare(
+        "SELECT * FROM " . WPF()->tables->boards . " WHERE status = 1 AND locale = %s LIMIT 1",
+        sanitize_locale_name($language)
+    );
+    $board = (array) WPF()->db->get_row( $sql, ARRAY_A );
+	if( $board ) $board = WPF()->board->decode( $board );
+
+    if( !$board ) {
+        return home_url(); // Fallback to default
+    }
+    return trailingslashit( home_url( $board['slug'] ) );
+}
+
+function wpforo_get_current_language_url( $url = '' ) {
+    $url = ( $url ) ? $url : '';
+    if( function_exists( 'pll_current_language' ) && $language = pll_current_language( 'locale' ) ) {
+        $sql = WPF()->db->prepare(
+            "SELECT * FROM " . WPF()->tables->boards . " WHERE status = 1 AND locale = %s LIMIT 1",
+            sanitize_locale_name($language)
+        );
+        $board = (array) WPF()->db->get_row( $sql, ARRAY_A );
+        if( $boardid = wpfval($board, 'boardid') ){
+            $url = ( $url ) ? $url : $_SERVER['REQUEST_URI'];
+            $url = add_query_arg( 'boardid', intval( $boardid ), $_SERVER['REQUEST_URI'] );
+        }
+    }
+    return $url;
 }

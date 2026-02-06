@@ -7,26 +7,26 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
 ?>
 
 <div id="wpf-admin-wrap" class="wrap" style="margin-top: 0">
-	<?php wpforo_screen_option() ?>
+    <?php wpforo_screen_option() ?>
     <div id="icon-users" class="icon32"><br></div>
     <h2 style="padding:30px 0 0 0; line-height: 20px; margin-bottom:15px;">
-		<?php _e( 'Front-end Phrases', 'wpforo' ); ?> &nbsp;
+        <?php _e( 'Front-end Phrases', 'wpforo' ); ?> &nbsp;
         <a class="add-new-h2" href="<?php echo admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'phrases' ) . '&wpfaction=phrase_add_form' ) ?>">
-			<?php _e( 'Add New', 'wpforo' ) ?>
+            <?php _e( 'Add New', 'wpforo' ) ?>
         </a>
     </h2>
-	<?php WPF()->notice->show() ?>
-	<?php
-	if( $wpfaction === 'phrase_add_form' ) { ?>
+    <?php WPF()->notice->show() ?>
+    <?php
+    if( $wpfaction === 'phrase_add_form' ) { ?>
         <form method="POST" id="phrases" class="validate">
-			<?php wp_nonce_field( 'wpforo-phrase-add' ); ?>
+            <?php wp_nonce_field( 'wpforo-phrase-add' ); ?>
             <input type="hidden" name="wpfaction" value="phrase_add">
             <table class="form-table">
                 <tr>
                     <td><?php _e( 'Language', 'wpforo' ) ?></td>
                     <td>
                         <select name="phrase[langid]">
-							<?php WPF()->phrase->show_lang_list(); ?>
+                            <?php WPF()->phrase->show_lang_list(); ?>
                         </select>
                     </td>
                 </tr>
@@ -34,18 +34,18 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
                     <td><?php _e( 'Package', 'wpforo' ) ?></td>
                     <td>
                         <select name="phrase[package]">
-							<?php
-							if( $packages = WPF()->phrase->get_distinct_packages() ) {
-								foreach( $packages as $package ) {
-									printf(
-										'<option value="%1$s" %2$s>%3$s</option>',
-										esc_attr( $package ),
-										( $package === 'wpforo' ) ? 'selected' : '',
-										esc_html( $package )
-									);
-								}
-							}
-							?>
+                            <?php
+                            if( $packages = WPF()->phrase->get_distinct_packages() ) {
+                                foreach( $packages as $package ) {
+                                    printf(
+                                            '<option value="%1$s" %2$s>%3$s</option>',
+                                            esc_attr( $package ),
+                                            ( $package === 'wpforo' ) ? 'selected' : '',
+                                            esc_html( $package )
+                                    );
+                                }
+                            }
+                            ?>
                         </select>
                     </td>
                 </tr>
@@ -72,25 +72,25 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
                 </tr>
             </table>
         </form>
-		<?php
-	} elseif( $wpfaction === 'phrase_edit_form' ) {
-		if( wpfval( $_GET, 'phraseid' ) ) {
-			check_admin_referer( 'wpforo-phrase-edit-' . wpfval( $_GET, 'phraseid' ) );
-		} else {
-			check_admin_referer( 'bulk-phrases' );
-		}
-		$phraseids = array_merge( (array) wpfval( $_GET, 'phraseid' ), (array) wpfval( $_GET, 'phraseids' ) );
-		?>
+        <?php
+    } elseif( $wpfaction === 'phrase_edit_form' ) {
+        if( wpfval( $_GET, 'phraseid' ) ) {
+            check_admin_referer( 'wpforo-phrase-edit-' . wpfval( $_GET, 'phraseid' ) );
+        } else {
+            check_admin_referer( 'bulk-phrases' );
+        }
+        $phraseids = array_merge( (array) wpfval( $_GET, 'phraseid' ), (array) wpfval( $_GET, 'phraseids' ) );
+        ?>
         <form method="POST" id="phrases" class="validate">
-			<?php wp_nonce_field( 'wpforo-phrases-edit' ); ?>
+            <?php wp_nonce_field( 'wpforo-phrases-edit' ); ?>
             <input type="hidden" name="wpfaction" value="phrase_edit">
             <table class="form-table">
-				<?php foreach( $phraseids as $phraseid ) : ?>
+                <?php foreach( $phraseids as $phraseid ) : ?>
                     <tr class="form-field form-required">
                         <th scope="row">
-							<?php $phrase = WPF()->phrase->get_phrase( $phraseid ); ?>
+                            <?php $phrase = WPF()->phrase->get_phrase( $phraseid ); ?>
                             <label for="phrase-<?php echo $phrase['phraseid']; ?>">
-								<?php echo esc_html( $phrase['phrase_key'] ); ?>
+                                <?php echo esc_html( $phrase['phrase_key'] ); ?>
                             </label>
                         </th>
                         <td>
@@ -102,7 +102,7 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
                                 ><?php wpfo( $phrase['phrase_value'], true, 'esc_textarea' ); ?></textarea>
                         </td>
                     </tr>
-				<?php endforeach; ?>
+                <?php endforeach; ?>
                 <tr>
                     <td colspan="2" style="text-align: right;">
                         <input type="submit" id="createusersub" class="button button-primary" style="padding: 0 30px" value="<?php _e( 'Update', 'wpforo' ) ?>">
@@ -110,11 +110,11 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
                 </tr>
             </table>
         </form>
-		<?php
-	} elseif( $wpfaction === 'add_new_xml_translation_form' ) {
-		?>
+        <?php
+    } elseif( $wpfaction === 'add_new_xml_translation_form' ) {
+        ?>
         <form action="" method="POST" name="add_lang" class="validate" enctype="multipart/form-data">
-			<?php wp_nonce_field( 'wpforo-settings-language' ); ?>
+            <?php wp_nonce_field( 'wpforo-settings-language' ); ?>
             <input type="hidden" name="wpfaction" value="add_new_xml_translation">
             <table class="wpforo_settings_table">
                 <tbody>
@@ -132,16 +132,16 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
                 <input type="submit" class="button button-primary" value="<?php _e( 'Add New Language', 'wpforo' ); ?>">
             </div>
         </form>
-		<?php
-	} else {
-		?>
+        <?php
+    } else {
+        ?>
         <form method="get">
             <input type="hidden" name="page" value="<?php echo wpforo_prefix_slug( 'phrases' ) ?>">
-			<?php WPF()->phrase->list_table->languages_dropdown() ?>
-			<?php WPF()->phrase->list_table->packages_dropdown() ?>
+            <?php WPF()->phrase->list_table->languages_dropdown() ?>
+            <?php WPF()->phrase->list_table->packages_dropdown() ?>
             <input type="submit" value="<?php _e( 'Filter', 'wpforo' ) ?>" class="button button-large">
 
-			<?php WPF()->phrase->list_table->search_box( 'Search Phrases', 'wpf-phrase-search' ) ?>
+            <?php WPF()->phrase->list_table->search_box( 'Search Phrases', 'wpf-phrase-search' ) ?>
         </form>
         <br>
         <hr>
@@ -152,7 +152,7 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
             <input type="hidden" name="wpfaction" value="phrase_edit_form">
 
             <!-- Now we can render the completed list table -->
-			<?php WPF()->phrase->list_table->display() ?>
+            <?php WPF()->phrase->list_table->display() ?>
         </form>
 
 
@@ -164,8 +164,13 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
             <table>
                 <tr>
                     <td style="padding-bottom: 10px;">
-                        <label for="langid" style="font-weight: bold;"><?php _e( 'Manage Phrasees with XML File', 'wpforo' ); ?> <a href="https://wpforo.com/docs/wpforo-v2/wpforo-settings/general-settings/#xml-language" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"><i class="far fa-question-circle"></i></a></label>
-                        <p class="wpf-info"><?php _e( 'This option is only related to XML language files. You should upload a translation XML file to have a new language option in this drop-down. If you are using PO/MO translation files you should change WordPress Language in Dashboard > Settings admin page to load according translation for wpForo.', 'wpforo' ); ?></p>
+                        <label for="langid" style="font-weight: bold;"><?php _e( 'Manage Phrases using XML File', 'wpforo' ); ?> <a
+                                    href="https://wpforo.com/docs/wpforo-v2/wpforo-settings/general-settings/#xml-language" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"><i
+                                        class="far fa-question-circle"></i></a></label>
+                        <p class="wpf-info"><?php _e(
+                                    'This option is only related to XML language files. You should upload a translation XML file to have a new language option in this drop-down. If you are using PO/MO translation files you should change WordPress Language in Dashboard > Settings admin page to load according translation for wpForo.',
+                                    'wpforo'
+                            ); ?></p>
                     </td>
                 </tr>
                 <tr>
@@ -178,12 +183,15 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
                 </tr>
                 <tr>
                     <td style="padding-top: 10px;">
-                        <a href="<?php echo admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'phrases' ) . '&wpfaction=add_new_xml_translation_form' ) ?>" class="add-new-h2"><?php _e( 'Add New', 'wpforo' ); ?></a>
+                        <a href="<?php echo admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'phrases' ) . '&wpfaction=add_new_xml_translation_form' ) ?>" class="add-new-h2"><?php _e(
+                                    'Add New',
+                                    'wpforo'
+                            ); ?></a>
                     </td>
                 </tr>
             </table>
         </form>
-		<?php
-	}
-	?>
+        <?php
+    }
+    ?>
 </div>

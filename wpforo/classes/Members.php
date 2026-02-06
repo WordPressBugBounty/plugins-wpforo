@@ -1552,7 +1552,10 @@ class Members {
 
         if( $orderby === 'groupid' ) $orderby = 'p.`groupid`';
         $sql .= esc_sql( " ORDER BY $orderby " . $order );
-        if( $row_count ) $sql .= esc_sql( " LIMIT $offset,$row_count" );
+
+        $offset = absint( $offset );
+        $limit = absint( $row_count );
+        if( $limit ) $sql .= esc_sql( " LIMIT {$offset},{$limit}" );
 
         return array_map( [ $this, 'decode' ], WPF()->db->get_results( $sql, ARRAY_A ) );
     }
@@ -2026,7 +2029,7 @@ class Members {
         if( ! $duration ) $duration = wpforo_setting( 'profiles', 'online_status_timeout' );
         $current_time     = time();
         $online_timeframe = $current_time - $duration;
-        $groupids         = array_filter( wpforo_parse_args( $groupids ) );
+        $groupids         = array_filter((array)$groupids);
         $args             = [
                 'groupids'    => $groupids,
                 'online_time' => $online_timeframe, // $current_time - $duration

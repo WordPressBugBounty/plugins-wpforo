@@ -536,8 +536,11 @@ class Actions {
 				} elseif( is_wpforo_url() ) {
 					$redirect_url = preg_replace( '#\?.*$#is', '', wpforo_get_request_uri() );
 				} else {
-					$redirect_url = ( wpforo_setting( 'authorization', 'user_register_email_confirm' ) ? wpforo_home_url() : WPF(
-					)->member->get_profile_url( $userid, 'account' ) );
+				    if( function_exists( 'pll_current_language' ) && $pll_lang = pll_current_language( 'locale' ) ) {
+                        $redirect_url = wpforo_get_home_url_for_language( $pll_lang );
+                    } else {
+                        $redirect_url = ( wpforo_setting( 'authorization', 'user_register_email_confirm' ) ? wpforo_home_url() : WPF()->member->get_profile_url( $userid, 'account' ) );
+                    }
 				}
 				
 				wp_safe_redirect( $redirect_url );
@@ -571,7 +574,11 @@ class Actions {
 				} elseif( is_wpforo_url() ) {
 					$redirect_url = preg_replace( '#\?.*$#is', '', wpforo_get_request_uri() );
 				} else {
-					$redirect_url = wpforo_home_url();
+				    if( function_exists( 'pll_current_language' ) && $pll_lang = pll_current_language( 'locale' ) ) {
+                        $redirect_url = wpforo_get_home_url_for_language( $pll_lang );
+                    } else {
+                        $redirect_url = wpforo_home_url();
+                    }
 				}
 				wp_safe_redirect( $redirect_url );
 			} else {
@@ -629,8 +636,7 @@ class Actions {
 			exit();
 		}
 		
-		if( strlen( (string) $pass1 ) < WPF()->member->pass_min_length || strlen( (string) $pass1 ) > WPF(
-			)->member->pass_max_length ) {
+		if( strlen( (string) $pass1 ) < WPF()->member->pass_min_length || strlen( (string) $pass1 ) > WPF()->member->pass_max_length ) {
 			WPF()->notice->add( 'Password length must be between %d characters and %d characters.', 'error', [
 				WPF()->member->pass_min_length,
 				WPF()->member->pass_max_length,
@@ -1050,8 +1056,7 @@ class Actions {
 			wp_raise_memory_limit();
 			
 			$lastid   = (int) wpfval( $_GET, 'topic_lastid' );
-			$sql      = "SELECT `topicid` FROM " . WPF(
-				)->tables->topics . " WHERE `topicid` > %d ORDER BY `topicid` ASC LIMIT %d";
+			$sql      = "SELECT `topicid` FROM " . WPF()->tables->topics . " WHERE `topicid` > %d ORDER BY `topicid` ASC LIMIT %d";
 			$topicids = WPF()->db->get_col(
 				WPF()->db->prepare( $sql, $lastid, apply_filters( 'wpforo_rebuild_per_request', 200 ) )
 			);
@@ -2258,7 +2263,7 @@ class Actions {
 			wpforo_clean_cache( 'loop' );
 		}
 		
-		wp_safe_redirect( admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'accesses' ) ) );
+		wp_safe_redirect( wp_get_raw_referer() );
 		exit();
 	}
 	

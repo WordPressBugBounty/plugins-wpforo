@@ -39,7 +39,7 @@ function wpforo_thread_reply_template( $post, $topic = array(), $forum = array()
                 </div>
                 <div class="wpf-post-date"><?php wpforo_date($post['created'], 'M d, Y g:i a'); ?></div>
                 <div class="wpf-post-btns">
-                    <?php wpforo_post_buttons( 'icon', [ 'bookmark', 'report', 'link' ], $forum, $topic, $post ); ?>
+                    <?php wpforo_post_buttons( 'icon', [ 'custom-top', 'bookmark', 'report', 'link' ], $forum, $topic, $post ); ?>
                     <?php wpforo_share_toggle($post['url'], $post['body'], 'top'); ?>
                 </div>
             </div>
@@ -68,7 +68,7 @@ function wpforo_thread_reply_template( $post, $topic = array(), $forum = array()
                         <?php wpforo_post_buttons( 'icon-text', 'reply', $forum, $topic, $post ); ?>
                     </div>
                     <div class="wpf-buttons">
-	                    <?php wpforo_post_buttons( 'icon', [ 'quote', 'approved', 'edit', 'delete' ], $forum, $topic, $post ); ?>
+	                    <?php wpforo_post_buttons( 'icon', [ 'custom-bottom', 'quote', 'approved', 'edit', 'delete' ], $forum, $topic, $post ); ?>
                     </div>
                 </div>
                 <div class="wpforo-post-footer">

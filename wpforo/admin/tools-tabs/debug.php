@@ -195,13 +195,13 @@ function wpforo_display_array_data( $array, $keys = [] ) {
 	foreach( $array as $k => $v ) {
 		if( ( ! empty( $keys ) && ! in_array( $k, $keys ) && strpos( (string) $k, 'capabilities' ) === false ) || $k == 'user_pass' ) continue;
 		if( is_serialized( $v ) || is_array( $v ) ) {
-			$v      = ( is_array( $v ) ) ? $v : @unserialize( $v );
+			$v      = ( is_array( $v ) ) ? $v : @unserialize( $v, [ 'allowed_classes' => false ] );
 			$v_html = '';
 			if( is_array( $v ) && ! empty( $v ) ) {
 				foreach( $v as $kk => $vv ) {
 					if( is_serialized( $vv ) || is_array( $vv ) ) {
 						$v_html = '';
-						$vv     = ( is_array( $vv ) ) ? $vv : unserialize( $vv );
+						$vv     = ( is_array( $vv ) ) ? $vv : unserialize( $vv, [ 'allowed_classes' => false ] );
 						if( $k === wpforo_prefix( 'read_topics' ) ) {
 							$v_html .= "<span class='wpf-sb-data'>" . count( $vv ) . "</span> ";
 						} else {

@@ -125,7 +125,15 @@ class Actions {
 	public function ajax_get_revision() {
 		wpforo_verify_nonce( 'wpforo_get_revision' );
 		if( $revisionid = wpforo_bigintval( wpfval( $_POST, 'revisionid' ) ) ) {
-			if( $revision = WPF()->revision->get_revision( [ 'include' => $revisionid ] ) ) wp_send_json_success( $revision );
+			if( $revision = WPF()->revision->get_revision(
+				[
+					'include'         => $revisionid,
+					'userids_include' => WPF()->current_userid,
+					'emails_include'  => WPF()->current_user_email,
+				]
+			) ) {
+				wp_send_json_success( $revision );
+			}
 		}
 		wp_send_json_error();
 	}

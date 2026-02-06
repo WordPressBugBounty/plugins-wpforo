@@ -40,7 +40,7 @@
                                 <?php endif; ?>
                                 <?php wpforo_share_toggle($post_url, $post['body'], 'top'); ?>
                                 <div class="wpforo-post-link wpf-post-link">
-                                    <?php wpforo_post_buttons( 'icon', ['bookmark', 'report', 'link'], $forum, $topic, $post ); ?>
+                                    <?php wpforo_post_buttons( 'icon', ['custom-top', 'bookmark', 'report', 'link'], $forum, $topic, $post ); ?>
                                 </div>
                                 <div class="wpforo-post-date"><?php wpforo_date($post['created'], 'd/m/Y g:i a'); ?></div>
 	                            <?php wpforo_topic_starter($topic, $post) ?>
@@ -99,7 +99,7 @@
                             </div><!-- wpforo-post-author -->
                             <div class="wpforo-post-tool-bar">
                                 <?php
-                                $buttons = [ 'edit', 'approved', 'delete' ];
+                                $buttons = [ 'custom-bottom', 'edit', 'approved', 'delete' ];
                                 wpforo_post_buttons( 'icon-text', $buttons, $forum, $topic, $post );
                                 ?>
                             </div>

@@ -2,8 +2,8 @@
 Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.1
-Tested up to: 6.8
-Stable tag: 2.4.8
+Tested up to: 6.9
+Stable tag: 2.4.14
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -179,10 +179,37 @@ IMPORTANT NOTES for UPDATE
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
 
-= wpForo Forum 2.4.0 - 2.4.8 | 09.03.2025 =
+= wpForo Forum 2.4.0 - 2.4.14 | 26.01.2026 =
 
 [wpForo Forum v2.4 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-2-4-is-released/)
 
+* Version 2.4.14
+* Security: Vulnerability - Authenticated (Subscriber+) PHP Object Injection
+* ---------
+* Version 2.4.13
+* Security: Vulnerability - Unauthenticated SQL Injection
+* ---------
+* Version 2.4.12
+* Compatibility: PHP 8.5
+* Compatibility: WordPress 6.9
+* Security: Vulnerability - Unauthenticated SQL Injection
+* Fixed: Multi-language integration issues with Polylang
+* ---------
+* Version 2.4.11
+* Security: Vulnerability - Unauthenticated Attacker to Post Revisions
+* ---------
+* Version 2.4.10
+* Security: Vulnerability Authenticated (Susbscriber+) SQL Injection
+* Fixed Bug: PHP Error: array_filter(): Argument #1 ($array) must be of type array, string given in classes/Members.php:2032
+* ---------
+* Version 2.4.9
+* Security: Unauthenticated SQL Injection
+* Security: Object unserialize code injection
+* ---------
+* Version 2.4.8
+* Added: New option in widgets to sort topics/posts randomly
+* Fixed Bug: Post editor text/object alignment issue
+* ---------
 * Version 2.4.7
 * Removed: Unnecessary profile buttons of guest posters
 * Removed: HTML tags from category description

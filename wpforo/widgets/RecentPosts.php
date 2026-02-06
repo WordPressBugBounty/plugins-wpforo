@@ -178,6 +178,27 @@ class RecentPosts extends WP_Widget {
         $_POST     = wp_unslash( $_POST );
         $instance  = json_decode( (string) wpfval( $_POST, 'instance' ), true );
         $post_args = json_decode( (string) wpfval( $_POST, 'post_args' ), true );
+        
+        // SECURITY FIX: Sanitize and validate all user-controlled parameters
+        if( is_array( $post_args ) ) {
+            // Remove dangerous 'where' parameter
+            unset( $post_args['where'] );
+
+            // Validate 'orderby' parameter against whitelist
+            if( isset( $post_args['orderby'] ) ) {
+                if( ! key_exists( $post_args['orderby'], $this->orderby_fields ) ) {
+                    $post_args['orderby'] = $this->default_instance['orderby'];
+                }
+            }
+
+            // Validate 'order' parameter against whitelist
+            if( isset( $post_args['order'] ) ) {
+                if( ! key_exists( $post_args['order'], $this->order_fields ) ) {
+                    $post_args['order'] = $this->default_instance['order'];
+                }
+            }
+        }
+        
         wp_send_json_success( [ 'html' => $this->get_widget( $instance, $post_args ) ] );
     }
 

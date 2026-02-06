@@ -48,7 +48,7 @@
                         <div>&nbsp;</div>
                     	<div class="wpf-post-actions">
 							<?php
-							$buttons = [ 'bookmark', 'report', 'link' ];
+							$buttons = [ 'custom-top', 'bookmark', 'report', 'link' ];
 							wpforo_post_buttons( 'icon-text', $buttons, $forum, $topic, $post );
                             ?>
                         </div>
@@ -67,7 +67,7 @@
                             <?php endif; ?>
                             <div>&nbsp;</div>
                             <?php
-                            $buttons = [ 'reply', 'quote', 'approved', 'edit', 'delete' ];
+                            $buttons = [ 'custom-bottom', 'reply', 'quote', 'approved', 'edit', 'delete' ];
                             wpforo_post_buttons( 'icon', $buttons, $forum, $topic, $post );
                             ?>
                         </div>
