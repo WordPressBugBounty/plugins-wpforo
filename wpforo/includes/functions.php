@@ -2845,6 +2845,55 @@ function wpforo_sanitize_text( $data ) {
 	return $data;
 }
 
+/**
+ * Sanitize orderby parameter for SQL queries.
+ * Validates against a whitelist of allowed column names to prevent SQL injection.
+ *
+ * @param string $orderby The orderby value to sanitize
+ * @param string $context The context: 'topics', 'posts', 'members', or 'search'
+ * @param string $default Default value if validation fails
+ * @return string Sanitized orderby value
+ */
+function wpforo_sanitize_orderby( $orderby, $context = 'topics', $default = '' ) {
+	$orderby = sanitize_text_field( $orderby );
+
+	// Define allowed columns for each context
+	$allowed = [
+		'topics' => [
+			'topicid', 'forumid', 'userid', 'title', 'slug', 'created', 'modified',
+			'views', 'posts', 'type', 'status', 'private', 'closed', 'solved',
+			'has_attach', 'first_postid', 'last_postid', 'pollid', 'prefix'
+		],
+		'posts' => [
+			'postid', 'forumid', 'topicid', 'userid', 'title', 'created', 'modified',
+			'status', 'private', 'is_answer', 'is_first_post', 'votes', 'root', 'parentid'
+		],
+		'members' => [
+			'userid', 'posts', 'questions', 'answers', 'comments', 'reactions', 'points',
+			'online_time', 'registered', 'display_name', 'user_registered'
+		],
+		'search' => [
+			'relevancy', 'date', 'user', 'forum', 'created', 'modified'
+		],
+	];
+
+	// Get the whitelist for this context
+	$whitelist = isset( $allowed[$context] ) ? $allowed[$context] : [];
+
+	// Also allow common aliases
+	$whitelist = array_merge( $whitelist, [ 'id', 'date', 'name' ] );
+
+	// Check if orderby is in the whitelist (case-insensitive)
+	$orderby_lower = strtolower( $orderby );
+	foreach( $whitelist as $allowed_col ) {
+		if( strtolower( $allowed_col ) === $orderby_lower ) {
+			return $allowed_col; // Return the properly cased version
+		}
+	}
+
+	// If not in whitelist, return the default
+	return $default;
+}
 
 if( ! function_exists( 'sanitize_textarea_field' ) && ! function_exists( '_sanitize_text_fields' ) ) {
 	function sanitize_textarea_field( $str ) {

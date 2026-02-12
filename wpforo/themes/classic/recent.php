@@ -29,7 +29,7 @@ if( $type === 'topics' ) {
 	$end_date = time() - ( intval( $days ) * 24 * 60 * 60 );
 	if( wpfval( $args, 'prefixid' ) ) $args['prefix'] = (int) wpfval( $args, 'prefixid' );
 	$args['where']     = "`modified` > '" . gmdate( 'Y-m-d H:i:s', $end_date ) . "'";
-	$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? sanitize_text_field( WPF()->GET['wpfob'] ) : 'modified';
+	$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? wpforo_sanitize_orderby( WPF()->GET['wpfob'], 'topics', 'modified' ) : 'modified';
 	$args['order']     = 'DESC';
 	$args['offset']    = ( $paged - 1 ) * wpforo_setting( 'topics', 'topics_per_page' );
 	$args['row_count'] = wpforo_setting( 'topics', 'topics_per_page' );
@@ -71,7 +71,7 @@ if( $type === 'topics' ) {
 } else {
 	$end_date = time() - ( intval( $days ) * 24 * 60 * 60 );
 	if( $view !== 'unapproved' ) $args['where'] = "`created` > '" . gmdate( 'Y-m-d H:i:s', $end_date ) . "'";
-	$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? sanitize_text_field( WPF()->GET['wpfob'] ) : 'created';
+	$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? wpforo_sanitize_orderby( WPF()->GET['wpfob'], 'posts', 'created' ) : 'created';
 	$args['order']     = 'DESC';
 	$args['offset']    = ( $paged - 1 ) * wpforo_setting( 'topics', 'posts_per_page' );
 	$args['row_count'] = wpforo_setting( 'topics', 'posts_per_page' );
