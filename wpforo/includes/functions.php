@@ -1152,7 +1152,7 @@ function wpforo_setcookie( $key, $args = [], $implode = false ) {
 	if( ! empty( $args ) && is_array( $args ) && $implode ) {
 		$value = trim( implode( ',', $args ), ',' );
 	} elseif( ! empty( $args ) && is_array( $args ) && ! $implode ) {
-		$value = json_encode( $args );
+		$value = wp_json_encode( $args );
 	}
 	if( ! isset( $value ) ) $value = '';
 	if( $key ) {
@@ -2247,7 +2247,7 @@ function wpforo_deep_merge( $default, $current = [] ) {
 }
 
 function wpforo_is_image( $e ) {
-	return (bool) preg_match( '#^(jpe?g|png|gif|bmp|webp|svg|tiff?)$#i', (string) $e );
+	return (bool) preg_match( '#^(jpe?g|png|gif|bmp|webp|tiff?)$#i', (string) $e );
 }
 
 function wpforo_is_video( $e ) {

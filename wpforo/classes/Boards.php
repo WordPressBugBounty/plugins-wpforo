@@ -171,9 +171,9 @@ class Boards {
 	 */
 	private function encode( $board ) {
 		$board                  = $this->decode( $board );
-		$board['modules']       = json_encode( $board['modules'] );
-		$board['excld_urls']    = json_encode( $board['excld_urls'] );
-		$board['settings']      = json_encode( $board['settings'] );
+		$board['modules']       = wp_json_encode( $board['modules'] );
+		$board['excld_urls']    = wp_json_encode( $board['excld_urls'] );
+		$board['settings']      = wp_json_encode( $board['settings'] );
 		$board['is_standalone'] = intval( $board['is_standalone'] );
 		$board['status']        = intval( $board['status'] );
 		

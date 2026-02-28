@@ -940,6 +940,10 @@ function wpf_approve() {
 	if( ! $postid = wpforo_bigintval( wpfval( $_POST, 'postid' ) ) ) {
 		wp_send_json_error();
 	}
+	$post = WPF()->post->get_post( $postid );
+	if( ! $post || ! WPF()->perm->forum_can( 'au', $post['forumid'] ) ) {
+		wp_send_json_error();
+	}
 	$status = wpfval( $_POST, 'status' );
 	if( $status === 'approve' ) {
 		WPF()->moderation->post_approve( $postid );
@@ -959,6 +963,10 @@ function wpf_close() {
 	}
 	
 	if( ! $topicid = wpforo_bigintval( wpfval( $_POST, 'topicid' ) ) ) {
+		wp_send_json_error();
+	}
+	$topic = WPF()->topic->get_topic( $topicid );
+	if( ! $topic || ! WPF()->perm->forum_can( 'cot', $topic['forumid'] ) ) {
 		wp_send_json_error();
 	}
 	$status = wpfval( $_POST, 'status' );
@@ -2525,6 +2533,10 @@ function wpforo_synch_user_roles( $userid ) {
 
 
 function wpforo_synch_roles() {
+	if( ! current_user_can( 'manage_options' ) ) {
+		wp_send_json_error( [ 'message' => 'Permission denied' ] );
+	}
+
 	$status = [
 		'progress' => 0,
 		'error'    => 0,
@@ -2534,7 +2546,7 @@ function wpforo_synch_roles() {
 		'total'    => 0,
 		'id'       => 0,
 	];
-	
+
 	$wpforo_synch_roles_data = isset( $_POST['wpforo_synch_roles_data'] ) ? $_POST['wpforo_synch_roles_data'] : '';
 	
 	if( $wpforo_synch_roles_data ) {
@@ -2633,7 +2645,7 @@ function wpforo_synch_roles() {
 		WPF()->notice->add( 'Role-Usergroup synchronization is complete!', 'success' );
 	}
 	
-	wp_die( json_encode( $status ) );
+	wp_die( wp_json_encode( $status ) );
 }
 
 add_action( 'wp_ajax_wpforo_synch_roles', 'wpforo_synch_roles' );

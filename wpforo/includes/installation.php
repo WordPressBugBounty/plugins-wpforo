@@ -365,7 +365,7 @@ function wpforo_alter_tables() {
 				$twitter        = trim( (string) $user['twitter'] );
 				$skype          = trim( (string) $user['skype'] );
 				$user['fields'] = array_merge( (array) json_decode( $user['fields'], true ), compact( 'facebook', 'twitter', 'skype' ) );
-				$user['fields'] = json_encode( $user['fields'] );
+				$user['fields'] = wp_json_encode( $user['fields'] );
 				WPF()->db->update(
 					WPF()->tables->profiles,
 					[ 'fields' => $user['fields'] ],
@@ -1531,7 +1531,7 @@ function wpforo_database_fixer( $problems ) {
 				$board['title']             = ( wpfval( $_general, 'title' ) ) ?: 'Forum';
 				$board['settings']['title'] = ( wpfval( $_general, 'title' ) ) ?: 'Forum';
 				$board['settings']['desc']  = ( wpfval( $_general, 'description' ) ) ?: 'Discussion Board';
-				$settings                   = json_encode( $board['settings'] );
+				$settings                   = wp_json_encode( $board['settings'] );
 				WPF()->db->query( "UPDATE `" . WPF()->tables->boards . "` SET `slug` = CONCAT('community-', `boardid`) WHERE `slug` = 'community' AND `boardid` != 0" );
 				$slug                         = basename( trim( (string) wpforo_get_option( 'wpforo_permastruct', 'community', false ), '/' ) );
 				$board['slug']                = ( $slug ) ?: 'community';
@@ -1540,7 +1540,7 @@ function wpforo_database_fixer( $problems ) {
 				$all_modules                  = array_map( '__return_true', wpforo_get_modules_info() );
 				$all_addons                   = array_map( '__return_true', wpforo_get_addons_info() );
 				$modules                      = array_merge( $all_modules, $all_addons );
-				$board['modules']             = json_encode( array_map( function( $a ) { return (bool) intval( $a ); }, $modules ) );
+				$board['modules']             = wp_json_encode( array_map( function( $a ) { return (bool) intval( $a ); }, $modules ) );
 				$SQL['data']['pre_board']     = "SET sql_mode='NO_AUTO_VALUE_ON_ZERO';";
 				$SQL['data']['default_board'] = "INSERT INTO `" . WPF()->tables->boards . "` (`boardid`, `title`, `slug`, `pageid`, `modules`, `locale`, `is_standalone`, `excld_urls`, `status`, `settings`)
                 VALUES(0, '" . esc_sql( $board['title'] ) . "', '" . esc_sql( $board['slug'] ) . "', " . intval( $board['pageid'] ) . ",

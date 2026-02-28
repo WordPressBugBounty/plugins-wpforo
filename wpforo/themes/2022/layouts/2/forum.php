@@ -50,7 +50,7 @@ $cover_styles = wpforo_get_forum_cover_styles( $cat );
                     <h3 class="wpforo-forum-title"><a href="<?php echo esc_url( (string) wpforo_forum( $forum['forumid'], 'url' ) ) ?>"><?php echo esc_html(
 								$forum['title']
 							); ?></a> <?php wpforo_viewing( $forum ); ?></h3>
-                    <div class="wpforo-forum-description"><?php echo $forum['description'] ?></div>
+                    <div class="wpforo-forum-description"><?php echo wp_kses_post( $forum['description'] ) ?></div>
 					<?php $sub_forums = WPF()->forum->get_forums( [ "parentid" => $forum['forumid'], "type" => 'forum' ] ); ?>
 					<?php if( is_array( $sub_forums ) && ! empty( $sub_forums ) ) : ?>
 

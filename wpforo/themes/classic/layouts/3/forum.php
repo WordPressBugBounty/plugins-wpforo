@@ -55,7 +55,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
                 <div class="wpforo-forum-icon"><i class="<?php echo esc_attr( $forum_icon ) ?> wpfcl-0"></i></div>
                 <div class="wpforo-forum-info">
                     <h3 class="wpforo-forum-title"><a href="<?php echo esc_url( (string) $forum_url ) ?>"><?php echo esc_html( $forum['title'] ); ?></a> <?php wpforo_viewing( $forum ); ?></h3>
-                    <div class="wpforo-forum-description"><?php echo $forum['description'] ?></div>
+                    <div class="wpforo-forum-description"><?php echo wp_kses_post( $forum['description'] ) ?></div>
 					
 					<?php if( $has_sub_forums ) : ?>
 

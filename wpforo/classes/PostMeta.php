@@ -105,7 +105,7 @@ class PostMeta {
 
 		if( is_null( $postmeta['metavalue'] ) ) $postmeta['metavalue'] = '';
 		$postmeta['metavalue'] = wp_unslash( $postmeta['metavalue'] );
-		if( ! is_scalar( $postmeta['metavalue'] ) ) $postmeta['metavalue'] = json_encode( (array) $postmeta['metavalue'] );
+		if( ! is_scalar( $postmeta['metavalue'] ) ) $postmeta['metavalue'] = wp_json_encode( (array) $postmeta['metavalue'] );
 
 		$postmeta = wpforo_array_ordered_intersect_key( $postmeta, $this->default->postmeta_format );
 		if( WPF()->db->insert(
@@ -136,7 +136,7 @@ class PostMeta {
 		if( wpfkey( $postmeta, 'metavalue' ) ) {
 			if( is_null( $postmeta['metavalue'] ) ) $postmeta['metavalue'] = '';
 			$postmeta['metavalue'] = wp_unslash( $postmeta['metavalue'] );
-			if( ! is_scalar( $postmeta['metavalue'] ) ) $postmeta['metavalue'] = json_encode( (array) $postmeta['metavalue'] );
+			if( ! is_scalar( $postmeta['metavalue'] ) ) $postmeta['metavalue'] = wp_json_encode( (array) $postmeta['metavalue'] );
 		}
 
 		$postmeta = wpforo_array_ordered_intersect_key( $postmeta, $this->default->postmeta_format );
@@ -283,7 +283,7 @@ class PostMeta {
 		$args = wpforo_array_ordered_intersect_key( (array) $args, $this->default->sql_select_args );
 		if( empty( $args ) ) return [];
 
-		$key = 'get_postmetas_' . json_encode( $args ) . '_' . $field;
+		$key = 'get_postmetas_' . wp_json_encode( $args ) . '_' . $field;
 		if( WPF()->ram_cache->exists( $key ) ) return WPF()->ram_cache->get( $key );
 
 		$postmetas = WPF()->db->get_col( $this->build_sql_select( $args, "`$field`" ) );
@@ -302,7 +302,7 @@ class PostMeta {
 		$args = wpforo_array_ordered_intersect_key( (array) $args, $this->default->sql_select_args );
 		if( empty( $args ) ) return [];
 
-		$key = 'get_postmetas_' . json_encode( $args );
+		$key = 'get_postmetas_' . wp_json_encode( $args );
 		if( WPF()->ram_cache->exists( $key ) ) return WPF()->ram_cache->get( $key );
 
 		if( $postmetas = (array) WPF()->db->get_results( $this->build_sql_select( $args ), ARRAY_A ) ) {
@@ -325,7 +325,7 @@ class PostMeta {
 		if( ! $postid = wpforo_bigintval( $postid ) ) return null;
 		$metakeys = array_filter( (array) $metakeys );
 
-		$key = 'get_postmeta_' . $postid . '_' . json_encode( $metakeys ) . '_' . $single;
+		$key = 'get_postmeta_' . $postid . '_' . wp_json_encode( $metakeys ) . '_' . $single;
 		if( WPF()->ram_cache->exists( $key ) ) return WPF()->ram_cache->get( $key );
 
 		$postmeta = null;

@@ -39,7 +39,7 @@ class RamCache {
 	 * @return string
 	 */
 	private function fix_key( $key ) {
-		if( ! is_scalar( $key ) ) $key = json_encode( $key );
+		if( ! is_scalar( $key ) ) $key = wp_json_encode( $key );
 
 		return md5( $key );
 	}

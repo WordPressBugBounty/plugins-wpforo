@@ -243,11 +243,11 @@ class Members {
         $member['secondary_groupids'] = implode( ',', $member['secondary_groupids'] );
         $member['groupids']           = implode( ',', $member['groupids'] );
         unset( $member['reactions_in']['__ALL__'], $member['reactions_out']['__ALL__'] );
-        $member['reactions_in']       = json_encode( $member['reactions_in'] );
-        $member['reactions_out']      = json_encode( $member['reactions_out'] );
+        $member['reactions_in']       = wp_json_encode( $member['reactions_in'] );
+        $member['reactions_out']      = wp_json_encode( $member['reactions_out'] );
         $member['is_email_confirmed'] = intval( $member['is_email_confirmed'] );
         $member['is_mention_muted']   = intval( $member['is_mention_muted'] );
-        $member['fields']             = json_encode( $member['fields'] );
+        $member['fields']             = wp_json_encode( $member['fields'] );
 
         return $member;
     }
@@ -1078,7 +1078,7 @@ class Members {
             $custom_fields = wpforo_unslashe( $custom_fields );
             $custom_fields = wpforo_decode( $custom_fields );
             $custom_fields = wpforo_encode( $custom_fields );
-            $fields_json   = json_encode( $custom_fields, JSON_UNESCAPED_UNICODE );
+            $fields_json   = wp_json_encode( $custom_fields, JSON_UNESCAPED_UNICODE );
             $sql           = "UPDATE `" . WPF()->tables->profiles . "` SET `fields` = %s WHERE `userid` = %d;";
             $sql           = WPF()->db->prepare( $sql, $fields_json, $userid );
             $result        = WPF()->db->query( $sql );
@@ -1104,7 +1104,7 @@ class Members {
             if( $data_old && is_array( $data_old ) ) {
                 $custom_fields = wp_parse_args( $custom_fields, $data_old );
             }
-            $fields_json   = json_encode( $custom_fields, JSON_UNESCAPED_UNICODE );
+            $fields_json   = wp_json_encode( $custom_fields, JSON_UNESCAPED_UNICODE );
             $sql           = "UPDATE `" . WPF()->tables->profiles . "` SET `fields` = %s WHERE `userid` = %d;";
             $sql           = WPF()->db->prepare( $sql, $fields_json, $userid );
             $result_fields = WPF()->db->query( $sql );
@@ -4022,8 +4022,8 @@ class Members {
                         'questions'     => $questions,
                         'answers'       => $answers,
                         'comments'      => $comments,
-                        'reactions_in'  => json_encode( $reactions_in ),
-                        'reactions_out' => json_encode( $reactions_out ),
+                        'reactions_in'  => wp_json_encode( $reactions_in ),
+                        'reactions_out' => wp_json_encode( $reactions_out ),
                         'points'        => $points,
                 ],
                 [ 'userid' => $userid ],

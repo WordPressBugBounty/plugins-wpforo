@@ -68,7 +68,7 @@ class OnlineMembers extends WP_Widget {
 		];
 		if( WPF()->board->get_current( 'boardid' ) !== 0 ) $data['referer'] = home_url();
 		$html = $this->get_widget( $data['instance'] );
-        $json = json_encode( $data );
+        $json = wp_json_encode( $data );
 		wp_enqueue_script( 'wpforo-widgets-js' );
 		echo $args['before_widget'] . '<div id="wpf-widget-online-users" class="wpforo-widget-wrap">';
 		if( $instance['title'] ) echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];

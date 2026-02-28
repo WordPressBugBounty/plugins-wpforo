@@ -1642,7 +1642,7 @@ function wpforo_topic_navi( $topic ) {
                         <select onchange="window.location.href = wpf_forum_urls['forum_' + this.value]">
                             <?php WPF()->forum->tree( 'select_box', false, $topic['forumid'], true ); ?>
                         </select>
-                        <script>var wpf_forum_json = '<?php echo json_encode( $forum_urls ) ?>';
+                        <script>var wpf_forum_json = '<?php echo wp_json_encode( $forum_urls ) ?>';
 							var wpf_forum_urls = JSON.parse(wpf_forum_json);</script>
                     </div>
                 <?php else: ?>

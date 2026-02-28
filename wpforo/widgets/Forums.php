@@ -44,7 +44,7 @@ class Forums extends WP_Widget {
 				echo '</select>';
 				?>
                 <script>
-                    var wpf_forum_json = '<?php echo json_encode( $forum_urls ) ?>';
+                    var wpf_forum_json = '<?php echo wp_json_encode( $forum_urls ) ?>';
                     var wpf_forum_urls = JSON.parse(wpf_forum_json);
                 </script>
 				<?php
@@ -78,7 +78,7 @@ class Forums extends WP_Widget {
             $onload = true;
 			$data['referer'] = home_url();
 		}
-		$json = json_encode( $data );
+		$json = wp_json_encode( $data );
 		echo $args['before_widget'] . '<div id="wpf-widget-forums" class="wpforo-widget-wrap">';
 		if ( $instance['title'] ) echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];
 		echo '<div class="wpforo-widget-content wpforo-ajax-widget ' . ( ! $onload ? 'wpforo-ajax-widget-onload-false' : '' ) . '" data-json="' . esc_attr( $json ) . '">' . $html . '</div></div>' . $args['after_widget'];

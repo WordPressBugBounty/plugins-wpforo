@@ -110,7 +110,7 @@ class Notices {
 				WPF()->db->insert( WPF()->tables->logs, [
 					'sessionid' => WPF()->session_token,
 					'key'       => $type,
-					'value'     => json_encode( (array) $args ),
+					'value'     => wp_json_encode( (array) $args ),
 				],                 [ '%s', '%s', '%s' ] );
 				WPF()->db->insert_id = $insert_id_backup;
 			}

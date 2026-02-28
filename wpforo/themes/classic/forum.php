@@ -16,7 +16,7 @@ if( ! $forum = WPF()->current_object['forum'] ) : ?>
         <div class="wpf-head-bar-left">
             <h1 id="wpforo-title"><?php echo esc_html( $forum['title'] ) ?></h1>
 			<?php if( $forum['description'] ): ?>
-                <div id="wpforo-description"><?php echo $forum['description'] ?></div>
+                <div id="wpforo-description"><?php echo wp_kses_post( $forum['description'] ) ?></div>
 			<?php endif; ?>
             <div class="wpf-action-link">
 	            <?php do_action( 'wpforo_template_forum_head_bar_action_links', $forum ); ?>

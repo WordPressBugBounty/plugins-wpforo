@@ -5,7 +5,7 @@
 * Description: WordPress Forum plugin. wpForo is a full-fledged forum solution for your community. Comes with multiple modern forum layouts.
 * Author: gVectors Team
 * Author URI: https://gvectors.com/
-* Version: 2.4.15
+* Version: 2.4.16
 * Requires at least: 5.2
 * Requires PHP: 7.2
 * Text Domain: wpforo
@@ -14,7 +14,7 @@
 
 namespace wpforo;
 
-define( 'WPFORO_VERSION', '2.4.15' );
+define( 'WPFORO_VERSION', '2.4.16' );
 
 //Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;
@@ -361,6 +361,7 @@ final class wpforo {
 			) ) {
 			add_action( 'init', [ $this, 'init' ], 99 );
 			add_action( 'admin_init', [ $this, 'admin_init' ] );
+			$this->init_v3_upgrade_hooks();
 		} elseif( strpos( (string) $_SERVER['REQUEST_URI'], '/wp-json/' ) !== false ) {
 			add_filter( 'rest_authentication_errors', function( $r ) {
 				$this->init();
@@ -537,7 +538,131 @@ final class wpforo {
 			add_action( 'admin_notices', 'wpforo_cache_information', 10 );
 		}
 	}
-	
+
+	/**
+	 * Register hooks for wpForo 3.0 major upgrade protection.
+	 *
+	 * - Blocks auto-updates from 2.x to 3.x
+	 * - Shows admin dashboard notice about wpForo 3.0 AI Edition
+	 * - Adds inline warning on Plugins page update row
+	 * - Replaces auto-update toggle text when major update is pending
+	 */
+	private function init_v3_upgrade_hooks() {
+		// 1. Block auto-updates for major version change (2.x → 3.x)
+		add_filter( 'auto_update_plugin', function( $update, $item ) {
+			if( ! isset( $item->plugin, $item->new_version ) || WPFORO_BASENAME !== $item->plugin ) {
+				return $update;
+			}
+			$current_major = explode( '.', WPFORO_VERSION )[0];
+			$new_major     = explode( '.', $item->new_version )[0];
+			if( $current_major !== $new_major ) {
+				return false;
+			}
+			return $update;
+		}, 10, 2 );
+
+		// 2. Replace auto-update toggle with explanation when major update is pending
+		add_filter( 'plugin_auto_update_setting_html', function( $html, $plugin_file, $plugin_data ) {
+			if( WPFORO_BASENAME !== $plugin_file ) {
+				return $html;
+			}
+			$update_plugins = get_site_transient( 'update_plugins' );
+			if( ! isset( $update_plugins->response[ $plugin_file ] ) ) {
+				return $html;
+			}
+			$new_version   = $update_plugins->response[ $plugin_file ]->new_version;
+			$current_major = explode( '.', WPFORO_VERSION )[0];
+			$new_major     = explode( '.', $new_version )[0];
+			if( $current_major !== $new_major ) {
+				return '<em style="color:#d63638;">'
+				       . esc_html__( 'Auto-updates disabled for this major release. Please update manually after creating a full backup.', 'wpforo' )
+				       . '</em>';
+			}
+			return $html;
+		}, 10, 3 );
+
+		// 3. Inline warning on Plugins page update row
+		add_action( 'in_plugin_update_message-' . WPFORO_BASENAME, function( $plugin_data, $response ) {
+			if( ! isset( $response->new_version ) ) {
+				return;
+			}
+			$current_major = explode( '.', WPFORO_VERSION )[0];
+			$new_major     = explode( '.', $response->new_version )[0];
+			if( $current_major !== $new_major ) {
+				echo '</p><p style="margin-top:8px;padding:10px 14px;background:#fef3e2;border-left:4px solid #dba617;font-size:13px;line-height:1.5;">';
+				echo '<strong style="color:#1d2327;">' . esc_html__( 'Important: Major Version Update!', 'wpforo' ) . '</strong><br>';
+				echo esc_html__( 'wpForo 3.0 AI Edition is a major release with significant changes. Please create a full backup of your site and database before updating.', 'wpforo' );
+				echo ' <a href="https://v3.wpforo.com/" target="_blank" style="white-space:nowrap;">' . esc_html__( 'Learn more about wpForo 3.0', 'wpforo' ) . ' &rarr;</a>';
+			}
+		}, 10, 2 );
+
+		// 4. Dashboard admin notice announcing wpForo 3.0 AI Edition
+		add_action( 'admin_notices', function() {
+			if( get_option( 'wpforo_v3_notice_dismissed' ) ) {
+				return;
+			}
+			$update_plugins = get_site_transient( 'update_plugins' );
+			$v3_available   = false;
+			if( isset( $update_plugins->response[ WPFORO_BASENAME ] ) ) {
+				$new_major  = explode( '.', $update_plugins->response[ WPFORO_BASENAME ]->new_version )[0];
+				$v3_available = ( $new_major === '3' );
+			}
+			?>
+			<div class="notice notice-info wpforo-v3-notice" style="padding:16px 20px;border-left-color:#2b96de;">
+				<div style="display:flex;align-items:flex-start;gap:16px;">
+					<div style="flex-shrink:0;width:48px;height:48px;background:linear-gradient(135deg,#2b96de 0%,#1a73b5 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-top:2px;">
+						<span style="color:#fff;font-size:18px;font-weight:800;">3.0</span>
+					</div>
+					<div style="flex:1;">
+						<h3 style="margin:0 0 6px;font-size:15px;color:#1d2327;">
+							<?php echo esc_html__( 'wpForo 3.0 AI Edition is Here!', 'wpforo' ); ?>
+						</h3>
+						<p style="margin:0 0 10px;font-size:13.5px;color:#50575e;line-height:1.6;">
+							<?php
+							echo esc_html__(
+								'The next version of wpForo is a major release with a brand-new theme, AI-powered features, improved layouts, and much more. We encourage you to test it on a staging site before updating your live forum.',
+								'wpforo'
+							);
+							?>
+						</p>
+						<p style="margin:0;display:flex;gap:10px;flex-wrap:wrap;">
+							<a href="https://v3.wpforo.com/" target="_blank" class="button button-primary">
+								<?php echo esc_html__( 'Explore wpForo 3.0', 'wpforo' ); ?>
+							</a>
+							<a href="https://wpforo.com/community/wpforo-3-beta-test/wpforo-3-0-ai-edition-we-start-early-access-beta-program/" target="_blank" class="button">
+								<?php echo esc_html__( 'Join the Beta Program', 'wpforo' ); ?>
+							</a>
+							<?php if( $v3_available ) : ?>
+							<a href="<?php echo esc_url( admin_url( 'update-core.php' ) ); ?>" class="button">
+								<?php echo esc_html__( 'Update Now', 'wpforo' ); ?>
+							</a>
+							<?php endif; ?>
+						</p>
+					</div>
+					<button type="button" class="notice-dismiss wpforo-v3-dismiss" style="position:relative;top:0;right:0;padding:0;flex-shrink:0;">
+						<span class="screen-reader-text"><?php echo esc_html__( 'Dismiss this notice.', 'wpforo' ); ?></span>
+					</button>
+				</div>
+			</div>
+			<script>
+			jQuery(function($){
+				$('.wpforo-v3-notice').on('click','.wpforo-v3-dismiss',function(){
+					$(this).closest('.notice').fadeOut(200);
+					$.post(ajaxurl,{action:'wpforo_dismiss_v3_notice',_wpnonce:'<?php echo esc_js( wp_create_nonce( 'wpforo_dismiss_v3' ) ); ?>'});
+				});
+			});
+			</script>
+			<?php
+		} );
+
+		// AJAX handler for persistent dismissal
+		add_action( 'wp_ajax_wpforo_dismiss_v3_notice', function() {
+			check_ajax_referer( 'wpforo_dismiss_v3', '_wpnonce' );
+			update_option( 'wpforo_v3_notice_dismissed', 1 );
+			wp_send_json_success();
+		} );
+	}
+
 	public function init() {
 		do_action( 'wpforo_before_init' );
 		$this->init_classes();

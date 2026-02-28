@@ -792,7 +792,7 @@ class Forms {
 					)
 				)
 			) : '' ),
-			esc_attr( json_encode( $f['values'] ) )
+			esc_attr( wp_json_encode( $f['values'] ) )
 		);
 	}
 	

@@ -60,7 +60,7 @@ class Search extends WP_Widget {
             $onload = true;
 			$data['referer'] = home_url();
 		}
-		$json = json_encode( $data );
+		$json = wp_json_encode( $data );
 
 		echo $args['before_widget'] . '<div id="wpf-widget-search" class="wpforo-widget-wrap">';
 		if( $instance['title'] ) echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];

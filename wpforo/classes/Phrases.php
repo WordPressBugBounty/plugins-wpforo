@@ -417,12 +417,12 @@ class Phrases {
 	
 	public function ajax_get_phrases() {
 		wpforo_verify_nonce( 'wpforo_get_phrases' );
-		echo json_encode( $this->__phrases );
+		echo wp_json_encode( $this->__phrases );
 		exit();
 	}
 	
 	public function get_wpforo_phrases_inline_js() {
-		return 'window.wpforo_phrases = ' . json_encode( $this->__phrases ) . ';';
+		return 'window.wpforo_phrases = ' . wp_json_encode( $this->__phrases ) . ';';
 	}
 	
 }

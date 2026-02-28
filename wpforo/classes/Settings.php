@@ -4364,7 +4364,7 @@ class Settings extends stdClass {
 				}
 			}
 			
-			$json = json_encode( $settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+			$json = wp_json_encode( $settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
 			
 			header( 'Content-Type: application/json' );
 			header( 'Content-Disposition: attachment; filename="wpforo-settings-' . date( 'Y-m-d_H-i-s' ) . '.json"' );

@@ -39,7 +39,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
                     <h3 class="wpforo-forum-title"><a href="<?php echo esc_url( (string) wpforo_forum( $forum['forumid'], 'url' ) ) ?>"><?php echo esc_html(
 								$forum['title']
 							); ?></a> <?php wpforo_viewing( $forum ); ?></h3>
-                    <div class="wpforo-forum-description"><?php echo $forum['description'] ?></div>
+                    <div class="wpforo-forum-description"><?php echo wp_kses_post( $forum['description'] ) ?></div>
 					<?php $counts = wpforo_forum( $forum['forumid'], 'counts' ); ?>
                     <span class="wpforo-forum-stat">
 		            	<?php wpforo_phrase( 'Topics' ) ?>: <?php echo wpforo_print_number( $counts['topics'] ) ?> &nbsp;<span class="wpfcl-1">|</span>&nbsp; <?php wpforo_phrase(

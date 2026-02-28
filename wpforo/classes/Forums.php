@@ -1009,7 +1009,7 @@ class Forums {
 		if( ! $parentids ) $parentids = WPF()->db->get_col( "SELECT `forumid` FROM `" . WPF()->tables->forums . "` WHERE `parentid` = 0 ORDER BY `order`" );
 		if( ! empty( $parentids ) ) {
 			if( $cache && ! wpforo_is_admin() ) {
-				$key                    = md5( serialize( $parentids ) . $type . (int) $cats . json_encode( WPF()->current_user_groupids ) );
+				$key                    = md5( serialize( $parentids ) . $type . (int) $cats . wp_json_encode( WPF()->current_user_groupids ) );
 				$html                   = wpforo_get_option( 'forum_tree_' . $key, '' );
 				$pattern_strip_selected = '#(<(?:option|input)[^<>]*?)[\r\n\t\s]*(?:selected|checked)[^\r\n\t\s]*?((?:[\r\n\t\s][^<>]*)?>)#isu';
 				if( $html ) {

@@ -273,17 +273,25 @@ class Actions {
 						                                             'row_count'     => $topic_rss_items,
 						                                             'orderby'       => '`created` DESC, `postid` DESC',
 						                                             'check_private' => true,
+						                                             'status'        => 0,
 					                                             ] );
 					$topic['title']    = '';
 					$topic['topicurl'] = wpforo_home_url();
 				} else {
-					$topic             = wpforo_topic( $topicid );
+					$topic = wpforo_topic( $topicid );
+					if( ! empty( $topic ) && ( intval( wpfval( $topic, 'private' ) ) || intval( wpfval( $topic, 'status' ) ) ) ) {
+						$topic = [];
+					}
+					if( empty( $topic ) ) {
+						WPF()->feed->rss2_topic( $forum, [], [] );
+					}
 					$topic['topicurl'] = ( wpfval( $topic, 'url' ) ) ? $topic['url'] : WPF()->topic->get_url( $topicid );
 					$posts             = WPF()->post->get_posts( [
 						                                             'topicid'       => $topicid,
 						                                             'row_count'     => $topic_rss_items,
 						                                             'orderby'       => '`created` DESC, `postid` DESC',
 						                                             'check_private' => true,
+						                                             'status'        => 0,
 					                                             ] );
 				}
 				foreach( $posts as $key => $post ) {
@@ -300,6 +308,8 @@ class Actions {
 						                                    'row_count' => $forum_rss_items,
 						                                    'orderby'   => 'created',
 						                                    'order'     => 'DESC',
+						                                    'private'   => 0,
+						                                    'status'    => 0,
 					                                    ] );
 				} else {
 					$topics = WPF()->topic->get_topics( [
@@ -307,6 +317,8 @@ class Actions {
 						                                    'row_count' => $forum_rss_items,
 						                                    'orderby'   => 'created',
 						                                    'order'     => 'DESC',
+						                                    'private'   => 0,
+						                                    'status'    => 0,
 					                                    ] );
 				}
 				foreach( $topics as $key => $topic ) {
@@ -791,6 +803,11 @@ class Actions {
 			$topicid = intval( wpfval( $_POST['topic_move'], 'topicid' ) );
 			$forumid = intval( wpfval( $_POST['topic_move'], 'forumid' ) );
 			if( $topicid && $forumid ) {
+				$topic = WPF()->topic->get_topic( $topicid );
+				if( ! $topic || ! WPF()->perm->forum_can( 'mt', $topic['forumid'] ) ) {
+					wp_safe_redirect( wpforo_get_request_uri() );
+					exit();
+				}
 				WPF()->topic->move( $topicid, $forumid );
 				$url = WPF()->topic->get_url( $topicid, [], false );
 				wpforo_clean_cache();
@@ -798,7 +815,7 @@ class Actions {
 				exit();
 			}
 		}
-		
+
 		wp_safe_redirect( wpforo_get_request_uri() );
 		exit();
 	}
@@ -809,6 +826,10 @@ class Actions {
 	public function topic_merge() {
 		wpforo_verify_form();
 		$redirect_to = wpforo_get_request_uri();
+		if( ! WPF()->current_object['topic'] || ! WPF()->perm->forum_can( 'mt', WPF()->current_object['topic']['forumid'] ) ) {
+			wp_safe_redirect( $redirect_to );
+			exit();
+		}
 		if( WPF()->current_object['topic'] && ! empty( $_POST['wpforo'] ) && ! empty( $_POST['wpforo']['target_topic_url'] ) ) {
 			$target_slug = wpforo_get_topic_slug_from_url( esc_url( (string) $_POST['wpforo']['target_topic_url'] ) );
 			if( ! is_null( $target_slug ) && $target = WPF()->topic->get_topic( $target_slug ) ) {
@@ -833,6 +854,10 @@ class Actions {
 	public function topic_split() {
 		wpforo_verify_form();
 		$redirect_to = wpforo_get_request_uri();
+		if( ! WPF()->current_object['topic'] || ! WPF()->perm->forum_can( 'mt', WPF()->current_object['topic']['forumid'] ) ) {
+			wp_safe_redirect( $redirect_to );
+			exit();
+		}
 		if( WPF()->current_object['topic'] && ! empty( $_POST['wpforo'] ) ) {
 			if( ! empty( $_POST['wpforo']['create_new'] ) ) {
 				$args            = [
@@ -2429,7 +2454,7 @@ class Actions {
 			
 			wp_mail( $to, $subject, $message, $headers );
 		}
-		wp_die( json_encode( $response ) );
+		wp_die( wp_json_encode( $response ) );
 	}
 	
 	/**
