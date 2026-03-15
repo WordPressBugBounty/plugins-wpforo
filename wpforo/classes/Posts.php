@@ -1371,7 +1371,13 @@ class Posts {
 			if( preg_match_all( '|\/wpforo\/default_attachments\/([^\s\"\]]+)|i', (string) $post['body'], $attachments, PREG_SET_ORDER ) ) {
 				foreach( $attachments as $attachment ) {
 					$filename = trim( $attachment[1] );
+					$filename = str_replace( [ '../', './', '\\' ], '', $filename );
 					$file     = WPF()->folders['default_attachments']['dir'] . DIRECTORY_SEPARATOR . $filename;
+					$real_file = realpath( $file );
+					$real_dir  = realpath( WPF()->folders['default_attachments']['dir'] );
+					if( ! $real_file || ! $real_dir || strpos( $real_file, $real_dir . DIRECTORY_SEPARATOR ) !== 0 ) {
+						continue;
+					}
 					if( file_exists( $file ) ) {
 						$posts = WPF()->db->get_var( "SELECT COUNT(*) as posts FROM `" . WPF()->tables->posts . "` WHERE `body` LIKE '%" . esc_sql( $attachment[0] ) . "%'" );
 						if( is_numeric( $posts ) && $posts == 1 ) {

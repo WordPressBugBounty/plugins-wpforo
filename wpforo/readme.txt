@@ -1,9 +1,9 @@
-=== wpForo Forum ===
+﻿=== wpForo Forum ===
 Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.1
 Tested up to: 6.9
-Stable tag: 2.4.16
+Stable tag: 2.4.17
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -184,8 +184,6 @@ Find wpForo forum plugin addons on [gVectors Team website...](https://gvectors.c
 Major update! wpForo 3.0 AI Edition is a major release with a new theme, AI-powered features, and significant database changes. Please create a full backup of your site and database before updating. Test on a staging site first. More info at [wpForo 3.0 Beta Release Summary](https://wpforo.com/community/wpforo-3-beta-test/wpforo-3-0-ai-edition-we-start-early-access-beta-program/)
 
 
-= 2.4.16 =
-Preparation release for wpForo 3.0 AI Edition. Adds upgrade protection and admin notice about the upcoming major version.
 
 
 == Changelog ==
@@ -196,9 +194,14 @@ IMPORTANT NOTES for UPDATE
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
 
-= wpForo Forum 2.4.16 - Last 2.x Version | 28.02.2026 =
+= wpForo Forum 2.4.17 - Last 2.x Version | 15.03.2026 =
+
+* Security: Authenticated (Subscriber+) Arbitrary File Deletion
 
 [Next wpForo Release - v3.0 Beta Release Summary](https://wpforo.com/community/wpforo-3-beta-test/wpforo-3-0-ai-edition-we-start-early-access-beta-program/)
+
+
+= wpForo Forum 2.4.16 | 28.02.2026 =
 
 * New: Admin notice announcing wpForo 3.0 AI Edition with links to introduction and beta program
 * New: Auto-update protection — blocks automatic updates from 2.x to 3.x to prevent unattended major upgrades
