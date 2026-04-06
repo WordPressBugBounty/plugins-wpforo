@@ -34,7 +34,9 @@ class Settings extends stdClass {
 	public $_rss;
 	public $_social;
 	public $_legal;
-	
+	public $_ai;
+	public $_activity;
+
 	public $general;
 	public $board;
 	public $slugs = [];
@@ -54,6 +56,7 @@ class Settings extends stdClass {
 	public $email;
 	public $subscriptions;
 	public $notifications;
+	public $activity;
 	public $logging;
 	public $seo;
 	public $antispam;
@@ -61,7 +64,8 @@ class Settings extends stdClass {
 	public $rss;
 	public $social;
 	public $legal;
-	
+	public $ai;
+
 	private function templates_to__slugs( $templates ) {
 		foreach( $templates as $template_key => $template ) {
 			if( ! wpfkey( $this->_slugs, $template_key ) ) $this->_slugs[ $template_key ] = ( wpfval( $template, 'slug' ) ?: $template_key );
@@ -91,9 +95,9 @@ class Settings extends stdClass {
 	}
 	
 	private function init__SERVER() {
-		$umf           = wpforo_human_size_to_bytes( ini_get( 'upload_max_filesize' ) );
-		$pms           = wpforo_human_size_to_bytes( ini_get( 'post_max_size' ) );
-		$maxs_min      = min( $umf, $pms );
+		$umf           = (int) wpforo_human_size_to_bytes( ini_get( 'upload_max_filesize' ) );
+		$pms           = (int) wpforo_human_size_to_bytes( ini_get( 'post_max_size' ) );
+		$maxs_min      = max( 1, min( $umf, $pms ) );
 		$this->_SERVER = [
 			'upload_max_filesize'       => $umf,
 			'post_max_size'             => $pms,
@@ -152,7 +156,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable wpForo Font-Awesome Lib", "wpforo" ),
 						"label_original"       => "Enable wpForo Font-Awesome Lib",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 'sitewide', 'label' => 'Sitewide' ],
@@ -254,7 +258,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Show Forum Page Title", "wpforo" ),
 						"label_original"       => "Show Forum Page Title",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/#show-forum-page-title",
 					],
@@ -270,8 +274,8 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Show Search Section in the Forum Menu Bar", "wpforo" ),
 						"label_original"       => "Show Search Section in the Forum Menu Bar",
-						"description"          => esc_html__( "", "wpforo" ),
-						"description_original" => "",
+						"description"          => esc_html__( "The search icon in the forum menu will be hidden on the home page if the &quot;Open [AI Assistant] widget by Default on Home Page&quot; option is enabled in AI Features setting page.", "wpforo" ),
+						"description_original" => "The search icon in the forum menu will be hidden on the home page if the &quot;Open [AI Assistant] widget by Default on Home Page&quot; option is enabled in AI Features setting page.",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/#forum-menu-search-section-and-breadcrumb",
 					],
 					"sidebar_location" => [
@@ -295,7 +299,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Show Breadcrumb", "wpforo" ),
 						"label_original"       => "Show Breadcrumb",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/#forum-menu-search-section-and-breadcrumb",
 					],
@@ -314,7 +318,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Show Forum Statistic", "wpforo" ),
 						"label_original"       => "Show Forum Statistic",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/#forum-footer-and-statistics",
 					],
@@ -352,7 +356,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Extended Layout - Recent topics", "wpforo" ),
 						"label_original"       => "Extended Layout - Recent topics",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => false, 'label' => __( 'Collapsed', 'wpforo' ) ],
@@ -365,7 +369,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Extended Layout - Number of Recent topics", "wpforo" ),
 						"label_original"       => "Extended Layout - Number of Recent topics",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#extended-forum-layout",
 					],
@@ -382,7 +386,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Simplified Layout - Display Add Topic Button on Forum List", "wpforo" ),
 						"label_original"       => "Simplified Layout - Display Add Topic Button on Forum List",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#simplified-forum-layout",
 					],
@@ -390,7 +394,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Q&A Layout - Recent topics", "wpforo" ),
 						"label_original"       => "Q&A Layout - Recent topics",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => false, 'label' => __( 'Collapsed', 'wpforo' ) ],
@@ -403,7 +407,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Q&A Layout - Number of Recent topics", "wpforo" ),
 						"label_original"       => "Q&A Layout - Number of Recent topics",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#q-a-forum-layout",
 					],
@@ -420,7 +424,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Q&A Layout - Display Add Topic Button on Forum List", "wpforo" ),
 						"label_original"       => "Q&A Layout - Display Add Topic Button on Forum List",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#q-a-forum-layout",
 					],
@@ -428,7 +432,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Threaded Layout - Forums List", "wpforo" ),
 						"label_original"       => "Threaded Layout - Forums List",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => false, 'label' => __( 'Collapsed', 'wpforo' ) ],
@@ -440,7 +444,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Threaded Layout - Display Sub Forums with Parent Forums", "wpforo" ),
 						"label_original"       => "Threaded Layout - Display Sub Forums with Parent Forums",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#threaded-forum-layout",
 					],
@@ -448,7 +452,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Threaded Layout - Display Thread Filtering Buttons", "wpforo" ),
 						"label_original"       => "Threaded Layout - Display Thread Filtering Buttons",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -456,7 +460,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Threaded Layout - Display Add Topic Button on Forum List", "wpforo" ),
 						"label_original"       => "Threaded Layout - Display Add Topic Button on Forum List",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#threaded-forum-layout",
 					],
@@ -465,7 +469,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Threaded Layout - Number of Recent topics", "wpforo" ),
 						"label_original"       => "Threaded Layout - Number of Recent topics",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#threaded-forum-layout",
 					],
@@ -474,7 +478,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Threaded Layout - Recent topic length", "wpforo" ),
 						"label_original"       => "Threaded Layout - Recent topic length",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#threaded-forum-layout",
 					],
@@ -510,7 +514,7 @@ class Settings extends stdClass {
 						"type"                 => "select",
 						"label"                => esc_html__( "Forums font size:", "wpforo" ),
 						"label_original"       => "Forums font size:",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 11, 'label' => '11px' ],
@@ -536,7 +540,7 @@ class Settings extends stdClass {
 						"type"                 => "select",
 						"label"                => esc_html__( "Topics font size:", "wpforo" ),
 						"label_original"       => "Topics font size:",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 11, 'label' => '11px' ],
@@ -562,7 +566,7 @@ class Settings extends stdClass {
 						"type"                 => "select",
 						"label"                => esc_html__( "Post content font size:", "wpforo" ),
 						"label_original"       => "Post content font size:",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 11, 'label' => '11px' ],
@@ -588,7 +592,7 @@ class Settings extends stdClass {
 						"type"                 => "textarea",
 						"label"                => esc_html__( "Custom CSS Code", "wpforo" ),
 						"label_original"       => "Custom CSS Code",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/colors-styles/#custom-css-code",
 					],
@@ -596,7 +600,7 @@ class Settings extends stdClass {
 						"type"                 => "color",
 						"label"                => esc_html__( "Forum Color Styles", "wpforo" ),
 						"label_original"       => "Forum Color Styles",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/colors-styles/#forum-styles",
 					],
@@ -622,7 +626,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Extended Layout - Recent posts", "wpforo" ),
 						"label_original"       => "Extended Layout - Recent posts",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => false, 'label' => __( 'Collapsed', 'wpforo' ) ],
@@ -644,7 +648,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Extended Layout - Recent post length", "wpforo" ),
 						"label_original"       => "Extended Layout - Recent post length",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#extended-forum-layout",
 					],
@@ -653,7 +657,7 @@ class Settings extends stdClass {
 						"min"                  => 5,
 						"label"                => esc_html__( "Q&A Layout - Number of Answers per Page", "wpforo" ),
 						"label_original"       => "Q&A Layout - Number of Answers per Page",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#q-a-forum-layout",
 					],
@@ -673,7 +677,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Q&A Layout - Enable Comments on the First Post (question)", "wpforo" ),
 						"label_original"       => "Q&A Layout - Enable Comments on the First Post (question)",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#q-a-forum-layout",
 					],
@@ -682,7 +686,7 @@ class Settings extends stdClass {
 						"min"                  => 5,
 						"label"                => esc_html__( "Threaded Layout - Number of Parent Posts per Page", "wpforo" ),
 						"label_original"       => "Threaded Layout - Number of Parent Posts per Page",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#threaded-forum-layout",
 					],
@@ -692,7 +696,7 @@ class Settings extends stdClass {
 						"max"                  => 7,
 						"label"                => esc_html__( "Threaded Layout - Replies Nesting Levels Deep", "wpforo" ),
 						"label_original"       => "Threaded Layout - Replies Nesting Levels Deep",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#threaded-forum-layout",
 					],
@@ -700,7 +704,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Threaded Layout - First Post Reply Button", "wpforo" ),
 						"label_original"       => "Threaded Layout - First Post Reply Button",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#threaded-forum-layout",
 					],
@@ -708,7 +712,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Display Subforums' Topics with the Parent Forum Topics", "wpforo" ),
 						"label_original"       => "Display Subforums' Topics with the Parent Forum Topics",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -717,7 +721,7 @@ class Settings extends stdClass {
 						"min"                  => 5,
 						"label"                => esc_html__( "Number of Topics per Page", "wpforo" ),
 						"label_original"       => "Number of Topics per Page",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#number-of-topics-and-posts-per-page",
 					],
@@ -726,7 +730,7 @@ class Settings extends stdClass {
 						"min"                  => 5,
 						"label"                => esc_html__( "Number of Posts per Page", "wpforo" ),
 						"label_original"       => "Number of Posts per Page",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#number-of-topics-and-posts-per-page",
 					],
@@ -735,7 +739,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Maximum Number of Search Results", "wpforo" ),
 						"label_original"       => "Maximum number of search results",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#maximum-number-of-search-results",
 					],
@@ -754,7 +758,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Recent Posts Display Type", "wpforo" ),
 						"label_original"       => "Recent Posts Display Type",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 'topics', 'label' => 'Topics' ],
@@ -766,7 +770,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Display Topic Statistics and Overview Panel", "wpforo" ),
 						"label_original"       => "Display Topic Statistics and Overview Panel",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -774,7 +778,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Keep Expanded Topic Overview in the Statistic Panel", "wpforo" ),
 						"label_original"       => "Keep Expanded Topic Overview in the Statistic Panel",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -801,7 +805,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Maximum Number of Tags per Topic", "wpforo" ),
 						"label_original"       => "Maximum Number of Tags per Topic",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/topic-tags/#maximum-number-of-tags-per-topic",
 					],
@@ -810,7 +814,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Number of Tags per Page", "wpforo" ),
 						"label_original"       => "Number of Tags per Page",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/topic-tags/#number-of-tags-per-page",
 					],
@@ -820,7 +824,7 @@ class Settings extends stdClass {
 						"max"                  => 50,
 						"label"                => esc_html__( "Maximum Tag Length", "wpforo" ),
 						"label_original"       => "Maximum Tag Length",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/topic-tags/#maximum-tags-length",
 					],
@@ -837,7 +841,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Force Lowercase Tags", "wpforo" ),
 						"label_original"       => "Force Lowercase Tags",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/topic-tags/#force-lowercase-tags",
 					],
@@ -863,7 +867,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Q&A Layout - Display Answer Editor", "wpforo" ),
 						"label_original"       => "Q&A Layout - Display Answer Editor",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#q-a-layout-%E2%80%93-display-answer-editor",
 					],
@@ -871,7 +875,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Q&A Layout - Comment Form Type", "wpforo" ),
 						"label_original"       => "Q&A Layout - Comment Form Type",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => false, 'label' => __( 'Text Editor', 'wpforo' ) ],
@@ -883,7 +887,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Threaded Layout - Reply Form Type", "wpforo" ),
 						"label_original"       => "Threaded Layout - Reply Form Type",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => false, 'label' => __( 'Text Editor', 'wpforo' ) ],
@@ -896,7 +900,7 @@ class Settings extends stdClass {
 						"min"                  => 1,
 						"label"                => esc_html__( "Topic Title Minimum Length", "wpforo" ),
 						"label_original"       => "Topic Title Minimum Length",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -951,7 +955,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Comment Content Minimum Length", "wpforo" ),
 						"label_original"       => "Comment Content Minimum Length",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -978,7 +982,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Allow Delete Own Topic within (minutes)", "wpforo" ),
 						"label_original"       => "Allow Delete Own Topic within (minutes)",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1035,7 +1039,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Post Preview", "wpforo" ),
 						"label_original"       => "Post Preview",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#post-preview-and-auto-drafting",
 					],
@@ -1043,7 +1047,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Post Revisions and Draft Saving", "wpforo" ),
 						"label_original"       => "Post Revisions and Draft Saving",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#post-preview-and-auto-drafting",
 					],
@@ -1051,7 +1055,7 @@ class Settings extends stdClass {
 						"type"                 => "select",
 						"label"                => esc_html__( "Auto Drafting Interval", "wpforo" ),
 						"label_original"       => "Auto Drafting Interval",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 0, 'label' => __( 'disabled', 'wpforo' ) ],
@@ -1068,7 +1072,7 @@ class Settings extends stdClass {
 						"min"                  => 3,
 						"label"                => esc_html__( "Max Number of Revisions", "wpforo" ),
 						"label_original"       => "Max Number of Revisions",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#post-preview-and-auto-drafting",
 					],
@@ -1095,7 +1099,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Toolbar Location of the Topic Editor", "wpforo" ),
 						"label_original"       => "Toolbar Location of the Topic Editor",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 'top', 'label' => __( 'Top', 'wpforo' ) ],
@@ -1107,7 +1111,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Toolbar Location of the Reply Editor", "wpforo" ),
 						"label_original"       => "Toolbar Location of the Reply Editor",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 'top', 'label' => __( 'Top', 'wpforo' ) ],
@@ -1119,7 +1123,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable WordPress Shortcodes in Post Content", "wpforo" ),
 						"label_original"       => "Enable WordPress Shortcodes in Post Content",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1156,7 +1160,7 @@ class Settings extends stdClass {
 						"type"                 => "select",
 						"label"                => esc_html__( "Members List Ordering", "wpforo" ),
 						"label_original"       => "Members List Ordering",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 'online_time', 'label' => __( 'Last Online time', 'wpforo' ) ],
@@ -1182,7 +1186,7 @@ class Settings extends stdClass {
 						"min"                  => 5,
 						"label"                => esc_html__( "Number of Members per Page", "wpforo" ),
 						"label_original"       => "Number of Members per Page",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1190,7 +1194,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Members Search Type", "wpforo" ),
 						"label_original"       => "Members Search Type",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 'search', 'label' => __( 'Search', 'wpforo' ) ],
@@ -1220,7 +1224,7 @@ class Settings extends stdClass {
 						"type"                 => "select",
 						"label"                => esc_html__( "Profile Page", "wpforo" ),
 						"label_original"       => "Profile Page",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[
@@ -1252,7 +1256,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Show Forum Header on Profile Pages", "wpforo" ),
 						"label_original"       => "Show Forum Header on Profile Pages",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#show-forum-header-and-footer-on-profile-pages",
 					],
@@ -1260,7 +1264,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Show Forum Footer under Profile Pages", "wpforo" ),
 						"label_original"       => "Show Forum Footer under Profile Pages",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#show-forum-header-and-footer-on-profile-pages",
 					],
@@ -1280,7 +1284,7 @@ class Settings extends stdClass {
 						"type"                 => "minute",
 						"label"                => esc_html__( "Online Status Timeout (minutes)", "wpforo" ),
 						"label_original"       => "Online Status Timeout (minutes)",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1288,7 +1292,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Member Custom Titles", "wpforo" ),
 						"label_original"       => "Member Custom Titles",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#member-custom-title",
 					],
@@ -1296,7 +1300,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "Member Custom Title by Default", "wpforo" ),
 						"label_original"       => "Member Custom Title by Default",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#member-custom-title",
 					],
@@ -1366,7 +1370,7 @@ class Settings extends stdClass {
 						"type"                 => "cover",
 						"label"                => esc_html__( "The Default Profile Cover Image", "wpforo" ),
 						"label_original"       => "The Default Profile Cover Image",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1403,7 +1407,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable Member Rating Badges", "wpforo" ),
 						"label_original"       => "Enable Member Rating Badges",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/#enable-member-rating-badges-and-titles",
 					],
@@ -1411,14 +1415,14 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable Member Rating Titles", "wpforo" ),
 						"label_original"       => "Enable Member Rating Titles",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/#enable-member-rating-badges-and-titles",
 					],
 					"member_rating"   => [
 						"label"                => esc_html__( "Member Reputation and Titles", "wpforo" ),
 						"label_original"       => "Member Reputation and Titles",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1427,7 +1431,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Points for One Topic", "wpforo" ),
 						"label_original"       => "Points for One Topic",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/#reputation-point-counting",
 					],
@@ -1436,7 +1440,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Points for One Post", "wpforo" ),
 						"label_original"       => "Points for 1 Post",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/#reputation-point-counting",
 					],
@@ -1445,7 +1449,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Points for One Like", "wpforo" ),
 						"label_original"       => "Points for One Post",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/#reputation-point-counting",
 					],
@@ -1462,7 +1466,7 @@ class Settings extends stdClass {
 						"type"                 => "checkbox",
 						"label"                => esc_html__( "Enable Reputation Titles for Selected Usergroups", "wpforo" ),
 						"label_original"       => "Enable Reputation Titles for Selected Usergroups",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 						"variants"             => $this->get_variants_usergroups(),
@@ -1471,7 +1475,7 @@ class Settings extends stdClass {
 						"type"                 => "checkbox",
 						"label"                => esc_html__( "Enable Reputation Badges for Selected Usergroups", "wpforo" ),
 						"label_original"       => "Enable Reputation Badges for Selected Usergroups",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 						"variants"             => $this->get_variants_usergroups(),
@@ -1480,7 +1484,7 @@ class Settings extends stdClass {
 						"type"                 => "ratinglevels",
 						"label"                => esc_html__( "Member Reputation and Titles", "wpforo" ),
 						"label_original"       => "Member Reputation and Titles",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1585,7 +1589,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Replace Registration Page URL to Forum Registration Page URL", "wpforo" ),
 						"label_original"       => "Replace Registration Page URL to Forum Registration Page URL",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1593,7 +1597,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Replace Login Page URL to Forum Login Page URL", "wpforo" ),
 						"label_original"       => "Replace Login Page URL to Forum Login Page URL",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1601,7 +1605,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Replace Reset Password Page URL to Forum Reset Password Page URL", "wpforo" ),
 						"label_original"       => "Replace Reset Password Page URL to Forum Reset Password Page URL",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1677,83 +1681,6 @@ class Settings extends stdClass {
 						"description"          => "",
 						"description_original" => "",
 					],
-					"fb_api_config"                     => [
-						"type"                 => "wrap",
-						"label"                => esc_html__( 'Facebook API Configuration', 'wpforo' ),
-						"label_original"       => "Facebook API Configuration",
-						"description"          => __(
-							                          'In order to get an App ID and Secret Key from Facebook, you’ll need to register a new application. Don’t worry – its very easy, and your application doesn\'t need to do anything. We only need the keys.',
-							                          'wpforo'
-						                          ) . sprintf(
-							                          '&nbsp;<a href="https://wpforo.com/community/faq/how-to-get-facebook-app-id-and-secret-key/" target="_blank">%1$s &raquo;</a>',
-							                          __( 'Please follow to this instruction', 'wpforo' )
-						                          ),
-						"description_original" => "In order to get an App ID and Secret Key from Facebook, you’ll need to register a new application. Don’t worry – its very easy, and your application doesn\'t need to do anything. We only need the keys.",
-						"docurl"               => "",
-						"options_keys"         => [ 'fb_api_id', 'fb_api_secret' ],
-					],
-					"fb_api_id"                         => [
-						"type"                 => "text",
-						"placeholder"          => esc_attr__( 'App ID', 'wpforo' ),
-						"label"                => "",
-						"label_original"       => "",
-						"description"          => "",
-						"description_original" => "",
-					],
-					"fb_api_secret"                     => [
-						"type"                 => "text",
-						"placeholder"          => esc_attr__( 'App Secret', 'wpforo' ),
-						"label"                => "",
-						"label_original"       => "",
-						"description"          => "",
-						"description_original" => "",
-					],
-					"fb_login"                          => [
-						"type"                 => "radio",
-						"label"                => esc_html__( "Facebook Login", "wpforo" ),
-						"label_original"       => "Facebook Login",
-						"description"          => esc_html__( "Adds Facebook Login button on Registration and Login pages.", "wpforo" ),
-						"description_original" => "Adds Facebook Login button on Registration and Login pages.",
-						"docurl"               => "",
-					],
-					"fb_lb_on_lp"                       => [
-						"type"                 => "radio",
-						"label"                => esc_html__( "Facebook Login button on User Login page", "wpforo" ),
-						"label_original"       => "Facebook Login button on User Login page",
-						"description"          => esc_html__( "", "wpforo" ),
-						"description_original" => "",
-						"docurl"               => "",
-					],
-					"fb_lb_on_rp"                       => [
-						"type"                 => "radio",
-						"label"                => esc_html__( "Facebook Login button on User Registration page", "wpforo" ),
-						"label_original"       => "Facebook Login button on User Registration page",
-						"description"          => esc_html__( "", "wpforo" ),
-						"description_original" => "",
-						"docurl"               => "",
-					],
-					"fb_redirect"                       => [
-						"type"                 => "radio",
-						"label"                => esc_html__( "Redirect to this page after success login", "wpforo" ),
-						"label_original"       => "Redirect to this page after success login",
-						"description"          => esc_html__( "", "wpforo" ),
-						"description_original" => "",
-						"variants"             => [
-							[ 'value' => 'profile', 'label' => 'Profile' ],
-							[ 'value' => 'home', 'label' => 'Forums' ],
-							[ 'value' => 'custom', 'label' => 'Custom' ],
-						],
-						"docurl"               => "",
-					],
-					"fb_redirect_url"                   => [
-						"type"                 => "text",
-						"placeholder"          => __( 'Custom URL, e.g.:', 'wpforo' ) . ' http://example.com/my-page/',
-						"label"                => esc_html__( "Redirect to custom URL after success login", "wpforo" ),
-						"label_original"       => "Redirect to custom URL after success login",
-						"description"          => esc_html__( "", "wpforo" ),
-						"description_original" => "",
-						"docurl"               => "",
-					],
 				],
 			],
 			'email'         => [
@@ -1776,7 +1703,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "FROM Name", "wpforo" ),
 						"label_original"       => "FROM Name",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/email-settings/#from-name-and-email-address",
 					],
@@ -1784,7 +1711,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "FROM Email Address", "wpforo" ),
 						"label_original"       => "FROM Email Address",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/email-settings/#from-name-and-email-address",
 					],
@@ -1827,7 +1754,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "Report Message Subject", "wpforo" ),
 						"label_original"       => "Report Message Subject",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1853,7 +1780,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Overwrite WordPress New User Registration Email for Admins", "wpforo" ),
 						"label_original"       => "Overwrite WordPress New User Registration Email for Admins",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1861,7 +1788,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "Message Subject", "wpforo" ),
 						"label_original"       => "Message Subject",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1887,7 +1814,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "Message Subject", "wpforo" ),
 						"label_original"       => "Message Subject",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1915,7 +1842,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Overwrite WordPress New User Registration Email for Users", "wpforo" ),
 						"label_original"       => "Overwrite WordPress New User Registration Email for Users",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1923,7 +1850,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "Message Subject", "wpforo" ),
 						"label_original"       => "Message Subject",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1947,7 +1874,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Overwrite WordPress Reset Password Emails", "wpforo" ),
 						"label_original"       => "Overwrite WordPress Reset Password Emails",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -1971,7 +1898,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "Message Subject", "wpforo" ),
 						"label_original"       => "Message Subject",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2060,7 +1987,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "Subscribe confirmation email subject", "wpforo" ),
 						"label_original"       => "Subscribe confirmation email subject",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2086,7 +2013,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "New topic notification email subject", "wpforo" ),
 						"label_original"       => "New topic notification email subject",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2120,7 +2047,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "New reply notification email subject", "wpforo" ),
 						"label_original"       => "New reply notification email subject",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2152,7 +2079,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "User mention message subject", "wpforo" ),
 						"label_original"       => "User mention message subject",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2182,7 +2109,7 @@ class Settings extends stdClass {
 						"type"                 => "text",
 						"label"                => esc_html__( "User following notification email subject", "wpforo" ),
 						"label_original"       => "User following notification email subject",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2230,7 +2157,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable User Notification", "wpforo" ),
 						"label_original"       => "Enable User Notification",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2238,7 +2165,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable User Notification Live Update", "wpforo" ),
 						"label_original"       => "Enable User Notification Live Update",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-notifications/#enable-user-notification-live-update",
 					],
@@ -2246,9 +2173,108 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Display User Notification Bell on Menu Bar", "wpforo" ),
 						"label_original"       => "Display User Notification Bell on Menu Bar",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-notifications/#display-user-notification-bell-on-menu-bar",
+					],
+				],
+			],
+			'activity'      => [
+				"title"                => esc_html__( "What's New Page", "wpforo" ),
+				"title_original"       => "What's New Page",
+				"icon"                 => '<svg height="58px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2.75C17.1086 2.75 21.25 6.89137 21.25 12C21.25 12.4142 21.5858 12.75 22 12.75C22.4142 12.75 22.75 12.4142 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25C11.5858 1.25 11.25 1.58579 11.25 2C11.25 2.41421 11.5858 2.75 12 2.75Z" /><path fill-rule="evenodd" clip-rule="evenodd" d="M12 8.25C12.4142 8.25 12.75 8.58579 12.75 9V12.25H16C16.4142 12.25 16.75 12.5858 16.75 13C16.75 13.4142 16.4142 13.75 16 13.75H12C11.5858 13.75 11.25 13.4142 11.25 13V9C11.25 8.58579 11.5858 8.25 12 8.25Z" /><path opacity="0.5" fill-rule="evenodd" clip-rule="evenodd" d="M9.09958 2.39808C9.24874 2.7845 9.05641 3.21868 8.66999 3.36785C8.52855 3.42245 8.38879 3.48042 8.2508 3.54168C7.87221 3.70975 7.42906 3.5391 7.261 3.16051C7.09293 2.78193 7.26358 2.33878 7.64217 2.17071C7.80267 2.09946 7.96526 2.03201 8.12981 1.96849C8.51623 1.81932 8.95041 2.01166 9.09958 2.39808ZM5.6477 4.2408C5.93337 4.54075 5.92178 5.01549 5.62183 5.30115C5.51216 5.40559 5.40505 5.5127 5.30061 5.62237C5.01495 5.92232 4.54021 5.93391 4.24026 5.64824C3.94031 5.36258 3.92873 4.88785 4.21439 4.5879C4.33566 4.46056 4.46002 4.3362 4.58736 4.21493C4.88731 3.92927 5.36204 3.94085 5.6477 4.2408ZM3.15997 7.26154C3.53856 7.42961 3.70921 7.87275 3.54114 8.25134C3.47988 8.38933 3.42191 8.52909 3.36731 8.67053C3.21814 9.05695 2.78396 9.24928 2.39754 9.10012C2.01112 8.95095 1.81878 8.51677 1.96795 8.13035C2.03147 7.9658 2.09892 7.80321 2.17017 7.64271C2.33824 7.26412 2.78139 7.09347 3.15997 7.26154ZM2.02109 11.0046C2.43518 11.0146 2.76276 11.3584 2.75275 11.7725C2.75092 11.8483 2.75 11.9243 2.75 12.0005C2.75 12.0768 2.75092 12.1528 2.75275 12.2286C2.76276 12.6427 2.43518 12.9865 2.02109 12.9965C1.60699 13.0065 1.26319 12.6789 1.25319 12.2648C1.25107 12.177 1.25 12.0889 1.25 12.0005C1.25 11.9122 1.25107 11.8241 1.25319 11.7363C1.26319 11.3222 1.60699 10.9946 2.02109 11.0046ZM21.6025 14.901C21.9889 15.0501 22.1812 15.4843 22.032 15.8707C21.9685 16.0353 21.9011 16.1979 21.8298 16.3584C21.6618 16.737 21.2186 16.9076 20.84 16.7395C20.4614 16.5715 20.2908 16.1283 20.4589 15.7497C20.5201 15.6117 20.5781 15.472 20.6327 15.3306C20.7819 14.9441 21.216 14.7518 21.6025 14.901ZM2.39754 14.901C2.78396 14.7518 3.21814 14.9441 3.36731 15.3306C3.42191 15.472 3.47988 15.6117 3.54114 15.7497C3.70921 16.1283 3.53856 16.5715 3.15997 16.7395C2.78139 16.9076 2.33824 16.737 2.17017 16.3584C2.09892 16.1979 2.03147 16.0353 1.96795 15.8707C1.81878 15.4843 2.01112 15.0501 2.39754 14.901ZM19.7597 18.3528C20.0597 18.6385 20.0713 19.1132 19.7856 19.4132C19.6643 19.5405 19.54 19.6649 19.4126 19.7861C19.1127 20.0718 18.638 20.0602 18.3523 19.7603C18.0666 19.4603 18.0782 18.9856 18.3782 18.6999C18.4878 18.5955 18.5949 18.4884 18.6994 18.3787C18.9851 18.0788 19.4598 18.0672 19.7597 18.3528ZM4.24026 18.3528C4.54021 18.0672 5.01495 18.0788 5.30061 18.3787C5.40506 18.4884 5.51216 18.5955 5.62183 18.6999C5.92178 18.9856 5.93337 19.4603 5.6477 19.7603C5.36204 20.0602 4.88731 20.0718 4.58736 19.7861C4.46003 19.6649 4.33566 19.5405 4.21439 19.4132C3.92873 19.1132 3.94031 18.6385 4.24026 18.3528ZM7.261 20.8406C7.42907 20.462 7.87221 20.2913 8.2508 20.4594C8.38879 20.5207 8.52855 20.5786 8.66999 20.6332C9.05641 20.7824 9.24874 21.2166 9.09958 21.603C8.95041 21.9894 8.51623 22.1818 8.12981 22.0326C7.96526 21.9691 7.80267 21.9016 7.64217 21.8304C7.26358 21.6623 7.09293 21.2192 7.261 20.8406ZM16.739 20.8406C16.9071 21.2192 16.7364 21.6623 16.3578 21.8304C16.1973 21.9016 16.0347 21.9691 15.8702 22.0326C15.4838 22.1818 15.0496 21.9894 14.9004 21.603C14.7513 21.2166 14.9436 20.7824 15.33 20.6332C15.4714 20.5786 15.6112 20.5207 15.7492 20.4594C16.1278 20.2913 16.5709 20.462 16.739 20.8406ZM11.004 21.9795C11.0141 21.5654 11.3579 21.2378 11.7719 21.2478C11.8477 21.2496 11.9237 21.2505 12 21.2505C12.0763 21.2505 12.1523 21.2496 12.2281 21.2478C12.6421 21.2378 12.9859 21.5654 12.996 21.9795C13.006 22.3935 12.6784 22.7373 12.2643 22.7474C12.1764 22.7495 12.0883 22.7505 12 22.7505C11.9117 22.7505 11.8236 22.7495 11.7357 22.7474C11.3216 22.7373 10.994 22.3935 11.004 21.9795Z" fill="#1C274C"/></svg>',
+				"description"          => esc_html__(
+					"Configure the What's New page settings. This page displays a timeline of recent forum activities including new topics, replies, reactions, favorites, and more.",
+					"wpforo"
+				),
+				"description_original" => "Configure the What's New page settings. This page displays a timeline of recent forum activities including new topics, replies, reactions, favorites, and more.",
+				"docurl"               => "",
+				"status"               => "new",
+				"base"                 => false,
+				"callback_for_page"    => function() {
+					require_once( WPFORO_DIR . '/admin/settings/activity.php' );
+				},
+				"options"              => [
+					"enabled_types"    => [
+						"type"                 => "checkbox",
+						"label"                => esc_html__( "Enabled Activity Types", "wpforo" ),
+						"label_original"       => "Enabled Activity Types",
+						"description"          => esc_html__( "Select which activity types to display on the What's New page.", "wpforo" ),
+						"description_original" => "Select which activity types to display on the What's New page.",
+						"docurl"               => "",
+						"variants"             => [
+							[ 'value' => 'wpforo_topic', 'label' => esc_html__( 'New Topics', 'wpforo' ) ],
+							[ 'value' => 'wpforo_post', 'label' => esc_html__( 'New Replies', 'wpforo' ) ],
+							[ 'value' => 'new_like', 'label' => esc_html__( 'Likes', 'wpforo' ) ],
+							[ 'value' => 'new_dislike', 'label' => esc_html__( 'Dislikes', 'wpforo' ) ],
+							[ 'value' => 'new_up_vote', 'label' => esc_html__( 'Up Votes', 'wpforo' ) ],
+							[ 'value' => 'new_down_vote', 'label' => esc_html__( 'Down Votes', 'wpforo' ) ],
+							[ 'value' => 'new_reaction', 'label' => esc_html__( 'Reactions', 'wpforo' ) ],
+							[ 'value' => 'new_favorite', 'label' => esc_html__( 'Favorites', 'wpforo' ) ],
+							[ 'value' => 'topic_solved', 'label' => esc_html__( 'Solved Topics', 'wpforo' ) ],
+							[ 'value' => 'topic_closed', 'label' => esc_html__( 'Closed Topics', 'wpforo' ) ],
+							[ 'value' => 'post_answer', 'label' => esc_html__( 'Marked as Answer', 'wpforo' ) ],
+						],
+					],
+					"items_per_page"   => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Items per Page", "wpforo" ),
+						"label_original"       => "Items per Page",
+						"description"          => esc_html__( "Number of activity items to display per page.", "wpforo" ),
+						"description_original" => "Number of activity items to display per page.",
+						"min"                  => 5,
+						"max"                  => 100,
+						"docurl"               => "",
+					],
+					"default_period"   => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Default Time Period", "wpforo" ),
+						"label_original"       => "Default Time Period",
+						"description"          => esc_html__( "Default time period filter when visiting the activity page.", "wpforo" ),
+						"description_original" => "Default time period filter when visiting the activity page.",
+						"variants"             => [
+							[ 'value' => 'day', 'label' => esc_html__( 'Last 24 Hours', 'wpforo' ) ],
+							[ 'value' => 'week', 'label' => esc_html__( 'Last Week', 'wpforo' ) ],
+							[ 'value' => 'month', 'label' => esc_html__( 'Last Month', 'wpforo' ) ],
+							[ 'value' => 'all', 'label' => esc_html__( 'All Time', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"show_avatars"     => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Show User Avatars", "wpforo" ),
+						"label_original"       => "Show User Avatars",
+						"description"          => esc_html__( "Display user avatars in the activity timeline.", "wpforo" ),
+						"description_original" => "Display user avatars in the activity timeline.",
+						"docurl"               => "",
+					],
+					"show_excerpt"     => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Show Content Excerpt", "wpforo" ),
+						"label_original"       => "Show Content Excerpt",
+						"description"          => esc_html__( "Display content excerpt for topics and replies.", "wpforo" ),
+						"description_original" => "Display content excerpt for topics and replies.",
+						"docurl"               => "",
+					],
+					"excerpt_length"   => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Excerpt Length", "wpforo" ),
+						"label_original"       => "Excerpt Length",
+						"description"          => esc_html__( "Maximum number of characters to show in the excerpt.", "wpforo" ),
+						"description_original" => "Maximum number of characters to show in the excerpt.",
+						"min"                  => 50,
+						"max"                  => 1000,
+						"docurl"               => "",
+					],
+					"retention_days"   => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Activity Retention Period (Days)", "wpforo" ),
+						"label_original"       => "Activity Retention Period (Days)",
+						"description"          => esc_html__( "Number of days to keep activities. Older activities will be automatically deleted daily. Set to 0 to disable cleanup and keep all activities forever.", "wpforo" ),
+						"description_original" => "Number of days to keep activities. Older activities will be automatically deleted daily. Set to 0 to disable cleanup and keep all activities forever.",
+						"min"                  => 0,
+						"max"                  => 3650,
+						"docurl"               => "",
 					],
 				],
 			],
@@ -2272,7 +2298,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Log Viewed Forums and Topics", "wpforo" ),
 						"label_original"       => "Log Viewed Forums and Topics",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/action-logging-views/#log-viewed-forums-and-topics",
 					],
@@ -2280,7 +2306,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Track Forum and Topic Current Viewers", "wpforo" ),
 						"label_original"       => "Track Forum and Topic Current Viewers",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/action-logging-views/#track-forum-and-topic-current-viewers",
 					],
@@ -2357,7 +2383,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable Meta Titles", "wpforo" ),
 						"label_original"       => "Enable eta Titles",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-meta-title-and-seo-tags",
 					],
@@ -2365,7 +2391,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable Meta Tags", "wpforo" ),
 						"label_original"       => "Enable Meta Tags",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-meta-title-and-seo-tags",
 					],
@@ -2373,7 +2399,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable User Profile Page indexing", "wpforo" ),
 						"label_original"       => "Enable User Profile Page indexing",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-user-profile-page-indexing",
 					],
@@ -2381,7 +2407,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable Forums Sitemap", "wpforo" ),
 						"label_original"       => "Enable Forums Sitemap",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-forums-topics-and-members-sitemap",
 					],
@@ -2389,7 +2415,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable Topics Sitemap", "wpforo" ),
 						"label_original"       => "Enable Topics Sitemap",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-forums-topics-and-members-sitemap",
 					],
@@ -2397,7 +2423,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable Members Sitemap", "wpforo" ),
 						"label_original"       => "Enable Members Sitemap",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-forums-topics-and-members-sitemap",
 					],
@@ -2447,7 +2473,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable wpForo Spam Control", "wpforo" ),
 						"label_original"       => "Enable wpForo Spam Control",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#wpforo-spam-control",
 					],
@@ -2455,7 +2481,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Ban user when spam is suspected", "wpforo" ),
 						"label_original"       => "Ban user when spam is suspected",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#wpforo-spam-control",
 					],
@@ -2469,22 +2495,22 @@ class Settings extends stdClass {
 					],
 					"spam_filter_level_topic"          => [
 						"type"                 => "number",
-						"min"                  => 0,
-						"max"                  => 100,
+						"min"                  => 1,
+						"max"                  => 20,
 						"label"                => esc_html__( "Spam Suspicion Level for Topics", "wpforo" ),
 						"label_original"       => "Spam Suspicion Level for Topics",
-						"description"          => esc_html__( "", "wpforo" ),
-						"description_original" => "",
+						"description"          => esc_html__( "Lower values require higher similarity to flag as spam (1 = 99% match, 20 = 80% match).", "wpforo" ),
+						"description_original" => "Lower values require higher similarity to flag as spam (1 = 99% match, 20 = 80% match).",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#wpforo-spam-control",
 					],
 					"spam_filter_level_post"           => [
 						"type"                 => "number",
-						"min"                  => 0,
-						"max"                  => 100,
+						"min"                  => 1,
+						"max"                  => 20,
 						"label"                => esc_html__( "Spam Suspicion Level for Posts", "wpforo" ),
 						"label_original"       => "Spam Suspicion Level for Posts",
-						"description"          => esc_html__( "", "wpforo" ),
-						"description_original" => "",
+						"description"          => esc_html__( "Lower values require higher similarity to flag as spam (1 = 99% match, 20 = 80% match).", "wpforo" ),
+						"description_original" => "Lower values require higher similarity to flag as spam (1 = 99% match, 20 = 80% match).",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#wpforo-spam-control",
 					],
 					"new_user_max_posts"               => [
@@ -2492,7 +2518,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "User is New (under hard spam control) during first [X] posts", "wpforo" ),
 						"label_original"       => "User is New (under hard spam control) during first [X] posts",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#user-is-new-under-hard-spam-control-during-first-x-posts",
 					],
@@ -2500,7 +2526,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Posts must be manually approved", "wpforo" ),
 						"label_original"       => "Posts must be manually approved",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#posts-must-be-manually-approved",
 					],
@@ -2509,7 +2535,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Min number of posts to be able to edit profile information", "wpforo" ),
 						"label_original"       => "Min number of posts to be able to edit profile information",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#min-number-of-posts-to-be-able-to-edit-profile-information",
 					],
@@ -2518,7 +2544,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Min number of posts to be able to attach files", "wpforo" ),
 						"label_original"       => "Min number of posts to be able to attach files",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#min-number-of-posts-to-be-able-to-attach-a-file-or-post-links",
 					],
@@ -2527,7 +2553,7 @@ class Settings extends stdClass {
 						"min"                  => 0,
 						"label"                => esc_html__( "Min number of posts to be able to post links", "wpforo" ),
 						"label_original"       => "Min number of posts to be able to post links",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#min-number-of-posts-to-be-able-to-attach-a-file-or-post-links",
 					],
@@ -2535,15 +2561,89 @@ class Settings extends stdClass {
 						"type"                 => "textarea_|",
 						"label"                => esc_html__( "Do not allow attaching files with following extensions", "wpforo" ),
 						"label_original"       => "Do not allow attaching files with following extensions",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#do-not-allow-attaching-files-with-following-extensions",
+					],
+					"flood_protection_enabled"         => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable Advanced Flood Protection", "wpforo" ),
+						"label_original"       => "Enable Advanced Flood Protection",
+						"description"          => esc_html__( "Detect and prevent spam floods by tracking posting velocity over time windows.", "wpforo" ),
+						"description_original" => "Detect and prevent spam floods by tracking posting velocity over time windows.",
+						"docurl"               => "",
+					],
+					"flood_posts_per_minute"           => [
+						"type"                 => "number",
+						"min"                  => 0,
+						"max"                  => 60,
+						"label"                => esc_html__( "Maximum posts per minute", "wpforo" ),
+						"label_original"       => "Maximum posts per minute",
+						"description"          => esc_html__( "Set to 0 to disable. Recommended: 3-5 posts per minute.", "wpforo" ),
+						"description_original" => "Set to 0 to disable. Recommended: 3-5 posts per minute.",
+						"docurl"               => "",
+					],
+					"flood_posts_per_hour"             => [
+						"type"                 => "number",
+						"min"                  => 0,
+						"max"                  => 500,
+						"label"                => esc_html__( "Maximum posts per hour", "wpforo" ),
+						"label_original"       => "Maximum posts per hour",
+						"description"          => esc_html__( "Set to 0 to disable. Recommended: 20-30 posts per hour.", "wpforo" ),
+						"description_original" => "Set to 0 to disable. Recommended: 20-30 posts per hour.",
+						"docurl"               => "",
+					],
+					"flood_ip_protection_enabled"      => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable IP-based Flood Protection", "wpforo" ),
+						"label_original"       => "Enable IP-based Flood Protection",
+						"description"          => esc_html__( "Track posting velocity by IP address in addition to user account.", "wpforo" ),
+						"description_original" => "Track posting velocity by IP address in addition to user account.",
+						"docurl"               => "",
+					],
+					"flood_posts_per_ip_hour"          => [
+						"type"                 => "number",
+						"min"                  => 0,
+						"max"                  => 500,
+						"label"                => esc_html__( "Maximum posts per IP per hour", "wpforo" ),
+						"label_original"       => "Maximum posts per IP per hour",
+						"description"          => esc_html__( "Set to 0 to disable. Recommended: 20-30 posts per IP per hour.", "wpforo" ),
+						"description_original" => "Set to 0 to disable. Recommended: 20-30 posts per IP per hour.",
+						"docurl"               => "",
+					],
+					"flood_action"                     => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Action when flood detected", "wpforo" ),
+						"label_original"       => "Action when flood detected",
+						"description"          => esc_html__( "What to do when a user exceeds flood limits.", "wpforo" ),
+						"description_original" => "What to do when a user exceeds flood limits.",
+						"variants"             => [
+							[ "value" => "unapprove", "label" => esc_html__( "Show error message and unapprove the post", "wpforo" ) ],
+							[ "value" => "block", "label" => esc_html__( "Show error message and block", "wpforo" ) ],
+							[ "value" => "temp_ban", "label" => esc_html__( "Temporarily ban user", "wpforo" ) ],
+						],
+						"docurl"               => "",
+					],
+					"flood_temp_ban_duration"          => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Temporary ban duration", "wpforo" ),
+						"label_original"       => "Temporary ban duration",
+						"description"          => esc_html__( "How long to temporarily ban users who exceed flood limits. Only applies when action is set to 'Temporarily ban'.", "wpforo" ),
+						"description_original" => "How long to temporarily ban users who exceed flood limits. Only applies when action is set to 'Temporarily ban'.",
+						"variants"             => [
+							[ "value" => "1", "label" => esc_html__( "1 minute", "wpforo" ) ],
+							[ "value" => "15", "label" => esc_html__( "15 minutes", "wpforo" ) ],
+							[ "value" => "30", "label" => esc_html__( "30 minutes", "wpforo" ) ],
+							[ "value" => "60", "label" => esc_html__( "1 hour", "wpforo" ) ],
+							[ "value" => "1440", "label" => esc_html__( "1 day", "wpforo" ) ],
+						],
+						"docurl"               => "",
 					],
 					"spam_file_scanner"                => [
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable File Scanner", "wpforo" ),
 						"label_original"       => "Enable File Scanner",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2551,7 +2651,7 @@ class Settings extends stdClass {
 						"type"                 => "textarea_|",
 						"label"                => esc_html__( "Exclude file extensions", "wpforo" ),
 						"label_original"       => "Exclude file extensions",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2562,10 +2662,10 @@ class Settings extends stdClass {
 				"title_original"       => "Google reCAPTCHA",
 				"icon"                 => '<?xml version="1.0" encoding="UTF-8"?> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.04 600 598.59" height="60px"><path d="M600 298.83c-.01-4.3-.11-8.58-.31-12.84V43.06l-67.12 67.16C477.64 42.93 394.06-.04 300.46-.04c-97.42 0-183.96 46.52-238.67 118.57l110.02 111.25a145.91 145.91 0 0 1 44.57-50.04c19.21-14.99 46.43-27.26 84.07-27.26 4.55 0 8.06.54 10.64 1.54 46.65 3.68 87.08 29.44 110.89 66.82l-77.88 77.93c98.64-.39 210.08-.62 255.89.05" fill="#2b95ce"></path><path d="M298.71-.03c-4.31.02-8.58.12-12.84.31H43.07l67.13 67.16C42.95 122.41 0 206.02 0 299.68c0 97.47 46.5 184.07 118.51 238.8L229.69 428.4a145.737 145.737 0 0 1-50-44.59c-14.99-19.22-27.25-46.45-27.25-84.12 0-4.55.53-8.07 1.53-10.65 3.69-46.67 29.43-87.12 66.79-110.94l77.88 77.92c-.39-98.7-.62-210.2.05-256.04" fill="#43A6DF"></path><path d="M.01 299.68c.02 4.3.12 8.58.31 12.84v242.93l67.12-67.16c54.94 67.29 138.51 110.26 232.12 110.26 97.41 0 183.95-46.52 238.66-118.57L428.2 368.73c-10.78 19.96-26.1 37.09-44.57 50.04-19.21 14.99-46.42 27.26-84.07 27.26-4.55 0-8.06-.54-10.64-1.54-46.64-3.68-87.08-29.44-110.88-66.82l77.88-77.93c-98.65.39-210.08.62-255.9-.05" fill="#cbcbcb"></path></svg>',
 				"description"          => esc_html__(
-					"reCAPTCHA protects you against spam and other types of automated abuse. It makes secure topic and post editors when Guest Posting is allowed, also it protects login and registration forms against spam attacks. wpForo comes with built-in reCAPTCHA version 2, \"I'm not a robot\" checkbox.",
+					"reCAPTCHA protects you against spam and other types of automated abuse. It secures topic and post editors when Guest Posting is allowed, and protects login and registration forms against spam attacks. wpForo supports reCAPTCHA v2 (Checkbox and Invisible) and v3 (score-based, invisible).",
 					"wpforo"
 				),
-				"description_original" => "reCAPTCHA protects you against spam and other types of automated abuse. It makes secure topic and post editors when Guest Posting is allowed, also it protects login and registration forms against spam attacks. wpForo comes with built-in reCAPTCHA version 2, \"I'm not a robot\" checkbox.",
+				"description_original" => "reCAPTCHA protects you against spam and other types of automated abuse. It secures topic and post editors when Guest Posting is allowed, and protects login and registration forms against spam attacks. wpForo supports reCAPTCHA v2 (Checkbox and Invisible) and v3 (score-based, invisible).",
 				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/google-recaptcha/",
 				"status"               => "ok",
 				"base"                 => true,
@@ -2573,15 +2673,31 @@ class Settings extends stdClass {
 					require_once( WPFORO_DIR . '/admin/settings/recaptcha.php' );
 				},
 				"options"              => [
+					"version"             => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "reCAPTCHA Version", "wpforo" ),
+						"label_original"       => "reCAPTCHA Version",
+						"description"          => esc_html__(
+							"Select the reCAPTCHA version. v2 Checkbox shows a visible checkbox, v2 Invisible runs in background but may show challenges, v3 is fully invisible and returns a score (0.0-1.0) without user interaction. Note: You must create separate API keys for each version in the Google reCAPTCHA admin panel.",
+							"wpforo"
+						),
+						"description_original" => "Select the reCAPTCHA version. v2 Checkbox shows a visible checkbox, v2 Invisible runs in background but may show challenges, v3 is fully invisible and returns a score (0.0-1.0) without user interaction. Note: You must create separate API keys for each version in the Google reCAPTCHA admin panel.",
+						"variants"             => [
+							[ 'value' => 'v2_checkbox', 'label' => 'v2 Checkbox' ],
+							[ 'value' => 'v2_invisible', 'label' => 'v2 Invisible' ],
+							[ 'value' => 'v3', 'label' => 'v3 Score based' ],
+						],
+						"docurl"               => "https://developers.google.com/recaptcha/docs/versions",
+					],
 					"site_key_secret_key" => [
 						"type"                 => "wrap",
-						"label"                => esc_html__( 'reCAPTCHA API Keys', 'wpforo' ) . ' ' . __( '(version 2, "I\'m not a robot" checkbox)', 'wpforo' ),
-						"label_original"       => 'reCAPTCHA API Keys (version 2, "I\'m not a robot" checkbox)',
+						"label"                => esc_html__( 'reCAPTCHA API Keys', 'wpforo' ),
+						"label_original"       => 'reCAPTCHA API Keys',
 						"description"          => __(
-							                          'To start using reCAPTCHA, you need to sign up for an API key pair for your site.',
+							                          'To start using reCAPTCHA, you need to sign up for an API key pair for your site. Important: API keys are version-specific - you must create keys matching the version selected above. ',
 							                          'wpforo'
-						                          ) . '<a href="http://www.google.com/recaptcha/admin" target="_blank">' . __( 'Register your site and get API keys here &raquo;', 'wpforo' ) . '</a>',
-						"description_original" => 'To start using reCAPTCHA, you need to sign up for an API key pair for your site.',
+						                          ) . '<a href="https://www.google.com/recaptcha/admin" target="_blank">' . __( 'Register your site and get API keys here &raquo;', 'wpforo' ) . '</a>',
+						"description_original" => 'To start using reCAPTCHA, you need to sign up for an API key pair for your site. Important: API keys are version-specific.',
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/google-recaptcha/#recaptcha-api-keys-version-2-%E2%80%9Ci%E2%80%99m-not-a-robot%E2%80%9D-checkbox",
 						"options_keys"         => [ 'site_key', 'secret_key' ],
 					],
@@ -2601,12 +2717,34 @@ class Settings extends stdClass {
 						"description"          => "",
 						"description_original" => "",
 					],
+					"v3_score_threshold"  => [
+						"type"                 => "select",
+						"label"                => esc_html__( "v3 Score Threshold", "wpforo" ),
+						"label_original"       => "v3 Score Threshold",
+						"description"          => esc_html__(
+							"Minimum score required to pass verification (0.0 = likely bot, 1.0 = likely human). Default is 0.5. Lower values are more permissive, higher values are stricter. Only applies to reCAPTCHA v3.",
+							"wpforo"
+						),
+						"description_original" => "Minimum score required to pass verification (0.0 = likely bot, 1.0 = likely human). Default is 0.5. Only applies to reCAPTCHA v3.",
+						"variants"             => [
+							[ 'value' => '0.1', 'label' => '0.1 (Very permissive)' ],
+							[ 'value' => '0.2', 'label' => '0.2' ],
+							[ 'value' => '0.3', 'label' => '0.3' ],
+							[ 'value' => '0.4', 'label' => '0.4' ],
+							[ 'value' => '0.5', 'label' => '0.5 (Default)' ],
+							[ 'value' => '0.6', 'label' => '0.6' ],
+							[ 'value' => '0.7', 'label' => '0.7' ],
+							[ 'value' => '0.8', 'label' => '0.8' ],
+							[ 'value' => '0.9', 'label' => '0.9 (Very strict)' ],
+						],
+						"docurl"               => "https://developers.google.com/recaptcha/docs/v3#interpreting_the_score",
+					],
 					"theme"               => [
 						"type"                 => "radio",
 						"label"                => esc_html__( "reCAPTCHA Theme", "wpforo" ),
 						"label_original"       => "reCAPTCHA Theme",
-						"description"          => esc_html__( "", "wpforo" ),
-						"description_original" => "",
+						"description"          => esc_html__( "Theme for reCAPTCHA v2 widget. Not applicable to v3.", "wpforo" ),
+						"description_original" => "Theme for reCAPTCHA v2 widget. Not applicable to v3.",
 						"variants"             => [
 							[ 'value' => 'light', 'label' => 'Light' ],
 							[ 'value' => 'dark', 'label' => 'Dark' ],
@@ -2617,7 +2755,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Guest Topic Editor", "wpforo" ),
 						"label_original"       => "Guest Topic Editor",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2625,7 +2763,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Guest Post Editor", "wpforo" ),
 						"label_original"       => "Guest Post Editor",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2633,7 +2771,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "wpForo Login Form", "wpforo" ),
 						"label_original"       => "wpForo Login Form",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2641,7 +2779,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "wpForo Registration Form", "wpforo" ),
 						"label_original"       => "wpForo Registration Form",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2649,7 +2787,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "wpForo Reset Password Form", "wpforo" ),
 						"label_original"       => "wpForo Reset Password Form",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2657,7 +2795,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "WordPress Login Form", "wpforo" ),
 						"label_original"       => "WordPress Login Form",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2665,7 +2803,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "WordPress Registration Form", "wpforo" ),
 						"label_original"       => "WordPress Registration Form",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2673,7 +2811,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "WordPress Reset Password Form", "wpforo" ),
 						"label_original"       => "WordPress Reset Password Form",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "",
 					],
@@ -2725,7 +2863,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable RSS Feed", "wpforo" ),
 						"label_original"       => "Enable RSS Feed",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-feed-rss/#enable-rss-feed",
 					],
@@ -2733,7 +2871,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable General RSS Feed", "wpforo" ),
 						"label_original"       => "Enable General RSS Feed",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-feed-rss/#enable-general-rss-feed",
 					],
@@ -2741,7 +2879,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable Forum RSS Feed", "wpforo" ),
 						"label_original"       => "Enable Forum RSS Feed",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-feed-rss/#enable-forum-rss-feed",
 					],
@@ -2749,7 +2887,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable Topic RSS Feed", "wpforo" ),
 						"label_original"       => "Enable Topic RSS Feed",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-feed-rss/#enable-topic-rss-feed",
 					],
@@ -2775,10 +2913,10 @@ class Settings extends stdClass {
 						"label"                => esc_html__( "Active Share Buttons", "wpforo" ),
 						"label_original"       => "Active Share Buttons",
 						"description"          => esc_html__(
-							"Check the checkbox share options to activate. Please note, that the Facebook share button cannot be activated without Facebook API ID. Please follow to the 'Facebook API Configuration' option instruction in 'Login & Registration' setting section and fill the API ID field in order to activate Facebook Share button.",
+							"Check the checkbox share options to activate.",
 							"wpforo"
 						),
-						"description_original" => "Check the checkbox share options to activate. Please note, that the Facebook share button cannot be activated without Facebook API ID. Please follow to the 'Facebook API Configuration' option instruction in 'Login & Registration' setting section and fill the API ID field in order to activate Facebook Share button.",
+						"description_original" => "Check the checkbox share options to activate.",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/social-share/#active-share-buttons",
 					],
 					"sb_on"              => [
@@ -2796,7 +2934,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Enable Post Sharing Toggle", "wpforo" ),
 						"label_original"       => "Enable Post Sharing Toggle",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/social-share/#general-share-buttons-color",
 					],
@@ -2804,7 +2942,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "General Share Buttons Color", "wpforo" ),
 						"label_original"       => "General Share Buttons Color",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 'grey', 'label' => 'Grey' ],
@@ -2816,7 +2954,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "General Share Buttons Type", "wpforo" ),
 						"label_original"       => "General Share Buttons Type",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 'icon', 'label' => 'Icon' ],
@@ -2839,7 +2977,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Post Sharing Toggle View", "wpforo" ),
 						"label_original"       => "Post Sharing Toggle View",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 'collapsed', 'label' => __( 'Collapsed', 'wpforo' ) ],
@@ -2851,7 +2989,7 @@ class Settings extends stdClass {
 						"type"                 => "radio",
 						"label"                => esc_html__( "Post Sharing Toggle Icon", "wpforo" ),
 						"label_original"       => "Post Sharing Toggle Icon",
-						"description"          => esc_html__( "", "wpforo" ),
+						"description"          => "",
 						"description_original" => "",
 						"variants"             => [
 							[ 'value' => 'mixed', 'label' => 'Mixed' ],
@@ -2968,7 +3106,7 @@ class Settings extends stdClass {
 				"title"                => esc_html__( "Privacy & Forum Rules", "wpforo" ),
 				"title_original"       => "Privacy & Rules",
 				"icon"                 => '<svg xmlns="http://www.w3.org/2000/svg" height="60px" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 498 512.17"><path d="M232.21 0c86.9 55.08 165.4 81.14 232.78 74.98 3.67 74.22-2.36 138.96-17.12 194.7-10-4.08-20.68-6.52-31.7-7 11.57-46.07 16.23-99.25 13.23-159.92-57.04 5.22-123.5-16.84-197.06-63.48C168.68 88.73 103 103.21 36.04 99.7c-2.97 113.09 16.9 198.24 55.29 260.18 28.38-23.73 76.71-20.15 99.6-51.62 1.65-2.43 2.41-3.74 2.39-4.81-.01-.56-24.83-31-27.06-34.55-5.85-9.3-16.8-21.93-16.8-32.82 0-6.15 4.85-14.17 11.8-15.96-.54-9.22-.91-18.57-.91-27.84 0-5.47.1-11.01.3-16.43.3-3.44.94-4.95 1.85-8.27a58.537 58.537 0 0 1 26.13-33.18c4.43-2.8 9.25-4.98 14.19-6.77 8.96-3.27 4.62-17.43 14.46-17.65 22.99-.59 60.81 19.51 75.54 35.48 9.39 10.38 14.75 21.92 15.07 35.92l-.93 40.27c4.08 1 8.66 4.19 9.66 8.28 3.15 12.71-10.04 28.53-16.18 38.64-5.65 9.33-27.26 34.79-27.28 35-.1 1.09.46 2.47 1.94 4.69 10.53 14.48 26.44 21.54 43.3 27.25-1.87 6.71-3.07 13.64-3.53 20.74-1.76 1.23-3.4 2.6-4.91 4.11l-.1.1c-6.73 6.75-10.93 16.04-10.93 26.26v93.19c-20.32 12.65-42.28 23.4-65.81 32.26C82.71 457.27-6.26 322.77.34 71.37 79.43 75.51 157.03 58.41 232.21 0zm105.67 375.54h3.88v-11.95c0-19.96 7.87-38.16 20.55-51.39 12.79-13.33 30.44-21.6 49.88-21.6s37.11 8.27 49.88 21.6c12.69 13.23 20.56 31.42 20.56 51.39v11.95h3.88c6.32 0 11.49 5.18 11.49 11.5v113.63c0 6.33-5.17 11.5-11.49 11.5H337.88c-6.33 0-11.49-5.17-11.49-11.5V387.04c-.01-6.32 5.16-11.5 11.49-11.5zm65.2 73.48-11.96 31.34h42.13l-11.08-31.77c7.04-3.62 11.85-10.95 11.85-19.41 0-12.06-9.77-21.82-21.84-21.82-12.05 0-21.82 9.76-21.82 21.82 0 8.8 5.21 16.38 12.72 19.84zm-39.57-73.48h97.35v-11.95c0-14.2-5.53-27.06-14.43-36.34-8.81-9.19-20.93-14.9-34.24-14.9-13.31 0-25.44 5.71-34.24 14.9-8.91 9.28-14.44 22.14-14.44 36.34v11.95z"/></svg>',
-				"description"          => esc_html__( "", "wpforo" ),
+				"description"          => "",
 				"description_original" => "",
 				"docurl"               => "",
 				"status"               => "ok",
@@ -3065,20 +3203,6 @@ class Settings extends stdClass {
 						"description_original" => "This is an example of forum Privacy Policy with GDPR compliant. It adapted to wpForo plugin functions and features. In case you enable this privacy policy template you become responsible for the content of this template. Please read this text carefully and make sure it suits your community Privacy Policy. If it doesn't, you should edit this text and adapt it to your community rules. This template includes shortcodes [forum-name] and [forum-url]. They are automatically replaced on registration page with current forum details. Don't forget to add an information about your organization, location and contacting ways (page, email, phone, etc...). Also if you have a separate privacy policy page for website please add a link to that page.",
 						"docurl"               => "",
 					],
-					"checkbox_fb_login"       => [
-						"label"                => esc_html__( "Checkbox: I Agree to create a forum account on Facebook Login", "wpforo" ),
-						"label_original"       => "Checkbox: I Agree to create a forum account on Facebook Login",
-						"description"          => esc_html__(
-							                          "If this option is enabled, the Facebook Login button becomes not-clickable until user accept automatic account creation process based on his/her Facebook public profile information. This checkbox and appropriate information will be displayed with Facebook Login button to comply with the GDPR",
-							                          "wpforo"
-						                          ) . ' <a href="https://gdpr-info.eu/art-22-gdpr/" target="_blank" rel="noreferrer">(Article 22)</a> <br>' . esc_html__(
-							                          "The note text and the label of this checkbox can be managed in Forums &gt; Phrases admin page. Search the label phrase, click on edit button and change it.",
-							                          "wpforo"
-						                          ),
-						"description_original" => 'If this option is enabled, the Facebook Login button becomes not-clickable until user accept automatic account creation process based on his/her Facebook public profile information. This checkbox and appropriate information will be displayed with Facebook Login button to comply with the GDPR <a href="https://gdpr-info.eu/art-22-gdpr/" target="_blank" rel="noreferrer">(Article 22)</a> <br>The note text and the label of this checkbox can be managed in Forums &gt; Phrases admin page. Search the label phrase, click on edit button and change it.',
-						"type"                 => "radio",
-						"docurl"               => "",
-					],
 					"cookies"                 => [
 						"label"                => esc_html__( "Forum Cookies", "wpforo" ),
 						"label_original"       => "Forum Cookies",
@@ -3117,14 +3241,985 @@ class Settings extends stdClass {
 						"description_original" => 'This is a basic example of forum rules provided by <a href="https://www.wikihow.com/Sample/Forum-Rules" target="_blank" title="Sample Forum Rules" rel="noreferrer">wikihow.com</a>. You should edit this text and adapt it to your community rules.',
 						"docurl"               => "",
 					],
-				
+
 				],
 			],
 		];
-		
+
+		// Only show AI settings if AI service is available (connected + active subscription)
+		if( isset( WPF()->ai_client ) && WPF()->ai_client->is_service_available() ) {
+			$this->info->core['ai'] = [
+				"title"                => esc_html__( "AI Features", "wpforo" ),
+				"title_original"       => "AI Features",
+				"icon"                 => '<svg xmlns="http://www.w3.org/2000/svg" height="55px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/><path d="M5 3v4"/><path d="M3 5h4"/><path d="M19 17v4"/><path d="M17 19h4"/></svg>',
+				"description"          => esc_html__(
+					"Configure AI-powered features for your forum. Available features include: AI Semantic Search (intelligent search understanding natural language queries), AI Translation (real-time content translation), AI Topic Summarization (automatic discussion summaries), AI Topic Suggestions (smart recommendations while composing posts), AI Content Moderation (spam detection, toxicity filtering, and rule compliance checks), AI Bot Reply (automated intelligent responses - Professional plan), and AI Chat Assistant (conversational forum assistant - Business plan). Manage your subscription, credits, and monitor usage in wpForo > AI Features. Index your forum content for semantic search in AI Features > AI Content Indexing tab.",
+					"wpforo"
+				),
+				"description_original" => "Configure AI-powered features for your forum. Available features include: AI Semantic Search (intelligent search understanding natural language queries), AI Translation (real-time content translation), AI Topic Summarization (automatic discussion summaries), AI Topic Suggestions (smart recommendations while composing posts), AI Content Moderation (spam detection, toxicity filtering, and rule compliance checks), AI Bot Reply (automated intelligent responses - Professional plan), and AI Chat Assistant (conversational forum assistant - Business plan). Manage your subscription, credits, and monitor usage in wpForo > AI Features. Index your forum content for semantic search in AI Features > AI Content Indexing tab.",
+				"docurl"               => "",
+				"status"               => "new",
+				"base"                 => false,
+				"callback_for_page"    => function() {
+					require_once( WPFORO_DIR . '/admin/settings/ai.php' );
+				},
+				"options"              => [
+					"assistant"          => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Display AI Assistant", "wpforo" ),
+						"label_original"       => "Display AI Assistant",
+						"description"          => esc_html__(
+							"Enable or disable the AI Assistant widget on the forum frontend.",
+							"wpforo"
+						),
+						"description_original" => "Enable or disable the AI Assistant widget on the forum frontend.",
+						"docurl"               => "",
+					],
+					"assistant_open"     => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Open [AI Assistant] widget by Default on Home Page", "wpforo" ),
+						"label_original"       => "Open [AI Assistant] widget by Default on Home Page",
+						"description"          => esc_html__(
+							"When enabled, the AI Assistant widget is displayed open by default on the forum home page. The toggle bar is hidden on the home page when open. On other pages the widget remains closed with the toggle.",
+							"wpforo"
+						),
+						"description_original" => "When enabled, the AI Assistant widget is displayed open by default on the forum home page. The toggle bar is hidden on the home page when open. On other pages the widget remains closed with the toggle.",
+						"docurl"               => "",
+					],
+					"assistant_classic_search" => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Display Classic Search Tab", "wpforo" ),
+						"label_original"       => "Display Classic Search Tab",
+						"description"          => esc_html__(
+							"Show or hide the Classic Search tab in the AI Assistant search widget.",
+							"wpforo"
+						),
+						"description_original" => "Show or hide the Classic Search tab in the AI Assistant search widget.",
+						"docurl"               => "",
+					],
+					"assistant_preferences" => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Display Preferences Tab", "wpforo" ),
+						"label_original"       => "Display Preferences Tab",
+						"description"          => esc_html__(
+							"Show or hide the Preferences tab in the AI Assistant widget for logged-in users.",
+							"wpforo"
+						),
+						"description_original" => "Show or hide the Preferences tab in the AI Assistant widget for logged-in users.",
+						"docurl"               => "",
+					],
+					"assistant_highlight" => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Highlight AI Assistant Toggle", "wpforo" ),
+						"label_original"       => "Highlight AI Assistant Toggle",
+						"description"          => esc_html__(
+							"When enabled, the AI Assistant toggle button has a highlighted background color to attract attention. On hover it changes to the primary theme color.",
+							"wpforo"
+						),
+						"description_original" => "When enabled, the AI Assistant toggle button has a highlighted background color to attract attention. On hover it changes to the primary theme color.",
+						"docurl"               => "",
+					],
+					"assistant_icon"     => [
+						"type"                 => "textarea",
+						"label"                => esc_html__( "AI Assistant Toggle Icon (SVG)", "wpforo" ),
+						"label_original"       => "AI Assistant Toggle Icon (SVG)",
+						"description"          => esc_html__(
+							"Custom SVG icon for the AI Assistant toggle button. Leave empty to use the default sparkle icon. Paste the full SVG markup.",
+							"wpforo"
+						),
+						"description_original" => "Custom SVG icon for the AI Assistant toggle button. Leave empty to use the default sparkle icon. Paste the full SVG markup.",
+						"placeholder"          => '<svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">...</svg>',
+						"docurl"               => "",
+					],
+					"search"             => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable AI Semantic Search", "wpforo" ),
+						"label_original"       => "Enable AI Semantic Search",
+						"description"          => esc_html__(
+							"Enable or disable the AI-powered semantic search feature in the AI Assistant widget.",
+							"wpforo"
+						),
+						"description_original" => "Enable or disable the AI-powered semantic search feature in the AI Assistant widget.",
+						"docurl"               => "",
+					],
+					"search_quality"     => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Semantic Search AI Quality", "wpforo" ),
+						"label_original"       => "Semantic Search AI Quality",
+						"description"          => esc_html__(
+							"Select the AI model quality for search re-ranking. Higher quality uses more credits per search.",
+							"wpforo"
+						),
+						"description_original" => "Select the AI model quality for search re-ranking. Higher quality uses more credits per search.",
+						"variants"             => [
+							[ 'value' => 'fast', 'label' => __( 'Fast (1 credit)', 'wpforo' ) ],
+							[ 'value' => 'balanced', 'label' => __( 'Balanced (2 credits)', 'wpforo' ) ],
+							[ 'value' => 'advanced', 'label' => __( 'Advanced (3 credits)', 'wpforo' ) ],
+							[ 'value' => 'premium', 'label' => __( 'Premium (4 credits)', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"search_min_score" => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Minimum Relevance Score (%)", "wpforo" ),
+						"label_original"       => "Minimum Relevance Score (%)",
+						"description"          => esc_html__(
+							"Results with relevance score below this threshold will be filtered out. Set to 0 to show all results. Recommended: 30%.",
+							"wpforo"
+						),
+						"description_original" => "Results with relevance score below this threshold will be filtered out. Set to 0 to show all results. Recommended: 30%.",
+						"min"                  => 0,
+						"max"                  => 100,
+						"docurl"               => "",
+					],
+					"search_enhance" => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable AI Summary & Recommendations", "wpforo" ),
+						"label_original"       => "Enable AI Summary & Recommendations",
+						"description"          => esc_html__(
+							"When enabled, AI generates a summary and recommendations for search results. This feature is automatically disabled when search returns fewer than 3 results. Disabling saves credits.",
+							"wpforo"
+						),
+						"description_original" => "When enabled, AI generates a summary and recommendations for search results. This feature is automatically disabled when search returns fewer than 3 results. Disabling saves credits.",
+						"variants"             => [
+							[ 'value' => true, 'label' => __( 'Yes', 'wpforo' ) ],
+							[ 'value' => false, 'label' => __( 'No', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"search_enhance_quality" => [
+						"type"                 => "select",
+						"label"                => esc_html__( "AI Summary & Recommendations Quality", "wpforo" ),
+						"label_original"       => "AI Summary & Recommendations Quality",
+						"description"          => esc_html__(
+							"Select the AI model quality for generating search summaries and recommendations. Higher quality provides better synthesis but uses more credits.",
+							"wpforo"
+						),
+						"description_original" => "Select the AI model quality for generating search summaries and recommendations. Higher quality provides better synthesis but uses more credits.",
+						"variants"             => [
+							[ 'value' => 'fast', 'label' => __( 'Fast (1 credit)', 'wpforo' ) ],
+							[ 'value' => 'balanced', 'label' => __( 'Balanced (2 credits)', 'wpforo' ) ],
+							[ 'value' => 'advanced', 'label' => __( 'Advanced (3 credits)', 'wpforo' ) ],
+							[ 'value' => 'premium', 'label' => __( 'Premium (4 credits)', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"search_language"    => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Search Response Language", "wpforo" ),
+						"label_original"       => "Search Response Language",
+						"description"          => esc_html__(
+							"Select the default language for AI-generated search responses. This setting is used when user preferences are not available.",
+							"wpforo"
+						),
+						"description_original" => "Select the default language for AI-generated search responses. This setting is used when user preferences are not available.",
+						"variants"             => $this->get_variants_ai_languages(),
+						"docurl"               => "",
+					],
+					"search_max_results" => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Default Max Search Results", "wpforo" ),
+						"label_original"       => "Default Max Search Results",
+						"description"          => esc_html__(
+							"Default maximum number of search results to display. Users can override this in their preferences.",
+							"wpforo"
+						),
+						"description_original" => "Default maximum number of search results to display. Users can override this in their preferences.",
+						"min"                  => 1,
+						"max"                  => 10,
+						"docurl"               => "",
+					],
+					"translation"        => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable AI Translation", "wpforo" ),
+						"label_original"       => "Enable AI Translation",
+						"description"          => esc_html__(
+							"Enable or disable the AI-powered translation feature that allows users to translate forum posts.",
+							"wpforo"
+						),
+						"description_original" => "Enable or disable the AI-powered translation feature that allows users to translate forum posts.",
+						"docurl"               => "",
+					],
+					"translation_quality" => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Translation AI Quality", "wpforo" ),
+						"label_original"       => "Translation AI Quality",
+						"description"          => esc_html__(
+							"Select the AI model quality for content translation. Higher quality provides better translations but uses more credits.",
+							"wpforo"
+						),
+						"description_original" => "Select the AI model quality for content translation. Higher quality provides better translations but uses more credits.",
+						"variants"             => [
+							[ 'value' => 'fast', 'label' => __( 'Fast (1 credit)', 'wpforo' ) ],
+							[ 'value' => 'balanced', 'label' => __( 'Balanced (2 credits)', 'wpforo' ) ],
+							[ 'value' => 'advanced', 'label' => __( 'Advanced (3 credits)', 'wpforo' ) ],
+							[ 'value' => 'premium', 'label' => __( 'Premium (4 credits)', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"topic_summary"        => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable AI Topic Summarization", "wpforo" ),
+						"label_original"       => "Enable AI Topic Summarization",
+						"description"          => esc_html__(
+							"Enable or disable the AI-powered topic summarization feature that generates concise summaries of forum discussions.",
+							"wpforo"
+						),
+						"description_original" => "Enable or disable the AI-powered topic summarization feature that generates concise summaries of forum discussions.",
+						"docurl"               => "",
+					],
+					"topic_summary_quality" => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Topic Summary AI Quality", "wpforo" ),
+						"label_original"       => "Topic Summary AI Quality",
+						"description"          => esc_html__(
+							"Select the AI model quality for generating topic summaries. Higher quality provides better summaries but uses more credits.",
+							"wpforo"
+						),
+						"description_original" => "Select the AI model quality for generating topic summaries. Higher quality provides better summaries but uses more credits.",
+						"variants"             => [
+							[ 'value' => 'fast', 'label' => __( 'Fast (1 credit)', 'wpforo' ) ],
+							[ 'value' => 'balanced', 'label' => __( 'Balanced (2 credits)', 'wpforo' ) ],
+							[ 'value' => 'advanced', 'label' => __( 'Advanced (3 credits)', 'wpforo' ) ],
+							[ 'value' => 'premium', 'label' => __( 'Premium (4 credits)', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"topic_summary_style" => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Topic Summary Style", "wpforo" ),
+						"label_original"       => "Topic Summary Style",
+						"description"          => esc_html__(
+							"Choose the style of AI-generated topic summaries. Different styles suit different types of discussions.",
+							"wpforo"
+						),
+						"description_original" => "Choose the style of AI-generated topic summaries. Different styles suit different types of discussions.",
+						"variants"             => [
+							[ 'value' => 'compact', 'label' => __( 'Compact with Key Points', 'wpforo' ) ],
+							[ 'value' => 'structured', 'label' => __( 'Structured with Sections', 'wpforo' ) ],
+							[ 'value' => 'conversational', 'label' => __( 'Conversational Flow', 'wpforo' ) ],
+							[ 'value' => 'detailed', 'label' => __( 'Short Summary + Details', 'wpforo' ) ],
+							[ 'value' => 'minimal', 'label' => __( 'Minimal and Clean', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"topic_summary_min_replies" => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Minimum Replies to Show Button", "wpforo" ),
+						"label_original"       => "Minimum Replies to Show Button",
+						"description"          => esc_html__(
+							"The minimum number of replies a topic must have before the Summarize Topic button is displayed. Set to 0 to always show the button, or 1 to require at least one reply.",
+							"wpforo"
+						),
+						"description_original" => "The minimum number of replies a topic must have before the Summarize Topic button is displayed. Set to 0 to always show the button, or 1 to require at least one reply.",
+						"docurl"               => "",
+					],
+					"topic_summary_language"   => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Summary Response Language", "wpforo" ),
+						"label_original"       => "Summary Response Language",
+						"description"          => esc_html__(
+							"Select the language for AI-generated topic summaries.",
+							"wpforo"
+						),
+						"description_original" => "Select the language for AI-generated topic summaries.",
+						"variants"             => $this->get_variants_ai_languages(),
+						"docurl"               => "",
+					],
+					// AI Topic Suggestions Settings
+					"topic_suggestions"                 => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable AI Topic Suggestions", "wpforo" ),
+						"label_original"       => "Enable AI Topic Suggestions",
+						"description"          => esc_html__(
+							"When enabled, AI will suggest similar topics, related topics, and quick answers when users create new topics. This helps prevent duplicate topics and provides immediate assistance.",
+							"wpforo"
+						),
+						"description_original" => "When enabled, AI will suggest similar topics, related topics, and quick answers when users create new topics. This helps prevent duplicate topics and provides immediate assistance.",
+						"docurl"               => "",
+					],
+					"topic_suggestions_quality"         => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Topic Suggestions AI Quality", "wpforo" ),
+						"label_original"       => "Topic Suggestions AI Quality",
+						"description"          => esc_html__(
+							"Select the AI model quality for generating topic suggestions. Higher quality provides better suggestions but uses more credits.",
+							"wpforo"
+						),
+						"description_original" => "Select the AI model quality for generating topic suggestions. Higher quality provides better suggestions but uses more credits.",
+						"variants"             => [
+							[ 'value' => 'fast', 'label' => __( 'Fast (1 credit)', 'wpforo' ) ],
+							[ 'value' => 'balanced', 'label' => __( 'Balanced (2 credits)', 'wpforo' ) ],
+							[ 'value' => 'advanced', 'label' => __( 'Advanced (3 credits)', 'wpforo' ) ],
+							[ 'value' => 'premium', 'label' => __( 'Premium (4 credits)', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"topic_suggestions_min_words"       => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Minimum Words to Trigger", "wpforo" ),
+						"label_original"       => "Minimum Words to Trigger",
+						"description"          => esc_html__(
+							"The minimum number of words in the topic title required to trigger AI suggestions.",
+							"wpforo"
+						),
+						"description_original" => "The minimum number of words in the topic title required to trigger AI suggestions.",
+						"docurl"               => "",
+					],
+					"topic_suggestions_max_calls"       => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Max API Calls Per Session", "wpforo" ),
+						"label_original"       => "Max API Calls Per Session",
+						"description"          => esc_html__(
+							"Maximum number of API calls allowed per topic creation session to prevent excessive credit usage.",
+							"wpforo"
+						),
+						"description_original" => "Maximum number of API calls allowed per topic creation session to prevent excessive credit usage.",
+						"docurl"               => "",
+					],
+					"topic_suggestions_show_related"    => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Show Related Topics", "wpforo" ),
+						"label_original"       => "Show Related Topics",
+						"description"          => esc_html__(
+							"Display AI-suggested related topics that might interest the user based on their question.",
+							"wpforo"
+						),
+						"description_original" => "Display AI-suggested related topics that might interest the user based on their question.",
+						"docurl"               => "",
+					],
+					"topic_suggestions_show_answer"     => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Show Quick AI Answer", "wpforo" ),
+						"label_original"       => "Show Quick AI Answer",
+						"description"          => esc_html__(
+							"Display a quick AI-generated answer based on existing forum content. Can help users get immediate answers.",
+							"wpforo"
+						),
+						"description_original" => "Display a quick AI-generated answer based on existing forum content. Can help users get immediate answers.",
+						"docurl"               => "",
+					],
+					"topic_suggestions_max_similar"     => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Max Similar Topics", "wpforo" ),
+						"label_original"       => "Max Similar Topics",
+						"description"          => esc_html__(
+							"Maximum number of similar topics to display in the suggestions panel.",
+							"wpforo"
+						),
+						"description_original" => "Maximum number of similar topics to display in the suggestions panel.",
+						"min"                  => 1,
+						"max"                  => 10,
+						"docurl"               => "",
+					],
+					"topic_suggestions_max_related"     => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Max Related Topics", "wpforo" ),
+						"label_original"       => "Max Related Topics",
+						"description"          => esc_html__(
+							"Maximum number of AI-suggested related topics to display.",
+							"wpforo"
+						),
+						"description_original" => "Maximum number of AI-suggested related topics to display.",
+						"docurl"               => "",
+					],
+					"topic_suggestions_similarity"      => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Similarity Threshold (%)", "wpforo" ),
+						"label_original"       => "Similarity Threshold (%)",
+						"description"          => esc_html__(
+							"Minimum similarity percentage for topics to be shown as similar. Lower values show more results.",
+							"wpforo"
+						),
+						"description_original" => "Minimum similarity percentage for topics to be shown as similar. Lower values show more results.",
+						"docurl"               => "",
+					],
+					"topic_suggestions_language"        => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Suggestions Response Language", "wpforo" ),
+						"label_original"       => "Suggestions Response Language",
+						"description"          => esc_html__(
+							"Select the language for AI-generated topic suggestions and insights.",
+							"wpforo"
+						),
+						"description_original" => "Select the language for AI-generated topic suggestions and insights.",
+						"variants"             => $this->get_variants_ai_languages(),
+						"docurl"               => "",
+					],
+					// AI Content Moderation - Spam Detection
+					"moderation_spam"                   => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable AI Spam Detection", "wpforo" ),
+						"label_original"       => "Enable AI Spam Detection",
+						"description"          => esc_html__(
+							"When enabled, AI will analyze new content for spam patterns including promotional content, link spam, and automated bot submissions.",
+							"wpforo"
+						),
+						"description_original" => "When enabled, AI will analyze new content for spam patterns including promotional content, link spam, and automated bot submissions.",
+						"docurl"               => "",
+					],
+					"moderation_spam_quality"           => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Spam Detection AI Quality", "wpforo" ),
+						"label_original"       => "Spam Detection AI Quality",
+						"description"          => esc_html__(
+							"Select the AI model quality for spam detection. Higher quality provides more accurate detection but uses more credits.",
+							"wpforo"
+						),
+						"description_original" => "Select the AI model quality for spam detection. Higher quality provides more accurate detection but uses more credits.",
+						"variants"             => [
+							[ 'value' => 'fast', 'label' => __( 'Fast (1 credit)', 'wpforo' ) ],
+							[ 'value' => 'balanced', 'label' => __( 'Balanced (2 credits)', 'wpforo' ) ],
+							[ 'value' => 'advanced', 'label' => __( 'Advanced (3 credits)', 'wpforo' ) ],
+							[ 'value' => 'premium', 'label' => __( 'Premium (4 credits)', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"moderation_spam_use_context"       => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Use Forum Context for Analysis", "wpforo" ),
+						"label_original"       => "Use Forum Context for Analysis",
+						"description"          => esc_html__(
+							"When enabled, AI will use indexed forum content as context to better understand what is normal content vs spam for your specific forum.",
+							"wpforo"
+						),
+						"description_original" => "When enabled, AI will use indexed forum content as context to better understand what is normal content vs spam for your specific forum.",
+						"docurl"               => "",
+					],
+					"moderation_spam_min_indexed"       => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Minimum Indexed Topics for Context", "wpforo" ),
+						"label_original"       => "Minimum Indexed Topics for Context",
+						"description"          => esc_html__(
+							"Minimum number of indexed topics required before using forum context. If fewer topics are indexed, context will not be used.",
+							"wpforo"
+						),
+						"description_original" => "Minimum number of indexed topics required before using forum context. If fewer topics are indexed, context will not be used.",
+						"docurl"               => "",
+					],
+					"moderation_spam_action_detected"   => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Action on Spam Detection", "wpforo" ),
+						"label_original"       => "Action on Spam Detection",
+						"description"          => esc_html__(
+							"Action to take when spam is detected (score 90-100%). This is high-confidence spam detection.",
+							"wpforo"
+						),
+						"description_original" => "Action to take when spam is detected (score 90-100%). This is high-confidence spam detection.",
+						"variants"             => [
+							[ 'value' => 'none', 'label' => esc_html__( "Do nothing", "wpforo" ) ],
+							[ 'value' => 'unapprove', 'label' => esc_html__( "Set it unapproved", "wpforo" ) ],
+							[ 'value' => 'unapprove_ban', 'label' => esc_html__( "Set it unapproved and ban the author", "wpforo" ) ],
+							[ 'value' => 'delete_author', 'label' => esc_html__( "Delete author with all forum posts", "wpforo" ) ],
+						],
+						"docurl"               => "",
+					],
+					"moderation_spam_action_suspected"  => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Action on Spam Suspection", "wpforo" ),
+						"label_original"       => "Action on Spam Suspection",
+						"description"          => esc_html__(
+							"Action to take when spam is suspected (score 70-89%). Content shows spam indicators but isn't definitive.",
+							"wpforo"
+						),
+						"description_original" => "Action to take when spam is suspected (score 70-89%). Content shows spam indicators but isn't definitive.",
+						"variants"             => [
+							[ 'value' => 'none', 'label' => esc_html__( "Do nothing", "wpforo" ) ],
+							[ 'value' => 'unapprove', 'label' => esc_html__( "Set it unapproved", "wpforo" ) ],
+							[ 'value' => 'unapprove_ban', 'label' => esc_html__( "Set it unapproved and ban the author", "wpforo" ) ],
+							[ 'value' => 'delete_author', 'label' => esc_html__( "Delete author with all forum posts", "wpforo" ) ],
+						],
+						"docurl"               => "",
+					],
+					"moderation_spam_action_uncertain"  => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Action on Uncertain Detection", "wpforo" ),
+						"label_original"       => "Action on Uncertain Detection",
+						"description"          => esc_html__(
+							"Action to take when spam detection is uncertain (score 41-69%). Content has some suspicious elements but not enough to classify as spam.",
+							"wpforo"
+						),
+						"description_original" => "Action to take when spam detection is uncertain (score 41-69%). Content has some suspicious elements but not enough to classify as spam.",
+						"variants"             => [
+							[ 'value' => 'none', 'label' => esc_html__( "Do nothing", "wpforo" ) ],
+							[ 'value' => 'unapprove', 'label' => esc_html__( "Set it unapproved", "wpforo" ) ],
+							[ 'value' => 'unapprove_ban', 'label' => esc_html__( "Set it unapproved and ban the author", "wpforo" ) ],
+							[ 'value' => 'delete_author', 'label' => esc_html__( "Delete author with all forum posts", "wpforo" ) ],
+						],
+						"docurl"               => "",
+					],
+					"moderation_spam_action_clean"      => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Action on No Spam Detection", "wpforo" ),
+						"label_original"       => "Action on No Spam Detection",
+						"description"          => esc_html__(
+							"Action to take when content appears clean (score 0-40%). Low spam indicators suggest legitimate content.",
+							"wpforo"
+						),
+						"description_original" => "Action to take when content appears clean (score 0-40%). Low spam indicators suggest legitimate content.",
+						"variants"             => [
+							[ 'value' => 'none', 'label' => esc_html__( "Do nothing", "wpforo" ) ],
+							[ 'value' => 'auto_approve', 'label' => esc_html__( "Auto-approve the content", "wpforo" ) ],
+						],
+						"docurl"               => "",
+					],
+					"moderation_spam_exempt_usergroups" => [
+						"type"                 => "info",
+						"label"                => esc_html__( "Usergroups Not Scanned by AI Antispam", "wpforo" ),
+						"label_original"       => "Usergroups Not Scanned by AI Antispam",
+						"description"          => esc_html__(
+							"Usergroups with the \"Front - Can pass moderation\" permission enabled will skip AI spam detection. Edit usergroup permissions to enable or disable this for each group.",
+							"wpforo"
+						),
+						"description_original" => "Usergroups with the \"Front - Can pass moderation\" permission enabled will skip AI spam detection. Edit usergroup permissions to enable or disable this for each group.",
+						"docurl"               => "",
+					],
+					"moderation_spam_exempt_minposts"   => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Skip Users with Minimum Approved Posts", "wpforo" ),
+						"label_original"       => "Skip Users with Approved Minimum Posts",
+						"description"          => esc_html__(
+							"Users with this many or more posts will be skipped from AI spam detection. Set to 0 to disable this rule.",
+							"wpforo"
+						),
+						"description_original" => "Users with this many or more posts will be skipped from AI spam detection. Set to 0 to disable this rule.",
+						"docurl"               => "",
+					],
+					"moderation_spam_autoban_unapproved" => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Auto-Ban After Unapproved Posts Count", "wpforo" ),
+						"label_original"       => "Auto-Ban After Unapproved Posts Count",
+						"description"          => esc_html__(
+							"Automatically ban users when they reach this number of unapproved posts. Set to 0 to disable auto-ban.",
+							"wpforo"
+						),
+						"description_original" => "Automatically ban users when they reach this number of unapproved posts. Set to 0 to disable auto-ban.",
+						"docurl"               => "",
+					],
+					// AI Content Moderation - Content Safety & Toxicity Detection
+					"moderation_toxicity"               => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable Content Safety & Toxicity Detection", "wpforo" ),
+						"label_original"       => "Enable Content Safety & Toxicity Detection",
+						"description"          => esc_html__(
+							"When enabled, AI will detect toxic content including hate speech, harassment, threats, profanity, and other harmful content that violates community guidelines.",
+							"wpforo"
+						),
+						"description_original" => "When enabled, AI will detect toxic content including hate speech, harassment, threats, profanity, and other harmful content that violates community guidelines.",
+						"docurl"               => "",
+					],
+					"moderation_toxicity_sensitivity"   => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Detection Sensitivity", "wpforo" ),
+						"label_original"       => "Detection Sensitivity",
+						"description"          => esc_html__(
+							"Low: Only severe violations (hate speech, direct threats, severe harassment). Medium: Standard detection including harassment, profanity, sexual content. High: Comprehensive including trolling, negativity, suggestive content.",
+							"wpforo"
+						),
+						"description_original" => "Low: Only severe violations (hate speech, direct threats, severe harassment). Medium: Standard detection including harassment, profanity, sexual content. High: Comprehensive including trolling, negativity, suggestive content.",
+						"variants"             => [
+							[ 'value' => 'low', 'label' => esc_html__( "Low (severe violations only)", "wpforo" ) ],
+							[ 'value' => 'medium', 'label' => esc_html__( "Medium (standard detection)", "wpforo" ) ],
+							[ 'value' => 'high', 'label' => esc_html__( "High (comprehensive)", "wpforo" ) ],
+						],
+						"docurl"               => "",
+					],
+					"moderation_toxicity_action"        => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Action on Toxic Content", "wpforo" ),
+						"label_original"       => "Action on Toxic Content",
+						"description"          => esc_html__(
+							"Action to take when toxic content is detected.",
+							"wpforo"
+						),
+						"description_original" => "Action to take when toxic content is detected.",
+						"variants"             => [
+							[ 'value' => 'none', 'label' => esc_html__( "Do nothing", "wpforo" ) ],
+							[ 'value' => 'unapprove', 'label' => esc_html__( "Set it unapproved", "wpforo" ) ],
+							[ 'value' => 'unapprove_ban', 'label' => esc_html__( "Set it unapproved and ban the author", "wpforo" ) ],
+						],
+						"docurl"               => "",
+					],
+					// AI Content Moderation - Rule Compliance & Policy Enforcement
+					"moderation_compliance"             => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable Rule Compliance & Policy Enforcement", "wpforo" ),
+						"label_original"       => "Enable Rule Compliance & Policy Enforcement",
+						"description"          => esc_html__(
+							"When enabled, AI will check content against forum rules and policies, detecting off-topic posts, prohibited content types, and policy violations.",
+							"wpforo"
+						),
+						"description_original" => "When enabled, AI will check content against forum rules and policies, detecting off-topic posts, prohibited content types, and policy violations.",
+						"docurl"               => "",
+					],
+					"moderation_compliance_action"      => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Action on Policy Violation", "wpforo" ),
+						"label_original"       => "Action on Policy Violation",
+						"description"          => esc_html__(
+							"Action to take when content violates forum policies or rules.",
+							"wpforo"
+						),
+						"description_original" => "Action to take when content violates forum policies or rules.",
+						"variants"             => [
+							[ 'value' => 'none', 'label' => esc_html__( "Do nothing (log only)", "wpforo" ) ],
+							[ 'value' => 'unapprove', 'label' => esc_html__( "Set it unapproved", "wpforo" ) ],
+							[ 'value' => 'unapprove_ban', 'label' => esc_html__( "Set it unapproved and ban the author", "wpforo" ) ],
+						],
+						"docurl"               => "",
+					],
+					// AI Assistant Chatbot
+					"chatbot"                           => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable AI Chatbot", "wpforo" ),
+						"label_original"       => "Enable AI Chatbot",
+						"description"          => esc_html__(
+							"Enable or disable the AI Chatbot feature in the AI Assistant widget. When enabled, users can have conversations with an AI assistant that has knowledge of your forum content.",
+							"wpforo"
+						),
+						"description_original" => "Enable or disable the AI Chatbot feature in the AI Assistant widget. When enabled, users can have conversations with an AI assistant that has knowledge of your forum content.",
+						"docurl"               => "",
+					],
+					"chatbot_quality"                   => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Chatbot AI Quality", "wpforo" ),
+						"label_original"       => "Chatbot AI Quality",
+						"description"          => esc_html__(
+							"Select the default AI model quality for chatbot responses. Higher quality provides better responses but uses more credits per message. Note: Fast quality is not available for AI Chat as it does not provide adequate response quality for conversational interactions.",
+							"wpforo"
+						),
+						"description_original" => "Select the default AI model quality for chatbot responses. Higher quality provides better responses but uses more credits per message. Note: Fast quality is not available for AI Chat as it does not provide adequate response quality for conversational interactions.",
+						"variants"             => [
+							[ 'value' => 'balanced', 'label' => esc_html__( 'Balanced (1 credit per message)', 'wpforo' ) ],
+							[ 'value' => 'advanced', 'label' => esc_html__( 'Advanced (2 credits per message)', 'wpforo' ) ],
+							[ 'value' => 'premium', 'label' => esc_html__( 'Premium (3 credits per message)', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"chatbot_welcome_message"           => [
+						"type"                 => "textarea",
+						"label"                => esc_html__( "Welcome Message", "wpforo" ),
+						"label_original"       => "Welcome Message",
+						"description"          => esc_html__(
+							"Custom welcome message shown when users start a new conversation. Use {user_display_name} to insert the user's name. Supports basic HTML: line breaks (<br>), paragraphs (<p>), bold (<strong>), italic (<em>), and links (<a>). Leave empty to use the default message.",
+							"wpforo"
+						),
+						"description_original" => "Custom welcome message shown when users start a new conversation. Use {user_display_name} to insert the user's name. Supports basic HTML: line breaks (<br>), paragraphs (<p>), bold (<strong>), italic (<em>), and links (<a>). Leave empty to use the default message.",
+						"placeholder"          => esc_html__( "Hello {user_display_name}!\nI am your AI assistant. How can I help you today?", "wpforo" ),
+						"docurl"               => "",
+					],
+					"chatbot_no_content_message"        => [
+						"type"                 => "textarea",
+						"label"                => esc_html__( "No Content Found Message", "wpforo" ),
+						"label_original"       => "No Content Found Message",
+						"description"          => esc_html__(
+							"Custom message shown when the chatbot cannot find relevant forum content to answer a question. Supports basic HTML: links (<a>), line breaks (<br>), paragraphs (<p>), and images (<img>). Leave empty to use the default message.",
+							"wpforo"
+						),
+						"description_original" => "Custom message shown when the chatbot cannot find relevant forum content to answer a question. Supports basic HTML: links (<a>), line breaks (<br>), paragraphs (<p>), and images (<img>). Leave empty to use the default message.",
+						"placeholder"          => esc_html__( "I couldn't find information about that topic in the forum. Please try searching directly or create a new topic to start a discussion.", "wpforo" ),
+						"docurl"               => "",
+					],
+					"chatbot_max_conversations"         => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Max Conversations per User", "wpforo" ),
+						"label_original"       => "Max Conversations per User",
+						"description"          => esc_html__(
+							"Maximum number of conversations a user can have. Older conversations are automatically deleted when this limit is reached.",
+							"wpforo"
+						),
+						"description_original" => "Maximum number of conversations a user can have. Older conversations are automatically deleted when this limit is reached.",
+						"min"                  => 1,
+						"max"                  => 50,
+						"docurl"               => "",
+					],
+					"chatbot_context_update_threshold"  => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Context Update Frequency", "wpforo" ),
+						"label_original"       => "Context Update Frequency",
+						"description"          => esc_html__(
+							"Number of messages between context summary updates. Lower values maintain better context but use more AI resources.",
+							"wpforo"
+						),
+						"description_original" => "Number of messages between context summary updates. Lower values maintain better context but use more AI resources.",
+						"min"                  => 3,
+						"max"                  => 20,
+						"docurl"               => "",
+					],
+					"chatbot_use_rag"                   => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable Forum Knowledge (RAG)", "wpforo" ),
+						"label_original"       => "Enable Forum Knowledge (RAG)",
+						"description"          => esc_html__(
+							"When enabled, the chatbot will search indexed forum content to provide accurate answers based on your forum's knowledge base.",
+							"wpforo"
+						),
+						"description_original" => "When enabled, the chatbot will search indexed forum content to provide accurate answers based on your forum's knowledge base.",
+						"docurl"               => "",
+					],
+					"chatbot_use_local_context"         => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable Page Context", "wpforo" ),
+						"label_original"       => "Enable Page Context",
+						"description"          => esc_html__(
+							"When enabled, the chatbot will consider the content of the current page (topic, forum) when answering questions.",
+							"wpforo"
+						),
+						"description_original" => "When enabled, the chatbot will consider the content of the current page (topic, forum) when answering questions.",
+						"docurl"               => "",
+					],
+					"chatbot_allowed_groups"            => [
+						"type"                 => "checkbox",
+						"label"                => esc_html__( "Allowed Usergroups", "wpforo" ),
+						"label_original"       => "Allowed Usergroups",
+						"description"          => esc_html__(
+							"Select which usergroups can use the AI Chatbot. New usergroups must be manually added here after creation.",
+							"wpforo"
+						),
+						"description_original" => "Select which usergroups can use the AI Chatbot. New usergroups must be manually added here after creation.",
+						"variants"             => $this->get_variants_usergroups_chatbot(),
+						"docurl"               => "",
+					],
+					"chatbot_language"                  => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Chatbot Response Language", "wpforo" ),
+						"label_original"       => "Chatbot Response Language",
+						"description"          => esc_html__(
+							"Select the language for AI chatbot responses.",
+							"wpforo"
+						),
+						"description_original" => "Select the language for AI chatbot responses.",
+						"variants"             => $this->get_variants_ai_languages(),
+						"docurl"               => "",
+					],
+					// AI Bot Reply
+					"bot_reply"                         => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Enable AI Bot Reply and Reply Suggestion", "wpforo" ),
+						"label_original"       => "Enable AI Bot Reply and Reply Suggestion",
+						"description"          => esc_html__(
+							"Enable or disable the AI Bot Reply feature. This adds a Bot Reply button to posts and a Suggest Reply button in the reply form for moderators.",
+							"wpforo"
+						),
+						"description_original" => "Enable or disable the AI Bot Reply feature. This adds a Bot Reply button to posts and a Suggest Reply button in the reply form for moderators.",
+						"docurl"               => "",
+					],
+					"bot_reply_quality"                 => [
+						"type"                 => "select",
+						"label"                => esc_html__( "AI Bot Reply Quality", "wpforo" ),
+						"label_original"       => "AI Bot Reply Quality",
+						"description"          => esc_html__(
+							"Select the AI model quality for bot replies. Higher quality provides better responses but uses more credits.",
+							"wpforo"
+						),
+						"description_original" => "Select the AI model quality for bot replies. Higher quality provides better responses but uses more credits.",
+						"variants"             => [
+							[ 'value' => 'fast', 'label' => esc_html__( 'Fast (1 credit)', 'wpforo' ) ],
+							[ 'value' => 'balanced', 'label' => esc_html__( 'Balanced (2 credits)', 'wpforo' ) ],
+							[ 'value' => 'advanced', 'label' => esc_html__( 'Advanced (3 credits)', 'wpforo' ) ],
+							[ 'value' => 'premium', 'label' => esc_html__( 'Premium (4 credits)', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"bot_reply_style"                   => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Reply Style", "wpforo" ),
+						"label_original"       => "Reply Style",
+						"description"          => esc_html__(
+							"Choose the style of AI-generated replies. This affects how the AI approaches answering questions.",
+							"wpforo"
+						),
+						"description_original" => "Choose the style of AI-generated replies. This affects how the AI approaches answering questions.",
+						"variants"             => [
+							[ 'value' => 'neutral', 'label' => esc_html__( 'Neutral', 'wpforo' ) ],
+							[ 'value' => 'helpful_answer', 'label' => esc_html__( 'Helpful Answer - Direct solution', 'wpforo' ) ],
+							[ 'value' => 'clarifying_questions', 'label' => esc_html__( 'Clarifying Questions - Ask for details', 'wpforo' ) ],
+							[ 'value' => 'provide_context', 'label' => esc_html__( 'Provide Context - Background info', 'wpforo' ) ],
+							[ 'value' => 'encourage_discussion', 'label' => esc_html__( 'Encourage Discussion - Promote conversation', 'wpforo' ) ],
+							[ 'value' => 'step_by_step', 'label' => esc_html__( 'Step-by-Step Solution - Detailed guide', 'wpforo' ) ],
+							[ 'value' => 'quick_answer', 'label' => esc_html__( 'Quick Answer - Brief response', 'wpforo' ) ],
+							[ 'value' => 'expert_opinion', 'label' => esc_html__( 'Expert Opinion - Authoritative view', 'wpforo' ) ],
+							[ 'value' => 'supportive', 'label' => esc_html__( 'Supportive Response - Empathetic help', 'wpforo' ) ],
+							[ 'value' => 'resource_sharing', 'label' => esc_html__( 'Resource Sharing - Links/references', 'wpforo' ) ],
+							[ 'value' => 'alternatives', 'label' => esc_html__( 'Alternative Solutions - Multiple options', 'wpforo' ) ],
+							[ 'value' => 'troubleshooting', 'label' => esc_html__( 'Troubleshooting Guide - Diagnostic approach', 'wpforo' ) ],
+							[ 'value' => 'best_practice', 'label' => esc_html__( 'Best Practice Advice - Recommended way', 'wpforo' ) ],
+							[ 'value' => 'experience_sharing', 'label' => esc_html__( 'Experience Sharing - Personal story', 'wpforo' ) ],
+							[ 'value' => 'detailed_explanation', 'label' => esc_html__( 'Detailed Explanation - Comprehensive answer', 'wpforo' ) ],
+							[ 'value' => 'summary', 'label' => esc_html__( 'Summary Response - Condensed info', 'wpforo' ) ],
+							[ 'value' => 'follow_up', 'label' => esc_html__( 'Follow-up Questions - Dig deeper', 'wpforo' ) ],
+							[ 'value' => 'confirmation', 'label' => esc_html__( 'Confirmation - Validate understanding', 'wpforo' ) ],
+							[ 'value' => 'constructive_feedback', 'label' => esc_html__( 'Constructive Feedback - Helpful critique', 'wpforo' ) ],
+							[ 'value' => 'collaborative', 'label' => esc_html__( 'Collaborative - Work together approach', 'wpforo' ) ],
+							[ 'value' => 'educational', 'label' => esc_html__( 'Educational - Teaching moment', 'wpforo' ) ],
+							[ 'value' => 'acknowledgment', 'label' => esc_html__( 'Acknowledgment - Recognize the issue', 'wpforo' ) ],
+							[ 'value' => 'recommendation', 'label' => esc_html__( 'Recommendation - Suggest specific action', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"bot_reply_tone"                    => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Reply Tone", "wpforo" ),
+						"label_original"       => "Reply Tone",
+						"description"          => esc_html__(
+							"Choose the tone for AI-generated replies. This affects the personality and voice of the response.",
+							"wpforo"
+						),
+						"description_original" => "Choose the tone for AI-generated replies. This affects the personality and voice of the response.",
+						"variants"             => [
+							[ 'value' => 'neutral', 'label' => esc_html__( 'Neutral', 'wpforo' ) ],
+							[ 'value' => 'professional', 'label' => esc_html__( 'Professional - Business-like and formal', 'wpforo' ) ],
+							[ 'value' => 'friendly', 'label' => esc_html__( 'Friendly - Warm and approachable', 'wpforo' ) ],
+							[ 'value' => 'casual', 'label' => esc_html__( 'Casual - Relaxed and informal', 'wpforo' ) ],
+							[ 'value' => 'technical', 'label' => esc_html__( 'Technical - Detailed and precise', 'wpforo' ) ],
+							[ 'value' => 'enthusiastic', 'label' => esc_html__( 'Enthusiastic - Excited and energetic', 'wpforo' ) ],
+							[ 'value' => 'helpful', 'label' => esc_html__( 'Helpful - Supportive and guiding', 'wpforo' ) ],
+							[ 'value' => 'authoritative', 'label' => esc_html__( 'Authoritative - Expert and confident', 'wpforo' ) ],
+							[ 'value' => 'conversational', 'label' => esc_html__( 'Conversational - Like chatting with a friend', 'wpforo' ) ],
+							[ 'value' => 'educational', 'label' => esc_html__( 'Educational - Teaching and informative', 'wpforo' ) ],
+							[ 'value' => 'inspirational', 'label' => esc_html__( 'Inspirational - Motivating and uplifting', 'wpforo' ) ],
+							[ 'value' => 'humorous', 'label' => esc_html__( 'Humorous - Light-hearted and witty', 'wpforo' ) ],
+							[ 'value' => 'serious', 'label' => esc_html__( 'Serious - Focused and earnest', 'wpforo' ) ],
+							[ 'value' => 'encouraging', 'label' => esc_html__( 'Encouraging - Positive and supportive', 'wpforo' ) ],
+							[ 'value' => 'warm', 'label' => esc_html__( 'Warm - Caring and compassionate', 'wpforo' ) ],
+							[ 'value' => 'direct', 'label' => esc_html__( 'Direct - Straightforward and to the point', 'wpforo' ) ],
+							[ 'value' => 'thoughtful', 'label' => esc_html__( 'Thoughtful - Considerate and reflective', 'wpforo' ) ],
+							[ 'value' => 'empathetic', 'label' => esc_html__( 'Empathetic - Understanding and relatable', 'wpforo' ) ],
+							[ 'value' => 'confident', 'label' => esc_html__( 'Confident - Self-assured and decisive', 'wpforo' ) ],
+							[ 'value' => 'curious', 'label' => esc_html__( 'Curious - Inquisitive and engaging', 'wpforo' ) ],
+							[ 'value' => 'playful', 'label' => esc_html__( 'Playful - Fun and lighthearted', 'wpforo' ) ],
+							[ 'value' => 'sincere', 'label' => esc_html__( 'Sincere - Genuine and honest', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"bot_reply_length"                  => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Reply Length", "wpforo" ),
+						"label_original"       => "Reply Length",
+						"description"          => esc_html__(
+							"Choose the target length for AI-generated replies.",
+							"wpforo"
+						),
+						"description_original" => "Choose the target length for AI-generated replies.",
+						"variants"             => [
+							[ 'value' => 'brief', 'label' => esc_html__( 'Brief (100-200 words)', 'wpforo' ) ],
+							[ 'value' => 'medium', 'label' => esc_html__( 'Medium (200-400 words)', 'wpforo' ) ],
+							[ 'value' => 'detailed', 'label' => esc_html__( 'Detailed (400-800 words)', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"bot_reply_knowledge_source"        => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Knowledge Source", "wpforo" ),
+						"label_original"       => "Knowledge Source",
+						"description"          => esc_html__(
+							"Choose where the AI should look for information when generating replies.",
+							"wpforo"
+						),
+						"description_original" => "Choose where the AI should look for information when generating replies.",
+						"variants"             => [
+							[ 'value' => 'forum_only', 'label' => esc_html__( 'Forum Content Only', 'wpforo' ) ],
+							[ 'value' => 'forum_and_ai', 'label' => esc_html__( 'Forum + AI Knowledge', 'wpforo' ) ],
+							[ 'value' => 'forum_and_web', 'label' => esc_html__( 'Forum + Web Search', 'wpforo' ) ],
+							[ 'value' => 'forum_and_web_and_ai', 'label' => esc_html__( 'Forum + Web + AI Knowledge', 'wpforo' ) ],
+							[ 'value' => 'ai_only', 'label' => esc_html__( 'AI Knowledge Only', 'wpforo' ) ],
+						],
+						"docurl"               => "",
+					],
+					"bot_reply_includes"                => [
+						"type"                 => "checkbox",
+						"label"                => esc_html__( "Include in Replies", "wpforo" ),
+						"label_original"       => "Include in Replies",
+						"description"          => esc_html__(
+							"Select what elements the AI may include in bot replies.",
+							"wpforo"
+						),
+						"description_original" => "Select what elements the AI may include in bot replies.",
+						"variants"             => $this->get_variants_bot_reply_includes(),
+						"docurl"               => "",
+					],
+					"bot_reply_language"                => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Bot Reply Response Language", "wpforo" ),
+						"label_original"       => "Bot Reply Response Language",
+						"description"          => esc_html__(
+							"Select the language for AI-generated bot replies and reply suggestions.",
+							"wpforo"
+						),
+						"description_original" => "Select the language for AI-generated bot replies and reply suggestions.",
+						"variants"             => $this->get_variants_ai_languages(),
+						"docurl"               => "",
+					],
+					"bot_reply_unapproved"              => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Set Bot Replies as Unapproved", "wpforo" ),
+						"label_original"       => "Set Bot Replies as Unapproved",
+						"description"          => esc_html__(
+							"When enabled, bot-generated replies will be set as unapproved and require manual approval before being visible.",
+							"wpforo"
+						),
+						"description_original" => "When enabled, bot-generated replies will be set as unapproved and require manual approval before being visible.",
+						"docurl"               => "",
+					],
+					"bot_reply_user_id"                 => [
+						"type"                 => "select",
+						"label"                => esc_html__( "Bot Reply User", "wpforo" ),
+						"label_original"       => "Bot Reply User",
+						"description"          => esc_html__(
+							"Select the WordPress user account that will be used for bot-generated replies. Create a dedicated user account for the bot.",
+							"wpforo"
+						),
+						"description_original" => "Select the WordPress user account that will be used for bot-generated replies. Create a dedicated user account for the bot.",
+						"variants"             => $this->get_variants_bot_users(),
+						"docurl"               => "",
+					],
+					"bot_reply_max_per_topic"           => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Max Bot Replies per Topic", "wpforo" ),
+						"label_original"       => "Max Bot Replies per Topic",
+						"description"          => esc_html__(
+							"Maximum number of bot replies allowed per topic. Set to 0 for unlimited.",
+							"wpforo"
+						),
+						"description_original" => "Maximum number of bot replies allowed per topic. Set to 0 for unlimited.",
+						"min"                  => 0,
+						"max"                  => 1000,
+						"docurl"               => "",
+					],
+					"bot_reply_max_per_day"             => [
+						"type"                 => "number",
+						"label"                => esc_html__( "Max Bot Replies per Day", "wpforo" ),
+						"label_original"       => "Max Bot Replies per Day",
+						"description"          => esc_html__(
+							"Maximum number of bot replies allowed per day across all topics. Set to 0 for unlimited.",
+							"wpforo"
+						),
+						"description_original" => "Maximum number of bot replies allowed per day across all topics. Set to 0 for unlimited.",
+						"min"                  => 0,
+						"max"                  => 1000,
+						"docurl"               => "",
+					],
+				],
+			];
+		}
+
+		// Reorder: place 'ai' right before 'activity' if AI is available
+		if( isset( $this->info->core['ai'] ) ) {
+			$reordered = [];
+			foreach( $this->info->core as $key => $value ) {
+				if( $key === 'activity' ) {
+					$reordered['ai'] = $this->info->core['ai'];
+				}
+				if( $key !== 'ai' ) {
+					$reordered[$key] = $value;
+				}
+			}
+			$this->info->core = $reordered;
+		}
+
 		$this->info->core = apply_filters( 'wpforo_settings_init_core_info', $this->info->core );
 	}
-	
+
 	private function init_addons() {
 		$this->info->addons = [];
 		$this->info->addons = apply_filters( 'wpforo_settings_init_addons_info', $this->info->addons );
@@ -3289,13 +4384,18 @@ class Settings extends stdClass {
 		$option_name = $group . '[' . $name . '][]';
 		$inputs      = '';
 		foreach( $variants as $variant ) {
+			$is_disabled = ! empty( $variant['disabled'] );
+			$disabled_attr = $is_disabled ? ' disabled="disabled"' : '';
+			$label_style = $is_disabled ? ' style="color: #999;"' : '';
 			$inputs .= sprintf(
-				'<div class="wpf-opt-checkbox-wrap"><input type="checkbox" id="%1$s" name="%2$s" value="%3$s" %4$s><label for="%1$s">%5$s</label></div>',
+				'<div class="wpf-opt-checkbox-wrap"><input type="checkbox" id="%1$s" name="%2$s" value="%3$s" %4$s%6$s><label for="%1$s"%7$s>%5$s</label></div>',
 				sanitize_title( $option_name . '_' . $variant['label'] ),
 				esc_attr( $option_name ),
 				esc_attr( $variant['value'] ),
 				checked( $variant['checked'], true, false ),
-				$variant['label']
+				$variant['label'],
+				$disabled_attr,
+				$label_style
 			);
 		}
 		
@@ -3686,10 +4786,90 @@ class Settings extends stdClass {
 			if( in_array( (int) $group['groupid'], (array) $excludeids, true ) ) continue;
 			$variants[] = [ 'value' => (int) $group['groupid'], 'label' => $group['name'] ];
 		}
-		
+
 		return $variants;
 	}
-	
+
+	/**
+	 * Get usergroup variants for chatbot with Guest disabled
+	 * Guest (groupid 4) cannot use chatbot - login required
+	 *
+	 * @return array
+	 */
+	public function get_variants_usergroups_chatbot() {
+		if( ! WPF()->is_installed() ) return [];
+		$variants = [];
+		$groups = WPF()->usergroup->get_usergroups();
+		foreach( $groups as $group ) {
+			$groupid = (int) $group['groupid'];
+			$is_guest = ( $groupid === 4 );
+			$variants[] = [
+				'value'    => $groupid,
+				'label'    => $group['name'] . ( $is_guest ? ' (' . esc_html__( 'login required', 'wpforo' ) . ')' : '' ),
+				'disabled' => $is_guest,
+			];
+		}
+
+		return $variants;
+	}
+
+	/**
+	 * Get variants for bot reply "Include in Replies" checkboxes
+	 *
+	 * @return array
+	 */
+	public function get_variants_bot_reply_includes() {
+		return [
+			[ 'value' => 'code', 'label' => esc_html__( 'Code examples', 'wpforo' ) ],
+			[ 'value' => 'docs', 'label' => esc_html__( 'Links to documentation', 'wpforo' ) ],
+			[ 'value' => 'steps', 'label' => esc_html__( 'Step-by-step solutions', 'wpforo' ) ],
+			[ 'value' => 'questions', 'label' => esc_html__( 'Follow-up questions', 'wpforo' ) ],
+			[ 'value' => 'youtube', 'label' => esc_html__( 'YouTube video URLs', 'wpforo' ) ],
+			[ 'value' => 'greeting', 'label' => esc_html__( 'Personalized greeting (e.g., "Hi John")', 'wpforo' ) ],
+		];
+	}
+
+	public function get_variants_ai_languages() {
+		$variants = [
+			[ 'value' => '', 'label' => __( 'Auto (Board Language)', 'wpforo' ) ],
+		];
+		$seen_codes = [];
+		foreach ( wpforo_get_ai_languages() as $lang ) {
+			if ( isset( $seen_codes[ $lang['code'] ] ) ) continue; // Admin uses 2-letter codes, skip locale duplicates (e.g., en_US/en_GB)
+			$seen_codes[ $lang['code'] ] = true;
+			$label = ( $lang['native'] !== $lang['name'] ) ? $lang['native'] . ' (' . $lang['name'] . ')' : $lang['name'];
+			$variants[] = [ 'value' => $lang['code'], 'label' => $label ];
+		}
+		return $variants;
+	}
+
+	/**
+	 * Get WordPress user variants for bot reply user selection
+	 *
+	 * @return array
+	 */
+	public function get_variants_bot_users() {
+		$variants = [
+			[ 'value' => 0, 'label' => esc_html__( '-- Select User --', 'wpforo' ) ],
+		];
+
+		$users = get_users( [
+			'role__in' => [ 'administrator', 'editor', 'author' ],
+			'orderby'  => 'display_name',
+			'order'    => 'ASC',
+			'number'   => 100,
+		] );
+
+		foreach( $users as $user ) {
+			$variants[] = [
+				'value' => (int) $user->ID,
+				'label' => sprintf( '%s (%s)', $user->display_name, $user->user_login ),
+			];
+		}
+
+		return $variants;
+	}
+
 	public function init_defaults() {
 		$blogname          = get_option( 'blogname', '' );
 		$adminemail        = get_option( 'admin_email', '' );
@@ -3709,7 +4889,7 @@ class Settings extends stdClass {
 			'wp_date_format' => false,
 			'fontawesome'    => 'sitewide',
 			'debug_mode'     => false,
-			'current_theme'  => '2022',
+			'current_theme'  => '2026',
 		];
 		$this->_members  = [
 			'list_order'       => 'posts__desc',
@@ -3860,26 +5040,21 @@ class Settings extends stdClass {
 			'redirect_url_after_login'          => '',
 			'redirect_url_after_register'       => '',
 			'redirect_url_after_confirm_sbscrb' => '',
-			'fb_api_id'                         => '',
-			'fb_api_secret'                     => '',
-			'fb_login'                          => false,
-			'fb_lb_on_lp'                       => true,
-			'fb_lb_on_rp'                       => true,
-			'fb_redirect'                       => 'profile',
-			'fb_redirect_url'                   => '',
 		];
 		$this->_recaptcha     = [
-			'site_key'          => '',
-			'secret_key'        => '',
-			'theme'             => 'light',
-			'topic_editor'      => true,
-			'post_editor'       => true,
-			'wpf_login_form'    => true,
-			'wpf_reg_form'      => true,
-			'wpf_lostpass_form' => true,
-			'login_form'        => false,
-			'reg_form'          => false,
-			'lostpass_form'     => false,
+			'version'            => 'v2_checkbox',
+			'site_key'           => '',
+			'secret_key'         => '',
+			'v3_score_threshold' => '0.5',
+			'theme'              => 'light',
+			'topic_editor'       => true,
+			'post_editor'        => true,
+			'wpf_login_form'     => true,
+			'wpf_reg_form'       => true,
+			'wpf_lostpass_form'  => true,
+			'login_form'         => false,
+			'reg_form'           => false,
+			'lostpass_form'      => false,
 		];
 		$this->_buddypress    = [
 			'activity'     => true,
@@ -4258,14 +5433,21 @@ class Settings extends stdClass {
 			'spam_filter'                      => true,
 			'spam_user_ban'                    => false,
 			'should_unapprove_after_report'    => false,
-			'spam_filter_level_topic'          => mt_rand( 30, 60 ),
-			'spam_filter_level_post'           => mt_rand( 30, 60 ),
+			'spam_filter_level_topic'          => 10,
+			'spam_filter_level_post'           => 10,
 			'new_user_max_posts'               => 3,
 			'unapprove_post_if_user_is_new'    => false,
 			'min_number_posts_to_attach'       => 0,
 			'min_number_posts_to_edit_account' => 3,
 			'min_number_posts_to_link'         => 0,
 			'limited_file_ext'                 => [ 'pdf', 'doc', 'docx', 'txt', 'htm', 'html', 'rtf', 'xml', 'xls', 'xlsx', 'zip', 'rar', 'tar', 'gz', 'bzip', '7z' ],
+			'flood_protection_enabled'         => true,
+			'flood_posts_per_minute'           => 5,
+			'flood_posts_per_hour'             => 30,
+			'flood_ip_protection_enabled'      => false,
+			'flood_posts_per_ip_hour'          => 30,
+			'flood_action'                     => 'block',
+			'flood_temp_ban_duration'          => '15',
 			'spam_file_scanner'                => true,
 			'exclude_file_ext'                 => [ 'pdf', 'doc', 'docx', 'txt' ],
 		];
@@ -4279,7 +5461,7 @@ class Settings extends stdClass {
 			'feed_topic'   => true,
 		];
 		$this->_social        = [
-			'sb'                 => [ 'fb' => true, 'tw' => true, 'wapp' => true, 'lin' => false, 'vk' => false, 'ok' => false, 'gg' => false ],
+			'sb'                 => [ 'fb' => true, 'tw' => true, 'wapp' => true, 'lin' => false, 'vk' => false ],
 			'sb_on'              => true,
 			'sb_toggle_on'       => false,
 			'sb_style'           => 'grey',
@@ -4298,10 +5480,104 @@ class Settings extends stdClass {
 			'page_privacy'            => '',
 			'checkbox_forum_privacy'  => false,
 			'forum_privacy_text'      => wpforo_get_file_content( WPFORO_DIR . '/admin/assets/html/privacy-policy-gdpr.html' ),
-			'checkbox_fb_login'       => true,
 			'cookies'                 => true,
 			'rules_text'              => wpforo_get_file_content( WPFORO_DIR . '/admin/assets/html/simple-forum-rules.html' ),
 			'rules_checkbox'          => false,
+		];
+		$this->_ai            = [
+			'assistant'                       => true,
+			'assistant_highlight'             => true,
+			'assistant_icon'                  => '',
+			'assistant_open'                  => true,
+			'assistant_classic_search'        => false,
+			'assistant_preferences'           => false,
+			'search'                          => true,
+			'search_quality'                  => 'balanced',
+			'search_min_score'                => 30,
+			'search_enhance'                  => true,
+			'search_enhance_quality'          => 'advanced',
+			'search_language'                 => '',
+			'search_max_results'              => 5,
+			'translation'                     => true,
+			'translation_quality'             => 'advanced',
+			'topic_summary'                   => true,
+			'topic_summary_quality'           => 'advanced',
+			'topic_summary_style'             => 'detailed',
+			'topic_summary_min_replies'       => 1,
+			'topic_summary_language'          => '',
+			// AI Topic Suggestions defaults
+			'topic_suggestions'               => true,
+			'topic_suggestions_quality'       => 'balanced',
+			'topic_suggestions_min_words'     => 3,
+			'topic_suggestions_max_calls'     => 3,
+			'topic_suggestions_show_related'  => false,
+			'topic_suggestions_show_answer'   => false,
+			'topic_suggestions_max_similar'   => 3,
+			'topic_suggestions_max_related'   => 3,
+			'topic_suggestions_similarity'    => 55,
+			'topic_suggestions_language'      => '',
+			// AI Content Moderation defaults
+			'moderation_spam'                   => true,
+			'moderation_spam_quality'           => 'advanced',
+			'moderation_spam_use_context'       => true,
+			'moderation_spam_min_indexed'       => 100,
+			'moderation_spam_action_detected'   => 'unapprove_ban',
+			'moderation_spam_action_suspected'  => 'unapprove_ban',
+			'moderation_spam_action_uncertain'  => 'unapprove',
+			'moderation_spam_action_clean'      => 'none',
+			'moderation_spam_exempt_minposts'   => 10,
+			'moderation_spam_autoban_unapproved' => 5,
+			'moderation_toxicity'               => true,
+			'moderation_toxicity_sensitivity'   => 'medium',
+			'moderation_toxicity_action'        => 'unapprove',
+			'moderation_compliance'             => false,
+			'moderation_compliance_custom_policy' => 0,
+			'moderation_compliance_custom_rules'  => 0,
+			'moderation_compliance_action'      => 'unapprove',
+			// AI Assistant Chatbot defaults
+			'chatbot'                           => true,
+			'chatbot_quality'                   => 'fast',
+			'chatbot_welcome_message'           => "Hello {user_display_name}!\r\nI'm your forum assistant. I can help you find information and answer questions related to this forum. What would you like to know?",
+			'chatbot_no_content_message'        => 'I couldn\'t find information about that topic in the forum. Please try searching directly or create a <a href="{add_topic_url}" target="_blank">new topic</a> to start a discussion.',
+			'chatbot_max_conversations'         => 10,
+			'chatbot_context_update_threshold'  => 5,
+			'chatbot_use_rag'                   => true,
+			'chatbot_use_local_context'         => false,
+			'chatbot_allowed_groups'            => [1, 2, 3, 5],
+			'chatbot_language'                  => '',
+			// AI Bot Reply defaults
+			'bot_reply'                         => true,
+			'bot_reply_quality'                 => 'premium',
+			'bot_reply_style'                   => 'helpful_answer',
+			'bot_reply_tone'                    => 'neutral',
+			'bot_reply_length'                  => 'medium',
+			'bot_reply_knowledge_source'        => 'forum_and_ai',
+			'bot_reply_includes'                => [],
+			'bot_reply_language'                => '',
+			'bot_reply_unapproved'              => true,
+			'bot_reply_user_id'                 => 0,
+			'bot_reply_max_per_topic'           => 10,
+			'bot_reply_max_per_day'             => 100,
+			// Rate Limits - Per-feature daily limits for guests and logged-in users
+			// Moderators (usergroup[cans][ms]) are exempt from rate limits
+			// Content indexing is NOT rate limited (admin-only operation)
+			'rate_limits'                       => [
+				'search'       => [ 'guest' => 20, 'user' => 100 ],
+				'translation'  => [ 'guest' => 10, 'user' => 50 ],
+				'summarization'=> [ 'guest' => 10, 'user' => 30 ],
+				'suggestions'  => [ 'guest' => 20, 'user' => 100 ],
+				'chatbot'      => [ 'guest' => 0, 'user' => 30 ],  // Chatbot requires login, guest=0
+				'moderation'   => [ 'guest' => 0, 'user' => 0 ],   // Admin only, no public access
+			],
+		];
+		$this->_activity      = [
+			'enabled_types'    => [ 'wpforo_topic', 'wpforo_post', 'new_like', 'new_dislike', 'new_up_vote', 'new_down_vote', 'new_reaction', 'new_favorite', 'topic_solved', 'topic_closed', 'post_answer' ],
+			'items_per_page'   => 20,
+			'default_period'   => 'month',
+			'show_avatars'     => true,
+			'show_excerpt'     => true,
+			'excerpt_length'   => 100,
+			'retention_days'   => 365,
 		];
 	}
 	
@@ -4339,12 +5615,14 @@ class Settings extends stdClass {
 		$this->tags          = wpforo_get_option( 'tags', $this->_tags );
 		$this->subscriptions = wpforo_get_option( 'subscriptions', $this->_subscriptions );
 		$this->notifications = wpforo_get_option( 'notifications', $this->_notifications );
+		$this->activity      = wpforo_get_option( 'activity', $this->_activity );
 		$this->logging       = wpforo_get_option( 'logging', $this->_logging );
 		$this->seo           = wpforo_get_option( 'seo', $this->_seo );
 		$this->rss           = wpforo_get_option( 'rss', $this->_rss );
 		$this->social        = wpforo_get_option( 'social', $this->_social );
+		$this->ai            = wpforo_get_option( 'ai', $this->_ai );
 		$this->styles        = wpforo_get_option( 'styles_' . WPF()->tpl->theme, $this->_styles );
-		
+
 		if( ! $this->seo['seo_profile'] ) $this->seo['members_sitemap'] = false;
 		
 		do_action( 'wpforo_settings_after_init', $this );

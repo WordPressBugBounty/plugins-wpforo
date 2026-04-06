@@ -23,7 +23,34 @@ class Posts {
 	public function reset() {
 		self::$cache = [ 'posts' => [], 'post' => [], 'item' => [], 'topic_slug' => [], 'forum_slug' => [], 'post_url' => [] ];
 	}
-	
+
+	/**
+	 * Get appropriate error message for flood protection
+	 *
+	 * @param string $reason The flood reason code
+	 * @return string Error message
+	 */
+	private function get_flood_error_message( $reason ) {
+		switch( $reason ) {
+			case 'temp_ban':
+				$remaining = WPF()->perm->get_flood_ban_remaining();
+				$minutes = ceil( $remaining / 60 );
+				return sprintf(
+					__( 'You have been temporarily blocked for posting too quickly. Please wait %d minute(s) before trying again.', 'wpforo' ),
+					$minutes
+				);
+			case 'per_minute':
+				return __( 'You are posting too quickly. Please wait a moment before posting again.', 'wpforo' );
+			case 'per_hour':
+				return __( 'You have reached the hourly posting limit. Please wait before posting more.', 'wpforo' );
+			case 'ip_per_hour':
+				return __( 'Too many posts from your location. Please wait before trying again.', 'wpforo' );
+			case 'interval':
+			default:
+				return __( 'You are posting too quickly. Slow down.', 'wpforo' );
+		}
+	}
+
 	private function init_hooks() {
 		add_filter( 'wpforo_content_after', [ $this, 'print_custom_fields' ], 99, 2 );
 		add_action( 'wpforo_after_delete_user', [ $this, 'after_delete_user' ], 10, 2 );
@@ -87,9 +114,19 @@ class Posts {
 		$args['name']  = ( isset( $args['name'] ) ? strip_tags( (string) $args['name'] ) : '' );
 		$args['email'] = ( isset( $args['email'] ) ? sanitize_email( $args['email'] ) : '' );
 		if( isset( $args['userid'] ) && $args['userid'] == 0 && $args['name'] && $args['email'] ) $guestposting = true;
-		
-		extract( $args );
-		
+
+		// Security: extract only expected keys to prevent variable injection (e.g., $guestposting override)
+		$topicid  = isset( $args['topicid'] ) ? $args['topicid'] : null;
+		$parentid = isset( $args['parentid'] ) ? $args['parentid'] : null;
+		$title    = isset( $args['title'] ) ? $args['title'] : null;
+		$body     = isset( $args['body'] ) ? $args['body'] : null;
+		$created  = isset( $args['created'] ) ? $args['created'] : null;
+		$userid   = isset( $args['userid'] ) ? $args['userid'] : null;
+		$root     = isset( $args['root'] ) ? $args['root'] : null;
+		$name     = isset( $args['name'] ) ? $args['name'] : '';
+		$email    = isset( $args['email'] ) ? $args['email'] : '';
+		$status   = isset( $args['status'] ) ? $args['status'] : null;
+
 		if( ! isset( $topicid ) || ! $topicid ) {
 			WPF()->notice->add( 'Error: No topic selected', 'error' );
 			
@@ -121,10 +158,20 @@ class Posts {
 			return false;
 		}
 		
-		if( ! WPF()->perm->can_post_now() ) {
-			WPF()->notice->add( 'You are posting too quickly. Slow down.', 'error' );
-			
-			return false;
+		// Skip flood check for AI-generated content (created by AI Tasks)
+		if ( empty( $args['is_ai_generated'] ) ) {
+			$flood_reason = '';
+			$flood_result = WPF()->perm->can_post_now( $flood_reason );
+			if( $flood_result === false ) {
+				$message = $this->get_flood_error_message( $flood_reason );
+				WPF()->notice->add( $message, 'error' );
+				return false;
+			}
+			// If flood action is 'unapprove', force the post to be unapproved
+			if( $flood_result === 'unapprove' ) {
+				$args['status'] = 1;
+				$args['_flood_reason'] = $flood_reason; // Pass flood reason for moderation logging
+			}
 		}
 		
 		if( ! WPF()->current_userid && $args['email'] ) WPF()->member->set_guest_cookies( $args );
@@ -145,11 +192,22 @@ class Posts {
 		}
 		
 		$post = apply_filters( 'wpforo_add_post_data_filter', $post );
-		
+
 		if( empty( $post ) ) return false;
-		
-		extract( $post, EXTR_OVERWRITE );
-		
+
+		// Security: explicitly reassign from filtered $post instead of extract()
+		$forumid  = isset( $post['forumid'] ) ? $post['forumid'] : $forumid;
+		$topicid  = isset( $post['topicid'] ) ? $post['topicid'] : $topicid;
+		$parentid = isset( $post['parentid'] ) ? $post['parentid'] : $parentid;
+		$title    = isset( $post['title'] ) ? $post['title'] : $title;
+		$body     = isset( $post['body'] ) ? $post['body'] : $body;
+		$created  = isset( $post['created'] ) ? $post['created'] : $created;
+		$userid   = isset( $post['userid'] ) ? $post['userid'] : $userid;
+		$root     = isset( $post['root'] ) ? $post['root'] : $root;
+		$name     = isset( $post['name'] ) ? $post['name'] : $name;
+		$email    = isset( $post['email'] ) ? $post['email'] : $email;
+		$status   = isset( $post['status'] ) ? $post['status'] : $status;
+
 		if( isset( $forumid ) ) $forumid = intval( $forumid );
 		if( isset( $topicid ) ) $topicid = intval( $topicid );
 		if( isset( $parentid ) ) $parentid = intval( $parentid );
@@ -279,9 +337,17 @@ class Posts {
 		
 		$args = apply_filters( 'wpforo_edit_post_data_filter', $args );
 		if( empty( $args ) ) return false;
-		
-		extract( $args, EXTR_OVERWRITE );
-		
+
+		// Security: extract only expected keys to prevent variable injection (e.g., $guestposting override)
+		$postid  = isset( $args['postid'] ) ? $args['postid'] : null;
+		$topicid = isset( $args['topicid'] ) ? $args['topicid'] : null;
+		$title   = isset( $args['title'] ) ? $args['title'] : null;
+		$body    = isset( $args['body'] ) ? $args['body'] : null;
+		$status  = isset( $args['status'] ) ? $args['status'] : null;
+		$private = isset( $args['private'] ) ? $args['private'] : null;
+		$name    = isset( $args['name'] ) ? $args['name'] : null;
+		$email   = isset( $args['email'] ) ? $args['email'] : null;
+
 		if( ! $guestposting ) {
 			$diff = time() - strtotime( $post['created'] . ' GMT' );
 			if( ! ( WPF()->perm->forum_can( 'er', $post['forumid'] ) || ( WPF()->current_userid == $post['userid'] && WPF()->perm->forum_can( 'eor', $post['forumid'] ) ) ) ) {
@@ -1449,7 +1515,11 @@ class Posts {
 		if( ! wpfval( $args, 'userid' ) ) return [];
 		$args = wpforo_parse_args( $args, $default );
 		if( is_array( $args ) && ! empty( $args ) ) {
-			extract( $args, EXTR_OVERWRITE );
+			$userid    = $args['userid'];
+			$order     = $args['order'];
+			$offset    = $args['offset'];
+			$row_count = $args['row_count'];
+			$var       = $args['var'];
 			if( $row_count === 0 ) return [];
 			$items_count   = WPF()->reaction->get_count( [ 'userid' => $userid, 'type' => 'up' ] );
 			$liked_postids = WPF()->reaction->get_reactions_col( 'postid', [ 'userid' => $userid, 'type' => 'up', 'orderby' => "`reactionid` $order", 'offset' => $offset, 'row_count' => $row_count ]

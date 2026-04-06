@@ -50,6 +50,7 @@
                         <span class="wpf-mod-message"><i class="fas fa-exclamation-circle" aria-hidden="true"></i> <?php wpforo_phrase('Awaiting moderation') ?></span>
                     <?php endif; ?>
                     <?php wpforo_topic_starter($topic, $post) ?>
+                    <?php do_action( 'wpforo_post_content_top_left', $post ) ?>
                     <span class="wpf-post-date"><?php wpforo_date($post['created'], 'd/m/Y g:i a'); ?></span> &nbsp;
 		            <?php wpforo_post_buttons( 'icon', array('custom-top', 'bookmark', 'report', 'link'), $forum, $topic, $post ); ?>
                     <?php wpforo_share_toggle($post_url, $post['body'], 'top'); ?>
@@ -62,6 +63,7 @@
                 <?php if( wpforo_setting( 'profiles', 'signature' ) ): ?>
 	            	<?php if($member['signature']): ?><div class="wpforo-post-signature"><?php wpforo_signature( $member ) ?></div><?php endif; ?>
                 <?php endif; ?>
+                <?php do_action( 'wpforo_post_content_footer', $post, $topic, $forum, 1 ) ?>
 	        </div><!-- right -->
 	        <br class="wpf-clear" />
 	        <div class="bottom">

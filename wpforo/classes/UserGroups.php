@@ -51,6 +51,7 @@ class UserGroups {
 		$this->default->cans = [
 			'mf'  => __( 'Dashboard - Manage Boards & Forums', 'wpforo' ),
 			'ms'  => __( 'Dashboard - Manage Settings', 'wpforo' ),
+            'mai' => __( 'Dashboard - Manage AI Features', 'wpforo' ),
 			'mt'  => __( 'Dashboard - Manage Tools', 'wpforo' ),
 			'vm'  => __( 'Dashboard - Manage Members', 'wpforo' ),
 			'aum' => __( 'Dashboard - Moderate Topics & Posts', 'wpforo' ),
@@ -77,7 +78,7 @@ class UserGroups {
 			'vmu'          => __( 'Front - Can view member username', 'wpforo' ),
 			'vmm'          => __( 'Front - Can view member email', 'wpforo' ),
 			'vmt'          => __( 'Front - Can view member title', 'wpforo' ),
-			'vmct'         => __( 'Front - Can view member custom title', 'wpforo' ),
+			// 'vmct'         => __( 'Front - Can view member custom title', 'wpforo' ),
 			'vmr'          => __( 'Front - Can view member reputation', 'wpforo' ),
 			'vmw'          => __( 'Front - Can view member website', 'wpforo' ),
 			'vmsn'         => __( 'Front - Can view member social networks', 'wpforo' ),
@@ -89,6 +90,11 @@ class UserGroups {
 			'vwpm'         => __( 'Front - Can write PM', 'wpforo' ),
 			'caa'          => __( 'Front - Can access to attachments', 'wpforo' ),
 			'vt_add_topic' => __( 'Front - Can access to add topic page', 'wpforo' ),
+
+            'ai_search'      => __( 'Front - Can use AI semantic search', 'wpforo' ),
+            'ai_summary'     => __( 'Front - Can use AI topic summarization', 'wpforo' ),
+            'ai_translation' => __( 'Front - Can use AI post translation', 'wpforo' ),
+            'ai_suggestion'  => __( 'Front - Can see AI topic suggestion', 'wpforo' ),
 		];
 	}
 

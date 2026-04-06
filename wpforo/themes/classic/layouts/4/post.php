@@ -58,6 +58,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
                                 <div class="wpf-author-title"><?php wpforo_member_title( $member, true, '', '', [ 'custom-title', 'rating-title' ] ); ?></div>
                                 <?php endif; ?>
 								<?php wpforo_topic_starter( $topic, $post ) ?>
+								<?php do_action( 'wpforo_post_content_top_left', $post ) ?>
                             </div>
                             <div class="wpf-post-date"><?php wpforo_date( $post['created'], 'M d, Y g:i a' ); ?></div>
                         </div>
@@ -100,9 +101,9 @@ if( ! defined( 'ABSPATH' ) ) exit;
                         </div>
                         <div class="wpf-buttons">
 							<?php if( $post['is_first_post'] ) {
-								wpforo_post_buttons( 'icon', [ 'quote', 'solved', 'sticky', 'close', 'approved', 'private', 'edit', 'delete' ], $forum, $topic, $post );
+								wpforo_post_buttons( 'icon', [ 'custom-bottom', 'quote', 'solved', 'sticky', 'close', 'approved', 'private', 'edit', 'delete' ], $forum, $topic, $post );
 							} else {
-								wpforo_post_buttons( 'icon', [ 'quote', 'approved', 'edit', 'delete' ], $forum, $topic, $post );
+								wpforo_post_buttons( 'icon', [ 'custom-bottom', 'quote', 'approved', 'edit', 'delete' ], $forum, $topic, $post );
 							} ?>
                         </div>
                     </div>

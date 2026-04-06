@@ -45,6 +45,7 @@
                 <div class="wpf-right">
                 	<div class="wpforo-post-content-top">
                         <?php wpforo_topic_starter($topic, $post) ?>
+                        <?php do_action( 'wpforo_post_content_top_left', $post ) ?>
                         <div>&nbsp;</div>
                     	<div class="wpf-post-actions">
 							<?php
@@ -61,6 +62,7 @@
                         <?php if( wpforo_setting( 'profiles', 'signature' ) ): ?>
                         	<?php if($member['signature']): ?><div class="wpforo-post-signature"><?php wpforo_signature( $member ) ?></div><?php endif; ?>
                         <?php endif; ?>
+                        <?php do_action( 'wpforo_post_content_footer', $post, $topic, $forum, 2 ) ?>
                         <div class="wpf-post-button-actions">
                             <?php if($post['status']): ?>
                                 <span class="wpf-mod-message"><i class="fas fa-exclamation-circle" aria-hidden="true"></i> <?php wpforo_phrase('Awaiting moderation') ?></span>

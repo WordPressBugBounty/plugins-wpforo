@@ -363,7 +363,7 @@ class SEO {
 	}
 	
 	public function hit_sitemap_index() {
-		wp_remote_get( trim( wpforo_home_url( 'sitemap_index.xml' ), '/' ) );
+		wp_remote_get( trim( wpforo_home_url( 'sitemap_index.xml' ), '/' ), [ 'blocking' => false, 'timeout' => 5 ] );
 	}
 	
 	public function ping_search_engines( $url = '' ) {

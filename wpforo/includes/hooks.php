@@ -924,6 +924,17 @@ function wpf_solved() {
 			$sql    = "UPDATE " . WPF()->tables->topics . " SET `solved` = %d WHERE `topicid` = %d";
 			WPF()->db->query( WPF()->db->prepare( $sql, $solved, $post['topicid'] ) );
 			wpforo_clean_cache( 'topic-first-post', $post['topicid'] );
+
+			// Fire action hook for topic solved/unsolved
+			$topic = WPF()->topic->get_topic( $post['topicid'] );
+			if( $topic ) {
+				if( $solved ) {
+					do_action( 'wpforo_topic_solved', $topic, $post );
+				} else {
+					do_action( 'wpforo_topic_unsolved', $topic, $post );
+				}
+			}
+
 			wp_send_json_success();
 		}
 	}
@@ -961,7 +972,7 @@ function wpf_close() {
 	if( ! WPF()->current_userid ) {
 		wp_send_json_error();
 	}
-	
+
 	if( ! $topicid = wpforo_bigintval( wpfval( $_POST, 'topicid' ) ) ) {
 		wp_send_json_error();
 	}
@@ -970,11 +981,19 @@ function wpf_close() {
 		wp_send_json_error();
 	}
 	$status = wpfval( $_POST, 'status' );
+	$topic  = WPF()->topic->get_topic( $topicid );
+
 	if( $status === 'closed' ) {
 		WPF()->topic->open( $topicid );
+		if( $topic ) {
+			do_action( 'wpforo_topic_opened', $topic );
+		}
 		wp_send_json_success();
 	} elseif( $status === 'close' ) {
 		WPF()->topic->close( $topicid );
+		if( $topic ) {
+			do_action( 'wpforo_topic_closed', $topic );
+		}
 		wp_send_json_success();
 	}
 	wp_send_json_error();
@@ -1119,6 +1138,165 @@ function wpfl4_loadmore() {
 		wp_send_json_success( $response );
 	} else {
 		wp_send_json_error( $response );
+	}
+}
+
+add_action( 'wp_ajax_wpforo_load_more_activities', 'wpforo_load_more_activities' );
+add_action( 'wp_ajax_nopriv_wpforo_load_more_activities', 'wpforo_load_more_activities' );
+function wpforo_load_more_activities() {
+	wpforo_verify_nonce( 'wpforo_load_more_activities' );
+
+	$items_per_page = 20;
+	$page           = ! empty( $_POST['page'] ) ? intval( $_POST['page'] ) : 1;
+	$activity_type  = ! empty( $_POST['type'] ) ? sanitize_text_field( $_POST['type'] ) : 'all';
+	$period         = ! empty( $_POST['period'] ) ? sanitize_text_field( $_POST['period'] ) : 'week';
+
+	// Calculate date_from based on period
+	$date_from = null;
+	switch( $period ) {
+		case 'day':
+			$date_from = time() - ( 24 * 60 * 60 );
+			break;
+		case 'week':
+			$date_from = time() - ( 7 * 24 * 60 * 60 );
+			break;
+		case 'month':
+			$date_from = time() - ( 30 * 24 * 60 * 60 );
+			break;
+		case 'all':
+		default:
+			$date_from = null;
+			break;
+	}
+
+	// Get enabled activity types from settings
+	$enabled_types = WPF()->settings->activity['enabled_types'] ?? [];
+
+	// Build activity query args
+	$args = [
+		'types_exclude' => [ 'new_reply' ], // Exclude notification-only types
+		'orderby'       => 'date',
+		'order'         => 'DESC',
+		'offset'        => ( $page - 1 ) * $items_per_page,
+		'row_count'     => $items_per_page,
+		'date_from'     => $date_from,
+	];
+
+	// Filter by activity type
+	if( $activity_type !== 'all' ) {
+		$type_mapping = [
+			'topic'    => [ 'wpforo_topic', 'edit_topic' ],
+			'reply'    => [ 'wpforo_post', 'edit_post' ],
+			'reaction' => [ 'new_like', 'new_dislike', 'new_up_vote', 'new_down_vote', 'new_reaction' ],
+			'favorite' => [ 'new_favorite' ],
+			'solved'   => [ 'topic_solved' ],
+			'closed'   => [ 'topic_closed' ],
+			'answer'   => [ 'post_answer' ],
+		];
+		if( isset( $type_mapping[ $activity_type ] ) ) {
+			// Intersect with enabled types to respect settings
+			$args['types_include'] = array_intersect( $type_mapping[ $activity_type ], $enabled_types );
+		}
+	} else {
+		// Show all enabled types
+		if( ! empty( $enabled_types ) ) {
+			$args['types_include'] = $enabled_types;
+		}
+	}
+
+	$items_count = 0;
+	$activities  = WPF()->activity->get_activities( $args, $items_count, true, true );
+	$has_more    = ( $page * $items_per_page ) < $items_count;
+
+	// Generate HTML for timeline items
+	$html = '';
+	if( ! empty( $activities ) ) {
+		$index = 0;
+		foreach( $activities as $activity ) {
+			// For non-content actions (reactions, favorites, votes, etc.), the actor is in itemid_second
+			$actor_actions = [ 'new_like', 'new_dislike', 'new_up_vote', 'new_down_vote', 'new_reaction', 'new_mention', 'new_favorite', 'topic_solved', 'topic_closed', 'post_answer' ];
+			$actor_userid  = in_array( $activity['type'], $actor_actions ) && ! empty( $activity['itemid_second'] )
+				? $activity['itemid_second']
+				: $activity['userid'];
+			$member       = wpforo_member( $actor_userid );
+			$icon         = wpforo_activity_icon( $activity['type'] );
+			$info_html    = wpforo_activity_info_html( $activity, $member );
+			$show_excerpt = in_array( $activity['type'], [ 'wpforo_topic', 'wpforo_post' ] );
+			$excerpt      = '';
+			if( $show_excerpt && $activity['itemid'] ) {
+				// For wpforo_topic, itemid is topicid - get first post via topic's first_postid
+				if( $activity['type'] === 'wpforo_topic' ) {
+					$topic_data = WPF()->topic->get_topic( $activity['itemid'] );
+					if( $topic_data && ! empty( $topic_data['first_postid'] ) ) {
+						$first_post = WPF()->post->get_post( $topic_data['first_postid'] );
+						if( $first_post && ! empty( $first_post['body'] ) ) {
+							$excerpt = wp_trim_words( strip_tags( $first_post['body'] ), 20 );
+						}
+					}
+				} else {
+					$post = WPF()->post->get_post( $activity['itemid'] );
+					if( $post && ! empty( $post['body'] ) ) {
+						$excerpt = wp_trim_words( strip_tags( $post['body'] ), 20 );
+					}
+				}
+			}
+
+			$html .= '<div class="wpf-timeline-item wpf-timeline-' . esc_attr( $activity['type'] ) . '" data-activity-id="' . esc_attr( $activity['id'] ) . '" style="--delay: ' . ( $index * 0.1 ) . 's">';
+			$html .= '<div class="wpf-timeline-left">';
+			if( WPF()->usergroup->can( 'va' ) && wpforo_setting( 'profiles', 'avatars' ) ) {
+				$html .= '<div class="wpf-timeline-avatar">' . wpforo_user_avatar( $member, 40 ) . '</div>';
+			}
+			$html .= '<div class="wpf-timeline-user">';
+			ob_start();
+			wpforo_member_link( $member );
+			$html .= ob_get_clean();
+			$html .= '</div>';
+			$html .= '<div class="wpf-timeline-date">';
+			ob_start();
+			wpforo_date( $activity['date'], 'ago' );
+			$html .= ob_get_clean();
+			$html .= '</div>';
+			$html .= '</div>';
+			$html .= '<div class="wpf-timeline-node"><div class="wpf-timeline-icon">' . $icon . '</div></div>';
+			$html .= '<div class="wpf-timeline-right"><div class="wpf-timeline-card">';
+			if( WPF()->usergroup->can( 'aum' ) ) {
+				$html .= '<button type="button" class="wpf-activity-delete" title="' . esc_attr( wpforo_phrase( 'Delete Activity', false ) ) . '"><i class="fas fa-trash-alt"></i></button>';
+			}
+			$html .= '<div class="wpf-timeline-activity">' . $info_html . '</div>';
+			if( $show_excerpt && $excerpt ) {
+				$html .= '<div class="wpf-timeline-excerpt">' . esc_html( $excerpt ) . '</div>';
+			}
+			$html .= '</div></div>';
+			$html .= '</div>';
+
+			$index++;
+		}
+	}
+
+	wp_send_json_success( [
+		'html'     => $html,
+		'has_more' => $has_more,
+	] );
+}
+
+add_action( 'wp_ajax_wpforo_delete_activity', 'wpforo_delete_activity' );
+function wpforo_delete_activity() {
+	wpforo_verify_nonce( 'wpforo_delete_activity' );
+
+	// Permission check
+	if( ! WPF()->usergroup->can( 'aum' ) ) {
+		wp_send_json_error( [ 'message' => wpforo_phrase( 'Permission denied', false ) ] );
+	}
+
+	$activity_id = ! empty( $_POST['activity_id'] ) ? wpforo_bigintval( $_POST['activity_id'] ) : 0;
+	if( ! $activity_id ) {
+		wp_send_json_error( [ 'message' => wpforo_phrase( 'Invalid activity', false ) ] );
+	}
+
+	if( WPF()->activity->delete_activity( $activity_id ) ) {
+		wp_send_json_success( [ 'message' => wpforo_phrase( 'Activity deleted', false ) ] );
+	} else {
+		wp_send_json_error( [ 'message' => wpforo_phrase( 'Failed to delete activity', false ) ] );
 	}
 }
 
@@ -1375,6 +1553,41 @@ function wpforo_frontend_register_scripts() {
 			'timeouts'          => WPF()->notice->get_timeouts(),
 		],
 	] );
+	// Register AI features script if AI service is available and any frontend AI feature is enabled
+	// ai-features.js handles: assistant widget, translation, topic summary, topic suggestions, bot reply
+	if( isset( WPF()->ai_client ) && WPF()->ai_client->is_service_available() && (
+		wpforo_setting( 'ai', 'assistant' ) ||
+		wpforo_setting( 'ai', 'translation' ) ||
+		wpforo_setting( 'ai', 'topic_summary' ) ||
+		wpforo_setting( 'ai', 'topic_suggestions' ) ||
+		wpforo_setting( 'ai', 'bot_reply' )
+	) ) {
+		wp_register_script( 'wpforo-ai-features-js', WPFORO_URL . '/assets/js/ai-features.js', [
+			'wpforo-frontend-js',
+		], WPFORO_VERSION, true );
+	}
+	// Register AI Chatbot script separately (can be large, loaded conditionally)
+	if( isset( WPF()->ai_chatbot ) && WPF()->ai_chatbot->is_enabled() ) {
+		wp_register_script( 'wpforo-ai-chatbot-js', WPFORO_URL . '/assets/js/ai-chatbot.js', [
+			'wpforo-frontend-js',
+		], WPFORO_VERSION, true );
+		wp_localize_script( 'wpforo-ai-chatbot-js', 'wpforo_ai_chatbot', [
+			'ajax_url'        => wpforo_get_ajax_url(),
+			'nonce'           => wp_create_nonce( 'wpforo_ai_chatbot' ),
+			'welcome_message' => wpforo_setting( 'ai', 'chatbot_welcome_message' ),
+			'use_rag'         => (bool) wpforo_setting( 'ai', 'chatbot_use_rag' ),
+			'use_local_context' => (bool) wpforo_setting( 'ai', 'chatbot_use_local_context' ),
+			'phrases'         => [
+				'new_conversation'    => wpforo_phrase( 'New Conversation', false ),
+				'send_message'        => wpforo_phrase( 'Send a message...', false ),
+				'delete_confirm'      => wpforo_phrase( 'Delete this conversation?', false ),
+				'error_sending'       => wpforo_phrase( 'Error sending message. Please try again.', false ),
+				'typing'              => wpforo_phrase( 'AI is thinking...', false ),
+				'no_conversations'    => wpforo_phrase( 'No conversations yet', false ),
+				'start_conversation'  => wpforo_phrase( 'Start a new conversation to chat with the AI assistant.', false ),
+			],
+		] );
+	}
 	wp_register_script( 'wpforo-ajax', WPFORO_URL . '/assets/js/ajax.js', [
 		'suggest',
 		'wpforo-frontend-js',
@@ -1440,6 +1653,20 @@ function wpforo_frontend_enqueue_scripts() {
 	if( is_wpforo_page() ) {
 		wp_enqueue_script( 'wpforo-dynamic-phrases' );
 		wp_enqueue_script( 'wpforo-frontend-js' );
+		// Enqueue AI features script if AI service is available and any frontend AI feature is enabled
+		if( isset( WPF()->ai_client ) && WPF()->ai_client->is_service_available() && (
+			wpforo_setting( 'ai', 'assistant' ) ||
+			wpforo_setting( 'ai', 'translation' ) ||
+			wpforo_setting( 'ai', 'topic_summary' ) ||
+			wpforo_setting( 'ai', 'topic_suggestions' ) ||
+			wpforo_setting( 'ai', 'bot_reply' )
+		) ) {
+			wp_enqueue_script( 'wpforo-ai-features-js' );
+		}
+		// Enqueue AI Chatbot script if enabled and user can chat
+		if( isset( WPF()->ai_chatbot ) && WPF()->ai_chatbot->is_enabled() && WPF()->ai_chatbot->user_can_chat() ) {
+			wp_enqueue_script( 'wpforo-ai-chatbot-js' );
+		}
 		wp_enqueue_script( 'wpforo-ajax' );
 		if( is_rtl() ) {
 			wp_enqueue_style( 'wpforo-style-rtl' );
@@ -1490,8 +1717,14 @@ function wpforo_style_options( $css ) {
         #wpforo #wpforo-wrap .wpforo-portable-form-wrap .wpf-extra-fields,
         #wpforo #wpforo-wrap .wpforo-messages-content .wpfpm-main .wpfpm-form-wrapper .wpf-extra-fields{ margin-top: 10px !important; }";
 	}
+	if( wpforo_setting( 'ai', 'assistant_highlight' ) ) {
+		$css .= "\r\n
+		#wpforo #wpforo-wrap .wpf-ai-helper-toggle.wpf-ai-highlight{ background:__WPFCOLOR_12__; color:__WPFCOLOR_1__;}
+		#wpforo #wpforo-wrap .wpf-ai-helper-toggle.wpf-ai-highlight .wpf-ai-sparkle-icon{ fill:__WPFCOLOR_1__;}
+		#wpforo #wpforo-wrap .wpf-ai-helper-toggle.wpf-ai-highlight:hover{ background:__WPFCOLOR_12__; color:__WPFCOLOR_1__; opacity: 0.85;}";
+	}
 	if( $ccss = wpforo_setting( 'styles', 'custom_css' ) ) $css .= "\r\n" . stripslashes( (string) $ccss );
-	
+
 	return $css;
 }
 
@@ -1595,8 +1828,23 @@ function wpforo_admin_enqueue() {
 		'jquery-touch-punch',
 	],                  false, true );
 	
+	// Register AI Features admin assets
+	wp_register_style(
+		'wpforo-ai-features',
+		WPFORO_URL . '/admin/assets/css/ai-features.css',
+		false,
+		WPFORO_VERSION
+	);
+	wp_register_script(
+		'wpforo-ai-features-js',
+		WPFORO_URL . '/admin/assets/js/ai-features.js',
+		[ 'jquery' ],
+		WPFORO_VERSION,
+		true
+	);
+
 	do_action( 'wpforo_admin_register_scripts' );
-	
+
 	if( ! empty( $_GET['page'] ) && strpos( (string) $_GET['page'], 'wpforo' ) === 0 ) {
 		wp_enqueue_style( 'wpforo-admin' );
 		wp_enqueue_script( 'wpforo-backend-js' );
@@ -1637,6 +1885,16 @@ function wpforo_admin_enqueue() {
 			wp_enqueue_script( 'link' );
 		} elseif( preg_match( '#^wpforo-(?:\d+-)?addons$#iu', (string) $_GET['page'] ) ) {
 			wp_enqueue_script( 'wpforo-contenthover-addons' );
+		} elseif( $_GET['page'] === 'wpforo-ai' ) {
+			wp_enqueue_style( 'wpforo-ai-features' );
+			wp_enqueue_script( 'wpforo-ai-features-js' );
+		} elseif( preg_match(
+			          '#^wpforo-(?:\d+-)?settings$#iu',
+			          (string) $_GET['page']
+		          ) && ! empty( $_GET['wpf_tab'] ) && $_GET['wpf_tab'] === 'ai' ) {
+			// Load AI features scripts on Settings > AI tab for bot user autocomplete
+			wp_enqueue_style( 'wpforo-ai-features' );
+			wp_enqueue_script( 'wpforo-ai-features-js' );
 		}
 	}
 	if( ! wpforo_get_option( 'deactivation_dialog_never_show', false, false ) && ( strpos(
@@ -2760,6 +3018,15 @@ function wpforo_admin_bar_menu( $wp_admin_bar ) {
 		];
 		$wp_admin_bar->add_node( $args );
 	}
+	if( WPF()->usergroup->can( 'ms' ) || wpforo_current_user_is( 'admin' ) ) {
+		$args = [
+			'id'     => 'wpf-ai',
+			'title'  => '' . __( 'AI Features', 'wpforo' ),
+			'href'   => admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'ai' ) ),
+			'parent' => 'wpf-community',
+		];
+		$wp_admin_bar->add_node( $args );
+	}
 	if( WPF()->usergroup->can( 'mt' ) || wpforo_current_user_is( 'admin' ) ) {
 		$args = [
 			'id'     => 'wpf-tools',
@@ -2889,14 +3156,14 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 				## ----------------------------------------------------------------------------------  ####
 				$args = [
 					'id'     => $menuid . 'new-forum',
-					'title'  => '&#43;&nbsp;&nbsp;' . __( 'Add New Forum', 'wpforo' ),
+					'title'  => '' . __( 'Add New Forum', 'wpforo' ),
 					'href'   => admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'forums' ) . '&action=add' ),
 					'parent' => $menuid,
 				];
 				$wp_admin_bar->add_node( $args );
 				$args = [
 					'id'     => $menuid . 'new-ugroup',
-					'title'  => '&#43;&nbsp;&nbsp;' . __( 'Add New User Group', 'wpforo' ),
+					'title'  => '' . __( 'Add New User Group', 'wpforo' ),
 					'href'   => admin_url(
 						'admin.php?page=' . wpforo_prefix_slug( 'usergroups' ) . '&wpfaction=wpforo_usergroup_save_form'
 					),
@@ -2905,7 +3172,7 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 				$wp_admin_bar->add_node( $args );
 				$args = [
 					'id'     => $menuid . 'new-phrase',
-					'title'  => '&#43;&nbsp;&nbsp;' . __( 'Add New Phrase', 'wpforo' ),
+					'title'  => '' . __( 'Add New Phrase', 'wpforo' ),
 					'href'   => admin_url(
 						'admin.php?page=' . wpforo_prefix_slug( 'phrases' ) . '&wpfaction=phrase_add_form'
 					),
@@ -2938,7 +3205,7 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 				$menuid = 'wpforo-' . $current['slug'];
 				$args   = [
 					'id'     => $menuid,
-					'title'  => '&#128489;&nbsp;&nbsp;' . $current['title'] . ' (' . strtok(
+					'title'  => '' . $current['title'] . ' (' . strtok(
 							$current['locale'],
 							'_'
 						) . ')' . wpforo_wp_admin_bar_red_circle_number( $bds_bar_numbers[ $boardid ]['all_count'] ),
@@ -2951,7 +3218,7 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 				
 				$args = [
 					'id'     => $menuid . '-home',
-					'title'  => '&#128279;&nbsp;' . __( 'Visit Forum', 'wpforo' ),
+					'title'  => '' . __( 'Visit Forum', 'wpforo' ),
 					'href'   => wpforo_home_url(),
 					'parent' => $menuid,
 					//                    'meta'   => [ 'target' => '_blank' ]
@@ -2961,14 +3228,14 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 				if( WPF()->usergroup->can( 'mf' ) || wpforo_current_user_is( 'admin' ) ) {
 					$args = [
 						'id'     => $menuid . '-forums',
-						'title'  => '&#9776;&nbsp;&nbsp;' . __( 'Forums', 'wpforo' ),
+						'title'  => '' . __( 'Forums', 'wpforo' ),
 						'href'   => admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'forums' ) ),
 						'parent' => $menuid,
 					];
 					$wp_admin_bar->add_node( $args );
 					$args = [
 						'id'     => $menuid . '-new-forum',
-						'title'  => '&#43;&nbsp;&nbsp;' . __( 'Add New Forum', 'wpforo' ),
+						'title'  => '' . __( 'Add New Forum', 'wpforo' ),
 						'href'   => admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'forums' ) . '&action=add' ),
 						'parent' => $menuid . '-forums',
 					];
@@ -2977,7 +3244,7 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 				if( WPF()->usergroup->can( 'ms' ) || wpforo_current_user_is( 'admin' ) ) {
 					$args = [
 						'id'     => $menuid . '-settings',
-						'title'  => '&#9881;&nbsp;&nbsp;' . __( 'Settings', 'wpforo' ),
+						'title'  => '' . __( 'Settings', 'wpforo' ),
 						'href'   => admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'settings' ) ),
 						'parent' => $menuid,
 					];
@@ -2986,7 +3253,7 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 				if( WPF()->usergroup->can( 'mt' ) || wpforo_current_user_is( 'admin' ) ) {
 					$args = [
 						'id'     => $menuid . '-tools',
-						'title'  => '&#128295;&nbsp;&nbsp;' . __( 'Tools', 'wpforo' ),
+						'title'  => '' . __( 'Tools', 'wpforo' ),
 						'href'   => admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'tools' ) ),
 						'parent' => $menuid,
 					];
@@ -2995,7 +3262,7 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 				if( WPF()->usergroup->can( 'aum' ) || wpforo_current_user_is( 'admin' ) ) {
 					$args = [
 						'id'     => $menuid . '-moderation',
-						'title'  => '&#128479;&nbsp;&nbsp;' . __(
+						'title'  => '' . __(
 								'Moderation',
 								'wpforo'
 							) . wpforo_wp_admin_bar_red_circle_number( $bds_bar_numbers[ $boardid ]['mod_count'] ),
@@ -3007,14 +3274,14 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 				if( WPF()->usergroup->can( 'mp' ) || wpforo_current_user_is( 'admin' ) ) {
 					$args = [
 						'id'     => $menuid . '-phrases',
-						'title'  => '&#9873;&nbsp;&nbsp;' . __( 'Phrases', 'wpforo' ),
+						'title'  => '' . __( 'Phrases', 'wpforo' ),
 						'href'   => admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'phrases' ) ),
 						'parent' => $menuid,
 					];
 					$wp_admin_bar->add_node( $args );
 					$args = [
 						'id'     => $menuid . '-new-phrase',
-						'title'  => '&#43;&nbsp;&nbsp;' . __( 'Add New Phrase', 'wpforo' ),
+						'title'  => '' . __( 'Add New Phrase', 'wpforo' ),
 						'href'   => admin_url(
 							'admin.php?page=' . wpforo_prefix_slug( 'phrases' ) . '&wpfaction=phrase_add_form'
 						),
@@ -3030,14 +3297,14 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 		if( WPF()->usergroup->can( 'ms' ) || wpforo_current_user_is( 'admin' ) ) {
 			$args = [
 				'id'     => 'wpforo-boards',
-				'title'  => '&#9776;&nbsp;&nbsp;' . __( 'Boards', 'wpforo' ),
+				'title'  => '' . __( 'Boards', 'wpforo' ),
 				'href'   => admin_url( 'admin.php?page=wpforo-boards' ),
 				'parent' => 'wpforo',
 			];
 			$wp_admin_bar->add_node( $args );
 			$args = [
 				'id'     => 'wpforo-new-board',
-				'title'  => '&#43;&nbsp;&nbsp;' . __( 'Add New Board', 'wpforo' ),
+				'title'  => '' . __( 'Add New Board', 'wpforo' ),
 				'href'   => admin_url( 'admin.php?page=wpforo-boards&wpfaction=wpforo_board_save_form' ),
 				'parent' => 'wpforo-boards',
 			];
@@ -3046,14 +3313,14 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 		if( WPF()->usergroup->can( 'ms' ) || wpforo_current_user_is( 'admin' ) ) {
 			$args = [
 				'id'     => 'wpforo-accesses',
-				'title'  => '&#33;&nbsp;&nbsp;' . __( 'Accesses', 'wpforo' ),
+				'title'  => '' . __( 'Accesses', 'wpforo' ),
 				'href'   => admin_url( 'admin.php?page=wpforo-accesses' ),
 				'parent' => 'wpforo',
 			];
 			$wp_admin_bar->add_node( $args );
 			$args = [
 				'id'     => 'wpforo-new-accesses',
-				'title'  => '&#43;&nbsp;&nbsp;' . __( 'Add New Forum Access', 'wpforo' ),
+				'title'  => '' . __( 'Add New Forum Access', 'wpforo' ),
 				'href'   => admin_url( 'admin.php?page=wpforo-accesses&wpfaction=wpforo_access_save_form' ),
 				'parent' => 'wpforo-accesses',
 			];
@@ -3062,14 +3329,14 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 		if( WPF()->usergroup->can( 'vmg' ) || wpforo_current_user_is( 'admin' ) ) {
 			$args = [
 				'id'     => 'wpforo-usergroups',
-				'title'  => '&#128101;&nbsp;&nbsp;' . __( 'Usergroups', 'wpforo' ),
+				'title'  => '' . __( 'Usergroups', 'wpforo' ),
 				'href'   => admin_url( 'admin.php?page=wpforo-usergroups' ),
 				'parent' => 'wpforo',
 			];
 			$wp_admin_bar->add_node( $args );
 			$args = [
 				'id'     => 'wpforo-new-ugroup',
-				'title'  => '&#43;&nbsp;&nbsp;' . __( 'Add New Usergroup', 'wpforo' ),
+				'title'  => '' . __( 'Add New Usergroup', 'wpforo' ),
 				'href'   => admin_url( 'admin.php?page=wpforo-usergroups&wpfaction=wpforo_usergroup_save_form' ),
 				'parent' => 'wpforo-usergroups',
 			];
@@ -3078,7 +3345,7 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 		if( WPF()->usergroup->can( 'vm' ) || wpforo_current_user_is( 'admin' ) ) {
 			$args = [
 				'id'     => 'wpforo-members',
-				'title'  => '&#128100;&nbsp;&nbsp;' . __( 'Members', 'wpforo' ) . wpforo_wp_admin_bar_red_circle_number(
+				'title'  => '' . __( 'Members', 'wpforo' ) . wpforo_wp_admin_bar_red_circle_number(
 						wpforo_get_memb_attention_count()
 					),
 				'href'   => admin_url( 'admin.php?page=wpforo-members' ),
@@ -3089,8 +3356,17 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 		if( WPF()->usergroup->can( 'ms' ) || wpforo_current_user_is( 'admin' ) ) {
 			$args = [
 				'id'     => 'wpforo-base-settings',
-				'title'  => '&#9881;&nbsp;&nbsp;' . __( 'Settings', 'wpforo' ),
+				'title'  => '' . __( 'Settings', 'wpforo' ),
 				'href'   => admin_url( 'admin.php?page=wpforo-base-settings' ),
+				'parent' => 'wpforo',
+			];
+			$wp_admin_bar->add_node( $args );
+		}
+		if( WPF()->usergroup->can( 'ms' ) || wpforo_current_user_is( 'admin' ) ) {
+			$args = [
+				'id'     => 'wpforo-ai',
+				'title'  => '' . __( 'AI Features', 'wpforo' ),
+				'href'   => admin_url( 'admin.php?page=wpforo-ai' ),
 				'parent' => 'wpforo',
 			];
 			$wp_admin_bar->add_node( $args );
@@ -3098,7 +3374,7 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 		if( WPF()->usergroup->can( 'mth' ) || wpforo_current_user_is( 'admin' ) ) {
 			$args = [
 				'id'     => 'wpforo-themes',
-				'title'  => '&#127912;&nbsp;&nbsp;' . __( 'Themes', 'wpforo' ),
+				'title'  => '' . __( 'Themes', 'wpforo' ),
 				'href'   => admin_url( 'admin.php?page=wpforo-themes' ),
 				'parent' => 'wpforo',
 			];
@@ -3107,13 +3383,12 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 		if( wpforo_current_user_is( 'admin' ) ) {
 			$args = [
 				'id'     => 'wpforo-addons',
-				'title'  => '&#128268;&nbsp;&nbsp;' . __( 'Addons', 'wpforo' ),
+				'title'  => '' . __( 'Addons', 'wpforo' ),
 				'href'   => admin_url( 'admin.php?page=wpforo-addons' ),
 				'parent' => 'wpforo',
 			];
 			$wp_admin_bar->add_node( $args );
 		}
-		
 	}
 }
 
@@ -3397,3 +3672,28 @@ add_filter( 'wpforo_add_post_data_filter', 'wpf_body_wp_encode_emoji' );
 add_filter( 'wpforo_edit_post_data_filter', 'wpf_body_wp_encode_emoji' );
 add_filter( 'wpforo_add_topic_data_filter', 'wpf_body_wp_encode_emoji' );
 add_filter( 'wpforo_edit_topic_data_filter', 'wpf_body_wp_encode_emoji' );
+
+// Feature Introduction Modal - AJAX dismiss handler (must be in hooks.php, not admin/index.php, because wpforo_is_admin() excludes AJAX)
+add_action( 'wp_ajax_wpforo_dismiss_feature_intro', function() {
+	\wpforo\classes\FeatureIntro::ajax_dismiss_static();
+} );
+
+// Feature Introduction Modal - redirect to wpForo Overview after update/activation
+add_action( 'admin_init', function() {
+	if( wp_doing_ajax() || wp_doing_cron() ) return;
+	if( is_network_admin() ) return;
+	if( isset( $_GET['activate-multi'] ) ) return;
+	if( ! current_user_can( 'manage_options' ) ) return;
+
+	$intro_version = \wpforo\classes\FeatureIntro::CURRENT_INTRO;
+	$version_option = \wpforo\classes\FeatureIntro::VERSION_OPTION;
+	$last_intro = get_option( $version_option, '' );
+
+	if( version_compare( $last_intro, $intro_version, '<' ) ) {
+		update_option( $version_option, $intro_version );
+		// Don't redirect if already on a wpForo page
+		if( isset( $_GET['page'] ) && strpos( sanitize_text_field( $_GET['page'] ), 'wpforo' ) !== false ) return;
+		wp_safe_redirect( admin_url( 'admin.php?page=wpforo-overview' ) );
+		exit;
+	}
+}, 1 );

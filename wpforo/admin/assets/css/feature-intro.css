@@ -1,0 +1,365 @@
+/**
+ * wpForo Feature Introduction Modal
+ */
+
+/* Overlay */
+.wpf-fi-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.6);
+	z-index: 999999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.wpf-fi-overlay.wpf-fi-visible {
+	opacity: 1;
+}
+
+/* Modal */
+.wpf-fi-modal {
+	background: #fff;
+	border-radius: 12px;
+	width: 680px;
+	max-width: calc(100vw - 40px);
+	max-height: calc(100vh - 60px);
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	transform: translateY(20px) scale(0.97);
+	transition: transform 0.3s ease;
+}
+
+.wpf-fi-overlay.wpf-fi-visible .wpf-fi-modal {
+	transform: translateY(0) scale(1);
+}
+
+/* Close button */
+.wpf-fi-close {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 10;
+	background: rgba(255, 255, 255, 0.9);
+	border: none;
+	font-size: 24px;
+	line-height: 28px;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	cursor: pointer;
+	color: #666;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s;
+}
+
+.wpf-fi-close:hover {
+	background: #fff;
+	color: #333;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Slides container */
+.wpf-fi-slides-wrap {
+	position: relative;
+	overflow: hidden;
+	flex: 1;
+	overflow-y: auto;
+}
+
+/* Individual slide */
+.wpf-fi-slide {
+	display: none;
+	animation: wpfFiFadeIn 0.3s ease;
+}
+
+.wpf-fi-slide.wpf-fi-active {
+	display: block;
+}
+
+@keyframes wpfFiFadeIn {
+	from { opacity: 0; transform: translateX(20px); }
+	to { opacity: 1; transform: translateX(0); }
+}
+
+/* Image area */
+.wpf-fi-image-wrap {
+	background: #f0f4f8;
+	padding: 20px 24px 12px;
+	text-align: center;
+	border-bottom: 1px solid #e5e9ef;
+}
+
+.wpf-fi-image-wrap img {
+	max-width: 100%;
+	max-height: 280px;
+	height: auto;
+	border-radius: 6px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Content area */
+.wpf-fi-content {
+	padding: 24px 32px 16px;
+}
+
+.wpf-fi-title {
+	font-size: 22px;
+	font-weight: 700;
+	color: #1d2327;
+	margin: 0 0 8px;
+	line-height: 1.3;
+}
+
+.wpf-fi-desc {
+	font-size: 14px;
+	color: #50575e;
+	margin: 0 0 16px;
+	line-height: 1.6;
+}
+
+/* Feature list */
+.wpf-fi-features {
+	list-style: none;
+	margin: 0 0 8px;
+	padding: 0;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 6px 16px;
+}
+
+.wpf-fi-features li {
+	font-size: 13px;
+	color: #3c434a;
+	padding-left: 20px;
+	position: relative;
+	line-height: 1.5;
+}
+
+.wpf-fi-features li::before {
+	content: '\2713';
+	position: absolute;
+	left: 0;
+	color: #00a32a;
+	font-weight: 700;
+	font-size: 14px;
+}
+
+/* Steps list */
+.wpf-fi-steps {
+	margin: 0 0 12px;
+	padding: 0 0 0 24px;
+}
+
+.wpf-fi-steps li {
+	font-size: 14px;
+	color: #3c434a;
+	margin-bottom: 8px;
+	line-height: 1.5;
+	padding-left: 4px;
+}
+
+.wpf-fi-steps li::marker {
+	color: #2271b1;
+	font-weight: 700;
+}
+
+/* Highlight box */
+.wpf-fi-highlight {
+	background: linear-gradient(135deg, #e6f7e6, #d4edda);
+	border: 1px solid #a3d9a5;
+	border-radius: 6px;
+	padding: 10px 16px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #155724;
+	text-align: center;
+}
+
+/* Tip box */
+.wpf-fi-tip {
+	background: #f0f6fc;
+	border: 1px solid #c3d4e5;
+	border-radius: 6px;
+	padding: 10px 16px;
+	font-size: 13px;
+	color: #2c3338;
+	line-height: 1.5;
+}
+
+/* Navigation */
+.wpf-fi-nav {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	padding: 8px 16px 4px;
+}
+
+.wpf-fi-arrow {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	border: 1px solid #d0d5dd;
+	background: #fff;
+	font-size: 22px;
+	line-height: 1;
+	color: #50575e;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s;
+	flex-shrink: 0;
+	padding: 0;
+}
+
+.wpf-fi-arrow:hover {
+	background: #f0f0f1;
+	border-color: #999;
+	color: #1d2327;
+}
+
+.wpf-fi-arrow:disabled,
+.wpf-fi-arrow.wpf-fi-hidden {
+	opacity: 0.3;
+	cursor: default;
+	pointer-events: none;
+}
+
+.wpf-fi-dots {
+	display: inline-flex;
+	gap: 8px;
+}
+
+.wpf-fi-dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: #d0d5dd;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.wpf-fi-dot:hover {
+	background: #98a2b3;
+}
+
+.wpf-fi-dot.wpf-fi-active {
+	background: #2271b1;
+	transform: scale(1.2);
+}
+
+/* Actions bar */
+.wpf-fi-actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 24px 16px;
+	border-top: 1px solid #eee;
+	gap: 12px;
+}
+
+.wpf-fi-actions-left {
+	flex: 1;
+}
+
+.wpf-fi-actions-right {
+	display: flex;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
+/* Opt-out checkbox */
+.wpf-fi-opt-out {
+	font-size: 12px;
+	color: #888;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.wpf-fi-opt-out input[type="checkbox"] {
+	margin: 0;
+}
+
+/* Buttons */
+.wpf-fi-btn {
+	display: inline-flex;
+	align-items: center;
+	padding: 8px 20px;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	text-decoration: none;
+	border: none;
+	transition: all 0.2s;
+	white-space: nowrap;
+	line-height: 1.4;
+}
+
+.wpf-fi-btn-primary {
+	background: #2271b1;
+	color: #fff;
+}
+
+.wpf-fi-btn-primary:hover {
+	background: #135e96;
+	color: #fff;
+}
+
+.wpf-fi-btn-secondary {
+	background: #f0f0f1;
+	color: #50575e;
+}
+
+.wpf-fi-btn-secondary:hover {
+	background: #e0e0e1;
+	color: #2c3338;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+	.wpf-fi-modal {
+		width: calc(100vw - 20px);
+		max-height: calc(100vh - 40px);
+		border-radius: 8px;
+	}
+
+	.wpf-fi-content {
+		padding: 16px 20px 12px;
+	}
+
+	.wpf-fi-features {
+		grid-template-columns: 1fr;
+	}
+
+	.wpf-fi-image-wrap img {
+		max-height: 180px;
+	}
+
+	.wpf-fi-actions {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.wpf-fi-actions-left {
+		text-align: center;
+	}
+
+	.wpf-fi-actions-right {
+		justify-content: center;
+	}
+}

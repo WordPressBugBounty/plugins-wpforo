@@ -799,7 +799,7 @@ $wpf(document).ready(function ($) {
 		
 		id = id.replace('button-arrow-', '');
 		$('.wpforo-last-posts-' + id).slideToggle('slow');
-		if ($(this).hasClass('topictoggle') && $(this).hasClass('wpfcl-a') && $(this).hasClass('fa-chevron-down')) {
+		if ($(this).hasClass('topictoggle') && $(this).hasClass('wpfcl-0') && $(this).hasClass('fa-chevron-down')) {
 			$('#button-arrow-' + id).removeClass('fa-chevron-down').addClass('fa-chevron-up');
 		} else {
 			$('#button-arrow-' + id).removeClass('fa-chevron-up').addClass('fa-chevron-down');
@@ -825,11 +825,12 @@ $wpf(document).ready(function ($) {
 		var id = $(this).attr('id');
 		id = id.replace('wpf-ttgg-', '');
 		$('#wpf-post-replies-' + id).slideToggle('slow');
-		if ($(this).find('i').hasClass('fa-angle-down')) {
-			$(this).find('i').removeClass('fa-angle-down').addClass('fa-angle-up');
+		var $angleIcon = $(this).find('.wpforo-ttgg i');
+		if ($angleIcon.hasClass('fa-angle-down')) {
+			$angleIcon.removeClass('fa-angle-down').addClass('fa-angle-up');
 			$(this).find('.wpforo-ttgg').attr('wpf-tooltip', wpforo_phrase('Hide Replies'));
 		} else {
-			$(this).find('i').removeClass('fa-angle-up').addClass('fa-angle-down');
+			$angleIcon.removeClass('fa-angle-up').addClass('fa-angle-down');
 			$(this).find('.wpforo-ttgg').attr('wpf-tooltip', wpforo_phrase('Show Replies'));
 		}
 	});
@@ -1000,13 +1001,9 @@ $wpf(document).ready(function ($) {
 	//Facebook Share Buttons
 	wpforo_wrap.on('click', '.wpf-fb', function () {
 		var item_url = $(this).data('wpfurl');
-		var item_quote = $(this).parents('.post-wrap').find('.wpforo-post-content').text();
-		FB.ui({
-			method: 'share',
-			href: item_url,
-			quote: item_quote,
-			hashtag: null,
-		}, function (response) {});
+		// Facebook deprecated custom parameters - content comes from Open Graph meta tags
+		var share_url = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(item_url);
+		window.open(share_url, 'facebook-share', 'width=580,height=400');
 	});
 	//Share Buttons Toggle
 	wpforo_wrap.on('mouseover', '.wpf-sb', function () {
@@ -1102,7 +1099,33 @@ $wpf(document).ready(function ($) {
 			wpforo_dialog_show(title, html, '40%', '260px');
 		}
 	});
-	
+
+	// Topic ID copy to clipboard
+	wpforo_wrap.on('click', '.wpf-topic-id[data-topicid]', function () {
+		var $el = $(this);
+		var topicid = $el.data('topicid');
+		if (topicid) {
+			var originalTooltip = $el.attr('wpf-tooltip');
+			navigator.clipboard.writeText(topicid.toString()).then(function () {
+				$el.attr('wpf-tooltip', wpforo_phrase('Copied!'));
+				setTimeout(function () {
+					$el.attr('wpf-tooltip', originalTooltip);
+				}, 1500);
+			}).catch(function () {
+				// Fallback for older browsers
+				var temp = $('<input>');
+				$('body').append(temp);
+				temp.val(topicid).select();
+				document.execCommand('copy');
+				temp.remove();
+				$el.attr('wpf-tooltip', wpforo_phrase('Copied!'));
+				setTimeout(function () {
+					$el.attr('wpf-tooltip', originalTooltip);
+				}, 1500);
+			});
+		}
+	});
+
 	$(document).on('click', '.wpforo-copy-url-wrap', function () {
 		var wrap = $(this);
 		var input = $('input.wpforo-copy-url', wrap);
@@ -1128,7 +1151,7 @@ $wpf(document).ready(function ($) {
 		$('.wpf-ico', $(this)).toggleClass('fa-chevron-down fa-chevron-up');
 		$('.wpf-search-custom-fields', wrap).slideToggle(350);
 	});
-	
+
 	wpforo_wrap.on('click', 'form[data-textareaid] .wpforo-delete-custom-file', function () {
 		if (confirm(wpforo_phrase('Are you sure you want to delete this file?'))) {
 			var wrap = $(this).closest('.wpf-field-file-wrap');

@@ -12,7 +12,7 @@ define( 'WPFORO_THEME_URL', WPFORO_URL . '/themes' );
 
 class Template {
     public $default;
-    public $theme            = '2022';
+    public $theme            = '2026';
     public $theme_info;
     public $template_dir;
     public $template_url;
@@ -362,6 +362,16 @@ class Template {
                         'is_default'        => 1,
                         'callback_for_page' => function() {
                             require wpftpl( 'tags.php' );
+                        },
+                ],
+                'recent-activity' => [
+                        'type'              => 'callback',
+                        'key'               => 'recent-activity',
+                        'menu_shortcode'    => 'recent-activity',
+                        'title'             => 'What\'s New',
+                        'is_default'        => 1,
+                        'callback_for_page' => function() {
+                            require wpftpl( 'activity.php' );
                         },
                 ],
         ];
@@ -823,7 +833,7 @@ class Template {
                     'container_id'    => '',
                     'menu_class'      => 'wpf-menu',
                     'menu_id'         => 'wpf-menu',
-                    'echo'            => true,
+                    'echo'            => false,
                     'fallback_cb'     => 'wp_page_menu',
                     'before'          => '',
                     'after'           => '',
@@ -833,12 +843,15 @@ class Template {
                     'depth'           => 0,
                     'walker'          => '',
             ];
-            wp_nav_menu( $defaults );
+            $menu = wp_nav_menu( $defaults );
+            // Remove whitespace between menu items to prevent gaps with inline-block display
+            $menu = preg_replace( '/>\s+</', '><', $menu );
+            echo $menu;
         }
     }
 
     private function init_current_theme( $theme ) {
-        if( ! $this->theme_exists( $theme ) ) $theme = '2022';
+        if( ! $this->theme_exists( $theme ) ) $theme = '2026';
         $this->theme        = $theme;
         $this->theme_info   = $this->find_theme( $this->theme );
         $this->template_dir = wpforo_fix_dir_sep( WPFORO_THEME_DIR . '/' . $this->theme );
@@ -896,7 +909,7 @@ class Template {
         ?>
         <div class="wpf-topic-form-extra-wrap">
             <div class="wpf-topic-forum-field" style="padding: 0 10px 15px; text-align: center; margin: 0 auto 10px;">
-                <label for="wpf-choose-forum-<?php echo $uniqid ?>" class="wpf-choose-forum" style="font-size: 15px; padding-bottom: 5px;">
+                <label for="wpf-choose-forum-<?php echo $uniqid ?>" class="wpf-choose-forum" style="font-size: 15px; padding-bottom: 5px; display: block;">
                     <?php wpforo_phrase( 'Select Forum' ) ?>
                 </label>
                 <div class="wpf-topic-forum-wrap" style="width: 70%; margin: 0 auto; padding-bottom: 15px; min-width: 222px; border-bottom: 1px dashed #cccccc;">
@@ -947,7 +960,16 @@ class Template {
                                     <label for="wpf_t_sticky_<?php echo $uniqid ?>" style="padding-bottom:2px; cursor: pointer;"><?php wpforo_phrase( 'Set Topic Sticky' ); ?>&nbsp;</label>
                                     <span class="wpfbs">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
                                 <?php endif; ?>
-                                <?php if( WPF()->perm->forum_can( 'p', $forumid ) || WPF()->perm->forum_can( 'op', $forumid ) ) : ?>
+                                <?php
+                                // Check if this is a ticket forum (all topics must be private)
+                                $is_ticket_forum = ( wpfval( $forum, 'type' ) === 'ticket_forum' );
+                                if( $is_ticket_forum ) :
+                                    // Force private for ticket forums - hidden input with visible notice
+                                    ?>
+                                    <input type="hidden" name="thread[private]" value="1">
+                                    <i class="fas fa-lock wpfsx wpfcl-5"></i>&nbsp;&nbsp;
+                                    <span style="padding-bottom:2px;" title="<?php wpforo_phrase( 'Only Admins and Moderators can see your private topics.' ); ?>"><?php wpforo_phrase( 'This topic will be private' ); ?></span>
+                                <?php elseif( WPF()->perm->forum_can( 'p', $forumid ) || WPF()->perm->forum_can( 'op', $forumid ) ) : ?>
                                     <input id="wpf_t_private_<?php echo $uniqid ?>" name="thread[private]" type="checkbox" value="1">&nbsp;&nbsp;
                                     <i class="fas fa-eye-slash wpfsx"></i>&nbsp;&nbsp;
                                     <label for="wpf_t_private_<?php echo $uniqid ?>" style="padding-bottom:2px; cursor: pointer;"
@@ -1033,6 +1055,7 @@ class Template {
                             <input type="button" class="wpf-button wpf-button-secondary wpf-edit-post-cancel" value="<?php wpforo_phrase( 'Cancel' ) ?>">
                             <input type="submit" class="wpf-button" value="<?php wpforo_phrase( 'Save' ) ?>" title="Ctrl+Enter">
                         <?php else : ?>
+                            <?php do_action( 'wpforo_editor_post_submit_button_before', $topic, $values, $forum ) ?>
                             <input type="submit" class="wpf-button" value="<?php $layout === 3 ? wpforo_phrase( 'Answer' ) : wpforo_phrase( 'Add Reply' ) ?>" title="Ctrl+Enter">
                         <?php endif ?>
                     </div>
@@ -1418,13 +1441,13 @@ class Template {
                     <div class="wpforo-td wpfw-60 wpfltd">
                         <span class="wpf-search-label wpfcl-1">&nbsp;<?php wpforo_phrase( 'Search Phrase' ) ?>:</span><br>
                         <label>
-                            <input type="text" name="wpfs" class="wpfs wpfw-90" value="<?php echo esc_attr( $needle ) ?>">
+                            <input type="text" name="wpfs" class="wpfs" value="<?php echo esc_attr( $needle ) ?>" autofocus>
                         </label>
                     </div>
                     <div class="wpforo-td wpfw-40 wpfrtd">
                         <span class="wpf-search-label wpfcl-1">&nbsp;<?php wpforo_phrase( 'Search Type' ) ?>:</span><br>
                         <label>
-                            <select name="wpfin" class="wpfw-90 wpfin">
+                            <select name="wpfin" class="wpfin">
                                 <option value="entire-posts" <?php echo $type === 'entire-posts' ? 'selected' : '' ?>>&nbsp;<?php wpforo_phrase( 'Search Entire Posts' ) ?></option>
                                 <option value="titles-only" <?php echo $type === 'titles-only' ? 'selected' : '' ?>>&nbsp;<?php wpforo_phrase( 'Search Titles Only' ) ?></option>
                                 <option value="tag" <?php echo $type === 'tag' ? 'selected' : '' ?>>&nbsp;<?php wpforo_phrase( 'Find Topics by Tags' ) ?></option>
@@ -1451,7 +1474,7 @@ class Template {
                                     <div class="wpforo-td wpfw-60 wpfltd">
                                         <span class="wpf-search-label wpfcl-1">&nbsp;<?php wpforo_phrase( 'Search in Forums' ) ?>:</span><br>
                                         <label>
-                                            <select name="wpff[]" class="wpfw-90 wpff" multiple="multiple">
+                                            <select name="wpff[]" class="wpff" multiple="multiple">
                                                 <?php WPF()->forum->tree( 'select_box', false, $forumids ) ?>
                                             </select>
                                         </label>
@@ -1459,7 +1482,7 @@ class Template {
                                     <div class="wpforo-td wpfw-40 wpfrtd">
                                         <span class="wpf-search-label wpfcl-1">&nbsp;<?php wpforo_phrase( 'Search in date period' ) ?>:</span><br>
                                         <label>
-                                            <select name="wpfd" class="wpfw-90 wpfd">
+                                            <select name="wpfd" class="wpfd">
                                                 <option value="0" <?php echo $date_period === 0 ? 'selected' : '' ?>>&nbsp;<?php wpforo_phrase( 'Any Date' ) ?></option>
                                                 <option value="1" <?php echo $date_period === 1 ? 'selected' : '' ?>>&nbsp;<?php wpforo_phrase( 'Last 24 hours' ) ?></option>
                                                 <option value="7" <?php echo $date_period === 7 ? 'selected' : '' ?>>&nbsp;<?php wpforo_phrase( 'Last Week' ) ?></option>
@@ -1472,7 +1495,7 @@ class Template {
                                         <br>
                                         <span class="wpf-search-label wpfcl-1">&nbsp;<?php wpforo_phrase( 'Sort Search Results by' ) ?>:</span><br>
                                         <label>
-                                            <select class="wpfw-90 wpfob" name="wpfob">
+                                            <select class="wpfob" name="wpfob">
                                                 <option value="relevancy" <?php echo $orderby === 'relevancy' ? 'selected' : '' ?>>&nbsp;<?php wpforo_phrase( 'Relevancy' ) ?></option>
                                                 <option value="date" <?php echo $orderby === 'date' ? 'selected' : '' ?>>&nbsp;<?php wpforo_phrase( 'Date' ) ?></option>
                                                 <option value="user" <?php echo $orderby === 'user' ? 'selected' : '' ?>>&nbsp;<?php wpforo_phrase( 'User' ) ?></option>
@@ -1480,7 +1503,7 @@ class Template {
                                             </select>
                                         </label><br>
                                         <label>
-                                            <select class="wpfw-90 wpfo" name="wpfo">
+                                            <select class="wpfo" name="wpfo">
                                                 <option value="desc" <?php echo $order === 'desc' ? 'selected' : '' ?>>&nbsp;<?php wpforo_phrase( 'Descending order' ) ?></option>
                                                 <option value="asc" <?php echo $order === 'asc' ? 'selected' : '' ?>>&nbsp;<?php wpforo_phrase( 'Ascending order' ) ?></option>
                                             </select>
@@ -1510,7 +1533,7 @@ class Template {
                     </div>
                 </div>
             <?php endif ?>
-            <div class="wpforo-table">
+            <div class="wpforo-table wpf-search-footer">
                 <div class="wpforo-tr">
                     <div class="wpforo-td wpfw-100 wpfrtd wpf-last">
                         <input type="submit" class="wpf-search" value="<?php wpforo_phrase( 'Search' ) ?>">
@@ -1891,6 +1914,11 @@ class Template {
                             $full_url,
                             $short_url
                     );
+                break;
+                case 'topic-id':
+                    if( $topicid && $is_topic ) {
+                        $button_html[] = '<span class="wpf-action wpf-topic-id" data-topicid="' . intval( $topicid ) . '" wpf-tooltip="' . esc_attr( wpforo_phrase( 'Click to copy Topic ID', false ) ) . '" wpf-tooltip-position="top">[#' . intval( $topicid ) . ']</span>';
+                    }
                 break;
                 case 'positivevote':
                     if( WPF()->perm->forum_can( 'v', $forumid ) && $login ) {
@@ -2751,11 +2779,7 @@ class Template {
         if( wpforo_setting( 'components', 'copyright' ) ): ?>
             <div id="wpforo-poweredby">
                 <p class="wpf-by">
-                    <span onclick='document.getElementById("bywpforo").style.display = "inline";document.getElementById("awpforo").style.display = "none";' id="awpforo"> <img
-                                title="<?php esc_attr( wpforo_phrase( 'Powered by' ) ) ?> wpForo version <?php echo esc_html( WPFORO_VERSION ) ?>" alt="Powered by wpForo" class="wpdimg"
-                                src="<?php echo WPFORO_URL ?>/assets/images/wpforo-info.png"> </span><a id="bywpforo" target="_blank" href="https://wpforo.com/">&nbsp;<?php wpforo_phrase(
-                                'Powered by'
-                        ) ?> wpForo version <?php echo esc_html( WPFORO_VERSION ) ?></a>
+                    <a id="bywpforo" target="_blank" href="https://wordpress.org/plugins/wpforo/">&nbsp;<?php wpforo_phrase('Powered by') ?> wpForo version <?php echo esc_html( WPFORO_VERSION ) ?></a>
                 </p>
             </div>
         <?php

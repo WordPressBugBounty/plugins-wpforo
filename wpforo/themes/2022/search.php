@@ -16,7 +16,7 @@ $posts  = WPF()->current_object['posts'];
 </h1>
 <div class="wpforo-search-wrap <?php if( $is_tag ) echo 'wpforo-search-tag' ?>">
     <div class="wpf-search-bar"><?php wpforo_post_search_form( $args ) ?></div>
-    <hr>
+
     <div class="wpf-snavi"><?php wpforo_template_pagenavi( '', false ) ?></div>
     <div class="wpforo-search-content">
         <table style="width: 100%;">

@@ -44,6 +44,7 @@
                                 </div>
                                 <div class="wpforo-post-date"><?php wpforo_date($post['created'], 'd/m/Y g:i a'); ?></div>
 	                            <?php wpforo_topic_starter($topic, $post) ?>
+                                <?php do_action( 'wpforo_post_content_top_left', $post ) ?>
                                 <div class="wpf-clear-right"></div>
                             </div>
                             <div class="wpforo-post-author">
@@ -81,6 +82,7 @@
                                 <?php if( wpforo_setting( 'profiles', 'signature' ) ): ?>
                                     <?php if( trim((string) $member['signature'])): ?><div class="wpforo-post-signature"><?php wpforo_signature( $member ) ?></div><?php endif ?>
                                 <?php endif; ?>
+                                <?php do_action( 'wpforo_post_content_footer', $post, $topic, $forum, 3 ) ?>
                             </div>
                             <div class="wpforo-post-author">
                                 <div class="wpforo-post-lb-box">

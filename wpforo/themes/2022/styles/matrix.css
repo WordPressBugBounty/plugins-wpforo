@@ -15,6 +15,78 @@
 #wpforo #wpforo-wrap .wpf-p-error { border-bottom: __WPFCOLOR_8__ 1px solid; color: __WPFCOLOR_2__; }
 #wpforo #wpforo-wrap .wpf-res-menu { color: __WPFCOLOR_3__; }
 #wpforo #wpforo-wrap #wpforo-menu { border-bottom: __WPFCOLOR_8__ 3px solid; background:__WPFCOLOR_9__;}
+/* AI Helper Toggle */
+#wpforo #wpforo-wrap .wpforo-ai-helper{background:__WPFCOLOR_9__;}
+#wpforo #wpforo-wrap .wpf-ai-helper-bar{background:transparent;}
+#wpforo #wpforo-wrap .wpf-ai-helper-toggle{ background:__WPFCOLOR_9__; color:__WPFCOLOR_12__; border: 2px solid __WPFCOLOR_8__;}
+#wpforo #wpforo-wrap .wpf-ai-helper-toggle:hover{ background:__WPFCOLOR_12__; color:__WPFCOLOR_1__;}
+#wpforo #wpforo-wrap .wpf-ai-helper-toggle .wpf-ai-sparkle-icon{ fill:__WPFCOLOR_12__;}
+#wpforo #wpforo-wrap .wpf-ai-helper-toggle:hover .wpf-ai-sparkle-icon{ fill:__WPFCOLOR_1__;}
+#wpforo #wpforo-wrap .wpf-ai-helper-content{border-top:none;}
+/* AI Helper Tabs */
+#wpforo #wpforo-wrap .wpf-ai-tab{}
+#wpforo #wpforo-wrap .wpf-ai-tab-active{color:__WPFCOLOR_12__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content{background:__WPFCOLOR_1__; border:1px solid __WPFCOLOR_8__; border-top:none;}
+/* AI Search Toggle - Segmented Control */
+#wpforo #wpforo-wrap .wpf-ai-search-toggle{border-bottom:1px solid __WPFCOLOR_8__;}
+#wpforo #wpforo-wrap .wpf-ai-search-mode{color:__WPFCOLOR_6__;}
+#wpforo #wpforo-wrap .wpf-ai-search-mode:hover{color:__WPFCOLOR_0__;}
+#wpforo #wpforo-wrap .wpf-ai-search-mode-active{color:__WPFCOLOR_4__; background:__WPFCOLOR_9__;}
+#wpforo #wpforo-wrap .wpf-ai-section-header{color:__WPFCOLOR_0__}
+#wpforo #wpforo-wrap .wpf-ai-quick-answer{color:__WPFCOLOR_0__}
+/* AI Search Forms */
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-input-wrap .wpf-ai-input{background:__WPFCOLOR_9__; border:1px solid __WPFCOLOR_8__; color:__WPFCOLOR_2__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-input-wrap .wpf-ai-input:focus{border-color:__WPFCOLOR_7__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-input-wrap .wpf-ai-input::placeholder{color:__WPFCOLOR_6__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-input-wrap .wpf-ai-input-icon{color:__WPFCOLOR_6__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-input-wrap .wpf-ai-submit{color:__WPFCOLOR_4__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-input-wrap .wpf-ai-input-icon svg{color: __WPFCOLOR_6__;}
+/* AI Search Results */
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-card{background:__WPFCOLOR_1__; border-bottom:1px solid __WPFCOLOR_8__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-card:hover{border-color:__WPFCOLOR_7__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-meta{color:__WPFCOLOR_6__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-meta i{color:__WPFCOLOR_7__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-score{color:__WPFCOLOR_12__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-content{color:__WPFCOLOR_4__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-more-btn{background:__WPFCOLOR_9__; color:__WPFCOLOR_4__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-more-btn:hover{background:__WPFCOLOR_8__;}
+/* AI Loading Animation - Blinking Stars */
+#wpforo #wpforo-wrap .wpf-ai-star{fill:__WPFCOLOR_12__;}
+#wpforo #wpforo-wrap .wpf-ai-loading-text{color:__WPFCOLOR_4__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-no-results{color:__WPFCOLOR_6__;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-error{color:__WPFCOLOR_42__;}
+/* AI Preferences */
+#wpforo #wpforo-wrap .wpf-ai-preferences{color:__WPFCOLOR_6__;}
+/* AI Classic Search Form */
+#wpforo #wpforo-wrap .wpf-ai-search-form[data-search-form="classic"]{background:__WPFCOLOR_9__; border:1px solid __WPFCOLOR_8__;}
+#wpforo #wpforo-wrap .wpf-ai-search-form[data-search-form="classic"] .wpfltd{border-bottom:1px dotted __WPFCOLOR_8__;}
+#wpforo #wpforo-wrap .wpf-ai-search-form[data-search-form="classic"] .wpfrtd{border-bottom:1px dotted __WPFCOLOR_8__;}
+#wpforo #wpforo-wrap .wpf-ai-search-form[data-search-form="classic"] .wpf-search-label{color:__WPFCOLOR_4__;}
+#wpforo #wpforo-wrap .wpf-ai-search-form[data-search-form="classic"] .wpf-toggle-wrap .wpf-toggle{border-bottom:1px dashed __WPFCOLOR_7__; color:__WPFCOLOR_6__;}
+#wpforo #wpforo-wrap .wpf-ai-search-form[data-search-form="classic"] input[type="text"], #wpforo #wpforo-wrap .wpf-ai-search-form[data-search-form="classic"] select{background:__WPFCOLOR_1__; border:1px solid __WPFCOLOR_8__; color:__WPFCOLOR_2__;}
+#wpforo #wpforo-wrap .wpf-ai-search-form[data-search-form="classic"] input[type="text"]:focus, #wpforo #wpforo-wrap .wpf-ai-search-form[data-search-form="classic"] select:focus{border-color:__WPFCOLOR_12__;}
+#wpforo #wpforo-wrap .wpf-ai-search-form[data-search-form="classic"] input[type="submit"]{background:__WPFCOLOR_12__; color:__WPFCOLOR_1__;}
+#wpforo #wpforo-wrap .wpf-ai-search-form[data-search-form="classic"] input[type="submit"]:hover{background:__WPFCOLOR_11__;}
+/* AI Translation */
+#wpforo #wpforo-wrap .wpf-ai-translate-dropdown{background: __WPFCOLOR_1__;}
+#wpforo #wpforo-wrap .wpf-ai-translate-original{color: __WPFCOLOR_20__;}
+#wpforo #wpforo-wrap .wpforo-post-content.wpf-ai-translated, #wpforo #wpforo-wrap .wpforo-comment-text.wpf-ai-translated{border-left: 2px dashed __WPFCOLOR_20__; background: #fff9f4 !important;}
+#wpforo #wpforo-wrap .wpfl-1 .wpforo-post-content.wpf-ai-translated{border-left: none; background: #fff9f4 !important;}
+/* AI Topic Summarization */
+#wpforo #wpforo-wrap .wpf-ai-summarize-btn{color: __WPFCOLOR_12__; border: 1px solid __WPFCOLOR_12__; background: __WPFCOLOR_1__;}
+#wpforo #wpforo-wrap .wpf-ai-summarize-btn:hover{color: __WPFCOLOR_12__; }
+#wpforo #wpforo-wrap .wpf-ai-summarize-btn .wpf-ai-star{color: __WPFCOLOR_12__;}
+#wpforo #wpforo-wrap .wpf-ai-translate-arrow{color: __WPFCOLOR_20__;}
+#wpforo #wpforo-wrap .wpf-ai-summary-body{border-left: 3px dashed __WPFCOLOR_12__;}
+#wpforo #wpforo-wrap .wpf-ai-summary-body h3, #wpforo #wpforo-wrap .wpf-ai-summary-body h4{color: __WPFCOLOR_12__;}
+/* AI Chat Bot */
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference{color: __WPFCOLOR_15__;}
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference:hover{color: __WPFCOLOR_12__;}
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-user .wpf-ai-chat-msg-content{background-color: __WPFCOLOR_12__; color: __WPFCOLOR_1__;}
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-assistant .wpf-ai-chat-msg-content{background-color: __WPFCOLOR_9__; color: __WPFCOLOR_2__;}
+/* AI Topic Suggestions */
+#wpforo #wpforo-wrap .wpf-ai-suggestions-title{color: __WPFCOLOR_12__; }
+#wpforo #wpforo-wrap .wpf-ai-suggestions-section .wpf-ai-suggestions-section-content .wpf-ai-similar-hint{color: __WPFCOLOR_5__;}
 #wpforo #wpforo-wrap #wpforo-menu li {border-bottom: 3px solid transparent;}
 #wpforo #wpforo-wrap #wpforo-menu li a { color: __WPFCOLOR_3__; }
 
@@ -831,3 +903,21 @@ body.wpf-dark #wpf-msg-box a:hover, body.wpf-dark #wpf-msg-box a:active{color:__
 #wpforo #wpforo-wrap.wpf-dark .wpfl-3 .wpforo-topic .wpf-tbox {background: #333;}
 #wpforo #wpforo-wrap.wpf-dark .wpfl-2 .wpforo-post .wpf-right .wpforo-post-content .wpforo-reaction{background-color: #111;}
 #wpforo #wpforo-wrap.wpf-dark .wpf-popover .wpf-popover-content{background-color: #333;}
+
+/* ======================================
+   Recent Activity Timeline - Dynamic Colors
+   ====================================== */
+/* Timeline Line */
+#wpforo #wpforo-wrap .wpf-timeline-line{background: linear-gradient(180deg, __WPFCOLOR_11__ 0%, __WPFCOLOR_11__ 50%, rgba(0,115,170,0.4) 100%);}
+/* Icon Node */
+#wpforo #wpforo-wrap .wpf-timeline-icon{border-color: __WPFCOLOR_7__; color: __WPFCOLOR_7__;}
+/* User link hover */
+#wpforo #wpforo-wrap .wpf-timeline-user a:hover{color: __WPFCOLOR_12__;}
+/* Filter select focus */
+#wpforo #wpforo-wrap .wpf-recent-activity-filter-form select:focus{border-color: __WPFCOLOR_12__;}
+/* Recent Activity label links */
+#wpforo #wpforo-wrap .wpf-recent-activity-label a{color: __WPFCOLOR_12__;}
+/* Timeline card border */
+#wpforo #wpforo-wrap .wpf-timeline-card{border-color: __WPFCOLOR_8__;}
+#wpforo #wpforo-wrap .wpf-timeline-card::after{border-right-color: __WPFCOLOR_8__;}
+#wpforo #wpforo-wrap .wpf-timeline-date-stick{border-bottom: 2px dashed __WPFCOLOR_11__;}

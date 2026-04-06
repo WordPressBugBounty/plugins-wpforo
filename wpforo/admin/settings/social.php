@@ -39,10 +39,6 @@ $options = WPF()->settings->info->core['social']['options'];
             <label for="sb_vk"><img src="<?php echo WPFORO_URL . '/assets/images/sn/vk-m.png' ?>" alt="vk-m.png" align="middle" style="width: 30px"></label><br>
             &nbsp;&nbsp;<input id="sb_vk" type="checkbox" name="social[sb][vk]" value="1" <?php checked( (bool) wpforo_setting( 'social', 'sb', 'vk' ) ) ?>>
         </div>
-        <div style="width: 15%; text-align: center; background: #FF7800; padding: 1px 18px 3px 18px;  margin: 1%;">
-            <label for="sb_ok"><img src="<?php echo WPFORO_URL . '/assets/images/sn/ok-m.png' ?>" alt="ok-m.png" align="middle" style="width: 30px"></label><br>
-            &nbsp;&nbsp;<input id="sb_ok" type="checkbox" name="social[sb][ok]" value="1" <?php checked( (bool) wpforo_setting( 'social', 'sb', 'ok' ) ) ?>>
-        </div>
     </div>
 	<?php echo WPF()->settings->get_doc_link( $options['sb'] ) ?>
 </div>

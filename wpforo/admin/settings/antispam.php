@@ -30,6 +30,21 @@
 <?php WPF()->settings->form_field( 'antispam', 'limited_file_ext' ); ?>
 
 <div class="wpf-subtitle">
+    <span class="dashicons dashicons-performance"></span> <?php _e( 'Flood Protection', 'wpforo' ) ?>
+    <p class="wpf-desc"><?php _e(
+			'Prevent spam floods by limiting how many posts users can create within specific time windows. This helps detect and stop automated spam attacks and excessive posting.',
+			'wpforo'
+		) ?></p>
+</div>
+<?php WPF()->settings->form_field( 'antispam', 'flood_protection_enabled' ); ?>
+<?php WPF()->settings->form_field( 'antispam', 'flood_posts_per_minute' ); ?>
+<?php WPF()->settings->form_field( 'antispam', 'flood_posts_per_hour' ); ?>
+<?php WPF()->settings->form_field( 'antispam', 'flood_ip_protection_enabled' ); ?>
+<?php WPF()->settings->form_field( 'antispam', 'flood_posts_per_ip_hour' ); ?>
+<?php WPF()->settings->form_field( 'antispam', 'flood_action' ); ?>
+<?php WPF()->settings->form_field( 'antispam', 'flood_temp_ban_duration' ); ?>
+
+<div class="wpf-subtitle">
     <span class="dashicons dashicons-paperclip"></span> <?php _e( 'Possible Spam Attachments', 'wpforo' ) ?>
     <p class="wpf-desc"><?php _e(
 			'This tool is designed to find attachment which have been uploaded by spammers. The tool checks most common spammer filenames and suggest to delete but you should check one by one and make sure those are spam files before deleting.',

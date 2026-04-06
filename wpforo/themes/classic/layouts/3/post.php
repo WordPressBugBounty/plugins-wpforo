@@ -55,6 +55,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
                                 </div>
                                 <div class="wpforo-post-date"><?php wpforo_date( $post['created'], 'd/m/Y g:i a' ); ?></div>
 								<?php wpforo_topic_starter( $topic, $post ) ?>
+								<?php do_action( 'wpforo_post_content_top_left', $post ) ?>
                                 <div class="wpf-clear-right"></div>
                             </div>
                             <div class="wpforo-post-content">
@@ -108,9 +109,9 @@ if( ! defined( 'ABSPATH' ) ) exit;
                             </div><!-- wpforo-post-author -->
                             <div class="wpforo-post-tool-bar">
 								<?php if( $post['is_first_post'] ) {
-									$buttons = [ 'sticky', 'private', 'close', 'approved', 'edit', 'delete', 'report' ];
+									$buttons = [ 'custom-bottom', 'sticky', 'private', 'close', 'approved', 'edit', 'delete', 'report' ];
 								} else {
-									$buttons = [ 'edit', 'approved', 'delete', 'report' ];
+									$buttons = [ 'custom-bottom', 'edit', 'approved', 'delete', 'report' ];
 								}
 								wpforo_post_buttons( 'icon-text', $buttons, $forum, $topic, $post ); ?>
                             </div>

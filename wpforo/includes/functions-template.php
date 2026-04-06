@@ -24,10 +24,37 @@ add_filter(
                 foreach( $items as $key => $item ) {
                     if( isset( $item->url ) ) {
                         if( strpos( (string) $item->url, '%wpforo-' ) !== false ) {
-                            $shortcode = trim( str_replace( [ 'https://', 'http://', '/', '%' ], '', (string) $item->url ) );
+                            // Extract shortcode and any query parameters (e.g., %wpforo-profile-activity?boardid=2%)
+                            $url_part = trim( str_replace( [ 'https://', 'http://', '/', '%' ], '', (string) $item->url ) );
+                            $query_params = [];
+                            if( strpos( $url_part, '?' ) !== false ) {
+                                list( $shortcode, $query_string ) = explode( '?', $url_part, 2 );
+                                parse_str( $query_string, $query_params );
+                            } else {
+                                $shortcode = $url_part;
+                            }
+
                             if( isset( WPF()->tpl->menu ) && isset( WPF()->tpl->menu[ $shortcode ] ) ) {
                                 if( isset( WPF()->tpl->menu[ $shortcode ]['href'] ) ) {
-                                    $item->url = WPF()->tpl->menu[ $shortcode ]['href'];
+                                    $url = WPF()->tpl->menu[ $shortcode ]['href'];
+                                    // Append query parameters (like boardid) if present
+                                    if( ! empty( $query_params ) ) {
+                                        $url = add_query_arg( $query_params, $url );
+                                    }
+                                    // Auto-append current boardid on multi-board sites (except home).
+                                    // Skip if boardid is already present (admin-provided or built-in).
+                                    if(
+                                            $shortcode !== 'wpforo-home'
+                                            && is_wpforo_multiboard()
+                                            && ! isset( $query_params['boardid'] )
+                                            && strpos( (string) $url, 'boardid=' ) === false
+                                    ) {
+                                        $current_boardid = (int) WPF()->board->get_current( 'boardid' );
+                                        if( $current_boardid > 0 ) {
+                                            $url = add_query_arg( 'boardid', $current_boardid, $url );
+                                        }
+                                    }
+                                    $item->url = $url;
                                 }
                                 if( wpfval( WPF()->tpl->menu[ $shortcode ], 'is_active' ) || ( isset(
                                                                                                        WPF()->tpl->menu[ $shortcode ]['attr']
@@ -58,6 +85,22 @@ function wpforo_menu_nofollow_items( $item_output, $item, $depth, $args ) {
 }
 
 add_filter( 'walker_nav_menu_start_el', 'wpforo_menu_nofollow_items', 1, 4 );
+
+/**
+ * Append current boardid to member profile URLs on multi-board sites so users
+ * stay inside the board they're browsing when navigating to a profile. Applies
+ * in all contexts (frontend, emails, etc.). Skips if boardid is already set.
+ */
+add_filter( 'wpforo_member_profile_url', 'wpforo_append_current_boardid_to_profile_url', 20, 3 );
+function wpforo_append_current_boardid_to_profile_url( $profile_url, $user, $template ) {
+    if( empty( $profile_url ) ) return $profile_url;
+    if( ! is_wpforo_multiboard() ) return $profile_url;
+    if( strpos( (string) $profile_url, 'boardid=' ) !== false ) return $profile_url;
+    $boardid = (int) WPF()->board->get_current( 'boardid' );
+    if( $boardid <= 0 ) return $profile_url;
+
+    return add_query_arg( 'boardid', $boardid, $profile_url );
+}
 
 /**
  * Detects the special anonymous email mask used by wpforo_anonymous_posting plugin.
@@ -902,7 +945,8 @@ function wpforo_signature( $member, $args = [] ) {
     $signature = stripslashes( (string) $signature );
 
     if( ! empty( $args ) ) {
-        extract( $args, EXTR_OVERWRITE );
+        $kses     = isset( $args['kses'] ) ? $args['kses'] : 1;
+        $nofollow = isset( $args['nofollow'] ) ? $args['nofollow'] : 1;
         if( isset( $kses ) && $kses ) $signature = wpforo_kses( $signature, 'user_description' );
         if( isset( $nofollow ) && $nofollow ) $signature = wpforo_nofollow_tag( $signature );
     } else {
@@ -1368,7 +1412,11 @@ function wpforo_share_buttons( $location = 'bottom', $url = '', $custom = false 
                             $location
                     ) && ! $custom ) ) {
         return;
-    } ?>
+    }
+
+    if( wpforo_setting( 'ai', 'assistant' ) && $location === 'top' ) return;
+
+    ?>
     <div class="wpf-sbtn wpf-sb-<?php echo esc_attr( $location ) ?> wpf-sb-style-<?php echo esc_attr(
             wpforo_setting( 'social', 'sb_style' )
     ) ?>" style="display: block">
@@ -2378,7 +2426,7 @@ function wpforo_template( $template = null ) {
     if( ! $template ) $template = WPF()->current_object['template'] ? WPF()->current_object['template'] : '404';
     if( WPF()->tpl->can_view_template( $template, WPF()->current_object['user'] ) ) {
         if( $path = WPF()->tpl->get_template_path( $template ) ) {
-            include( $path );
+            if( file_exists( $path ) ) include( $path );
         } else {
             WPF()->tpl->show_template( $template );
         }
@@ -3061,4 +3109,222 @@ function wpforo_get_recent_page_filter_selectbox(): string {
     }
 
     return sprintf( '<label><select onchange="window.location.assign(this.value)">%1$s</select></label>', $options_html );
+}
+
+/**
+ * Get icon HTML for activity type
+ * Reads from WPF()->activity->actions for single source of truth
+ *
+ * @param string $type Activity type
+ * @return string Icon HTML (SVG)
+ */
+function wpforo_activity_icon( $type ) {
+	$actions = WPF()->activity->actions;
+	$icon    = isset( $actions[ $type ]['icon'] ) ? $actions[ $type ]['icon'] : '';
+	if( ! $icon ) {
+		$icon = isset( $actions['default']['icon'] ) ? $actions['default']['icon'] : '';
+	}
+
+	return apply_filters( 'wpforo_activity_icon', $icon, $type );
+}
+
+/**
+ * Get label for activity type
+ *
+ * @param string $type Activity type
+ * @return string Translated label
+ */
+function wpforo_activity_label( $type ) {
+	$labels = [
+		'wpforo_topic'  => wpforo_phrase( 'created the topic', false ),
+		'wpforo_post'   => wpforo_phrase( 'replied to', false ),
+		'edit_topic'    => wpforo_phrase( 'edited a topic', false ),
+		'edit_post'     => wpforo_phrase( 'edited a post', false ),
+		'new_reply'     => wpforo_phrase( 'replied to', false ),
+		'new_like'      => wpforo_phrase( 'liked', false ),
+		'new_dislike'   => wpforo_phrase( 'disliked', false ),
+		'new_up_vote'   => wpforo_phrase( 'voted up', false ),
+		'new_down_vote' => wpforo_phrase( 'voted down', false ),
+		'new_reaction'  => wpforo_phrase( 'reacted to', false ),
+		'new_mention'   => wpforo_phrase( 'mentioned in', false ),
+		'new_favorite'  => wpforo_phrase( 'favorited', false ),
+		'topic_solved'  => wpforo_phrase( 'marked as solved', false ),
+		'new_closed'    => wpforo_phrase( 'closed the topic', false ),
+		'default'       => wpforo_phrase( 'activity', false ),
+	];
+
+	$labels = apply_filters( 'wpforo_activity_labels', $labels );
+
+	return wpfval( $labels, $type ) ?: $labels['default'];
+}
+
+/**
+ * Render detailed activity info HTML based on activity type
+ *
+ * @param array $activity Activity data
+ * @param array $member   User who performed the activity
+ * @return string HTML for the activity info row
+ */
+function wpforo_activity_info_html( $activity, $member ) {
+	$type = $activity['type'];
+	$html = '';
+
+	// Get post and topic data if available
+	$post  = [];
+	$topic = [];
+	$forum = [];
+	$post_author = [];
+
+	if( $activity['itemid'] ) {
+		// For wpforo_topic, topic_solved, and topic_closed, itemid is the topicid, not postid
+		if( $type === 'wpforo_topic' || $type === 'topic_solved' || $type === 'topic_closed' ) {
+			$topic = WPF()->topic->get_topic( $activity['itemid'] );
+			if( $topic && ! empty( $topic['forumid'] ) ) {
+				$forum = WPF()->forum->get_forum( $topic['forumid'] );
+			}
+		} else {
+			$post = WPF()->post->get_post( $activity['itemid'] );
+			if( $post && ! empty( $post['topicid'] ) ) {
+				$topic = WPF()->topic->get_topic( $post['topicid'] );
+				if( $topic && ! empty( $topic['forumid'] ) ) {
+					$forum = WPF()->forum->get_forum( $topic['forumid'] );
+				}
+				// Get post author for reaction-type activities
+				if( ! empty( $post['userid'] ) && $post['userid'] != $activity['userid'] ) {
+					$post_author = wpforo_member( $post['userid'] );
+				}
+			}
+		}
+	}
+
+	// Build topic link
+	$topic_title = '';
+	$topic_link  = '';
+	if( $topic ) {
+		$topic_title = esc_html( $topic['title'] );
+		$topic_url   = $activity['permalink'] ?: WPF()->topic->get_url( $topic['topicid'] );
+		$topic_link  = '<a href="' . esc_url( $topic_url ) . '" class="wpf-activity-topic-link">' . $topic_title . '</a>';
+	}
+
+	// Build forum link
+	$forum_link = '';
+	if( $forum ) {
+		$forum_title = esc_html( $forum['title'] );
+		$forum_url   = WPF()->forum->get_forum_url( $forum );
+		$forum_link  = '<a href="' . esc_url( $forum_url ) . '" class="wpf-activity-forum-link">' . $forum_title . '</a>';
+	}
+
+	// Build post author link for reactions
+	$author_link = '';
+	if( $post_author && ! empty( $post_author['display_name'] ) ) {
+		$author_link = '<a href="' . esc_url( wpforo_member_url( $post_author ) ) . '" class="wpf-activity-author-link">' . esc_html( $post_author['display_name'] ) . '</a>';
+	}
+
+	// Build HTML based on activity type
+	switch( $type ) {
+		case 'wpforo_topic':
+			// {User} created the topic {Topic Title} in {Forum Title}
+			$html = sprintf(
+				wpforo_phrase( 'created the topic %1$s in %2$s', false ),
+				$topic_link,
+				$forum_link
+			);
+			break;
+
+		case 'wpforo_post':
+		case 'new_reply':
+			// {User} replied to the topic {Topic Title}
+			$html = sprintf(
+				wpforo_phrase( 'replied to the topic %s', false ),
+				$topic_link
+			);
+			break;
+
+		case 'new_like':
+		case 'new_dislike':
+		case 'new_up_vote':
+		case 'new_down_vote':
+		case 'new_reaction':
+			// {User} reacted to {Author}'s post in the topic {Topic Title}
+			if( $author_link ) {
+				$html = sprintf(
+					wpforo_phrase( 'reacted to %1$s\'s post in the topic %2$s', false ),
+					$author_link,
+					$topic_link
+				);
+			} else {
+				$html = sprintf(
+					wpforo_phrase( 'reacted to a post in the topic %s', false ),
+					$topic_link
+				);
+			}
+			break;
+
+		case 'new_favorite':
+			// {User} favorited {Author}'s post in the topic {Topic Title}
+			if( $author_link ) {
+				$html = sprintf(
+					wpforo_phrase( 'favorited %1$s\'s post in the topic %2$s', false ),
+					$author_link,
+					$topic_link
+				);
+			} else {
+				$html = sprintf(
+					wpforo_phrase( 'favorited a post in the topic %s', false ),
+					$topic_link
+				);
+			}
+			break;
+
+		case 'new_solved':
+		case 'topic_solved':
+			// {User} marked as solved the topic {Topic Title}
+			$html = sprintf(
+				wpforo_phrase( 'marked as solved the topic %s', false ),
+				$topic_link
+			);
+			break;
+
+		case 'new_closed':
+		case 'topic_closed':
+			// {User} closed the topic {Topic Title}
+			$html = sprintf(
+				wpforo_phrase( 'closed the topic %s', false ),
+				$topic_link
+			);
+			break;
+
+		case 'post_answer':
+			// {User} marked as answer a post in the topic {Topic Title}
+			$html = sprintf(
+				wpforo_phrase( 'marked as answer a post in the topic %s', false ),
+				$topic_link
+			);
+			break;
+
+		case 'new_mention':
+			// {User} mentioned you in {Topic Title}
+			$html = sprintf(
+				wpforo_phrase( 'mentioned you in %s', false ),
+				$topic_link
+			);
+			break;
+
+		case 'edit_topic':
+		case 'edit_post':
+			// {User} edited a post in {Topic Title}
+			$html = sprintf(
+				wpforo_phrase( 'edited a post in %s', false ),
+				$topic_link
+			);
+			break;
+
+		default:
+			// Fallback to simple label
+			$label = wpforo_activity_label( $type );
+			$html  = $label . ( $topic_link ? ' ' . $topic_link : '' );
+			break;
+	}
+
+	return apply_filters( 'wpforo_activity_info_html', $html, $activity, $member );
 }

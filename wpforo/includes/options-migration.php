@@ -598,7 +598,8 @@ function _wpforo_migrate_old_options_to_new() {
 	wpforo_update_option( 'topics', $topics );
 	wpforo_update_option( 'posting', $posting );
 	wpforo_update_option( 'components', $components );
-	wpforo_update_option( 'styles_classic', $styles );
+	// wpforo_update_option( 'styles_classic', $styles );
+    wpforo_update_option( 'styles_2022', $styles );
 	wpforo_update_option( 'tags', $tags );
 	wpforo_update_option( 'subscriptions', $subscriptions );
 	wpforo_update_option( 'notifications', $notifications );

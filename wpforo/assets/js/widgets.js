@@ -134,10 +134,20 @@ function wpforo_bell (wpf_alerts) {
 }
 
 var wpforo_check_notifications_timeout;
+var wpforo_last_alert_count = -1;
+var wpforo_idle_polls = 0;
+var wpforo_max_interval = 300000; // 5 minutes max backoff
 
 function wpforo_check_notifications (wpforo_check_interval) {
 	wpforo_check_interval = parseInt(wpforo_check_interval);
 	if (isNaN(wpforo_check_interval)) wpforo_check_interval = 60000;
+
+	// Skip poll when page is not visible (browser tab in background)
+	if (document.hidden) {
+		wpforo_check_notifications_timeout = setTimeout(wpforo_check_notifications, wpforo_check_interval, wpforo_check_interval);
+		return;
+	}
+
 	var getdata = jQuery('.wpf-notifications').is(':visible');
 	jQuery.ajax({
 		type: 'POST',
@@ -146,9 +156,22 @@ function wpforo_check_notifications (wpforo_check_interval) {
 			getdata: getdata,
 			action: 'wpforo_notifications',
 		},
-		success: wpforo_notifications_ui_update,
+		success: function (response) {
+			wpforo_notifications_ui_update(response);
+			var current_alerts = parseInt(response.data.alerts);
+			if (current_alerts !== wpforo_last_alert_count) {
+				// Alert count changed — reset to base interval
+				wpforo_idle_polls = 0;
+				wpforo_last_alert_count = current_alerts;
+			} else {
+				// No change — increase backoff
+				wpforo_idle_polls++;
+			}
+		},
 		complete: function () {
-			wpforo_check_notifications_timeout = setTimeout(wpforo_check_notifications, wpforo_check_interval, wpforo_check_interval);
+			// Exponential backoff: double interval every 3 idle polls, cap at 5 min
+			var backoff = Math.min(wpforo_check_interval * Math.pow(2, Math.floor(wpforo_idle_polls / 3)), wpforo_max_interval);
+			wpforo_check_notifications_timeout = setTimeout(wpforo_check_notifications, backoff, wpforo_check_interval);
 		},
 		error: function () {
 			clearTimeout(wpforo_check_notifications_timeout);

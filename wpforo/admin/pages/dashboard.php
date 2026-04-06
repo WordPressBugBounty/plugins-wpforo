@@ -4,7 +4,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
 ?>
 
 <div id="wpf-admin-wrap" class="wrap">
-    <h1 style="padding:30px 10px 10px;"><?php _e( 'Forum Dashboard', 'wpforo' ); ?></h1>
+    <h1 style="padding:10px 10px 0;"><?php _e( 'Forum Dashboard', 'wpforo' ); ?></h1>
 	<?php WPF()->notice->show() ?>
 
     <div id="dashboard-widgets-wrap">

@@ -13,11 +13,11 @@ if( ! WPF()->usergroup->can( 'mth' ) ) exit;
     <div style="box-shadow:none; margin:25px 0 20px;" class="wpf-info-bar">
         <p style="font-size:13px; padding:0; margin:10px;">
             wpForo theme files contain the markup and template structure for frontend of your forum.
-            Theme files can be found within the <span style="color:#43A6DF">/wpforo/themes/</span> directory, in current active theme folder, for example <span style="color:#43A6DF">/classic/</span>.
+            Theme files can be found within the <span style="color:#43A6DF">/wpforo/themes/</span> directory, in current active theme folder, for example <span style="color:#43A6DF">/2026/</span>.
             You can edit these files in an upgrade-safe way using overrides.
-            For example, copy the certain or all files of <span style="color:#43A6DF">/classic/</span> folder into a folder within your current active WordPress theme named <span style="color:#43A6DF">/wpforo/</span>, keeping the same file structure.<br>
+            For example, copy the certain or all files of <span style="color:#43A6DF">/2026/</span> folder into a folder within your current active WordPress theme named <span style="color:#43A6DF">/wpforo/</span>, keeping the same file structure.<br>
         </p>
-        <div style="background:#F5F5F5; border:#ddd 1px dotted; padding:10px 15px; margin:5px 0; font-size:13px; line-height:18px;">Example: To override the "Topic List" template file of the Extended (#1) forum layout, copy according file: <span style="color:#43A6DF">plugins/wpforo/themes/classic/<span style="color:#C98B4C">layouts/1/topic.php</span></span> to <span style="color:#43A6DF">themes/yourtheme/wpforo/<span style="color:#C98B4C">layouts/1/topic.php</span></span></div>
+        <div style="background:#F5F5F5; border:#ddd 1px dotted; padding:10px 15px; margin:5px 0; font-size:13px; line-height:18px;">Example: To override the "Topic List" template file of the Extended (#1) forum layout, copy according file: <span style="color:#43A6DF">plugins/wpforo/themes/2026/<span style="color:#C98B4C">layouts/1/topic.php</span></span> to <span style="color:#43A6DF">themes/yourtheme/wpforo/<span style="color:#C98B4C">layouts/1/topic.php</span></span></div>
         <p style="font-size:13px; padding:0; margin:10px;">
             The copied file will now automatically override the wpForo default theme file. All changes in this file will not be lost on forum update.
         </p>

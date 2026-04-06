@@ -22,7 +22,10 @@ if( WPF()->perm->forum_can( 'vf' ) && WPF()->perm->forum_can( 'enf' ) ):
 
 		if( $topics = WPF()->current_object['topics'] ) {
 			wpforo_template_pagenavi( 'wpf-navi-topic-top' );
-			include( wpftpl( 'layouts/' . $forum['layout'] . '/topic.php' ) );
+			$template_path = wpftpl( 'layouts/' . $forum['layout'] . '/topic.php' );
+			if( file_exists($template_path) ) {
+				include( $template_path );
+			}
 			wpforo_template_pagenavi( 'wpf-navi-topic-bottom' );
 			do_action( 'wpforo_topic_list_footer' );
 		} else { ?>

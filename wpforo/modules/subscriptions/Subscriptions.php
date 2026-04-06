@@ -97,11 +97,18 @@ class Subscriptions {
 		if( empty( $args ) && ! empty( $_REQUEST['sbscrb'] ) ) $args = $_REQUEST['sbscrb'];
 		if( ! isset( $args['active'] ) || ! $args['active'] ) $args['active'] = 0;
 		
-		extract( $args );
+		// Security: extract only expected keys instead of extract()
+		$itemid     = isset( $args['itemid'] ) ? $args['itemid'] : null;
+		$userid     = isset( $args['userid'] ) ? $args['userid'] : null;
+		$user_email = isset( $args['user_email'] ) ? $args['user_email'] : null;
+		$type       = isset( $args['type'] ) ? $args['type'] : null;
+		$confirmkey = isset( $args['confirmkey'] ) ? $args['confirmkey'] : null;
+		$user_name  = isset( $args['user_name'] ) ? $args['user_name'] : null;
+		$active     = isset( $args['active'] ) ? $args['active'] : null;
 		if( ! isset( $itemid ) || ! ( ( isset( $userid ) && $userid ) || ( isset( $user_email ) && $user_email ) ) || ! isset( $type ) || ! $type ) return false;
-		
+
 		if( empty( $confirmkey ) ) $confirmkey = $this->get_confirm_key();
-		
+
 		$user_name  = ( isset( $user_name ) && $user_name ? $user_name : '' );
 		$user_email = ( isset( $user_email ) && $user_email ? $user_email : '' );
 		
@@ -340,8 +347,17 @@ class Subscriptions {
 		];
 		
 		$args = wpforo_parse_args( $args, $default );
-		extract( $args );
-		
+
+		// Security: extract only expected keys instead of extract()
+		$itemid    = $args['itemid'];
+		$type      = $args['type'];
+		$userid    = $args['userid'];
+		$active    = $args['active'];
+		$orderby   = $args['orderby'];
+		$order     = $args['order'];
+		$offset    = $args['offset'];
+		$row_count = $args['row_count'];
+
 		$sql    = "SELECT * FROM `" . WPF()->tables->subscribes . "`";
 		$wheres = [];
 		
@@ -431,11 +447,11 @@ class Subscriptions {
 					);
 				}
 			break;
-			case 'user_follow';
+            case 'user_follow':
 				$sbj = wpforo_setting( 'subscriptions', 'user_following_email_subject' );
 				$msg = wpforo_setting( 'subscriptions', 'user_following_email_message' );
 			break;
-			case 'user_mention';
+            case 'user_mention':
 				$sbj = wpforo_setting( 'subscriptions', 'user_mention_email_subject' );
 				$msg = wpforo_setting( 'subscriptions', 'user_mention_email_message' );
 			break;

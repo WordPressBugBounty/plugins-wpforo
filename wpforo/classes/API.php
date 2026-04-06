@@ -8,7 +8,6 @@ use WP_Error;
 if( ! defined( 'ABSPATH' ) ) exit;
 
 class API {
-	const  FB_SDK_VERSION = 'v14.0';
 	public $locale     = 'en_US';
 	public $locale_iso = 'en';
 	public $fb_local   = [
@@ -139,32 +138,10 @@ class API {
 		$template = WPF()->current_object['template'];
 		
 		###############################################################################
-		############### Facebook & X.com API ########################################
+		############### X.com & Social Share API ####################################
 		###############################################################################
-		
-		if( ! is_user_logged_in() ) {
-			if( wpforo_setting( 'authorization', 'fb_login' ) ) {
-				if( in_array( $template, [ 'login', 'register' ], true ) ) {
-					add_action( 'wp_enqueue_scripts', [ $this, 'fb_enqueue' ] );
-					add_action( 'wpforo_bottom_hook', [ $this, 'fb_login_sdk' ], 9 );
-				}
-				if( wpforo_setting( 'authorization', 'fb_api_id' ) && wpforo_setting( 'authorization', 'fb_api_secret' ) ) {
-					if( wpforo_setting( 'authorization', 'fb_lb_on_lp' ) ) {
-						add_action( 'wpforo_login_form_end', [ $this, 'fb_login_button' ] );
-					}
-					if( wpforo_setting( 'authorization', 'fb_lb_on_rp' ) ) {
-						add_action( 'wpforo_register_form_end', [ $this, 'fb_login_button' ] );
-					}
-				}
-				add_action( 'wp_ajax_wpforo_facebook_auth', [ $this, 'fb_auth' ] );
-				add_action( 'wp_ajax_nopriv_wpforo_facebook_auth', [ $this, 'fb_auth' ] );
-			}
-		}
-		
+
 		if( is_wpforo_page() ) {
-			if( apply_filters( 'wpforo_api_fb_load_sdk', true ) && wpforo_setting( 'social', 'sb', 'fb' ) ) {
-				add_action( 'wpforo_bottom_hook', [ $this, 'fb_sdk' ], 10 );
-			}
 			if( apply_filters( 'wpforo_api_tw_load_wjs', true ) && wpforo_setting( 'social', 'sb', 'tw' ) ) {
 				add_action( 'wpforo_top_hook', [ $this, 'tw_wjs' ], 11 );
 			}
@@ -281,234 +258,15 @@ class API {
 		return $wplocal;
 	}
 	
-	public function fb_enqueue() {
-		$app_id = wpforo_setting( 'authorization', 'fb_api_id' );
-		wp_register_script( 'wpforo-snfb', WPFORO_URL . '/assets/js/snfb.js', [ 'jquery' ], WPFORO_VERSION, false );
-		wp_enqueue_script( 'wpforo-snfb' );
-		wp_localize_script( 'wpforo-snfb', 'wpforo_fb', [
-			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-			'site_url' => home_url(),
-			'scopes'   => 'email,public_profile',
-			'appId'    => $app_id,
-			'l18n'     => [
-				'chrome_ios_alert' => __(
-					'Please login into Facebook and then click connect button again',
-					'wpforo'
-				),
-			],
-		] );
-	}
 	
-	public function fb_auth() {
-		
-		$app_version = 'v2.10';
-		$app_secret  = wpforo_setting( 'authorization', 'fb_api_secret' );
-		check_ajax_referer( 'wpforo-fb-nonce', 'security' );
-		$fb_token = isset( $_POST['fb_response']['authResponse']['accessToken'] ) ? $_POST['fb_response']['authResponse']['accessToken'] : '';
-		$fb_url   = add_query_arg(
-			[ 'fields' => 'id,first_name,last_name,email,link,about,locale,birthday', 'access_token' => $fb_token ],
-			'https://graph.facebook.com/' . $app_version . '/' . $_POST['fb_response']['authResponse']['userID']
-		);
-		
-		###################################################################################################################
-		// Verifying Graph API Calls with appsecret_proof
-		// Graph API calls can be made from clients or from your server on behalf of clients.
-		// Calls from a server can be better secured by adding a parameter called appsecret_proof.
-		// https://developers.facebook.com/docs/graph-api/securing-requests/
-		if( $app_secret ) {
-			$appsecret_proof = hash_hmac( 'sha256', $fb_token, trim( (string) $app_secret ) );
-			$fb_url          = add_query_arg( [ 'appsecret_proof' => $appsecret_proof ], $fb_url );
-		}
-		###################################################################################################################
-		
-		$fb_response = wp_remote_get( esc_url_raw( $fb_url ), [ 'timeout' => 30 ] );
-		if( is_wp_error( $fb_response ) ) wpforo_ajax_response( [ 'error' => $fb_response->get_error_message() ] );
-		$fb_user = json_decode( wp_remote_retrieve_body( $fb_response ), true );
-		if( isset( $fb_user['error'] ) ) {
-			wpforo_ajax_response( [ 'error' => 'Error code: ' . $fb_user['error']['code'] . ' - ' . $fb_user['error']['message'] ] );
-		}
-		if( empty( $fb_user['email'] ) ) {
-			wpforo_ajax_response( [
-				                      'error' => __(
-					                      'Your email is required to be able authorize you here. Please try loging again. ',
-					                      'wpforo'
-				                      ),
-				                      'fb'    => $fb_user,
-			                      ] );
-		}
-		$fb_user['link']   = ( isset( $fb_user['link'] ) ) ? $fb_user['link'] : '';
-		$fb_user['about']  = ( isset( $fb_user['about'] ) ) ? $fb_user['about'] : '';
-		$fb_user['locale'] = ( isset( $fb_user['locale'] ) ) ? $fb_user['locale'] : '';
-		$user              = [
-			'fb_user_id'   => $fb_user['id'],
-			'first_name'   => $fb_user['first_name'],
-			'last_name'    => $fb_user['last_name'],
-			'user_email'   => $fb_user['email'],
-			'user_url'     => $fb_user['link'],
-			'user_pass'    => wp_generate_password(),
-			'description'  => $fb_user['about'],
-			'locale'       => $fb_user['locale'],
-			'rich_editing' => 'true',
-		];
-		$message           = [ 'error' => __( 'Invalid User', 'wpforo' ) ];
-		if( empty( $user['fb_user_id'] ) ) wpforo_ajax_response( $message );
-		$member       = wpforo_get_fb_user( $user );
-		$meta_updated = false;
-		
-		if( $member ) {
-			$user_id = $member->ID;
-			$message = [ 'success' => $user_id, 'method' => 'login' ];
-			if( empty( $member->user_email ) ) {
-				wp_update_user( [ 'ID' => $user_id, 'user_email' => $user['user_email'] ] );
-			}
-		} else {
-			if( ! wpforo_setting( 'authorization', 'user_register' ) ) {
-				wpforo_ajax_response( [ 'error' => __( 'User registration is disabled', 'wpforo' ) ] );
-			}
-			$username              = wpforo_unique_username( $user['user_email'] );
-			$user['user_login']    = str_replace( '.', '', $username );
-			$user['user_nicename'] = sanitize_title( $username );
-			$user['display_name']  = ( $user['first_name'] || $user['last_name'] ) ? trim(
-				$user['first_name'] . ' ' . $user['last_name']
-			) : ucfirst( str_replace( '-', ' ', $user['user_nicename'] ) );
-			$user_id               = wp_insert_user( $user );
-			if( ! is_wp_error( $user_id ) ) {
-				wp_new_user_notification( $user_id, null, 'admin' );
-				wp_new_user_notification( $user_id, '', 'user' );
-				update_user_meta( $user_id, '_fb_user_id', $user['fb_user_id'] );
-				if( isset( $fb_user['birthday'] ) && $fb_user['birthday'] ) {
-					update_user_meta( $user_id, '_fb_user_birthday', $fb_user['birthday'] );
-				}
-				$meta_updated = true;
-				$message      = [ 'success' => $user_id, 'method' => 'registration' ];
-			}
-		}
-		if( wpforo_is_id( $user_id ) ) {
-			wp_set_auth_cookie( $user_id, true );
-			if( ! $meta_updated ) update_user_meta( $user_id, '_fb_user_id', $user['fb_user_id'] );
-		}
-		wpforo_ajax_response( $message );
-	}
-	
-	public function fb_redirect() {
-		if( wpforo_setting( 'authorization', 'fb_redirect' ) === 'custom' && wpforo_setting( 'authorization', 'fb_redirect_url' ) != '' ) {
-			return esc_url( (string) wpforo_setting( 'authorization', 'fb_redirect_url' ) );
-		} elseif( wpforo_setting( 'authorization', 'fb_redirect' ) === 'profile' ) {
-			return wpforo_home_url( "account/" );
-		} else {
-			return wpforo_home_url();
-		}
-	}
-	
-	public function fb_sdk() {
-		// @todo
-		// FB SDK is disabled temporarily.
-		return false;
-		if( wpforo_setting( 'authorization', 'fb_api_id' ) ) {
-			?>
-            <script>
-				window.fbAsyncInit = function () {
-					FB.init({
-						appId: '<?php echo wpforo_setting( 'authorization', 'fb_api_id' ) ?>',
-						autoLogAppEvents: true,
-						xfbml: true,
-						version: '<?php echo self::FB_SDK_VERSION ?>',
-					});
-				};
-            </script>
-			<?php
-			if( ! wpforo_setting( 'authorization', 'fb_login' ) ) {
-				?>
-                <div id="fb-root"></div>
-                <script async defer crossorigin="anonymous" src="https://connect.facebook.net/<?php echo $this->local( 'fb' ) ?>/sdk.js"></script><?php
-			}
-		}
-	}
-	
-	public function fb_login_sdk() {
-		?>
-        <script type='text/javascript'>
-			function statusChangeCallback (response) {
-				if (response.status === 'connected') {
-					//testAPI();
-				} else {
-					//document.getElementById('status').innerHTML = 'Please log ' + 'into this webpage.';
-				}
-			}
-			
-			function checkLoginState () { FB.getLoginStatus(function (response) { statusChangeCallback(response); });}
-			
-			window.fbAsyncInit = function () {
-				FB.init({
-					appId: '<?php echo trim( (string) wpforo_setting( 'authorization', 'fb_api_id' ) ) ?>',
-					cookie: <?php echo wpforo_setting( 'legal', 'cookies' ) ? 'true' : 'false'; ?>,                     // Enable cookies to allow the server to access the session.
-					xfbml: true,
-					version: '<?php echo self::FB_SDK_VERSION ?>',
-				});
-				FB.getLoginStatus(function (response) { statusChangeCallback(response); });
-			};
-        </script>
-        <div id="fb-root"></div>
-        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/<?php echo $this->local( 'fb' ) ?>/sdk.js#xfbml=1&version=<?php echo self::FB_SDK_VERSION ?>"></script>
-		<?php
-	}
-	
-	public function fb_login_button() {
-		$checkbox       = wpforo_setting( 'legal', 'checkbox_fb_login' );
-		$public_profile = '<a href="https://developers.facebook.com/docs/facebook-login/permissions#reference-public_profile" target="_blank" rel="nofollow" title="' . wpforo_phrase(
-				'Read more about Facebook public_profile properties.',
-				false
-			) . '">public_profile</a>';
-		?>
-		<?php if( $checkbox ): ?>
-            <div class="wpforo-fb-info">
-                <span class="wpforo-fb-info-title">
-                    <i class="fas fa-info-circle wpfcl-5" aria-hidden="true" style="font-size:16px;"></i> &nbsp;<?php wpforo_phrase( 'Facebook Login Information' ); ?>
-                </span>
-                <span class="wpforo-fb-info-text">
-                    <?php echo apply_filters(
-	                    'wpforo_fb_login_privacy_info',
-	                    sprintf(
-		                    wpforo_phrase(
-			                    'When you login first time using Facebook Login button, we collect your account %s information shared by Facebook, based on your privacy settings. We also get your email address to automatically create a forum account for you. Once your account is created, you\'ll be logged-in to this account and you\'ll receive a confirmation email.',
-			                    false
-		                    ),
-		                    $public_profile
-	                    )
-                    ); ?>
-                </span>
-                <label class="wpforo-legal-checkbox wpflegal-fblogin">
-                    <input id="wpflegal_fblogin" name="legal[agree-fb-login]" value="1" type="checkbox"> &nbsp;
-                    <span><?php wpforo_phrase( 'I allow to create an account and send confirmation email.' ); ?></span>
-                </label>
-            </div>
-		<?php endif; ?>
-        <div class="wpforo_fb-button wpforo-fb-login-wrap" data-redirect="<?php echo $this->fb_redirect() ?>"
-             data-fb_nonce="<?php echo wp_create_nonce(
-			     'wpforo-fb-nonce'
-		     ) ?>" <?php if( $checkbox ) echo 'style="pointer-events: none; opacity:0.6;"'; ?>>
-            <div class="fb-login-button"
-                 data-max-rows="1"
-                 onlogin="wpforo_fb_check_auth"
-                 data-width=""
-                 data-size="medium"
-                 data-button-type="login_with"
-                 data-layout="rounded"
-                 data-show-faces="false"
-                 data-auth-type="rerequest"
-                 data-auto-logout-link="false"
-                 data-use-continue-as="true"
-                 data-scope="email,public_profile"></div>
-            <img data-no-lazy="1" src="<?php echo WPFORO_URL . '/assets/images/loading.gif'; ?>" class="wpforo_fb-spinner" style="display:none" alt="loading...">
-        </div>
-		<?php
-	}
-	
-	public function fb_share_button( $url = '', $type = 'custom' ) {
-		if( ! wpforo_setting( 'social', 'sb', 'fb' ) || ! wpforo_setting( 'authorization', 'fb_api_id' ) ) return;
+	public function fb_share_button( $url = '', $type = 'custom', $text = '' ) {
+		if( ! wpforo_setting( 'social', 'sb', 'fb' ) ) return;
 		$url = $url ?: WPF()->current_url;
+		// Facebook deprecated custom parameters (quote, title, etc.)
+		// Content is now pulled from Open Graph meta tags on the shared URL
+		$share_url = 'https://www.facebook.com/sharer/sharer.php?u=' . urlencode( (string) $url );
 		if( $type === 'custom' ) { ?>
-            <span class="wpforo-share-button wpf-fb" data-wpfurl="<?php echo $url ?>"
+            <span class="wpforo-share-button wpf-fb" data-wpfurl="<?php echo esc_attr( $url ) ?>"
                   title="<?php wpforo_phrase( 'Share to Facebook' ); ?>">
                 <?php if( wpforo_setting( 'social', 'sb_icon' ) === 'figure' ): ?>
                     <i class="fab fa-facebook-f" aria-hidden="true"></i>
@@ -523,14 +281,14 @@ class API {
 			?>
             <div class="wpf-sbw wpf-sbw-fb">
 				<?php if( wpforo_setting( 'social', 'sb_type' ) === 'button_count' ): ?>
-                    <a target="_blank" href="https://www.facebook.com/share.php?u=<?php echo urlencode( (string) $url ) ?>"
-                       class="fb-xfbml-parse-ignore" rel="nofollow"><?php wpforo_phrase( 'Share' ); ?></a>
+                    <a target="_blank" href="<?php echo esc_url( $share_url ) ?>"
+                       rel="nofollow"><?php wpforo_phrase( 'Share' ); ?></a>
 				<?php elseif( wpforo_setting( 'social', 'sb_type' ) === 'button' ): ?>
-                    <a class="wpf-sb-button wpf-fb" href="https://www.facebook.com/share.php?u=<?php echo urlencode( (string) $url ) ?>" target="_blank" rel="nofollow">
+                    <a class="wpf-sb-button wpf-fb" href="<?php echo esc_url( $share_url ) ?>" target="_blank" rel="nofollow">
                         <i class="fab fa-facebook-f" aria-hidden="true"></i> <span><?php wpforo_phrase( 'Share' ) ?></span>
                     </a>
 				<?php else: ?>
-                    <a class="wpf-sb-button wpf-sb-icon wpf-fb" href="https://www.facebook.com/share.php?u=<?php echo urlencode( (string) $url ) ?>" target="_blank" rel="nofollow">
+                    <a class="wpf-sb-button wpf-sb-icon wpf-fb" href="<?php echo esc_url( $share_url ) ?>" target="_blank" rel="nofollow">
                         <i class="fab fa-facebook-f" aria-hidden="true"></i>
                     </a>
 				<?php endif; ?>
@@ -726,75 +484,6 @@ class API {
 		}
 	}
 	
-	public function ok_share_button( $url = '', $type = 'custom', $text = '' ) {
-		if( ! wpforo_setting( 'social', 'sb', 'ok' ) ) return;
-		$url = $url ?: WPF()->current_url;
-		if( preg_match( '|#post-(\d+)|', (string) $url, $a ) ) {
-			$pid = ( isset( $a[1] ) ) ? intval( $a[1] ) : mt_rand( 100000, 999999 );
-		} else {
-			$pid = mt_rand( 100000, 999999 );
-		}
-		$text = $text ?: wpfval( WPF()->current_object, 'og_text' );
-		$text = wpforo_text( strip_shortcodes( strip_tags( (string) $text ) ), 500, false );
-		if( $type == 'custom' ) { ?>
-            <a class="wpforo-share-button wpf-ok"
-               href="https://connect.ok.ru/offer?url=<?php echo urlencode( (string) $url ) ?>&description=<?php echo urlencode(
-				   (string) $text
-			   ) ?>" title="<?php wpforo_phrase( 'Share to OK' ); ?>" target="_blank" rel="nofollow">
-				<?php if( wpforo_setting( 'social', 'sb_icon' ) === 'figure' ): ?>
-                    <i class="fab fa-odnoklassniki" aria-hidden="true"></i>
-				<?php elseif( wpforo_setting( 'social', 'sb_icon' ) === 'square' ): ?>
-                    <i class="fab fa-odnoklassniki-square" aria-hidden="true"></i>
-				<?php else: ?>
-                    <i class="fab fa-odnoklassniki-square" aria-hidden="true"></i>
-				<?php endif; ?>
-            </a>
-			<?php
-		} else { ?>
-            <div class="wpf-sbw wpf-sbw-ok">
-				<?php if( wpforo_setting( 'social', 'sb_type' ) === 'button_count' ): ?>
-                    <div id="<?php echo 'wpfokb_' . $pid ?>"></div>
-                    <script>
-						!function (d, id, did, st, title, description, image) {
-							var js = d.createElement('script');
-							js.src = 'https://connect.ok.ru/connect.js';
-							js.onload = js.onreadystatechange = function () {
-								if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
-									if (!this.executed) {
-										this.executed = true;
-										setTimeout(function () { OK.CONNECT.insertShareWidget(id, did, st, title, description, image); }, 0);
-									}
-								}
-							};
-							d.documentElement.appendChild(js);
-						}(document, "<?php echo 'wpfokb_' . $pid ?>", "<?php echo esc_attr(
-							$url
-						) ?>", '{"sz":20,"st":"straight","ck":2,"lang":"<?php echo $this->local(
-							'ok'
-						) ?>"}', '', '', '');
-                    </script>
-				<?php elseif( wpforo_setting( 'social', 'sb_type' ) === 'button' ): ?>
-                    <a class="wpf-sb-button wpf-ok" href="https://connect.ok.ru/offer?url=<?php echo urlencode(
-						(string) $url
-					) ?>&description=<?php echo urlencode( (string) $text ) ?>" title="<?php wpforo_phrase( 'Share to OK' ); ?>"
-                       target="_blank" rel="nofollow">
-                        <i class="fab fa-odnoklassniki" aria-hidden="true"></i> <span><?php wpforo_phrase(
-								'Share'
-							) ?></span>
-                    </a>
-				<?php else: ?>
-                    <a class="wpf-sb-button wpf-sb-icon wpf-ok"
-                       href="https://connect.ok.ru/offer?url=<?php echo urlencode(
-						   (string) $url
-					   ) ?>&description=<?php echo urlencode( (string) $text ) ?>"
-                       title="<?php wpforo_phrase( 'Share to OK' ); ?>" target="_blank" rel="nofollow">
-                        <i class="fab fa-odnoklassniki" aria-hidden="true"></i>
-                    </a>
-				<?php endif; ?>
-            </div>
-			<?php
-		}
-	}
 	
 	public function share_toggle( $url = '', $text = '', $type = 'custom' ) {
 		WPF()->api->fb_share_button( $url, $type );
@@ -802,7 +491,6 @@ class API {
 		WPF()->api->wapp_share_button( $url, $type, $text );
 		WPF()->api->lin_share_button( $url, $type, $text );
 		WPF()->api->vk_share_button( $url, $type, $text );
-		WPF()->api->ok_share_button( $url, $type, $text );
 	}
 	
 	public function share_buttons( $url = '', $type = 'default', $text = '' ) {
@@ -814,38 +502,149 @@ class API {
 			WPF()->api->wapp_share_button( $url, $type, $text );
 			WPF()->api->lin_share_button( $url, $type, $text );
 			WPF()->api->vk_share_button( $url, $type, $text );
-			WPF()->api->ok_share_button( $url, $type, $text );
 		}
 	}
 	
 	public function rc_enqueue() {
+		$version  = wpforo_setting( 'recaptcha', 'version' );
 		$theme    = wpforo_setting( 'recaptcha', 'theme' );
 		$site_key = wpforo_setting( 'recaptcha', 'site_key' );
-		wp_register_script(
-			'wpforo_recaptcha',
-			'https://www.google.com/recaptcha/api.js?onload=wpForoReCallback&render=explicit'
-		);
-		wp_add_inline_script(
-			'wpforo_recaptcha',
-			"var wpForoReCallback = function(){
-		    setTimeout(function () {
-                if( typeof grecaptcha !== 'undefined' && typeof grecaptcha.render === 'function' ){
-                    var rc_widgets = document.getElementsByClassName('wpforo_recaptcha_widget');
-                    if( rc_widgets.length ){
-                        var i;
-                        for (i = 0; i < rc_widgets.length; i++) {
-                            if( rc_widgets[i].firstElementChild === null ){
-                                rc_widgets[i].innerHtml = '';
-                                grecaptcha.render(
-                                    rc_widgets[i], { 'sitekey': '" . $site_key . "', 'theme': '" . $theme . "' }
-                                );
-                            }
-                        }
-                    }
-                }
-            }, 800);
-		}"
-		);
+
+		// reCAPTCHA v3 uses a different script URL and approach
+		if( $version === 'v3' ) {
+			wp_register_script(
+				'wpforo_recaptcha',
+				'https://www.google.com/recaptcha/api.js?render=' . $site_key
+			);
+			wp_add_inline_script(
+				'wpforo_recaptcha',
+				"var wpForoReCaptchaV3Execute = function(action){
+					return new Promise(function(resolve, reject){
+						if( typeof grecaptcha !== 'undefined' && typeof grecaptcha.execute === 'function' ){
+							grecaptcha.ready(function(){
+								grecaptcha.execute('" . esc_js( $site_key ) . "', {action: action}).then(function(token){
+									resolve(token);
+								}).catch(function(error){
+									reject(error);
+								});
+							});
+						} else {
+							reject('reCAPTCHA not loaded');
+						}
+					});
+				};
+				var wpForoReCaptchaV3Init = function(){
+					var forms = document.querySelectorAll('form[data-wpforo-recaptcha-v3]');
+					forms.forEach(function(form){
+						form.addEventListener('submit', function(e){
+							var tokenInput = form.querySelector('input[name=\"g-recaptcha-response\"]');
+							if( tokenInput && !tokenInput.value ){
+								e.preventDefault();
+								var action = form.getAttribute('data-wpforo-recaptcha-action') || 'wpforo_form';
+								wpForoReCaptchaV3Execute(action).then(function(token){
+									tokenInput.value = token;
+									form.submit();
+								}).catch(function(error){
+									console.error('reCAPTCHA error:', error);
+									form.submit();
+								});
+							}
+						});
+					});
+				};
+				if( document.readyState === 'loading' ){
+					document.addEventListener('DOMContentLoaded', wpForoReCaptchaV3Init);
+				} else {
+					wpForoReCaptchaV3Init();
+				}"
+			);
+		} elseif( $version === 'v2_invisible' ) {
+			// reCAPTCHA v2 Invisible
+			wp_register_script(
+				'wpforo_recaptcha',
+				'https://www.google.com/recaptcha/api.js?onload=wpForoReCallback&render=explicit'
+			);
+			wp_add_inline_script(
+				'wpforo_recaptcha',
+				"var wpForoReWidgetIds = {};
+				var wpForoReCallback = function(){
+					setTimeout(function () {
+						if( typeof grecaptcha !== 'undefined' && typeof grecaptcha.render === 'function' ){
+							var rc_widgets = document.getElementsByClassName('wpforo_recaptcha_widget');
+							if( rc_widgets.length ){
+								var i;
+								for (i = 0; i < rc_widgets.length; i++) {
+									if( rc_widgets[i].firstElementChild === null ){
+										rc_widgets[i].innerHTML = '';
+										var form = rc_widgets[i].closest('form');
+										var widgetId = grecaptcha.render(
+											rc_widgets[i], {
+												'sitekey': '" . esc_js( $site_key ) . "',
+												'theme': '" . esc_js( $theme ) . "',
+												'size': 'invisible',
+												'callback': function(token){
+													if( form ){
+														var tokenInput = form.querySelector('input[name=\"g-recaptcha-response\"]');
+														if( !tokenInput ){
+															tokenInput = document.createElement('input');
+															tokenInput.type = 'hidden';
+															tokenInput.name = 'g-recaptcha-response';
+															form.appendChild(tokenInput);
+														}
+														tokenInput.value = token;
+														form.submit();
+													}
+												}
+											}
+										);
+										if( form ){
+											wpForoReWidgetIds[form.id || i] = widgetId;
+											form.addEventListener('submit', function(e){
+												var formId = this.id || Array.prototype.indexOf.call(document.forms, this);
+												if( wpForoReWidgetIds[formId] !== undefined ){
+													var tokenInput = this.querySelector('input[name=\"g-recaptcha-response\"]');
+													if( !tokenInput || !tokenInput.value ){
+														e.preventDefault();
+														grecaptcha.execute(wpForoReWidgetIds[formId]);
+													}
+												}
+											});
+										}
+									}
+								}
+							}
+						}
+					}, 800);
+				}"
+			);
+		} else {
+			// reCAPTCHA v2 Checkbox (default)
+			wp_register_script(
+				'wpforo_recaptcha',
+				'https://www.google.com/recaptcha/api.js?onload=wpForoReCallback&render=explicit'
+			);
+			wp_add_inline_script(
+				'wpforo_recaptcha',
+				"var wpForoReCallback = function(){
+					setTimeout(function () {
+						if( typeof grecaptcha !== 'undefined' && typeof grecaptcha.render === 'function' ){
+							var rc_widgets = document.getElementsByClassName('wpforo_recaptcha_widget');
+							if( rc_widgets.length ){
+								var i;
+								for (i = 0; i < rc_widgets.length; i++) {
+									if( rc_widgets[i].firstElementChild === null ){
+										rc_widgets[i].innerHTML = '';
+										grecaptcha.render(
+											rc_widgets[i], { 'sitekey': '" . esc_js( $site_key ) . "', 'theme': '" . esc_js( $theme ) . "' }
+										);
+									}
+								}
+							}
+						}
+					}, 800);
+				}"
+			);
+		}
 		wp_enqueue_script( 'wpforo_recaptcha' );
 	}
 	
@@ -856,36 +655,104 @@ class API {
 	}
 	
 	public function rc_enqueue_css() {
+		$version = wpforo_setting( 'recaptcha', 'version' );
+
+		// Only add CSS for v2 checkbox (visible widget)
+		// v2 invisible and v3 don't need widget styling
+		if( $version !== 'v2_checkbox' ) {
+			return;
+		}
+
 		wp_register_style( 'wpforo-rc-style', false );
 		wp_enqueue_style( 'wpforo-rc-style' );
 		$custom_css = ".wpforo_recaptcha_widget{ -webkit-transform:scale(0.9); transform:scale(0.9); -webkit-transform-origin:left 0; transform-origin:left 0; }";
 		wp_add_inline_style( 'wpforo-rc-style', $custom_css );
 	}
 	
-	public function rc_widget() {
+	public function rc_widget( $action = 'wpforo_form' ) {
 		$site_key = wpforo_setting( 'recaptcha', 'site_key' );
+		$version  = wpforo_setting( 'recaptcha', 'version' );
+
 		if( $site_key ) {
-			echo '<div class="wpforo_recaptcha_widget"></div><div class="wpf-cl"></div>';
-			echo "\r\n<script>wpForoReCallback();</script>";
+			if( $version === 'v3' ) {
+				// reCAPTCHA v3 - hidden token input, form gets data attributes
+				echo '<input type="hidden" name="g-recaptcha-response" value="" />';
+				echo '<input type="hidden" name="g-recaptcha-version" value="v3" />';
+				// Add JS to mark the parent form for v3 processing
+				echo "\r\n<script>(function(){
+					var input = document.currentScript.previousElementSibling.previousElementSibling;
+					var form = input.closest('form');
+					if(form){
+						form.setAttribute('data-wpforo-recaptcha-v3', '1');
+						form.setAttribute('data-wpforo-recaptcha-action', '" . esc_js( $action ) . "');
+					}
+				})();</script>";
+			} else {
+				// reCAPTCHA v2 (checkbox or invisible) - standard widget div
+				echo '<div class="wpforo_recaptcha_widget"></div><div class="wpf-cl"></div>';
+				echo "\r\n<script>if(typeof wpForoReCallback === 'function') wpForoReCallback();</script>";
+			}
 		}
 	}
 	
 	public function _rc_check() {
-		if( isset( $_POST['g-recaptcha-response'] ) ) {
+		if( isset( $_POST['g-recaptcha-response'] ) && ! empty( $_POST['g-recaptcha-response'] ) ) {
 			$secret_key = wpforo_setting( 'recaptcha', 'secret_key' );
-			$url        = 'https://www.google.com/recaptcha/api/siteverify?secret=' . $secret_key . '&response=' . $_POST['g-recaptcha-response'];
-			$response   = wp_remote_get( $url );
+			$version    = wpforo_setting( 'recaptcha', 'version' );
+
+			// Use POST method for verification (recommended by Google)
+			$response = wp_remote_post(
+				'https://www.google.com/recaptcha/api/siteverify',
+				[
+					'body' => [
+						'secret'   => $secret_key,
+						'response' => sanitize_text_field( $_POST['g-recaptcha-response'] ),
+						'remoteip' => WPF()->current_user_ip,
+					],
+				]
+			);
+
 			if( is_wp_error( $response ) || empty( $response['body'] ) ) {
 				$error = wpforo_phrase( "ERROR: Can't connect to Google reCAPTCHA API", false );
-				if( WP_DEBUG === true ) $error .= ' ( ' . $response->get_error_message() . ' )';
-				
+				if( wpforo_setting( 'general', 'debug_mode' ) && is_wp_error( $response ) ) {
+					$error .= ' ( ' . $response->get_error_message() . ' )';
+				}
+
 				return $error;
 			}
-			$response = json_decode( $response['body'], true );
-			if( $response['success'] ) {
+
+			$response_data = json_decode( $response['body'], true );
+
+			if( ! empty( $response_data['success'] ) ) {
+				// For reCAPTCHA v3, also check the score
+				if( $version === 'v3' || ( isset( $_POST['g-recaptcha-version'] ) && $_POST['g-recaptcha-version'] === 'v3' ) ) {
+					$score     = isset( $response_data['score'] ) ? (float) $response_data['score'] : 0;
+					$threshold = (float) wpforo_setting( 'recaptcha', 'v3_score_threshold' );
+
+					// Default threshold to 0.5 if not set
+					if( $threshold <= 0 || $threshold > 1 ) {
+						$threshold = 0.5;
+					}
+
+					if( $score < $threshold ) {
+						// Score too low, likely a bot
+						$error = wpforo_phrase( 'reCAPTCHA verification failed: suspicious activity detected', false );
+						if( wpforo_setting( 'general', 'debug_mode' ) ) {
+							$error .= sprintf( ' (score: %.2f, threshold: %.2f)', $score, $threshold );
+						}
+
+						return $error;
+					}
+				}
+
 				return 'success';
 			} else {
-				return wpforo_phrase( 'Google reCAPTCHA verification failed', false );
+				$error = wpforo_phrase( 'Google reCAPTCHA verification failed', false );
+				if( wpforo_setting( 'general', 'debug_mode' ) && ! empty( $response_data['error-codes'] ) ) {
+					$error .= ' (' . implode( ', ', $response_data['error-codes'] ) . ')';
+				}
+
+				return $error;
 			}
 		} else {
 			return wpforo_phrase( 'Google reCAPTCHA data are not submitted', false );

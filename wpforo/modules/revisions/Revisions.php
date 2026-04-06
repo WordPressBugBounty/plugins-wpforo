@@ -152,31 +152,31 @@ class Revisions {
 		}
 		
 		if( ! empty( $args['textareaids_include'] ) ) {
-			$wheres[] = "`textareaid` IN('" . implode( "','", array_map( 'trim', $args['textareaids_include'] ) ) . "')";
+			$wheres[] = "`textareaid` IN('" . implode( "','", array_map( 'esc_sql', $args['textareaids_include'] ) ) . "')";
 		}
 		if( ! empty( $args['textareaids_exclude'] ) ) {
-			$wheres[] = "`textareaid` IN('" . implode( "','", array_map( 'trim', $args['textareaids_exclude'] ) ) . "')";
+			$wheres[] = "`textareaid` IN('" . implode( "','", array_map( 'esc_sql', $args['textareaids_exclude'] ) ) . "')";
 		}
-		
+
 		if( ! empty( $args['postids_include'] ) ) {
 			$wheres[] = "`postid` IN(" . implode( ',', array_map( 'wpforo_bigintval', $args['postids_include'] ) ) . ")";
 		}
 		if( ! empty( $args['postids_exclude'] ) ) {
 			$wheres[] = "`postid` NOT IN(" . implode( ',', array_map( 'wpforo_bigintval', $args['postids_exclude'] ) ) . ")";
 		}
-		
+
 		if( ! empty( $args['urls_include'] ) ) {
-			$wheres[] = "`url` IN('" . implode( "','", array_map( 'trim', $args['urls_include'] ) ) . "')";
+			$wheres[] = "`url` IN('" . implode( "','", array_map( 'esc_sql', $args['urls_include'] ) ) . "')";
 		}
 		if( ! empty( $args['urls_exclude'] ) ) {
-			$wheres[] = "`url` IN('" . implode( "','", array_map( 'trim', $args['urls_exclude'] ) ) . "')";
+			$wheres[] = "`url` IN('" . implode( "','", array_map( 'esc_sql', $args['urls_exclude'] ) ) . "')";
 		}
-		
+
 		if( ! empty( $args['emails_include'] ) ) {
-			$wheres[] = "`email` IN('" . implode( "','", array_map( 'trim', $args['emails_include'] ) ) . "')";
+			$wheres[] = "`email` IN('" . implode( "','", array_map( 'esc_sql', $args['emails_include'] ) ) . "')";
 		}
 		if( ! empty( $args['emails_exclude'] ) ) {
-			$wheres[] = "`email` IN('" . implode( "','", array_map( 'trim', $args['emails_exclude'] ) ) . "')";
+			$wheres[] = "`email` IN('" . implode( "','", array_map( 'esc_sql', $args['emails_exclude'] ) ) . "')";
 		}
 		
 		if( $wheres ) {
@@ -190,9 +190,12 @@ class Revisions {
 		$args = $this->parse_args( $args );
 		$sql  = "SELECT * FROM " . WPF()->tables->post_revisions;
 		$sql  .= $this->build_sql_where( $args );
-		$sql  .= " ORDER BY " . $args['orderby'] . " " . $args['order'];
+		$allowed_orderby = array_keys( $this->default->revision_format );
+		$orderby         = in_array( $args['orderby'], $allowed_orderby, true ) ? $args['orderby'] : 'revisionid';
+		$order           = strtoupper( $args['order'] ) === 'ASC' ? 'ASC' : 'DESC';
+		$sql             .= " ORDER BY `" . $orderby . "` " . $order;
 		if( $args['row_count'] ) $sql .= " LIMIT " . wpforo_bigintval( $args['offset'] ) . "," . wpforo_bigintval( $args['row_count'] );
-		
+
 		return $sql;
 	}
 	

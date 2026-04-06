@@ -133,17 +133,28 @@ class Forums {
 		
 		$args['is_cat'] = (int) wpfval( $args, 'is_cat' );
 		if( ! $args['parentid'] ) $args['is_cat'] = 1;
-		
+
 		$args['layout'] = (int) wpfval( $args, 'layout' );
 		if( $args['parentid'] ) {
 			$layout = (int) WPF()->db->get_var( "SELECT `layout` FROM `" . WPF()->tables->forums . "` WHERE `forumid` = " . $args['parentid'] );
 			if( $layout ) $args['layout'] = $layout;
 		}
 		if( ! $args['layout'] ) $args['layout'] = 1;
-		
+
+		// Forum type: 'forum' (default) or 'ticket_forum' (all topics private)
+		// Only non-category forums can be ticket forums
+		$args['type'] = sanitize_text_field( (string) wpfval( $args, 'type' ) );
+		if( ! in_array( $args['type'], [ 'forum', 'ticket_forum' ], true ) ) {
+			$args['type'] = 'forum';
+		}
+		// Categories cannot be ticket forums
+		if( $args['is_cat'] ) {
+			$args['type'] = 'forum';
+		}
+
 		$args = apply_filters( 'wpforo_before_add_forum', $args, $checkperm );
 		if( ! $args ) return false;
-		
+
 		if( WPF()->db->insert(
 			WPF()->tables->forums,
 			[
@@ -164,6 +175,7 @@ class Forums {
 			'layout'       => $args['layout'],
 			'order'        => $args['order'],
 			'color'        => $args['color'],
+			'type'         => $args['type'],
 		],  [
 				'%s',
 				'%s',
@@ -181,6 +193,7 @@ class Forums {
 				'%d',
 				'%d',
 				'%d',
+				'%s',
 				'%s',
 			]
 		) ) {
@@ -256,17 +269,28 @@ class Forums {
 		
 		$args['is_cat'] = (int) wpfval( $args, 'is_cat' );
 		if( ! $args['parentid'] ) $args['is_cat'] = 1;
-		
+
 		$args['layout'] = (int) wpfval( $args, 'layout' );
 		if( $args['parentid'] ) {
 			$layout = (int) WPF()->db->get_var( "SELECT `layout` FROM `" . WPF()->tables->forums . "` WHERE `forumid` = " . $args['parentid'] );
 			if( $layout ) $args['layout'] = $layout;
 		}
 		if( ! $args['layout'] ) $args['layout'] = 1;
-		
+
+		// Forum type: 'forum' (default) or 'ticket_forum' (all topics private)
+		// Only non-category forums can be ticket forums
+		$args['type'] = sanitize_text_field( (string) wpfval( $args, 'type' ) );
+		if( ! in_array( $args['type'], [ 'forum', 'ticket_forum' ], true ) ) {
+			$args['type'] = 'forum';
+		}
+		// Categories cannot be ticket forums
+		if( $args['is_cat'] ) {
+			$args['type'] = 'forum';
+		}
+
 		$args = apply_filters( 'wpforo_before_edit_forum', $args, $forum, $checkperm );
 		if( ! $args ) return false;
-		
+
 		if( false !== WPF()->db->update(
 				WPF()->tables->forums,
 				[
@@ -284,9 +308,10 @@ class Forums {
 				'is_cat'       => $args['is_cat'],
 				'layout'       => $args['layout'],
 				'color'        => $args['color'],
+				'type'         => $args['type'],
 			],
 				[ 'forumid' => $args['forumid'] ],
-				[ '%s', '%s', '%s', '%d', '%s', '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%s' ], [ '%d' ]
+				[ '%s', '%s', '%s', '%d', '%s', '%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%s', '%s' ], [ '%d' ]
 			) ) {
 			if( $childs = $this->get_childs( $args['forumid'] ) ) {
 				$sql = "UPDATE `" . WPF()->tables->forums . "` SET `layout` = " . $args['layout'] . " WHERE `forumid` IN(" . implode( ',', $childs ) . ")";
@@ -582,8 +607,22 @@ class Forums {
 		];
 		
 		$args = wpforo_parse_args( $args, $default );
-		extract( $args, EXTR_OVERWRITE );
-		
+
+		// Security: extract only expected keys instead of extract()
+		$include        = $args['include'];
+		$exclude        = $args['exclude'];
+		$parent_include = $args['parent_include'];
+		$parent_exclude = $args['parent_exclude'];
+		$parentid       = $args['parentid'];
+		$parent_slug    = $args['parent_slug'];
+		$status         = $args['status'];
+		$type           = $args['type'];
+		$orderby        = $args['orderby'];
+		$order          = $args['order'];
+		$offset         = $args['offset'];
+		$row_count      = $args['row_count'];
+		$layout         = $args['layout'];
+
 		$include        = wpforo_parse_args( $include );
 		$exclude        = wpforo_parse_args( $exclude );
 		$parent_include = wpforo_parse_args( $parent_include );
@@ -691,11 +730,14 @@ class Forums {
 		if( is_array( $_REQUEST['forum'] ) && ! empty( $_REQUEST['forum'] ) ) {
 			$i = 0;
 			foreach( $_REQUEST['forum'] as $hierarchy ) {
-				
-				extract( $hierarchy );
-				
+
+				// Security: extract only expected keys instead of extract()
+				$forumid  = isset( $hierarchy['forumid'] ) ? $hierarchy['forumid'] : null;
+				$parentid = isset( $hierarchy['parentid'] ) ? $hierarchy['parentid'] : null;
+				$order    = isset( $hierarchy['order'] ) ? $hierarchy['order'] : null;
+
 				if( ! isset( $forumid ) || ! $forumid = intval( $forumid ) ) continue;
-				
+
 				if( false !== WPF()->db->update( WPF()->tables->forums, [
 						'parentid' => ( isset( $parentid ) ? intval( $parentid ) : 0 ),
 						'order'    => ( isset( $order ) ? intval( $order ) : 0 ),
@@ -705,7 +747,7 @@ class Forums {
 				                                 ], [ '%d' ] ) ) {
 					$i ++;
 				}
-				
+
 				if( isset( $parentid ) && $parentid = intval( $parentid ) ) {
 					$layout = WPF()->db->get_var( "SELECT `layout` FROM `" . WPF()->tables->forums . "` WHERE `forumid` = " . intval( $parentid ) );
 					WPF()->db->query( "UPDATE `" . WPF()->tables->forums . "` SET `layout` = " . intval( $layout ) . " WHERE `forumid` = " . intval( $forumid ) );
@@ -891,6 +933,9 @@ class Forums {
 					break;
 					case 4:
 						$layout_name = 'Threaded Layout';
+                    break;
+                    case 5:
+                        $layout_name = 'Boxed Layout';
 					break;
 					default:
 						$layout_name = 'Extended Layout';
@@ -1072,7 +1117,8 @@ class Forums {
 			
 			if( $usergroups = WPF()->db->get_results( "SELECT `groupid`, `name` FROM `" . WPF()->tables->usergroups . "`", ARRAY_A ) ) {
 				foreach( $usergroups as $usergroup ) {
-					extract( $usergroup, EXTR_OVERWRITE );
+					$groupid = $usergroup['groupid'];
+					$name    = $usergroup['name'];
 					echo '
 						<tr>
 							<td>' . esc_html( $name ) . '</td>
@@ -1148,8 +1194,6 @@ class Forums {
 		}
 		$args = wpforo_parse_args( $args, $default );
 		if( ! empty( $args ) ) {
-			extract( $args, EXTR_OVERWRITE );
-			
 			if( $args['forumid'] ) {
 				$layout = (int) wpforo_forum( $args['forumid'], 'layout' );
 				

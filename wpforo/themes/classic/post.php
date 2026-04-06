@@ -10,11 +10,15 @@ if( ( ( $topic = WPF()->current_object['topic'] ) && wpforo_is_owner( $topic['us
 					<?php do_action( 'wpforo_template_post_head_bar_action_links', $forum, $topic, $posts ); ?>
                 </div>
             </div>
-			
+			<?php do_action( 'wpforo_template_post_head_bar', $forum, $topic, $posts ); ?>
+
 			<?php
 			wpforo_template_pagenavi( 'wpf-navi-post-top' );
 			if( $forum['layout'] == 3 ) include_once( wpftpl( 'layouts/3/comment.php' ) );
-			include( wpftpl( 'layouts/' . $forum['layout'] . '/post.php' ) );
+			$template_path = wpftpl( 'layouts/' . $forum['layout'] . '/post.php' );
+			if( file_exists( $template_path ) ) {
+				include( $template_path );
+			}
 			wpforo_template_pagenavi( 'wpf-navi-post-bottom' );
 			
 			if( WPF()->perm->forum_can( 'cr' ) || ( wpforo_is_owner( $topic['userid'], $topic['email'] ) && WPF()->perm->forum_can( 'ocr' ) ) ) {

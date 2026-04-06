@@ -38,7 +38,10 @@ if( $cats = WPF()->current_object['categories'] ) :
 			if( ! empty( $forums ) ) {
 				$layout = ( $cat['layout'] ? intval( $cat['layout'] ) : 1 );
 				do_action( 'wpforo_category_loop_start', $cat, $key );
-				include( wpftpl( 'layouts/' . $layout . '/' . $forum_template ) );
+				$template_path = wpftpl( 'layouts/' . $layout . '/' . $forum_template );
+				if( file_exists( $template_path ) ) {
+					include( $template_path );
+				}
 				do_action( 'wpforo_category_loop_end', $cat, $key );
 			}else{
 				do_action( 'wpforo_category_loop_no_forums', $cat, $key );

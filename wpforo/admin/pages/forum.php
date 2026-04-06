@@ -120,6 +120,7 @@ $action = wpfval( $_GET, 'action' );
         }
         if( ! empty( $_GET['parentid'] ) ) $selected_forumid = $_GET['parentid'];
         $color = wpfval( $data, 'color' ) ? $data['color'] : wpforo_random_colors();
+        $is_boxed_layout = (int) wpfval( $data, 'layout' ) === 5;
         ?>
         <style type="text/css">
             #forum_layout .wpf-fl-box a:not(.wpf-lightbox) {
@@ -164,6 +165,8 @@ $action = wpfval( $_GET, 'action' );
                 border: 1px solid #cccccc;
                 padding: 5px;
                 text-align: center;
+                display: flex;
+                flex-direction: column;
             }
 
             .wpf-fl-box h4 {
@@ -228,12 +231,20 @@ $action = wpfval( $_GET, 'action' );
 					$('#wpfl-' + this.value).addClass('wpf-fl-active');
 				});
 				$('#use_us_cat').on('change', function () {
+					var isBoxedLayout = <?php echo $is_boxed_layout ? 'true' : 'false'; ?>;
 					if (!$(this).is(':checked')) {
-						$('#wpf_forum_cover_field').hide();
+						if (!isBoxedLayout) {
+							$('#wpf_forum_cover_field').hide();
+						}
+						// Show private topics option for non-category forums
+						$('#wpf-private-topics-option').show();
                         <?php if( wpfkey( $data, 'is_cat' ) && ! wpfval( $data, 'is_cat' ) ): ?>
 						$('.wpf-fl-box').removeClass('wpf-fl-active');
 						var wpf_layout = $('#wpf-current-layout').val();
 						$('#wpfl-' + wpf_layout).addClass('wpf-fl-active');
+                        <?php elseif( $is_boxed_layout ): ?>
+						$('.wpf-fl-box').removeClass('wpf-fl-active');
+						$('#wpfl-5').addClass('wpf-fl-active');
                         <?php else: ?>
 						$('.wpf-fl-box').removeClass('wpf-fl-active');
 						$('#forum_layout').hide();
@@ -244,6 +255,9 @@ $action = wpfval( $_GET, 'action' );
 						var wpf_layout = $('#layout').find('option:selected').val();
 						$('#wpfl-' + wpf_layout).addClass('wpf-fl-active');
 						$('#forum_layout').show();
+						// Hide private topics option for categories (and uncheck it)
+						$('#wpf-private-topics-option').hide();
+						$('#make_topics_private').prop('checked', false);
 					}
 				});
 			});
@@ -376,6 +390,17 @@ $action = wpfval( $_GET, 'action' );
                                         </div>
                                         <div style="clear: both"></div>
                                     </div>
+                                    <div id="wpf-private-topics-option" class="wpf-forum-additional-options" style="margin-top: 15px;<?php echo ( isset( $data['is_cat'] ) && $data['is_cat'] == 1 ) ? ' display: none;' : ''; ?>">
+                                        <p class="form-field" style="margin: 0;">
+                                            <label for="make_topics_private" style="cursor: pointer;">
+                                                <?php _e( 'Make All Topics Private', 'wpforo' ); ?>
+                                                <input id="make_topics_private" type="checkbox" name="forum[type]" value="ticket_forum" <?php echo ( wpfval( $data, 'type' ) === 'ticket_forum' ) ? 'checked' : ''; ?> />
+                                            </label>
+                                        </p>
+                                        <p class="description" style="margin: 5px 0 0 0; font-style: italic; color: #666;">
+                                            <?php _e( 'When enabled, all topics in this forum will be created as private by default. Users cannot make topics public.', 'wpforo' ); ?>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -386,7 +411,7 @@ $action = wpfval( $_GET, 'action' );
                     <div id="postbox-container-2" class="postbox-container">
                         <div id="normal-sortables" class="meta-box-sortables ui-sortable">
 
-                            <div id="forum_layout" class="postbox" <?php if( ! wpfkey( $data, 'is_cat' ) ) echo 'style="display: none"'; ?>>
+                            <div id="forum_layout" class="postbox" <?php if( ! wpfkey( $data, 'is_cat' ) && ! $is_boxed_layout ) echo 'style="display: none"'; ?>>
                                 <h3 class="wpf-box-header">
                                         <span>
                                             <?php if( wpfkey( $data, 'is_cat' ) ): ?>
@@ -415,6 +440,7 @@ $action = wpfval( $_GET, 'action' );
                                                             style="height: 100px;"/></a>
                                                 <a href="#_" class="wpf-lightbox" id="img1<?php echo intval( $layout['id'] ); ?>"><img
                                                             src="<?php echo WPFORO_URL ?>/themes/<?php echo esc_attr( $theme ) ?>/layouts/<?php echo intval( $layout['id'] ); ?>/view-forums.png"/></a>
+                                                <hr style="height: 1px; background-color: #666; width: 100%;" />
                                                 <a href="#img2<?php echo intval( $layout['id'] ); ?>"><img
                                                             src="<?php echo WPFORO_URL ?>/themes/<?php echo esc_attr( $theme ) ?>/layouts/<?php echo intval( $layout['id'] ); ?>/view-posts.png"
                                                             style="height: 100px;"/></a>
@@ -433,7 +459,7 @@ $action = wpfval( $_GET, 'action' );
                                         ); ?></p>
 
 
-                                    <?php $show_cover_field = ! (int) wpfval( $data, 'forumid' ) || (int) wpfval( $data, 'is_cat' ); ?>
+                                    <?php $show_cover_field = ! (int) wpfval( $data, 'forumid' ) || (int) wpfval( $data, 'is_cat' ) || $is_boxed_layout; ?>
                                     <div id="wpf_forum_cover_field" style="padding: 10px; <?php echo( $show_cover_field ? 'display: block' : 'display: none' ) ?>">
                                         <h3 style="font-size: 15px;"><?php _e( 'Category Cover Image', 'wpforo' ) ?></h3>
                                         <div id="wpf-forum-cover" style="background-image: url('<?php echo esc_url_raw( (string) wpfval( $data, 'cover_url' ) ) ?>')">

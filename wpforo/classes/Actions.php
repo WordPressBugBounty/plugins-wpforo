@@ -74,6 +74,10 @@ class Actions {
 			add_action( 'wp_ajax_wpforo_search_existed_topics', [ $this, 'search_existed_topics' ] );
 			add_action( 'wp_ajax_nopriv_wpforo_search_existed_topics', [ $this, 'search_existed_topics' ] );
 			add_action( 'wp_ajax_wpforo_confirm_current_user_password', [ $this, 'confirm_current_user_password' ] );
+
+			// AI Features admin AJAX handlers
+			add_action( 'wp_ajax_wpforo_ai_store_checkout_mapping', [ $this, 'ai_store_checkout_mapping' ] );
+			add_action( 'wp_ajax_wpforo_ai_get_legal_document', [ $this, 'ai_get_legal_document' ] );
 		} else {
 			add_action( 'wpforo_actions', [ $this, 'check_dashboard_permissions' ], 1 );
 			add_action( 'wpforo_actions', [ $this, 'repair_lost_main_shortcode_page' ] );
@@ -103,6 +107,7 @@ class Actions {
 			add_action( 'wpforo_action_email_settings_save', [ $this, 'email_settings_save' ] );
 			add_action( 'wpforo_action_forums_settings_save', [ $this, 'forums_settings_save' ] );
 			add_action( 'wpforo_action_logging_settings_save', [ $this, 'logging_settings_save' ] );
+			add_action( 'wpforo_action_activity_settings_save', [ $this, 'activity_settings_save' ] );
 			add_action( 'wpforo_action_members_settings_save', [ $this, 'members_settings_save' ] );
 			add_action( 'wpforo_action_notifications_settings_save', [ $this, 'notifications_settings_save' ] );
 			add_action( 'wpforo_action_posting_settings_save', [ $this, 'posting_settings_save' ] );
@@ -117,6 +122,7 @@ class Actions {
 			add_action( 'wpforo_action_topics_settings_save', [ $this, 'topics_settings_save' ] );
 			add_action( 'wpforo_action_um_settings_save', [ $this, 'um_settings_save' ] );
 			add_action( 'wpforo_action_legal_settings_save', [ $this, 'legal_settings_save' ] );
+			add_action( 'wpforo_action_ai_settings_save', [ $this, 'ai_settings_save' ] );
 			add_action( 'wpforo_action_settings_export', [ $this, 'settings_export' ] );
 			add_action( 'wpforo_action_settings_import', [ $this, 'settings_import' ] );
 			
@@ -1232,33 +1238,63 @@ class Actions {
 	}
 	
 	/**
-	 * reset wpforo all caches (phrase, user, forum, post, stats) etc.
+	 * reset wpforo all caches (phrase, user, forum, post, stats, AI) etc.
 	 */
 	public function reset_all_caches() {
 		check_admin_referer( 'wpforo_reset_cache' );
-		
+
 		if( ! current_user_can( 'administrator' ) ) {
 			WPF()->notice->add( 'Permission denied', 'error' );
 			wp_safe_redirect( admin_url() );
 			exit();
 		}
-		
+
 		wpforo_set_max_execution_time();
 		wp_raise_memory_limit();
-		
+
 		WPF()->member->clear_db_cache();
 		wpforo_clean_cache();
-		
+
+		// Clear AI Cache (translations, summaries, embeddings cache)
+		$this->clear_ai_cache();
+
 		// Flush WordPress Cache
 		wp_cache_flush();
-		
+
 		WPF()->notice->add( 'Deleted Successfully!', 'success' );
-		
+
 		$redirect = ( is_admin() ) ? admin_url( 'admin.php?page=' . wpforo_prefix_slug( 'dashboard' ) ) : wpforo_home_url();
 		wp_safe_redirect( $redirect );
 		exit();
 	}
-	
+
+	/**
+	 * Clear AI-related caches (translations, summaries, embeddings cache)
+	 *
+	 * Clears:
+	 * - ai_cache table (translations, topic summaries)
+	 * - ai_embeddings_cache table (similarity search cache)
+	 *
+	 * Does NOT clear:
+	 * - ai_embeddings (indexed content - expensive to regenerate)
+	 * - ai_chat_* tables (user conversation history)
+	 * - ai_logs (audit logs)
+	 * - ai_moderation (moderation history)
+	 */
+	private function clear_ai_cache() {
+		global $wpdb;
+
+		// Clear AI cache table (translations, summaries)
+		if ( ! empty( WPF()->tables->ai_cache ) ) {
+			$wpdb->query( "TRUNCATE TABLE `" . WPF()->tables->ai_cache . "`" );
+		}
+
+		// Clear AI embeddings cache table (similarity search results cache)
+		if ( ! empty( WPF()->tables->ai_embeddings_cache ) ) {
+			$wpdb->query( "TRUNCATE TABLE `" . WPF()->tables->ai_embeddings_cache . "`" );
+		}
+	}
+
 	/**
 	 * Clean Up damaged content in database
 	 */
@@ -1497,7 +1533,6 @@ class Actions {
 				$options['page_privacy']            = esc_url( (string) $options['page_privacy'] );
 				$options['checkbox_forum_privacy']  = intval( $options['checkbox_forum_privacy'] );
 				$options['forum_privacy_text']      = wpforo_kses( $options['forum_privacy_text'], 'post' );
-				$options['checkbox_fb_login']       = intval( $options['checkbox_fb_login'] );
 				$options['cookies']                 = intval( $options['cookies'] );
 				$options['rules_checkbox']          = intval( $options['rules_checkbox'] );
 				$options['rules_text']              = wpforo_kses( $options['rules_text'], 'post' );
@@ -2686,10 +2721,7 @@ class Actions {
 			$authorization['redirect_url_after_confirm_sbscrb'] = esc_url_raw(
 				(string) $authorization['redirect_url_after_confirm_sbscrb']
 			);
-			$authorization['fb_api_id']                         = sanitize_text_field( (string) $authorization['fb_api_id'] );
-			$authorization['fb_api_secret']                     = sanitize_text_field( (string) $authorization['fb_api_secret'] );
-			$authorization['fb_redirect_url']                   = esc_url_raw( (string) $authorization['fb_redirect_url'] );
-			
+
 			wpforo_update_option( 'wpforo_authorization', $authorization );
 		}
 		
@@ -2839,7 +2871,40 @@ class Actions {
 		wp_safe_redirect( wp_get_raw_referer() );
 		exit();
 	}
-	
+
+	/**
+	 * activity_settings_save from submit action
+	 *
+	 * @return void
+	 */
+	public function activity_settings_save() {
+		check_admin_referer( 'wpforo_settings_save_activity' );
+
+		if( wpfkey( $_POST, 'reset' ) ) {
+			wpforo_delete_option( 'activity' );
+			// Unschedule cleanup cron when settings are reset
+			WPF()->activity->unschedule_cleanup();
+		} else {
+			$activity = wpforo_array_args_cast_and_merge( wp_unslash( $_POST['activity'] ), WPF()->settings->_activity );
+			$activity['enabled_types'] = array_map( 'sanitize_text_field', (array) wpfval( $_POST['activity'], 'enabled_types' ) );
+			foreach( $this->generate_option_names( 'activity' ) as $option_name ) {
+				wpforo_update_option( $option_name, $activity );
+			}
+
+			// Handle activity cleanup cron based on retention_days setting
+			$retention_days = isset( $activity['retention_days'] ) ? (int) $activity['retention_days'] : 365;
+			if( $retention_days > 0 ) {
+				WPF()->activity->schedule_cleanup();
+			} else {
+				WPF()->activity->unschedule_cleanup();
+			}
+		}
+
+		WPF()->notice->add( 'Successfully Done', 'success' );
+		wp_safe_redirect( wp_get_raw_referer() );
+		exit();
+	}
+
 	/**
 	 * members_settings_save from submit action
 	 *
@@ -3189,7 +3254,41 @@ class Actions {
 		wp_safe_redirect( wp_get_raw_referer() );
 		exit();
 	}
-	
+
+	/**
+	 * ai_settings_save from submit action
+	 *
+	 * @return void
+	 */
+	public function ai_settings_save() {
+		check_admin_referer( 'wpforo_settings_save_ai' );
+
+		if( wpfkey( $_POST, 'reset' ) ) {
+			wpforo_delete_option( 'ai' );
+		} else {
+			$post_ai = wp_unslash( $_POST['ai'] );
+			$ai      = wpforo_array_args_cast_and_merge( $post_ai, WPF()->settings->_ai );
+			// Ensure max_results is within bounds
+			$ai['search_max_results'] = max( 1, min( 10, intval( $ai['search_max_results'] ) ) );
+			// Fix checkbox array fields: wpforo_array_args_cast_and_merge re-adds default
+			// values for missing numeric keys, so we must override with the actual POST data.
+			// When all checkboxes are unchecked the key is absent from POST, meaning empty array.
+			$ai['chatbot_allowed_groups'] = array_map( 'intval', (array) wpfval( $post_ai, 'chatbot_allowed_groups' ) );
+			$ai['bot_reply_includes']     = array_map( 'sanitize_text_field', (array) wpfval( $post_ai, 'bot_reply_includes' ) );
+			// Filter out Guest usergroup (groupid 4) - guests cannot use chatbot (login required)
+			$ai['chatbot_allowed_groups'] = array_values( array_filter( $ai['chatbot_allowed_groups'], function( $gid ) {
+				return $gid !== 4;
+			} ) );
+			foreach( $this->generate_option_names( 'ai' ) as $option_name ) {
+				wpforo_update_option( $option_name, $ai );
+			}
+		}
+
+		WPF()->notice->add( 'Successfully Done', 'success' );
+		wp_safe_redirect( wp_get_raw_referer() );
+		exit();
+	}
+
 	public function settings_export() {
 		check_admin_referer( 'wpforo_settings_export' );
 		
@@ -3266,5 +3365,83 @@ class Actions {
 		}
 		wp_safe_redirect( wp_get_referer() );
 		exit();
+	}
+
+	/**
+	 * Store checkout mapping for Freemius webhook lookup
+	 *
+	 * This is primarily a validation step before opening checkout.
+	 * The actual tenant lookup in the webhook will be done by matching
+	 * the WordPress site URL from the Freemius install object.
+	 */
+	public function ai_store_checkout_mapping() {
+		// Verify nonce
+		check_ajax_referer( 'wpforo_ai_features_nonce', 'nonce' );
+
+		// Check permissions
+		if ( ! wpforo_current_user_is( 'admin' ) && ! WPF()->usergroup->can( 'ms' ) ) {
+			wp_send_json_error( [ 'message' => 'Insufficient permissions' ], 403 );
+		}
+
+		// Get parameters
+		$email     = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+		$tenant_id = isset( $_POST['tenant_id'] ) ? sanitize_text_field( $_POST['tenant_id'] ) : '';
+
+		if ( empty( $email ) || empty( $tenant_id ) ) {
+			wp_send_json_error( [ 'message' => 'Email and tenant_id are required' ], 400 );
+		}
+
+		// The webhook will look up tenant_id by matching the WordPress site URL
+		// No need to store mapping here - just validate and proceed
+		wp_send_json_success( [
+			'message'   => 'Checkout ready',
+			'email'     => $email,
+			'tenant_id' => $tenant_id,
+			'site_url'  => home_url()
+		] );
+	}
+
+	/**
+	 * AJAX handler for loading legal documents (Terms of Service, Privacy Policy)
+	 * Used by the AI Features settings page modal
+	 */
+	public function ai_get_legal_document() {
+		// Verify nonce
+		check_ajax_referer( 'wpforo_ai_features_nonce', 'nonce' );
+
+		// Check permissions - admin only
+		if ( ! wpforo_current_user_is( 'admin' ) && ! WPF()->usergroup->can( 'ms' ) ) {
+			wp_send_json_error( [ 'message' => 'Insufficient permissions' ], 403 );
+		}
+
+		// Get document type
+		$document = isset( $_POST['document'] ) ? sanitize_text_field( $_POST['document'] ) : '';
+
+		// Map document type to file
+		$document_files = [
+			'terms'   => 'terms-of-service.php',
+			'privacy' => 'privacy-policy.php',
+		];
+
+		if ( empty( $document ) || ! isset( $document_files[ $document ] ) ) {
+			wp_send_json_error( [ 'message' => 'Invalid document type' ], 400 );
+		}
+
+		// Build file path
+		$file_path = WPFORO_DIR . '/admin/pages/legal/' . $document_files[ $document ];
+
+		if ( ! file_exists( $file_path ) ) {
+			wp_send_json_error( [ 'message' => 'Document not found' ], 404 );
+		}
+
+		// Capture the output of the PHP file
+		ob_start();
+		include $file_path;
+		$content = ob_get_clean();
+
+		wp_send_json_success( [
+			'content' => $content,
+			'title'   => $document === 'terms' ? __( 'Terms of Service', 'wpforo' ) : __( 'Privacy Policy', 'wpforo' ),
+		] );
 	}
 }

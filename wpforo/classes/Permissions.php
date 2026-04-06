@@ -398,42 +398,305 @@ class Permissions {
 	}
 
 	/**
-	 * @return bool
+	 * Check if user can post now based on flood protection settings
+	 *
+	 * @param string $flood_reason Reference to store the reason if blocked
+	 * @return bool|string True if can post, false if blocked, 'unapprove' if should be unapproved
 	 */
-	public function can_post_now() {
+	public function can_post_now( &$flood_reason = '' ) {
 		if( wpforo_is_admin() || ( defined( 'IS_GO2WPFORO' ) && IS_GO2WPFORO ) ) {
 			return true;
 		}
 
-		$email   = ( ( $userid = WPF()->current_userid ) ? '' : WPF()->current_user_email );
+		// Users with "Dashboard - Moderate Topics & Posts" permission bypass flood protection
+		if( WPF()->usergroup->can( 'aum' ) ) {
+			return true;
+		}
+
+		$userid  = WPF()->current_userid;
+		$email   = $userid ? '' : WPF()->current_user_email;
 		$groupid = WPF()->current_user_groupid;
 		if( WPF()->member->current_user_is_new() ) {
 			$groupid = 0;
 		}
-		if( ! $flood_interval = WPF()->usergroup->get_flood_interval( $groupid ) ) {
+
+		// Check for temporary ban first
+		if( $this->is_flood_banned() ) {
+			$flood_reason = 'temp_ban';
+			return false;
+		}
+
+		// Legacy flood interval check (per user group)
+		if( $flood_interval = WPF()->usergroup->get_flood_interval( $groupid ) ) {
+			$hour_ago = gmdate( 'Y-m-d H:i:s', time() - HOUR_IN_SECONDS );
+			$args = [
+				'userid'    => $userid,
+				'email'     => $email,
+				'orderby'   => '`created` DESC, `postid` DESC',
+				'row_count' => 1,
+				'where'     => "`created` >= '$hour_ago'",
+			];
+			$items_count = 0;
+			$lastpost    = WPF()->post->get_posts( $args, $items_count, false );
+			if( $lasttime = wpfval( $lastpost, 0, 'created' ) ) {
+				$lasttime = strtotime( $lasttime . ' GMT' );
+				$nowtime  = time();
+				$diff     = $nowtime - $lasttime;
+				if( $diff < $flood_interval ) {
+					$flood_reason = 'interval';
+					return false;
+				}
+			}
+		}
+
+		// Advanced flood protection checks
+		if( ! wpforo_setting( 'antispam', 'flood_protection_enabled' ) ) {
 			return true;
 		}
-		$hour_ago = gmdate( 'Y-m-d H:i:s', time() - HOUR_IN_SECONDS );
 
-		$args        = [
-			'userid'    => $userid,
-			'email'     => $email,
-			'orderby'   => '`created` DESC, `postid` DESC',
-			'row_count' => 1,
-			'where'     => "`created` >= '$hour_ago'",
-		];
-		$items_count = 0;
-		$lastpost    = WPF()->post->get_posts( $args, $items_count, false );
-		if( $lasttime = wpfval( $lastpost, 0, 'created' ) ) {
-			$lasttime = strtotime( $lasttime . ' GMT' );
-			$nowtime  = time();
-			$diff     = $nowtime - $lasttime;
-			if( $diff < $flood_interval ) {
-				return false;
+		// Check posts per minute
+		$posts_per_minute = (int) wpforo_setting( 'antispam', 'flood_posts_per_minute' );
+		if( $posts_per_minute > 0 ) {
+			$minute_ago = gmdate( 'Y-m-d H:i:s', time() - 60 );
+			$count = $this->get_user_post_count_since( $userid, $email, $minute_ago );
+			if( $count >= $posts_per_minute ) {
+				$flood_reason = 'per_minute';
+				return $this->handle_flood_action();
+			}
+		}
+
+		// Check posts per hour
+		$posts_per_hour = (int) wpforo_setting( 'antispam', 'flood_posts_per_hour' );
+		if( $posts_per_hour > 0 ) {
+			$hour_ago = gmdate( 'Y-m-d H:i:s', time() - HOUR_IN_SECONDS );
+			$count = $this->get_user_post_count_since( $userid, $email, $hour_ago );
+			if( $count >= $posts_per_hour ) {
+				$flood_reason = 'per_hour';
+				return $this->handle_flood_action();
+			}
+		}
+
+		// IP-based flood protection (tracked via transients since posts table has no IP column)
+		if( wpforo_setting( 'antispam', 'flood_ip_protection_enabled' ) ) {
+			$posts_per_ip_hour = (int) wpforo_setting( 'antispam', 'flood_posts_per_ip_hour' );
+			if( $posts_per_ip_hour > 0 ) {
+				$ip = $this->get_user_ip();
+				if( $ip ) {
+					$count = $this->get_ip_post_count_in_window( $ip, HOUR_IN_SECONDS );
+					if( $count >= $posts_per_ip_hour ) {
+						$flood_reason = 'ip_per_hour';
+						return $this->handle_flood_action();
+					}
+				}
+			}
+		}
+
+		// All checks passed - record IP post attempt for IP-based tracking
+		if( wpforo_setting( 'antispam', 'flood_ip_protection_enabled' ) ) {
+			$ip = $this->get_user_ip();
+			if( $ip ) {
+				$this->record_ip_post_attempt( $ip );
 			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * Get the current user's IP address
+	 *
+	 * @return string|null IP address or null if not available
+	 */
+	private function get_user_ip() {
+		// Check for forwarded IP first (behind proxy/load balancer)
+		$headers = [ 'HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'REMOTE_ADDR' ];
+		foreach( $headers as $header ) {
+			if( ! empty( $_SERVER[ $header ] ) ) {
+				$ip = $_SERVER[ $header ];
+				// HTTP_X_FORWARDED_FOR can contain multiple IPs, get the first one
+				if( strpos( $ip, ',' ) !== false ) {
+					$ip = trim( explode( ',', $ip )[0] );
+				}
+				if( filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+					return $ip;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get post count for a user since a specific time
+	 *
+	 * @param int    $userid User ID
+	 * @param string $email  Email for guests
+	 * @param string $since  MySQL datetime string
+	 * @return int Post count
+	 */
+	private function get_user_post_count_since( $userid, $email, $since ) {
+		$posts_table = WPF()->tables->posts;
+
+		if( $userid ) {
+			$count = WPF()->db->get_var( WPF()->db->prepare(
+				"SELECT COUNT(*) FROM `{$posts_table}` WHERE `userid` = %d AND `created` >= %s",
+				$userid,
+				$since
+			) );
+		} elseif( $email ) {
+			$count = WPF()->db->get_var( WPF()->db->prepare(
+				"SELECT COUNT(*) FROM `{$posts_table}` WHERE `email` = %s AND `created` >= %s",
+				$email,
+				$since
+			) );
+		} else {
+			return 0;
+		}
+
+		return (int) $count;
+	}
+
+	/**
+	 * Get post count for an IP address within a time window (using transients)
+	 *
+	 * @param string $ip             IP address
+	 * @param int    $window_seconds Time window in seconds
+	 * @return int Post count
+	 */
+	private function get_ip_post_count_in_window( $ip, $window_seconds ) {
+		$key = 'wpforo_ip_posts_' . md5( $ip );
+		$timestamps = get_transient( $key );
+		if( ! is_array( $timestamps ) ) {
+			return 0;
+		}
+
+		// Filter to only include timestamps within the window
+		$cutoff = time() - $window_seconds;
+		$valid_timestamps = array_filter( $timestamps, function( $ts ) use ( $cutoff ) {
+			return $ts >= $cutoff;
+		});
+
+		return count( $valid_timestamps );
+	}
+
+	/**
+	 * Record an IP post attempt for flood tracking
+	 *
+	 * @param string $ip IP address
+	 */
+	private function record_ip_post_attempt( $ip ) {
+		$key = 'wpforo_ip_posts_' . md5( $ip );
+		$timestamps = get_transient( $key );
+		if( ! is_array( $timestamps ) ) {
+			$timestamps = [];
+		}
+
+		// Add current timestamp
+		$timestamps[] = time();
+
+		// Clean old entries (keep last hour only)
+		$cutoff = time() - HOUR_IN_SECONDS;
+		$timestamps = array_filter( $timestamps, function( $ts ) use ( $cutoff ) {
+			return $ts >= $cutoff;
+		});
+
+		// Re-index array and store with 1-hour expiration
+		$timestamps = array_values( $timestamps );
+		set_transient( $key, $timestamps, HOUR_IN_SECONDS );
+	}
+
+	/**
+	 * Handle flood action based on settings
+	 *
+	 * @return bool|string False to block, 'unapprove' to allow but unapprove
+	 */
+	private function handle_flood_action() {
+		$action = wpforo_setting( 'antispam', 'flood_action' );
+
+		if( $action === 'temp_ban' ) {
+			$this->set_flood_ban();
+			return false;
+		}
+
+		if( $action === 'unapprove' ) {
+			return 'unapprove';
+		}
+
+		// Default: block
+		return false;
+	}
+
+	/**
+	 * Set a temporary flood ban for the current user/IP
+	 */
+	private function set_flood_ban() {
+		$duration = (int) wpforo_setting( 'antispam', 'flood_temp_ban_duration' );
+		$ban_until = time() + ( $duration * 60 );
+
+		$userid = WPF()->current_userid;
+		$ip = $this->get_user_ip();
+
+		// Store ban in transient (keyed by user ID or IP)
+		if( $userid ) {
+			set_transient( 'wpforo_flood_ban_user_' . $userid, $ban_until, $duration * 60 );
+		}
+		if( $ip ) {
+			set_transient( 'wpforo_flood_ban_ip_' . md5( $ip ), $ban_until, $duration * 60 );
+		}
+	}
+
+	/**
+	 * Check if the current user/IP is temporarily banned for flooding
+	 *
+	 * @return bool True if banned
+	 */
+	public function is_flood_banned() {
+		$userid = WPF()->current_userid;
+		$ip = $this->get_user_ip();
+
+		// Check user ban
+		if( $userid ) {
+			$ban_until = get_transient( 'wpforo_flood_ban_user_' . $userid );
+			if( $ban_until && time() < $ban_until ) {
+				return true;
+			}
+		}
+
+		// Check IP ban
+		if( $ip ) {
+			$ban_until = get_transient( 'wpforo_flood_ban_ip_' . md5( $ip ) );
+			if( $ban_until && time() < $ban_until ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get remaining flood ban time in seconds
+	 *
+	 * @return int Seconds remaining, 0 if not banned
+	 */
+	public function get_flood_ban_remaining() {
+		$userid = WPF()->current_userid;
+		$ip = $this->get_user_ip();
+		$max_remaining = 0;
+
+		if( $userid ) {
+			$ban_until = get_transient( 'wpforo_flood_ban_user_' . $userid );
+			if( $ban_until && time() < $ban_until ) {
+				$max_remaining = max( $max_remaining, $ban_until - time() );
+			}
+		}
+
+		if( $ip ) {
+			$ban_until = get_transient( 'wpforo_flood_ban_ip_' . md5( $ip ) );
+			if( $ban_until && time() < $ban_until ) {
+				$max_remaining = max( $max_remaining, $ban_until - time() );
+			}
+		}
+
+		return $max_remaining;
 	}
 
 	public function get_forum_accesses_by_usergroup( $groupids = [] ) {

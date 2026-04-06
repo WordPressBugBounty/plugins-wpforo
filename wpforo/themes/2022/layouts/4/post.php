@@ -55,6 +55,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
                                     <div class="wpf-author-title"><?php wpforo_member_title( $member, true, '', '', [ 'custom-fields', 'custom-title', 'rating-title' ] ); ?></div>
                                 <?php endif; ?>
                                 <?php wpforo_topic_starter( $topic, $post ) ?>
+                                <?php do_action( 'wpforo_post_content_top_left', $post ) ?>
                             </div>
                             <div class="wpf-post-date"><?php wpforo_date( $post['created'], 'M d, Y g:i a' ); ?></div>
                         </div>
@@ -92,6 +93,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
                                 <?php if( $member['signature'] ): ?>
                                     <div class="wpforo-post-signature"><?php wpforo_signature( $member ) ?></div><?php endif; ?>
                             <?php endif; ?>
+                            <?php do_action( 'wpforo_post_content_footer', $post, $topic, $forum, 4 ) ?>
                         </div>
                     </div>
                     <div class="wpf-content-foot">

@@ -46,6 +46,7 @@ function wpforo_thread_reply_template( $post, $topic = [], $forum = [], $level =
             <div class="wpf-reply-content wpf-content">
                 <div class="wpf-reply-tree">
 					<?php wpforo_thread_breadcrumb( $post, $parents ); ?>
+					<?php do_action( 'wpforo_post_content_top_left', $post ) ?>
                 </div>
 				<?php if( $post['status'] ): ?>
                     <div class="wpf-mod">
@@ -70,9 +71,9 @@ function wpforo_thread_reply_template( $post, $topic = [], $forum = [], $level =
                     </div>
                     <div class="wpf-buttons">
 						<?php if( $post['is_first_post'] ) {
-							wpforo_post_buttons( 'icon', [ 'quote', 'solved', 'sticky', 'close', 'approved', 'private', 'edit', 'delete' ], $forum, $topic, $post );
+							wpforo_post_buttons( 'icon', [ 'custom-bottom', 'quote', 'solved', 'sticky', 'close', 'approved', 'private', 'edit', 'delete' ], $forum, $topic, $post );
 						} else {
-							wpforo_post_buttons( 'icon', [ 'quote', 'approved', 'edit', 'delete' ], $forum, $topic, $post );
+							wpforo_post_buttons( 'icon', [ 'custom-bottom', 'quote', 'approved', 'edit', 'delete' ], $forum, $topic, $post );
 						} ?>
                     </div>
                 </div>

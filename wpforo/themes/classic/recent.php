@@ -195,7 +195,7 @@ if( $type === 'topics' ) {
                         <td class="wpf-shead-title"><?php wpforo_phrase( 'Topic Title' ) ?></td>
                         <td class="wpf-shead-forum"><?php wpforo_phrase( 'Forum' ) ?></td>
                     </tr>
-					<?php foreach( $topics as $topic ) : extract( $topic, EXTR_OVERWRITE ); ?>
+					<?php foreach( $topics as $topic ) : $topicid = $topic['topicid']; ?>
 						<?php
 						$posts  = [];
 						$member = wpforo_member( $topic );
@@ -286,7 +286,7 @@ if( $type === 'topics' ) {
                         <td class="wpf-shead-title"><?php wpforo_phrase( 'Post Title' ) ?></td>
                         <td class="wpf-shead-forum"><?php wpforo_phrase( 'Forum' ) ?></td>
                     </tr>
-					<?php foreach( $posts as $post ) : extract( $post, EXTR_OVERWRITE ); ?>
+					<?php foreach( $posts as $post ) : $postid = $post['postid']; $title = $post['title']; ?>
 						<?php
 						$member = wpforo_member( $post );
 						$forum  = wpforo_forum( $post['forumid'] );

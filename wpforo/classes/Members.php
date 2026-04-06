@@ -457,7 +457,11 @@ class Members {
 
             $errors = new WP_Error();
 
-            extract( $user_fields, EXTR_OVERWRITE );
+            // Security: extract only expected keys instead of extract()
+            $user_login = isset( $user_fields['user_login'] ) ? $user_fields['user_login'] : '';
+            $user_email = isset( $user_fields['user_email'] ) ? $user_fields['user_email'] : '';
+            $user_pass1 = isset( $user_fields['user_pass1'] ) ? $user_fields['user_pass1'] : '';
+            $user_pass2 = isset( $user_fields['user_pass2'] ) ? $user_fields['user_pass2'] : '';
             $sanitized_user_login = sanitize_user( $user_login );
             $user_email           = apply_filters( 'user_registration_email', $user_email );
             $user_pass1           = trim( substr( (string) $user_pass1, 0, 100 ) );
@@ -1425,7 +1429,9 @@ class Members {
 
         $args = wpforo_parse_args( $args, $default );
 
-        extract( $args );
+        // Security: extract only expected keys instead of extract()
+        $userid        = $args['userid'];
+        $user_nicename = $args['user_nicename'];
 
         $userid = wpforo_bigintval( $userid );
 
@@ -1481,7 +1487,18 @@ class Members {
         ];
 
         $args = wpforo_parse_args( $args, $default );
-        extract( $args, EXTR_OVERWRITE );
+
+        // Security: extract only expected keys instead of extract()
+        $include     = $args['include'];
+        $exclude     = $args['exclude'];
+        $status      = $args['status'];
+        $groupid     = $args['groupid'];
+        $online_time = $args['online_time'];
+        $orderby     = $args['orderby'];
+        $order       = $args['order'];
+        $offset      = $args['offset'];
+        $row_count   = $args['row_count'];
+        $groupids    = $args['groupids'];
 
         $include = wpforo_parse_args( $include );
         $exclude = wpforo_parse_args( $exclude );

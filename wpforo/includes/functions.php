@@ -169,7 +169,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			'deps'     => [],
 			'title'    => 'User Custom Fields',
 			'thumb'    => WPFORO_URL . '/assets/addons/ucf/header.png',
-			'desc'     => __( 'Advanced user profile builder system. Allows to add new fields and manage profile. Creates custom Registration, Account, Member Search forms.', 'wpforo' ),
+			'desc'     => 'Advanced user profile builder system. Allows to add new fields and manage profile. Creates custom Registration, Account, Member Search forms.',
 			'url'      => 'https://gvectors.com/product/wpforo-user-custom-fields/',
 		],
 		'wpforo-topic-custom-fields'     => [
@@ -186,7 +186,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'Topic Custom Fields',
 			'thumb'        => WPFORO_URL . '/assets/addons/tcf/header.png',
-			'desc'         => __( 'Allows to create topic custom fields and manage topic form layout with a form builder. Adds topic search options by custom fields', 'wpforo' ),
+			'desc'         => 'Allows to create topic custom fields and manage topic form layout with a form builder. Adds topic search options by custom fields',
 			'url'          => 'https://gvectors.com/product/wpforo-topic-custom-fields/',
 		],
 		'wpforo-private-messages'        => [
@@ -203,7 +203,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'Private Messages',
 			'thumb'        => WPFORO_URL . '/assets/addons/pm/header.png',
-			'desc'         => __( 'Provides a safe way to communicate directly with other members. Messages are private and can only be viewed by conversation participants.', 'wpforo' ),
+			'desc'         => 'Provides a safe way to communicate directly with other members. Messages are private and can only be viewed by conversation participants.',
 			'url'          => 'https://gvectors.com/product/wpforo-private-messages/',
 		],
 		'wpforo-topic-prefix'            => [
@@ -220,10 +220,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'Topic Prefix & Tag Manager',
 			'thumb'        => WPFORO_URL . '/assets/addons/prefix/header.png',
-			'desc'         => __(
-				'Allows you to create topic prefixes and prefix groups to categorize topics. Also, it allows you to add, edit, delete topic tags and convert them to prefixes.',
-				'wpforo'
-			),
+			'desc'         => 'Allows you to create topic prefixes and prefix groups to categorize topics. Also, it allows you to add, edit, delete topic tags and convert them to prefixes.',
 			'url'          => 'https://gvectors.com/product/wpforo-topic-prefix/',
 		],
 		'wpforo-advanced-reactions'      => [
@@ -235,7 +232,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			'deps'     => [],
 			'title'    => 'Advanced Reactions',
 			'thumb'    => WPFORO_URL . '/assets/addons/reactions/header.png',
-			'desc'     => __( 'allows users to add new types of reactions and provides a frontend dialog to view each post\'s currently reacted users', 'wpforo' ),
+			'desc'     => 'Allows users to add new types of reactions and provides a frontend dialog to view each post\'s currently reacted users',
 			'url'      => 'https://gvectors.com/product/wpforo_reactions/',
 		],
 		'wpforo-advanced-attachments'    => [
@@ -252,7 +249,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'Advanced Attachments',
 			'thumb'        => WPFORO_URL . '/assets/addons/attachments/header.png',
-			'desc'         => __( 'Adds an advanced file attachment system to forum. AJAX powered media uploading and displaying system with user specific library.', 'wpforo' ),
+			'desc'         => 'Adds an advanced file attachment system to forum. AJAX powered media uploading and displaying system with user specific library.',
 			'url'          => 'https://gvectors.com/product/wpforo-advanced-attachments/',
 		],
 		'wpforo-embeds'                  => [
@@ -264,7 +261,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			'deps'     => [],
 			'title'    => 'Embeds',
 			'thumb'    => WPFORO_URL . '/assets/addons/embeds/header.png',
-			'desc'     => __( 'Allows to embed hundreds of video, social network, audio and photo content providers in forum topics and posts.', 'wpforo' ),
+			'desc'     => 'Allows to embed hundreds of video, social network, audio and photo content providers in forum topics and posts.',
 			'url'      => 'https://gvectors.com/product/wpforo-embeds/',
 		],
 		'wpforo-memberpress'             => [
@@ -281,7 +278,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'MemberPress Integration',
 			'thumb'        => WPFORO_URL . '/assets/addons/wpforo-memberpress/header.png',
-			'desc'         => __( 'Allows to setup membership access to your forums through MemberPress membership plugin.', 'wpforo' ),
+			'desc'         => 'Allows to setup membership access to your forums through MemberPress membership plugin.',
 			'url'          => 'https://gvectors.com/product/wpforo-memberpress/',
 		],
 		'wpforo-groups'                  => [
@@ -298,7 +295,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'Groups Plugin Integration',
 			'thumb'        => WPFORO_URL . '/assets/addons/wpforo-groups/header.png',
-			'desc'         => __( 'Allows to setup membership access to your forums through Groups plugin.', 'wpforo' ),
+			'desc'         => 'Allows to setup membership access to your forums through Groups plugin.',
 			'url'          => 'https://gvectors.com/product/wpforo-groups-membership/',
 		],
 		'wpforo-suremembers'             => [
@@ -315,7 +312,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'SureMembers Integration',
 			'thumb'        => WPFORO_URL . '/assets/addons/wpforo-suremembers/header.png',
-			'desc'         => __( 'Allows to setup membership access to your forums through SureMembers membership plugin.', 'wpforo' ),
+			'desc'         => 'Allows to setup membership access to your forums through SureMembers membership plugin.',
 			'url'          => 'https://gvectors.com/product/wpforo-suremembers/',
 		],
 		'wpforo-paid-membership-pro'     => [
@@ -332,7 +329,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'Paid Membership Pro Integration',
 			'thumb'        => WPFORO_URL . '/assets/addons/wpforo-paid-membership-pro/header.png',
-			'desc'         => __( 'Allows to setup membership access to your forums through Paid Membership Pro plugin.', 'wpforo' ),
+			'desc'         => 'Allows to setup membership access to your forums through Paid Membership Pro plugin.',
 			'url'          => 'https://gvectors.com/product/wpforo-paid-membership-pro/',
 		],
 		'wpforo-woocommerce-memberships' => [
@@ -349,7 +346,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'WooCommerce Memberships Integration',
 			'thumb'        => WPFORO_URL . '/assets/addons/wpforo-woocomerce-memberships/header.png',
-			'desc'         => __( 'Allows to setup membership access to your forums and topics through WooCommerce Memberships plugin.', 'wpforo' ),
+			'desc'         => 'Allows to setup membership access to your forums and topics through WooCommerce Memberships plugin.',
 			'url'          => 'https://gvectors.com/product/wpforo-woocommerce-memberships/',
 		],
 		'wpforo-mentioning'              => [
@@ -361,7 +358,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			'deps'     => [],
 			'title'    => 'User Mentioning',
 			'thumb'    => WPFORO_URL . '/assets/addons/wpforo-mentioning/header.png',
-			'desc'     => __( 'Opens pop-up window to select users for mentioning by @nickname.', 'wpforo' ),
+			'desc'     => 'Opens pop-up window to select users for mentioning by @nickname.',
 			'url'      => 'https://gvectors.com/product/wpforo_mentioning/',
 		],
 		'wpforo-voice-posting'           => [
@@ -373,7 +370,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			'deps'     => [],
 			'title'    => 'Voice Posting',
 			'thumb'    => WPFORO_URL . '/assets/addons/wpforo-voice-posting/header.png',
-			'desc'     => __( 'Allows to record and attach voice messages to forum posts and private messages.', 'wpforo' ),
+			'desc'     => 'Allows to record and attach voice messages to forum posts and private messages.',
 			'url'      => 'https://gvectors.com/product/wpforo-voice-posting/',
 		],
 		'wpforo-cross-posting'           => [
@@ -385,7 +382,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			'deps'     => [],
 			'title'    => '"Forum - Blog" Cross Posting',
 			'thumb'    => WPFORO_URL . '/assets/addons/cross/header.png',
-			'desc'     => __( 'Blog to Forum and Forum to Blog content synchronization. Blog posts with Forum topics and Blog comments with Forum replies.', 'wpforo' ),
+			'desc'     => 'Blog to Forum and Forum to Blog content synchronization. Blog posts with Forum topics and Blog comments with Forum replies.',
 			'url'      => 'https://gvectors.com/product/wpforo-cross-posting/',
 		],
 		'wpforo-ad-manager'              => [
@@ -402,7 +399,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'Ads Manager',
 			'thumb'        => WPFORO_URL . '/assets/addons/ad-manager/header.png',
-			'desc'         => __( 'Ads Manager is a powerful yet simple advertisement management system. Allows you to add adverting banners between forums, topics and posts.', 'wpforo' ),
+			'desc'         => 'Ads Manager is a powerful yet simple advertisement management system. Allows you to add adverting banners between forums, topics and posts.',
 			'url'          => 'https://gvectors.com/product/wpforo-ad-manager/',
 		],
 		'wpforo-polls'                   => [
@@ -419,7 +416,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'Polls',
 			'thumb'        => WPFORO_URL . '/assets/addons/polls/header.png',
-			'desc'         => __( 'wpForo Polls is a complete addon to help forum members create, vote and manage polls effectively. Comes with poll specific permissions and settings.', 'wpforo' ),
+			'desc'         => 'wpForo Polls is a complete addon to help forum members create, vote and manage polls effectively. Comes with poll specific permissions and settings.',
 			'url'          => 'https://gvectors.com/product/wpforo-polls/',
 		],
 		'wpforo-emoticons'               => [
@@ -436,7 +433,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'wpForo Emoticons',
 			'thumb'        => WPFORO_URL . '/assets/addons/wpforo-emoticons/header.png',
-			'desc'         => __( 'Adds awesome Sticker and Emoticons packs to editor. Allows to create new custom emoticons packs.', 'wpforo' ),
+			'desc'         => 'Adds awesome Sticker and Emoticons packs to editor. Allows to create new custom emoticons packs.',
 			'url'          => 'https://gvectors.com/product/wpforo-emoticons/',
 		],
 		'wpforo-tenor'                   => [
@@ -448,7 +445,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			'deps'     => [],
 			'title'    => 'Tenor GIFs Integration',
 			'thumb'    => WPFORO_URL . '/assets/addons/tenor/header.png',
-			'desc'     => __( 'Adds Tenor [GIF] button and opens popup where you can search for gifs and insert them in topic, post and private message content.', 'wpforo' ),
+			'desc'     => 'Adds Tenor [GIF] button and opens popup where you can search for gifs and insert them in topic, post and private message content.',
 			'url'      => 'https://gvectors.com/product/wpforo-tenor/',
 		],
 		'wpforo-giphy'                   => [
@@ -460,7 +457,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			'deps'     => [],
 			'title'    => 'GIPHY Integration',
 			'thumb'    => WPFORO_URL . '/assets/addons/giphy/header.png',
-			'desc'     => __( 'Adds GIPHY [GIF] button and opens popup where you can search for gifs and insert them in topic, post and private message content.', 'wpforo' ),
+			'desc'     => 'Adds GIPHY [GIF] button and opens popup where you can search for gifs and insert them in topic, post and private message content.',
 			'url'      => 'https://gvectors.com/product/wpforo-giphy/',
 		],
 		'wpforo-mycred'                  => [
@@ -472,7 +469,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			'deps'     => [],
 			'title'    => 'MyCRED Integration',
 			'thumb'    => WPFORO_URL . '/assets/addons/mycred/header.png',
-			'desc'     => __( 'Awards myCRED points for forum activity. Integrates myCRED Badges and Ranks. Converts wpForo topic and posts, likes to myCRED points.', 'wpforo' ),
+			'desc'     => 'Awards myCRED points for forum activity. Integrates myCRED Badges and Ranks. Converts wpForo topic and posts, likes to myCRED points.',
 			'url'      => 'https://gvectors.com/product/wpforo-mycred/',
 		],
 		'wpforo-syntax-highlighter'      => [
@@ -489,7 +486,7 @@ function wpforo_get_addons_info( $base = null ): array {
 			},
 			'title'        => 'Syntax Highlighter',
 			'thumb'        => WPFORO_URL . '/assets/addons/syntax/header.png',
-			'desc'         => __( 'Syntax highlighting for forum posts, automatic language detection and multi-language code highlighting.', 'wpforo' ),
+			'desc'         => 'Syntax highlighting for forum posts, automatic language detection and multi-language code highlighting.',
 			'url'          => 'https://gvectors.com/product/wpforo-syntax-highlighter/',
 		],
 
@@ -864,8 +861,23 @@ function wpforo_arr_group_by( $array, $key_by ) {
 }
 
 function wpforo_phrase( $key, $echo = true, $format = 'first-upper' ) {
-	$locale = WPF()->locale;
-	$phrase = ( isset( WPF()->phrase->phrases[ addslashes( strtolower( (string) $key ) ) ] ) ) ? WPF()->phrase->phrases[ addslashes( strtolower( (string) $key ) ) ] : $key;
+	static $cache = [];
+
+	$locale    = WPF()->locale;
+	$cache_key = $key . '|' . $locale . '|' . $format;
+
+	// For English locale, we can safely cache (no domain/backtrace issues)
+	if ( 'en_US' === $locale && isset( $cache[ $cache_key ] ) ) {
+		if ( $echo ) {
+			echo $cache[ $cache_key ];
+		}
+		return $cache[ $cache_key ];
+	}
+
+	// Normalize key once for phrase lookup
+	$normalized_key = addslashes( strtolower( (string) $key ) );
+	$phrase         = isset( WPF()->phrase->phrases[ $normalized_key ] ) ? WPF()->phrase->phrases[ $normalized_key ] : $key;
+
 	if( 'en_US' !== $locale ) {
 		$native      = $phrase;
 		$backtrace   = wp_debug_backtrace_summary();
@@ -910,6 +922,11 @@ function wpforo_phrase( $key, $echo = true, $format = 'first-upper' ) {
 	}
 
 	$phrase = str_replace( '{number}', '', $phrase );
+
+	// Cache for English locale (safe - no domain dependency)
+	if ( 'en_US' === $locale ) {
+		$cache[ $cache_key ] = $phrase;
+	}
 
 	if( $echo ) echo $phrase;
 
@@ -1183,15 +1200,25 @@ function wpforo_getcookie( $key, $explode = false ) {
 }
 
 function wpforo_is_bot() {
+	static $is_bot = null;
+
+	if ( $is_bot !== null ) {
+		return $is_bot;
+	}
+
 	if( ! $http_user_agent = wpfval( $_SERVER, 'HTTP_USER_AGENT' ) ) $http_user_agent = wpfval( $_SERVER, 'http_user_agent' );
 	if( $http_user_agent ) {
-		return preg_match(
+		$is_bot = (bool) preg_match(
 			'#(abot|dbot|ebot|hbot|kbot|lbot|mbot|nbot|obot|pbot|rbot|sbot|tbot|vbot|ybot|zbot|bot\.|bot\/|_bot|\.bot|\/bot|\-bot|\:bot|\(bot|crawl|slurp|spider|seek|accoona|acoon|adressendeutschland|ah\-ha\.com|ahoy|altavista|ananzi|anthill|appie|arachnophilia|arale|araneo|aranha|architext|aretha|arks|asterias|atlocal|atn|atomz|augurfind|backrub|bannana_bot|baypup|bdfetch|big brother|biglotron|bjaaland|blackwidow|blaiz|blog|blo\.|bloodhound|boitho|booch|bradley|butterfly|calif|cassandra|ccubee|cfetch|charlotte|churl|cienciaficcion|cmc|collective|comagent|combine|computingsite|csci|curl|cusco|daumoa|deepindex|delorie|depspid|deweb|die blinde kuh|digger|ditto|dmoz|docomo|download express|dtaagent|dwcp|ebiness|ebingbong|e\-collector|ejupiter|emacs\-w3 search engine|esther|evliya celebi|ezresult|falcon|felix ide|ferret|fetchrover|fido|findlinks|fireball|fish search|fouineur|funnelweb|gazz|gcreep|genieknows|getterroboplus|geturl|glx|goforit|golem|grabber|grapnel|gralon|griffon|gromit|grub|gulliver|hamahakki|harvest|havindex|helix|heritrix|hku www octopus|homerweb|htdig|html index|html_analyzer|htmlgobble|hubater|hyper\-decontextualizer|ia_archiver|ibm_planetwide|ichiro|iconsurf|iltrovatore|image\.kapsi\.net|imagelock|incywincy|indexer|infobee|informant|ingrid|inktomisearch\.com|inspector web|intelliagent|internet shinchakubin|ip3000|iron33|israeli\-search|ivia|jack|jakarta|javabee|jetbot|jumpstation|katipo|kdd\-explorer|kilroy|knowledge|kototoi|kretrieve|labelgrabber|lachesis|larbin|legs|libwww|linkalarm|link validator|linkscan|lockon|lwp|lycos|magpie|mantraagent|mapoftheinternet|marvin\/|mattie|mediafox|mediapartners|mercator|merzscope|microsoft url control|minirank|miva|mj12|mnogosearch|moget|monster|moose|motor|multitext|muncher|muscatferret|mwd\.search|myweb|najdi|nameprotect|nationaldirectory|nazilla|ncsa beta|nec\-meshexplorer|nederland\.zoek|netcarta webmap engine|netmechanic|netresearchserver|netscoop|newscan\-online|nhse|nokia6682\/|nomad|noyona|nutch|nzexplorer|objectssearch|occam|omni|open text|openfind|openintelligencedata|orb search|osis\-project|pack rat|pageboy|pagebull|page_verifier|panscient|parasite|partnersite|patric|pear\.|pegasus|peregrinator|pgp key agent|phantom|phpdig|picosearch|piltdownman|pimptrain|pinpoint|pioneer|piranha|plumtreewebaccessor|pogodak|poirot|pompos|poppelsdorf|poppi|popular iconoclast|psycheclone|publisher|python|rambler|raven search|roach|road runner|roadhouse|robbie|robofox|robozilla|rules|salty|sbider|scooter|scoutjet|scrubby|search\.|searchprocess|semanticdiscovery|senrigan|sg\-scout|shai\'hulud|shark|shopwiki|sidewinder|sift|silk|simmany|site searcher|site valet|sitetech\-rover|skymob\.com|sleek|smartwit|sna\-|snappy|snooper|sohu|speedfind|sphere|sphider|spinner|spyder|steeler\/|suke|suntek|supersnooper|surfnomore|sven|sygol|szukacz|tach black widow|tarantula|templeton|\/teoma|t\-h\-u\-n\-d\-e\-r\-s\-t\-o\-n\-e|theophrastus|titan|titin|tkwww|toutatis|t\-rex|tutorgig|twiceler|twisted|ucsd|udmsearch|url check|updated|vagabondo|valkyrie|verticrawl|victoria|vision\-search|volcano|voyager\/|voyager\-hc|w3c_validator|w3m2|w3mir|walker|wallpaper|wanderer|wauuu|wavefire|web core|web hopper|web wombat|webbandit|webcatcher|webcopy|webfoot|weblayers|weblinker|weblog monitor|webmirror|webmonkey|webquest|webreaper|websitepulse|websnarf|webstolperer|webvac|webwalk|webwatch|webwombat|webzinger|wget|whizbang|whowhere|wild ferret|wordpress|worldlight|wwwc|wwwster|xenu|xget|xift|xirq|yandex|yanga|yeti|yodao|zao\/|zippp|zyborg|\.\.\.\.|InspectionTool)#i',
 			(string) $http_user_agent
 		);
+
+		return $is_bot;
 	}
 
-	return true;
+	$is_bot = true;
+
+	return $is_bot;
 }
 
 //Option value filter and output
@@ -1227,13 +1254,27 @@ function wpfo_check( $option = '', $value = '', $type = 'checked', $echo = true 
 }
 
 /**
- * Validates keys of requested array.
+ * Check if nested array keys exist.
  *
- * @param array $array
- * @param string|int $key
- * @param string|int ... $_, ... [optional] more keys
+ * Traverses nested arrays to validate if a path of keys exists.
+ * All arguments after $array are treated as keys to traverse - this function
+ * does NOT support a default value parameter.
  *
- * @return bool
+ * @example
+ * // Check if $arr['user']['profile']['name'] exists:
+ * wpfkey( $arr, 'user', 'profile', 'name' )  // Returns true/false
+ *
+ * // WRONG - this tries to check $arr['key'][0], not use 0 as default:
+ * wpfkey( $arr, 'key', 0 )  // Checks for $arr['key'][0], NOT a default!
+ *
+ * @param array      $array The array to check
+ * @param string|int $key   First key to check
+ * @param string|int ...$_  Additional keys to traverse (NOT a default value!)
+ *
+ * @return bool True if all keys exist in the nested path, false otherwise
+ *
+ * @see wpfval() To get the value at a nested path
+ * @see wpffix() To get a value with a default fallback
  */
 function wpfkey( &$array, $key ) {
 	$a = $array;
@@ -1250,14 +1291,38 @@ function wpfkey( &$array, $key ) {
 }
 
 /**
- * get values of requested array keys if found otherwise returns null to allow you cast to your desired type of variable.
+ * Get value from nested array keys, or null if path doesn't exist.
  *
- * @param mixed $array
- * @param string|int ... $_, ... [optional] more keys
+ * Traverses nested arrays to retrieve a value at a given key path.
+ * All arguments after $array are treated as keys to traverse - this function
+ * does NOT support a default value parameter.
  *
- * @return mixed|null
+ * IMPORTANT: This function does NOT accept a default value!
+ * Use wpffix() or the null coalescing operator for defaults.
+ *
+ * @example
+ * // Get $arr['user']['profile']['name']:
+ * wpfval( $arr, 'user', 'profile', 'name' )  // Returns value or null
+ *
+ * // WRONG - this tries to access $arr['key'][0], not use 0 as default:
+ * wpfval( $arr, 'key', 0 )  // Accesses $arr['key'][0], NOT a default!
+ *
+ * // CORRECT - use ?: or ?? for defaults:
+ * wpfval( $arr, 'key' ) ?: 'default'    // Fallback for falsy values
+ * wpfval( $arr, 'key' ) ?? 'default'    // Fallback for null only
+ *
+ * // CORRECT - use wpffix() for defaults:
+ * wpffix( 'default', $arr, 'key' )      // Returns 'default' if key missing
+ *
+ * @param mixed      $array The array to traverse
+ * @param string|int ...$_  Keys to traverse (NOT a default value!)
+ *
+ * @return mixed|null The value at the key path, or null if any key doesn't exist
+ *
+ * @see wpfkey() To check if a nested path exists
+ * @see wpffix() To get a value with a default fallback
  */
-function wpfval( &$array ) {
+function wpfval( $array ) {
 	if( func_num_args() === 1 ) return $array;
 	$a = $array;
 	foreach( func_get_args() as $arg_num => $key ) {
@@ -2293,6 +2358,9 @@ function wpforo_get_option( $option, $default = null, $cache = true ) {
 				if( wpfkey( $default, $k ) ) $default[ $k ] = [];
 			}
 		}
+		if( preg_match( '#_activity$#iu', (string) $option ) ) {
+			if( wpfkey( $default, 'enabled_types' ) ) $default['enabled_types'] = [];
+		}
 		$default = apply_filters( 'wpforo_get_option_default_arg_before_cast', $default, $option );
 
 		$value = wpforo_settype( $value, gettype( $default ) );
@@ -2688,17 +2756,6 @@ function wpforo_ajax_response( $message ) {
 	die();
 }
 
-function wpforo_get_fb_user( $user ) {
-	if( is_user_logged_in() ) return wp_get_current_user();
-	$user_data = get_user_by( 'email', $user['user_email'] );
-	if( ! $user_data ) {
-		$users = get_users( [ 'meta_key' => '_fb_user_id', 'meta_value' => $user['fb_user_id'], 'number' => 1, 'count_total' => false ] );
-		if( is_array( $users ) ) $user_data = reset( $users );
-	}
-
-	return $user_data;
-}
-
 function wpforo_unique_username( $username ) {
 	static $i;
 	if( ! $username ) $username = 'user_' . uniqid();
@@ -3020,7 +3077,7 @@ function wpforo_user_is( $userid, $role ) {
 }
 
 function wpforo_random_colors() {
-	mt_srand( (double) microtime() * 1000000 );
+	mt_srand( (int) ( microtime( true ) * 1000000 ) );
 	$color = '';
 	while( strlen( (string) $color ) < 6 ) {
 		$color .= sprintf( "%02X", mt_rand( 0, 255 ) );
@@ -4058,4 +4115,181 @@ function wpforo_get_current_language_url( $url = '' ) {
         }
     }
     return $url;
+}
+
+/**
+ * Centralized logging function for wpForo AI features.
+ *
+ * Nothing is logged unless wpforo General > Debug Mode is enabled
+ * OR WordPress WP_DEBUG is on. This ensures zero disk usage on production sites.
+ *
+ * Log levels: 'error', 'info', 'debug'
+ * - error: Logged when WP_DEBUG is on OR wpforo Debug Mode is on
+ * - info:  Logged only when BOTH WP_DEBUG and wpforo Debug Mode are on
+ * - debug: Logged when wpforo Debug Mode is on (with or without WP_DEBUG)
+ *
+ * Logs are written to: wp-content/uploads/wpforo/ai-logs/{Y-m-d}.log
+ *
+ * @param string $level   Log level: 'error', 'info', or 'debug'
+ * @param string $message Log message
+ * @param string $tag     Component tag, e.g. 'Moderation', 'Client', 'VectorStorage'
+ */
+function wpforo_ai_log( $level, $message, $tag = '' ) {
+	static $enabled_levels = null;
+	static $log_dir        = null;
+
+	// Resolve enabled levels once per request
+	if ( $enabled_levels === null ) {
+		$enabled_levels = [];
+		$wpforo_debug   = wpforo_setting( 'general', 'debug_mode' );
+		$wp_debug       = defined( 'WP_DEBUG' ) && WP_DEBUG;
+		if ( $wp_debug || $wpforo_debug ) {
+			$enabled_levels[] = 'error';
+		}
+		if ( $wpforo_debug ) {
+			$enabled_levels[] = 'debug';
+		}
+		if ( $wp_debug && $wpforo_debug ) {
+			$enabled_levels[] = 'info';
+		}
+	}
+
+	if ( ! in_array( $level, $enabled_levels, true ) ) {
+		return;
+	}
+
+	// Resolve log directory once per request
+	if ( $log_dir === null ) {
+		$upload_dir = wp_upload_dir();
+		$log_dir    = $upload_dir['basedir'] . '/wpforo/ai-logs';
+		if ( ! is_dir( $log_dir ) ) {
+			wp_mkdir_p( $log_dir );
+			@file_put_contents( $log_dir . '/index.php', "<?php // Silence is golden.\n" );
+		}
+	}
+
+	$prefix = '[wpForo AI' . ( $tag ? ' ' . $tag : '' ) . ']';
+	$date   = gmdate( 'Y-m-d H:i:s' );
+	$entry  = sprintf( "[%s] [%s] %s %s\n", $date, strtoupper( $level ), $prefix, $message );
+
+	$log_file = $log_dir . '/' . gmdate( 'Y-m-d' ) . '.log';
+	@file_put_contents( $log_file, $entry, FILE_APPEND | LOCK_EX );
+}
+
+/**
+ * Get the master list of AI-supported languages.
+ *
+ * Single source of truth for all AI language lists across the plugin:
+ * - Admin settings dropdowns (Settings.php)
+ * - Frontend widget preference dropdown (header.php)
+ * - Language name resolution (AIClient.php get_user_language)
+ * - Preference validation whitelist (AIClient.php ajax_save_ai_preferences)
+ *
+ * Each entry: [ 'code' => '2-letter ISO code', 'locale' => 'WordPress locale', 'name' => 'English name', 'native' => 'Native name' ]
+ *
+ * @return array
+ */
+function wpforo_get_ai_languages() {
+	return [
+		// Major world languages
+		[ 'code' => 'en', 'locale' => 'en_US', 'name' => 'English', 'native' => 'English' ],
+		[ 'code' => 'en', 'locale' => 'en_GB', 'name' => 'English (UK)', 'native' => 'English (UK)' ],
+		[ 'code' => 'zh', 'locale' => 'zh_CN', 'name' => 'Chinese Simplified', 'native' => '简体中文' ],
+		[ 'code' => 'zh', 'locale' => 'zh_TW', 'name' => 'Chinese Traditional', 'native' => '繁體中文' ],
+		[ 'code' => 'es', 'locale' => 'es_ES', 'name' => 'Spanish', 'native' => 'Español' ],
+		[ 'code' => 'hi', 'locale' => 'hi_IN', 'name' => 'Hindi', 'native' => 'हिन्दी' ],
+		[ 'code' => 'ar', 'locale' => 'ar', 'name' => 'Arabic', 'native' => 'العربية' ],
+		[ 'code' => 'pt', 'locale' => 'pt_BR', 'name' => 'Portuguese (Brazil)', 'native' => 'Português Brasil' ],
+		[ 'code' => 'pt', 'locale' => 'pt_PT', 'name' => 'Portuguese', 'native' => 'Português' ],
+		[ 'code' => 'bn', 'locale' => 'bn_BD', 'name' => 'Bengali', 'native' => 'বাংলা' ],
+		[ 'code' => 'ru', 'locale' => 'ru_RU', 'name' => 'Russian', 'native' => 'Русский' ],
+		[ 'code' => 'ja', 'locale' => 'ja', 'name' => 'Japanese', 'native' => '日本語' ],
+		[ 'code' => 'fr', 'locale' => 'fr_FR', 'name' => 'French', 'native' => 'Français' ],
+		[ 'code' => 'de', 'locale' => 'de_DE', 'name' => 'German', 'native' => 'Deutsch' ],
+		[ 'code' => 'ko', 'locale' => 'ko_KR', 'name' => 'Korean', 'native' => '한국어' ],
+		[ 'code' => 'it', 'locale' => 'it_IT', 'name' => 'Italian', 'native' => 'Italiano' ],
+		[ 'code' => 'tr', 'locale' => 'tr_TR', 'name' => 'Turkish', 'native' => 'Türkçe' ],
+		[ 'code' => 'vi', 'locale' => 'vi_VN', 'name' => 'Vietnamese', 'native' => 'Tiếng Việt' ],
+		[ 'code' => 'pl', 'locale' => 'pl_PL', 'name' => 'Polish', 'native' => 'Polski' ],
+		[ 'code' => 'nl', 'locale' => 'nl_NL', 'name' => 'Dutch', 'native' => 'Nederlands' ],
+		[ 'code' => 'th', 'locale' => 'th', 'name' => 'Thai', 'native' => 'ไทย' ],
+		[ 'code' => 'id', 'locale' => 'id_ID', 'name' => 'Indonesian', 'native' => 'Bahasa Indonesia' ],
+		[ 'code' => 'ms', 'locale' => 'ms_MY', 'name' => 'Malay', 'native' => 'Bahasa Melayu' ],
+		// European languages
+		[ 'code' => 'uk', 'locale' => 'uk', 'name' => 'Ukrainian', 'native' => 'Українська' ],
+		[ 'code' => 'ro', 'locale' => 'ro_RO', 'name' => 'Romanian', 'native' => 'Română' ],
+		[ 'code' => 'el', 'locale' => 'el_GR', 'name' => 'Greek', 'native' => 'Ελληνικά' ],
+		[ 'code' => 'cs', 'locale' => 'cs_CZ', 'name' => 'Czech', 'native' => 'Čeština' ],
+		[ 'code' => 'sv', 'locale' => 'sv_SE', 'name' => 'Swedish', 'native' => 'Svenska' ],
+		[ 'code' => 'hu', 'locale' => 'hu_HU', 'name' => 'Hungarian', 'native' => 'Magyar' ],
+		[ 'code' => 'da', 'locale' => 'da_DK', 'name' => 'Danish', 'native' => 'Dansk' ],
+		[ 'code' => 'fi', 'locale' => 'fi', 'name' => 'Finnish', 'native' => 'Suomi' ],
+		[ 'code' => 'no', 'locale' => 'no_NO', 'name' => 'Norwegian', 'native' => 'Norsk' ],
+		[ 'code' => 'sk', 'locale' => 'sk_SK', 'name' => 'Slovak', 'native' => 'Slovenčina' ],
+		[ 'code' => 'bg', 'locale' => 'bg_BG', 'name' => 'Bulgarian', 'native' => 'Български' ],
+		[ 'code' => 'hr', 'locale' => 'hr', 'name' => 'Croatian', 'native' => 'Hrvatski' ],
+		[ 'code' => 'sr', 'locale' => 'sr_RS', 'name' => 'Serbian', 'native' => 'Српски' ],
+		[ 'code' => 'sl', 'locale' => 'sl_SI', 'name' => 'Slovenian', 'native' => 'Slovenščina' ],
+		[ 'code' => 'lt', 'locale' => 'lt_LT', 'name' => 'Lithuanian', 'native' => 'Lietuvių' ],
+		[ 'code' => 'lv', 'locale' => 'lv', 'name' => 'Latvian', 'native' => 'Latviešu' ],
+		[ 'code' => 'et', 'locale' => 'et', 'name' => 'Estonian', 'native' => 'Eesti' ],
+		[ 'code' => 'ca', 'locale' => 'ca', 'name' => 'Catalan', 'native' => 'Català' ],
+		[ 'code' => 'gl', 'locale' => 'gl_ES', 'name' => 'Galician', 'native' => 'Galego' ],
+		[ 'code' => 'eu', 'locale' => 'eu', 'name' => 'Basque', 'native' => 'Euskara' ],
+		[ 'code' => 'sq', 'locale' => 'sq', 'name' => 'Albanian', 'native' => 'Shqip' ],
+		[ 'code' => 'mk', 'locale' => 'mk_MK', 'name' => 'Macedonian', 'native' => 'Македонски' ],
+		[ 'code' => 'bs', 'locale' => 'bs_BA', 'name' => 'Bosnian', 'native' => 'Bosanski' ],
+		[ 'code' => 'mt', 'locale' => 'mt_MT', 'name' => 'Maltese', 'native' => 'Malti' ],
+		[ 'code' => 'is', 'locale' => 'is_IS', 'name' => 'Icelandic', 'native' => 'Íslenska' ],
+		[ 'code' => 'ga', 'locale' => 'ga', 'name' => 'Irish', 'native' => 'Gaeilge' ],
+		[ 'code' => 'cy', 'locale' => 'cy', 'name' => 'Welsh', 'native' => 'Cymraeg' ],
+		[ 'code' => 'be', 'locale' => 'be_BY', 'name' => 'Belarusian', 'native' => 'Беларуская' ],
+		[ 'code' => 'lb', 'locale' => 'lb_LU', 'name' => 'Luxembourgish', 'native' => 'Lëtzebuergesch' ],
+		// Middle Eastern & Central Asian
+		[ 'code' => 'he', 'locale' => 'he_IL', 'name' => 'Hebrew', 'native' => 'עברית' ],
+		[ 'code' => 'fa', 'locale' => 'fa_IR', 'name' => 'Persian', 'native' => 'فارسی' ],
+		[ 'code' => 'ur', 'locale' => 'ur', 'name' => 'Urdu', 'native' => 'اردو' ],
+		[ 'code' => 'ku', 'locale' => 'ku', 'name' => 'Kurdish', 'native' => 'Kurdî' ],
+		[ 'code' => 'az', 'locale' => 'az', 'name' => 'Azerbaijani', 'native' => 'Azərbaycan' ],
+		[ 'code' => 'ka', 'locale' => 'ka_GE', 'name' => 'Georgian', 'native' => 'ქართული' ],
+		[ 'code' => 'hy', 'locale' => 'hy', 'name' => 'Armenian', 'native' => 'Հայերեն' ],
+		[ 'code' => 'kk', 'locale' => 'kk', 'name' => 'Kazakh', 'native' => 'Қазақша' ],
+		[ 'code' => 'uz', 'locale' => 'uz_UZ', 'name' => 'Uzbek', 'native' => 'Oʻzbek' ],
+		[ 'code' => 'tg', 'locale' => 'tg', 'name' => 'Tajik', 'native' => 'Тоҷикӣ' ],
+		[ 'code' => 'ky', 'locale' => 'ky_KY', 'name' => 'Kyrgyz', 'native' => 'Кыргызча' ],
+		[ 'code' => 'tk', 'locale' => 'tk', 'name' => 'Turkmen', 'native' => 'Türkmen' ],
+		[ 'code' => 'mn', 'locale' => 'mn', 'name' => 'Mongolian', 'native' => 'Монгол' ],
+		// South Asian
+		[ 'code' => 'ta', 'locale' => 'ta_IN', 'name' => 'Tamil', 'native' => 'தமிழ்' ],
+		[ 'code' => 'te', 'locale' => 'te', 'name' => 'Telugu', 'native' => 'తెలుగు' ],
+		[ 'code' => 'mr', 'locale' => 'mr', 'name' => 'Marathi', 'native' => 'मराठी' ],
+		[ 'code' => 'gu', 'locale' => 'gu', 'name' => 'Gujarati', 'native' => 'ગુજરાતી' ],
+		[ 'code' => 'kn', 'locale' => 'kn', 'name' => 'Kannada', 'native' => 'ಕನ್ನಡ' ],
+		[ 'code' => 'ml', 'locale' => 'ml_IN', 'name' => 'Malayalam', 'native' => 'മലയാളം' ],
+		[ 'code' => 'pa', 'locale' => 'pa_IN', 'name' => 'Punjabi', 'native' => 'ਪੰਜਾਬੀ' ],
+		[ 'code' => 'si', 'locale' => 'si_LK', 'name' => 'Sinhala', 'native' => 'සිංහල' ],
+		[ 'code' => 'ne', 'locale' => 'ne_NP', 'name' => 'Nepali', 'native' => 'नेपाली' ],
+		[ 'code' => 'my', 'locale' => 'my_MM', 'name' => 'Burmese', 'native' => 'မြန်မာ' ],
+		[ 'code' => 'km', 'locale' => 'km', 'name' => 'Khmer', 'native' => 'ខ្មែរ' ],
+		[ 'code' => 'lo', 'locale' => 'lo', 'name' => 'Lao', 'native' => 'ລາວ' ],
+		// East & Southeast Asian
+		[ 'code' => 'tl', 'locale' => 'tl', 'name' => 'Filipino', 'native' => 'Filipino' ],
+		[ 'code' => 'jv', 'locale' => 'jv_ID', 'name' => 'Javanese', 'native' => 'Basa Jawa' ],
+		[ 'code' => 'su', 'locale' => 'su_ID', 'name' => 'Sundanese', 'native' => 'Basa Sunda' ],
+		// African languages
+		[ 'code' => 'sw', 'locale' => 'sw', 'name' => 'Swahili', 'native' => 'Kiswahili' ],
+		[ 'code' => 'am', 'locale' => 'am', 'name' => 'Amharic', 'native' => 'አማርኛ' ],
+		[ 'code' => 'ha', 'locale' => 'ha', 'name' => 'Hausa', 'native' => 'Hausa' ],
+		[ 'code' => 'yo', 'locale' => 'yo', 'name' => 'Yoruba', 'native' => 'Yorùbá' ],
+		[ 'code' => 'ig', 'locale' => 'ig_NG', 'name' => 'Igbo', 'native' => 'Igbo' ],
+		[ 'code' => 'zu', 'locale' => 'zu', 'name' => 'Zulu', 'native' => 'isiZulu' ],
+		[ 'code' => 'xh', 'locale' => 'xh', 'name' => 'Xhosa', 'native' => 'isiXhosa' ],
+		[ 'code' => 'af', 'locale' => 'af', 'name' => 'Afrikaans', 'native' => 'Afrikaans' ],
+		[ 'code' => 'so', 'locale' => 'so_SO', 'name' => 'Somali', 'native' => 'Soomaali' ],
+		[ 'code' => 'rw', 'locale' => 'rw_RW', 'name' => 'Kinyarwanda', 'native' => 'Kinyarwanda' ],
+		[ 'code' => 'mg', 'locale' => 'mg_MG', 'name' => 'Malagasy', 'native' => 'Malagasy' ],
+		// Other
+		[ 'code' => 'eo', 'locale' => 'eo', 'name' => 'Esperanto', 'native' => 'Esperanto' ],
+		[ 'code' => 'la', 'locale' => 'la', 'name' => 'Latin', 'native' => 'Latina' ],
+	];
 }

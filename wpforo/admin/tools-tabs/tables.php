@@ -89,7 +89,7 @@ add_action( 'admin_footer', 'wpforo_debug_page_ajax_actions' );
                             <p style="font-size: 14px; font-weight: 600;"><?php _e( 'Problem fixer SQL commands:', 'wpforo' ) ?></p>
                             <pre style=" width: 100%; max-width: 1200px; display: block; padding: 10px; line-height: 1.4; border: 1px dashed #dd0000; background-color: #fffdea; color: #000000; overflow-x:auto;"><?php
                                 if( ! empty( $problems ) ) {
-                                    echo 'SET AUTOCOMMIT = 0;<br />';
+                                    echo 'SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";<br />SET AUTOCOMMIT = 0;<br />';
                                     $SQL = wpforo_database_fixer( $problems );
                                     if( wpfval( $SQL, 'fields' ) ) {
                                         foreach( $SQL['fields'] as $query ) echo $query . '<br>';

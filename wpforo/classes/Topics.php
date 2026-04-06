@@ -28,7 +28,34 @@ class Topics {
 	public function reset() {
 		self::$cache = [ 'topics' => [], 'tags' => [], 'item' => [], 'topic' => [], 'tag' => [], 'forum_slug' => [] ];
 	}
-	
+
+	/**
+	 * Get appropriate error message for flood protection
+	 *
+	 * @param string $reason The flood reason code
+	 * @return string Error message
+	 */
+	private function get_flood_error_message( $reason ) {
+		switch( $reason ) {
+			case 'temp_ban':
+				$remaining = WPF()->perm->get_flood_ban_remaining();
+				$minutes = ceil( $remaining / 60 );
+				return sprintf(
+					__( 'You have been temporarily blocked for posting too quickly. Please wait %d minute(s) before trying again.', 'wpforo' ),
+					$minutes
+				);
+			case 'per_minute':
+				return __( 'You are posting too quickly. Please wait a moment before creating another topic.', 'wpforo' );
+			case 'per_hour':
+				return __( 'You have reached the hourly posting limit. Please wait before creating more topics.', 'wpforo' );
+			case 'ip_per_hour':
+				return __( 'Too many posts from your location. Please wait before trying again.', 'wpforo' );
+			case 'interval':
+			default:
+				return __( 'You are posting too quickly. Slow down.', 'wpforo' );
+		}
+	}
+
 	public function edit( $args = [] ) {
 		if( empty( $args ) && empty( $_REQUEST['thread'] ) ) return false;
 		if( ! isset( $args['topicid'] ) && isset( $_GET['id'] ) ) $args['topicid'] = intval( $_GET['id'] );
@@ -81,8 +108,17 @@ class Topics {
 			}
 		}
 		
-		extract( $args, EXTR_OVERWRITE );
-		
+		// Security: extract only expected keys to prevent variable injection (e.g., $topic/$forum override)
+		$topicid = isset( $args['topicid'] ) ? $args['topicid'] : null;
+		$title   = isset( $args['title'] ) ? $args['title'] : null;
+		$type    = isset( $args['type'] ) ? $args['type'] : null;
+		$status  = isset( $args['status'] ) ? $args['status'] : null;
+		$private = isset( $args['private'] ) ? $args['private'] : null;
+		$name    = isset( $args['name'] ) ? $args['name'] : null;
+		$email   = isset( $args['email'] ) ? $args['email'] : null;
+		$body    = isset( $args['body'] ) ? $args['body'] : null;
+		$tags    = isset( $args['tags'] ) ? $args['tags'] : null;
+
 		if( isset( $topicid ) ) $topicid = intval( $topicid );
 		if( isset( $title ) ) $title = sanitize_text_field( trim( (string) $title ) );
 		if( isset( $type ) ) $type = intval( $type );
@@ -134,6 +170,10 @@ class Topics {
 		$type       = ( isset( $type ) ? $type : intval( $topic['type'] ) );
 		$status     = ( isset( $status ) ? $status : intval( $topic['status'] ) );
 		$private    = ( isset( $private ) ? $private : intval( $topic['private'] ) );
+		// Force private for ticket_forum type forums (all topics must be private)
+		if( wpfval( $forum, 'type' ) === 'ticket_forum' ) {
+			$private = 1;
+		}
 		$has_attach = ( isset( $body ) ? ( strpos(
 			                                   (string) $body,
 			                                   '[attach]'
@@ -261,10 +301,20 @@ class Topics {
 			return false;
 		}
 		
-		if( ! WPF()->perm->can_post_now() ) {
-			WPF()->notice->add( 'You are posting too quickly. Slow down.', 'error' );
-			
-			return false;
+		// Skip flood check for AI-generated content (created by AI Tasks)
+		if ( empty( $args['is_ai_generated'] ) ) {
+			$flood_reason = '';
+			$flood_result = WPF()->perm->can_post_now( $flood_reason );
+			if( $flood_result === false ) {
+				$message = $this->get_flood_error_message( $flood_reason );
+				WPF()->notice->add( $message, 'error' );
+				return false;
+			}
+			// If flood action is 'unapprove', force the topic to be unapproved
+			if( $flood_result === 'unapprove' ) {
+				$args['status'] = 1;
+				$args['_flood_reason'] = $flood_reason; // Pass flood reason for moderation logging
+			}
 		}
 		
 		if( ! isset( $args['title'] ) || ! $args['title'] = wpforo_text(
@@ -312,15 +362,34 @@ class Topics {
 		$args = apply_filters( 'wpforo_add_topic_data_filter', $args, $forum );
 		
 		if( empty( $args ) ) return false;
-		
-		extract( $args, EXTR_OVERWRITE );
-		
+
+		// Security: extract only expected keys to prevent variable injection
+		$title    = isset( $args['title'] ) ? $args['title'] : null;
+		$slug     = isset( $args['slug'] ) ? $args['slug'] : null;
+		$created  = isset( $args['created'] ) ? $args['created'] : null;
+		$userid   = isset( $args['userid'] ) ? $args['userid'] : null;
+		$name     = isset( $args['name'] ) ? $args['name'] : null;
+		$email    = isset( $args['email'] ) ? $args['email'] : null;
+		$body     = isset( $args['body'] ) ? $args['body'] : null;
+		$tags     = isset( $args['tags'] ) ? $args['tags'] : null;
+		$type     = isset( $args['type'] ) ? $args['type'] : null;
+		$status   = isset( $args['status'] ) ? $args['status'] : null;
+		$private  = isset( $args['private'] ) ? $args['private'] : null;
+		$meta_key  = isset( $args['meta_key'] ) ? $args['meta_key'] : null;
+		$meta_desc = isset( $args['meta_desc'] ) ? $args['meta_desc'] : null;
+		$views     = isset( $args['views'] ) ? $args['views'] : null;
+		$has_attach = isset( $args['has_attach'] ) ? $args['has_attach'] : null;
+
 		if( isset( $title ) ) $title = sanitize_text_field( trim( (string) $title ) );
 		if( isset( $created ) ) $created = sanitize_text_field( $created );
 		if( isset( $userid ) ) $userid = intval( $userid );
 		$type    = ( isset( $type ) && $type ? 1 : 0 );
 		$status  = ( isset( $status ) && $status ? 1 : 0 );
 		$private = ( isset( $private ) && $private ? 1 : 0 );
+		// Force private for ticket_forum type forums (all topics must be private)
+		if( wpfval( $forum, 'type' ) === 'ticket_forum' ) {
+			$private = 1;
+		}
 		if( isset( $meta_key ) ) $meta_key = sanitize_text_field( $meta_key );
 		if( isset( $meta_desc ) ) $meta_desc = sanitize_text_field( $meta_desc );
 		if( isset( $name ) ) $name = strip_tags( trim( (string) $name ) );
@@ -1068,9 +1137,21 @@ class Topics {
 			$args['userid']  = $fpost['userid'];
 			$args['name']    = $fpost['name'];
 			$args['email']   = $fpost['email'];
-			
-			extract( $args );
-			
+
+			// Security: extract only expected keys to prevent variable injection
+			$forumid = isset( $args['forumid'] ) ? $args['forumid'] : null;
+			$title   = isset( $args['title'] ) ? $args['title'] : null;
+			$slug    = isset( $args['slug'] ) ? $args['slug'] : null;
+			$created = isset( $args['created'] ) ? $args['created'] : null;
+			$userid  = isset( $args['userid'] ) ? $args['userid'] : null;
+			$body    = isset( $args['body'] ) ? $args['body'] : null;
+			$name    = isset( $args['name'] ) ? $args['name'] : null;
+			$email   = isset( $args['email'] ) ? $args['email'] : null;
+			$type    = isset( $args['type'] ) ? $args['type'] : null;
+			$status  = isset( $args['status'] ) ? $args['status'] : null;
+			$private = isset( $args['private'] ) ? $args['private'] : null;
+			$has_attach = isset( $args['has_attach'] ) ? $args['has_attach'] : null;
+
 			if( isset( $forumid ) ) $forumid = intval( $forumid );
 			if( isset( $title ) ) $title = sanitize_text_field( trim( (string) $title ) );
 			if( isset( $slug ) ) $slug = sanitize_title( $slug );
@@ -1268,6 +1349,7 @@ class Topics {
 				$topicid
 			)
 		) ) {
+			$exclude = [];
 			foreach( $postids as $postid ) {
 				if( $postid == $topic['first_postid'] ) {
 					return WPF()->post->delete( $postid, false, false, $exclude, false );
@@ -1560,33 +1642,52 @@ class Topics {
 		$cache = WPF()->cache->on( 'topic' );
 		
 		$default = [
-			'include'   => [],        // array( 2, 10, 25 )
-			'exclude'   => [],        // array( 2, 10, 25 )
-			'forumids'  => [],
-			'forumid'   => null,
-			'userid'    => null,            // user id in DB
-			'type'      => null,            //0, 1, etc . . .
-			'solved'    => null,
-			'closed'    => null,
-			'status'    => null,            //0, 1, etc . . .
-			'private'   => null,            //0, 1, etc . . .''
-			'pollid'    => null,
-			'orderby'   => 'type, topicid',    // type, topicid, modified, created
-			'order'     => 'DESC',        // ASC DESC
-			'offset'    => null,        // this use when you give row_count
-			'row_count' => null,        // 4 or 1 ...
-			'permgroup' => null,        //Checks permissions based on attribute value not on current user usergroup
-			'read'      => null,       //true / false
-			'prefix'    => null,       //23 / 23,24,50
-			'where'     => null,
+			'include'      => [],        // array( 2, 10, 25 )
+			'exclude'      => [],        // array( 2, 10, 25 )
+			'forumids'     => [],
+			'forumid'      => null,
+			'userid'       => null,            // user id in DB
+			'type'         => null,            //0, 1, etc . . .
+			'solved'       => null,
+			'closed'       => null,
+			'status'       => null,            //0, 1, etc . . .
+			'private'      => null,            //0, 1, etc . . .''
+			'pollid'       => null,
+			'orderby'      => 'type, topicid',    // type, topicid, modified, created
+			'order'        => 'DESC',        // ASC DESC
+			'offset'       => null,        // this use when you give row_count
+			'row_count'    => null,        // 4 or 1 ...
+			'permgroup'    => null,        //Checks permissions based on attribute value not on current user usergroup
+			'read'         => null,       //true / false
+			'prefix'       => null,       //23 / 23,24,50
+			'where'        => null,
 		];
 		
 		$args = wpforo_parse_args( $args, $default );
-		
-		extract( $args, EXTR_OVERWRITE );
-		
+
+		// Security: extract only expected keys instead of extract()
+		$include   = $args['include'];
+		$exclude   = $args['exclude'];
+		$forumids  = $args['forumids'];
+		$forumid   = $args['forumid'];
+		$userid    = $args['userid'];
+		$type      = $args['type'];
+		$solved    = $args['solved'];
+		$closed    = $args['closed'];
+		$status    = $args['status'];
+		$private   = $args['private'];
+		$pollid    = $args['pollid'];
+		$orderby   = $args['orderby'];
+		$order     = $args['order'];
+		$offset    = $args['offset'];
+		$row_count = $args['row_count'];
+		$permgroup = $args['permgroup'];
+		$read      = $args['read'];
+		$prefix    = $args['prefix'];
+		$where     = $args['where'];
+
 		if( $row_count === 0 ) return [];
-		
+
 		$include  = wpforo_parse_args( $include );
 		$exclude  = wpforo_parse_args( $exclude );
 		$forumids = wpforo_parse_args( $forumids );

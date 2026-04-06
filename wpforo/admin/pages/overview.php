@@ -7,35 +7,25 @@ if( ! defined( 'ABSPATH' ) ) exit;
     <h1 style="margin: 0; padding: 0; line-height: 10px;">&nbsp</h1>
 	<?php WPF()->notice->show() ?>
 
-    <div id="dashboard-widgets-wrap" style="padding-top:10px;">
+    <div id="dashboard-widgets-wrap">
         <div class="metabox-holder" id="dashboard-widgets">
 
             <div class="postbox-container" id="postbox-container-0" style="width:100%;">
                 <div class="wpf-box-wrap" style="min-height:60px;">
 
-                    <div class="postbox" id="wpforo_dashboard_widget_0" style="margin: 10px; padding: 20px 15px 10px 15px;">
+                    <div class="postbox" id="wpforo_dashboard_widget_0" style="margin: 10px; padding: 15px 15px 10px 15px;">
                         <div class="inside">
                             <div class="main" style="padding:5px 15px 15px 15px;">
-                                <div style="float:left; vertical-align:top; width:calc(100% - 150px);;">
+                                <div style="float:left; vertical-align:top; width:calc(100% - 200px);;">
                                     <p style="font-size:30px; margin:0 0 10px; font-family:Constantia, 'Lucida Bright', 'DejaVu Serif', Georgia, serif">
                                         <?php _e( 'Welcome to wpForo', 'wpforo' ); echo ' ' . esc_html( WPFORO_VERSION ) ?>
                                     </p>
-                                    <p style="margin:0; font-size:14px; font-family:'Lucida Bright', 'DejaVu Serif', Georgia, serif">
-										<?php _e( 'Thank you for using wpForo! wpForo is a professional bulletin board for WordPress, and the only forum software which comes with Multi-layout template system.
-                                    The "Extended", "Simplified", "Q&A" and "Threaded" layouts fit almost all type of discussions needs. You can use wpForo for small and extremely large communities. If you found some issue or bug please open a support topic in wpForo Support forum at wpForo.com. If you liked wpForo please leave some good review for this plugin. We really need your good reviews. 
-                                    If you didn\'t like wpForo please leave a list of issues and requirements you\'d like us to fix and add in our support forum. We\'re here to help you and improve wpForo as much as possible.',
+                                    <p style="margin:0; font-size:14px;">
+										<?php _e( 'Thank you for using wpForo! wpForo is the first 360° AI-powered forum platform for WordPress with revolutionary AI features and Multi-layout template system.
+                                    The "Extended", "Simplified", "Q&A", "Threaded" and "Boxed" layouts fit almost all type of discussions needs. You can use wpForo for small and extremely large communities. If you found some issue or bug please open a support topic in wpForo Support forum at wpForo.com. If you liked wpForo please leave some good review for this plugin.',
 											'wpforo'
 										); ?>
                                     </p>
-                                    <h3 style="font-size: 18px; margin-top: 20px;"><?php _e("What's New in wpForo 2", 'wpforo') ?></h3>
-                                    <ul class="wpf-wn-list">
-                                        <li><span class="wpf-wn-label"><?php _e("Multi-board system:", 'wpforo') ?></span> <?php _e("Allows to create multiple separate forum boards in the same WordPress website. You can create fully separate forums in different pages,", 'wpforo') ?></li>
-                                        <li><span class="wpf-wn-label"><?php _e("Multi-language forums:", 'wpforo') ?></span> <?php _e("Using the multi-board system you can create multiple separate forums for each language of your website. The forums will have different pages, categories and threads,", 'wpforo') ?></li>
-                                        <li><span class="wpf-wn-label"><?php _e("New Forum Theme:", 'wpforo') ?></span> <?php _e("The new version comes with completely redesigned forum layouts and style. It brings modern and clean look and feel for all 4 forum layouts (Extended, Simplified, Q&A and Threaded),", 'wpforo') ?></li>
-                                        <li><span class="wpf-wn-label"><?php _e("New Member Profile System:", 'wpforo') ?></span> <?php _e("wpForo 2 comes with more powerful member profile system with awesome design, so in most cases you won't need to use other profile builder plugins,", 'wpforo') ?></li>
-                                        <li><span class="wpf-wn-label"><?php _e("Topic Overview:", 'wpforo') ?></span> <?php _e("You can see a small panel on the top of all topics, which provides lots of quick information about the topic. Different statistic information and a shorthand tree of the whole topic with discussion threads and nested replies in one place. This makes it very quick find the posts you need in the topic,", 'wpforo') ?></li>
-                                        <li><span class="wpf-wn-label"><?php _e("And lots of more:", 'wpforo') ?></span> <a href="https://wpforo.com/community/wpforo-announcements/wpforo-2-0-1-is-released/" target="_blank"><?php _e("wpForo 2 release summary", 'wpforo') ?> &raquo;</a></li>
-                                    </ul>
                                 </div>
                                 <div style="float:right; vertical-align:top; padding-right:0; width:150px; text-align:right; padding-top:20px;">
                                     <img class="wpforo-dashboard-logo" src="<?php echo WPFORO_URL ?>/assets/images/wpforo-logo.png" alt="wpforo logo">

@@ -36,7 +36,6 @@ WPF()->settings->form_field( 'legal', 'page_terms' );
 WPF()->settings->form_field( 'legal', 'page_privacy' );
 WPF()->settings->form_field( 'legal', 'checkbox_forum_privacy' );
 WPF()->settings->form_field( 'legal', 'forum_privacy_text' );
-WPF()->settings->form_field( 'legal', 'checkbox_fb_login' );
 WPF()->settings->form_field( 'legal', 'cookies' );
 ?>
 

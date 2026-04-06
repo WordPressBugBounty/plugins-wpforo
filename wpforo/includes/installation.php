@@ -74,6 +74,19 @@ function wpforo_activation() {
 	if( function_exists( 'redis_object_cache' ) ) {
 		wp_cache_flush();
 	}
+
+	#################################################################
+	// Schedule AI Cache Cleanup Cron ///////////////////////////////
+	WPF()->ai_client->schedule_cache_cleanup();
+
+	// Schedule daily subscription sync (updates cached subscription status)
+	WPF()->ai_client->schedule_daily_subscription_sync();
+
+	// Schedule AI Moderation Log Cleanup Cron
+	\wpforo\classes\AIContentModeration::get_instance()->schedule_moderation_cleanup();
+
+	// Note: AI Pending Topics Indexing Cron is scheduled when user
+	// enables auto-indexing in the admin settings (disabled by default)
 }
 
 function wpforo_upgrade() {
@@ -82,6 +95,13 @@ function wpforo_upgrade() {
 		require_once WPFORO_DIR . "/includes/options-migration.php";
 		_wpforo_migrate_old_options_to_new();
 		_wpforo_migrate_old_widgets_to_new();
+	}
+
+	// Migrate menu for Recent Activity page (upgrade from 2.x to 3.x)
+	$old_version = wpforo_get_option( 'version', '', false );
+	if( $old_version && version_compare( $old_version, '3.0.0', '<' ) ) {
+		wpforo_migrate_recent_activity_menu();
+		wpforo_migrate_theme_styles();
 	}
 }
 
@@ -350,6 +370,26 @@ function wpforo_alter_tables() {
 		@WPF()->db->query( "ALTER TABLE `" . WPF()->tables->reactions . "` ADD KEY `performance` (`postid`,`post_userid`,`type`)" );
 	}
 
+    #################################################################
+    // ADD `type` field in forums TABLE for ticket/private forums
+    // Default is 'forum', 'ticket_forum' forces all topics to be private
+    if( ! wpforo_db_check( [ 'table' => WPF()->tables->forums, 'col' => 'type', 'check' => 'col_exists' ] ) ) {
+        @WPF()->db->query( "ALTER TABLE `" . WPF()->tables->forums . "` ADD `type` VARCHAR(20) NOT NULL DEFAULT 'forum'" );
+    }
+
+    // ADD indexed, local, cloud, task_tag fields and indexes in TOPICS TABLE  ///////////////////////////
+    if( ! wpforo_db_check( [ 'table' => WPF()->tables->topics, 'col' => 'indexed', 'check' => 'col_exists' ] ) ) {
+        @WPF()->db->query( "ALTER TABLE `" . WPF()->tables->topics . "`
+            ADD `indexed` VARCHAR(32),
+            ADD `local` TINYINT(1) NOT NULL DEFAULT 0,
+            ADD `cloud` TINYINT(1) NOT NULL DEFAULT 0,
+            ADD `task_tag` TINYINT(1) NOT NULL DEFAULT 0,
+            ADD INDEX `indexed` (`indexed`),
+            ADD INDEX `local` (`local`),
+            ADD INDEX `cloud` (`cloud`),
+            ADD INDEX `task_tag` (`task_tag`)" );
+    }
+
 	################################################################
 	// profiles table fields fixing ////////////////////////////////
 	if( wpforo_db_check( [ 'table' => WPF()->tables->profiles, 'col' => 'facebook', 'check' => 'col_exists' ] ) ) {
@@ -403,6 +443,13 @@ function wpforo_alter_tables() {
 			ADD COLUMN `cover` VARCHAR(255) NOT NULL DEFAULT '' AFTER `avatar`,
 			ADD COLUMN `is_mention_muted` TINYINT(1) NOT NULL DEFAULT 0 AFTER `is_email_confirmed`"
 		);
+	}
+
+	#################################################################
+	// Add content_type column to ai_embeddings table //////////////
+	if( ! wpforo_db_check( [ 'table' => WPF()->tables->ai_embeddings, 'col' => 'content_type', 'check' => 'col_exists' ] ) ) {
+		@WPF()->db->query( "ALTER TABLE `" . WPF()->tables->ai_embeddings . "` ADD COLUMN `content_type` VARCHAR(20) NOT NULL DEFAULT 'forum' COMMENT 'forum or WordPress post_type'" );
+		@WPF()->db->query( "ALTER TABLE `" . WPF()->tables->ai_embeddings . "` ADD KEY `idx_content_type` (`content_type`)" );
 	}
 
 	WPF()->db->query( "TRUNCATE TABLE `" . WPF()->tables->visits . "`" );
@@ -621,23 +668,32 @@ function wpforo_import_default_menus() {
 			'menu-item-position'  => 0,
 		] );
 
-		$id['wpforo-members'] = wp_update_nav_menu_item( $menu_id, 0, [
-			'menu-item-title'     => wpforo_phrase( 'Members', false ),
-			'menu-item-classes'   => 'wpforo-members',
-			'menu-item-url'       => '/%wpforo-members%/',
-			'menu-item-status'    => 'publish',
-			'menu-item-parent-id' => 0,
-			'menu-item-position'  => 0,
-		] );
+        $id['wpforo-recent-activity'] = wp_update_nav_menu_item( $menu_id, 0, [
+            'menu-item-title'     => wpforo_phrase( 'What\'s New', false ),
+            'menu-item-classes'   => 'wpforo-whats-new',
+            'menu-item-url'       => '/%wpforo-recent-activity%/',
+            'menu-item-status'    => 'publish',
+            'menu-item-parent-id' => 0,
+            'menu-item-position'  => 0,
+        ] );
 
-		$id['wpforo-recent'] = wp_update_nav_menu_item( $menu_id, 0, [
-			'menu-item-title'     => wpforo_phrase( 'Recent Posts', false ),
-			'menu-item-classes'   => 'wpforo-recent',
-			'menu-item-url'       => '/%wpforo-recent%/',
-			'menu-item-status'    => 'publish',
-			'menu-item-parent-id' => 0,
-			'menu-item-position'  => 0,
-		] );
+        $id['wpforo-recent'] = wp_update_nav_menu_item( $menu_id, 0, [
+            'menu-item-title'     => wpforo_phrase( 'Recent Posts', false ),
+            'menu-item-classes'   => 'wpforo-recent',
+            'menu-item-url'       => '/%wpforo-recent%/',
+            'menu-item-status'    => 'publish',
+            'menu-item-parent-id' => 0,
+            'menu-item-position'  => 0,
+        ] );
+
+        $id['wpforo-members'] = wp_update_nav_menu_item( $menu_id, 0, [
+            'menu-item-title'     => wpforo_phrase( 'Members', false ),
+            'menu-item-classes'   => 'wpforo-members',
+            'menu-item-url'       => '/%wpforo-members%/',
+            'menu-item-status'    => 'publish',
+            'menu-item-parent-id' => 0,
+            'menu-item-position'  => 0,
+        ] );
 
 		$id['wpforo-profile'] = wp_update_nav_menu_item( $menu_id, 0, [
 			'menu-item-title'     => wpforo_phrase( 'My Profile', false ),
@@ -977,46 +1033,52 @@ function wpforo_import_default_accesses() {
 
 function wpforo_import_default_usergroups() {
 	$cans_admin    = [
-		'mf'           => 1,
-		'ms'           => 1,
-		'mt'           => 1,
-		'mp'           => 1,
-		'mth'          => 1,
-		'vm'           => 1,
-		'aum'          => 1,
-		'em'           => 1,
-		'vmg'          => 1,
-		'aup'          => 1,
-		'vmem'         => 1,
-		'view_stat'    => 1,
-		'vprf'         => 1,
-		'vpra'         => 1,
-		'vprs'         => 1,
-		'bm'           => 1,
-		'dm'           => 1,
-		'upc'          => 1,
-		'upa'          => 1,
-		'ups'          => 1,
-		'va'           => 1,
-		'vmu'          => 1,
-		'vmm'          => 1,
-		'vmt'          => 1,
-		'vmct'         => 1,
-		'vmr'          => 1,
-		'vmw'          => 1,
-		'vmsn'         => 1,
-		'vmrd'         => 1,
-		'vml'          => 1,
-		'vmo'          => 1,
-		'vms'          => 1,
-		'vmam'         => 1,
-		'vwpm'         => 1,
-		'caa'          => 1,
-		'vt_add_topic' => 1,
+		'mf'             => 1,
+		'mai'            => 1,
+        'ms'             => 1,
+		'mt'             => 1,
+		'mp'             => 1,
+		'mth'            => 1,
+		'vm'             => 1,
+		'aum'            => 1,
+		'em'             => 1,
+		'vmg'            => 1,
+		'aup'            => 1,
+		'vmem'           => 1,
+		'view_stat'      => 1,
+		'vprf'           => 1,
+		'vpra'           => 1,
+		'vprs'           => 1,
+		'bm'             => 1,
+		'dm'             => 1,
+		'upc'            => 1,
+		'upa'            => 1,
+		'ups'            => 1,
+		'va'             => 1,
+		'vmu'            => 1,
+		'vmm'            => 1,
+		'vmt'            => 1,
+		'vmct'           => 1,
+		'vmr'            => 1,
+		'vmw'            => 1,
+		'vmsn'           => 1,
+		'vmrd'           => 1,
+		'vml'            => 1,
+		'vmo'            => 1,
+		'vms'            => 1,
+		'vmam'           => 1,
+		'vwpm'           => 1,
+		'caa'            => 1,
+		'vt_add_topic'   => 1,
+        'ai_search'      => 1,
+        'ai_summary'     => 1,
+        'ai_translation' => 1,
+        'ai_suggestion'  => 1,
 	];
 	$cans_moder    = [
 		'mf'           => 0,
 		'ms'           => 0,
+        'mai'          => 0,
 		'mt'           => 0,
 		'mp'           => 0,
 		'mth'          => 0,
@@ -1051,10 +1113,15 @@ function wpforo_import_default_usergroups() {
 		'vwpm'         => 1,
 		'caa'          => 1,
 		'vt_add_topic' => 1,
+        'ai_search'      => 1,
+        'ai_summary'     => 1,
+        'ai_translation' => 1,
+        'ai_suggestion'  => 1,
 	];
 	$cans_reg      = [
 		'mf'           => 0,
 		'ms'           => 0,
+        'mai'          => 0,
 		'mt'           => 0,
 		'mp'           => 0,
 		'mth'          => 0,
@@ -1089,10 +1156,15 @@ function wpforo_import_default_usergroups() {
 		'vwpm'         => 1,
 		'caa'          => 1,
 		'vt_add_topic' => 1,
+        'ai_search'      => 1,
+        'ai_summary'     => 1,
+        'ai_translation' => 1,
+        'ai_suggestion'  => 1,
 	];
 	$cans_guest    = [
 		'mf'           => 0,
 		'ms'           => 0,
+        'mai'          => 0,
 		'mt'           => 0,
 		'mp'           => 0,
 		'mth'          => 0,
@@ -1127,10 +1199,15 @@ function wpforo_import_default_usergroups() {
 		'vwpm'         => 0,
 		'caa'          => 1,
 		'vt_add_topic' => 0,
+        'ai_search'      => 1,
+        'ai_summary'     => 1,
+        'ai_translation' => 1,
+        'ai_suggestion'  => 0,
 	];
 	$cans_customer = [
 		'mf'           => 0,
 		'ms'           => 0,
+        'mai'          => 0,
 		'mt'           => 0,
 		'mp'           => 0,
 		'mth'          => 0,
@@ -1165,12 +1242,17 @@ function wpforo_import_default_usergroups() {
 		'vwpm'         => 1,
 		'caa'          => 1,
 		'vt_add_topic' => 1,
+        'ai_search'      => 1,
+        'ai_summary'     => 1,
+        'ai_translation' => 1,
+        'ai_suggestion'  => 1,
 	];
 
 	//Add new Cans in this array to add those in custom Usergroup created by forum admin
 	$cans_defaults = [
 		'mf'           => 0,
 		'ms'           => 0,
+        'mai'          => 0,
 		'mt'           => 0,
 		'mp'           => 0,
 		'mth'          => 0,
@@ -1180,6 +1262,10 @@ function wpforo_import_default_usergroups() {
 		'caa'          => 1,
 		'vt_add_topic' => 1,
 		'upc'          => 1,
+        'ai_search'      => 1,
+        'ai_summary'     => 1,
+        'ai_translation' => 1,
+        'ai_suggestion'  => 1,
 	];
 
 	$sql = "SELECT * FROM `" . WPF()->tables->usergroups . "`";
@@ -1290,7 +1376,7 @@ function wpforo_fix_installed_options() {
 
 function wpforo_update_theme_options() {
 	if( $current_theme = wpforo_get_option( 'theme_options_' . WPF()->tpl->theme, [], false ) ) {
-		$theme = WPF()->tpl->find_theme( '2022' );
+		$theme = WPF()->tpl->find_theme( '2026' );
 		if( wpfval( $theme, 'layouts' ) ) {
 			$current_theme['layouts'] = $theme['layouts'];
 			$theme                    = wpforo_deep_merge( $theme, $current_theme );
@@ -1580,4 +1666,137 @@ function wpforo_add_unique_key( $table, $primary_key, $unique_key_name = '', $un
 	}
 	$sql = "ALTER TABLE `$table` ADD UNIQUE KEY `$unique_key_name`( $unique_fields )";
 	WPF()->db->query( $sql );
+}
+
+/**
+ * Add What’s New menu item on plugin update (2.x to 3.x migration only)
+ * Adds "What’s New" right after the first [Forums] menu item.
+ * This only runs once during the 2.x to 3.x update.
+ *
+ * @since 3.0.0
+ */
+function wpforo_migrate_recent_activity_menu() {
+	// Only run this migration once (2.x to 3.x update)
+	if( get_option( 'wpforo_recent_activity_menu_migrated' ) ) {
+		return;
+	}
+
+	// Get all boards to migrate menus for each
+	$boards = [];
+	if( isset( WPF()->board ) && method_exists( WPF()->board, 'get_boards' ) ) {
+		$boards = WPF()->board->get_boards();
+	}
+
+	// If no boards found or multi-board not initialized, just migrate default board
+	if( empty( $boards ) ) {
+		$boards = [ [ 'boardid' => 0 ] ];
+	}
+
+	foreach( $boards as $board ) {
+		$boardid   = intval( wpfval( $board, 'boardid' ) );
+		$menu_name = wpforo_phrase( 'wpForo Navigation', false, 'orig' ) . ( $boardid ? ' #' . $boardid : '' );
+		$menu_obj  = wp_get_nav_menu_object( $menu_name );
+
+		if( ! $menu_obj ) {
+			continue; // Skip boards without a menu (fresh install will create menu with What's New)
+		}
+
+		$menu_id    = $menu_obj->term_id;
+		$menu_items = wp_get_nav_menu_items( $menu_id );
+
+		if( empty( $menu_items ) ) {
+			continue;
+		}
+
+		// Check if "What's New" already exists (check both old and new CSS class names)
+		$has_whats_new = false;
+		foreach( $menu_items as $item ) {
+			if( is_array( $item->classes ) && ( in_array( 'wpforo-whats-new', $item->classes ) || in_array( 'wpforo-recent-activity', $item->classes ) ) ) {
+				$has_whats_new = true;
+				break;
+			}
+		}
+
+		if( $has_whats_new ) {
+			continue; // What's New already exists for this board, skip
+		}
+
+		// Find the first [Forums] menu item (wpforo-home) to get its position
+		$forums_position = 1;
+		foreach( $menu_items as $item ) {
+			if( is_array( $item->classes ) && in_array( 'wpforo-home', $item->classes ) ) {
+				$forums_position = $item->menu_order;
+				break;
+			}
+		}
+
+		// Shift all menu items after [Forums] by 1 position
+		foreach( $menu_items as $item ) {
+			if( $item->menu_order > $forums_position ) {
+				wp_update_nav_menu_item( $menu_id, $item->db_id, [
+					'menu-item-title'     => $item->title,
+					'menu-item-classes'   => implode( ' ', (array) $item->classes ),
+					'menu-item-url'       => $item->url,
+					'menu-item-status'    => 'publish',
+					'menu-item-parent-id' => $item->menu_item_parent,
+					'menu-item-position'  => $item->menu_order + 1,
+				] );
+			}
+		}
+
+		// Add "What's New" right after [Forums]
+		wp_update_nav_menu_item( $menu_id, 0, [
+			'menu-item-title'     => wpforo_phrase( 'What\'s New', false ),
+			'menu-item-classes'   => 'wpforo-whats-new',
+			'menu-item-url'       => '/%wpforo-recent-activity%/',
+			'menu-item-status'    => 'publish',
+			'menu-item-parent-id' => 0,
+			'menu-item-position'  => $forums_position + 1,
+		] );
+	}
+
+	// Mark migration as complete - won't run again on future updates
+	update_option( 'wpforo_recent_activity_menu_migrated', 1 );
+}
+
+/**
+ * Migrate theme styles from 2022 to 2026 theme on plugin update (2.x to 3.x migration)
+ * Preserves user's custom colors and CSS when the default theme changes from 2022 to 2026.
+ * Supports multi-board installations.
+ * This only runs once during the 2.x to 3.x update.
+ *
+ * @since 3.0.0
+ */
+function wpforo_migrate_theme_styles() {
+	// Only run this migration once
+	if( get_option( 'wpforo_theme_styles_migrated' ) ) {
+		return;
+	}
+
+	// Get all boards to migrate styles for each
+	$boards = [];
+	if( isset( WPF()->board ) && method_exists( WPF()->board, 'get_boards' ) ) {
+		$boards = WPF()->board->get_boards();
+	}
+
+	// If no boards found or multi-board not initialized, just migrate default board
+	if( empty( $boards ) ) {
+		$boards = [ [ 'boardid' => 0 ] ];
+	}
+
+	foreach( $boards as $board ) {
+		$boardid = intval( wpfval( $board, 'boardid' ) );
+		$prefix  = WPF()->generate_prefix( $boardid );
+
+		// Get the old 2022 theme styles for this board
+		$styles_2022 = get_option( $prefix . 'styles_2022', [] );
+
+		// If user had 2022 styles, copy them to 2026 theme
+		if( ! empty( $styles_2022 ) && ! get_option( $prefix . 'styles_2026', [] ) ) {
+			update_option( $prefix . 'styles_2026', $styles_2022 );
+		}
+	}
+
+	// Mark migration as complete
+	update_option( 'wpforo_theme_styles_migrated', 1 );
 }

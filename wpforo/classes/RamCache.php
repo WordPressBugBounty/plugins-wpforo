@@ -85,14 +85,12 @@ class RamCache {
 	 * and store in static property for next call
 	 *
 	 * @param callable $func
-	 * @param mixed ... $_, ... [optional] call_user_func parameters
+	 * @param mixed    ...$args [optional] call_user_func parameters
 	 *
 	 * @return mixed
 	 */
-	public function call_user_func( $func ) {
+	public function call_user_func( $func, ...$args ) {
 		if( ! is_callable( $func, false, $callable_name ) ) return null;
-		$args = func_get_args();
-		array_shift( $args );
 		$key = [ $callable_name, $args ];
 		if( $this->exists( $key ) ) return $this->get( $key );
 		$data = call_user_func_array( $func, $args );

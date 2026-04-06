@@ -2,19 +2,19 @@
 /*
 * Plugin Name: wpForo
 * Plugin URI: https://wpforo.com
-* Description: WordPress Forum plugin. wpForo is a full-fledged forum solution for your community. Comes with multiple modern forum layouts.
+* Description: WordPress Forum plugin. wpForo is the only AI powered forum solution for your community. Modern design and 5 forum layouts.
 * Author: gVectors Team
 * Author URI: https://gvectors.com/
-* Version: 2.4.17
+* Version: 3.0.0
 * Requires at least: 5.2
-* Requires PHP: 7.2
+* Requires PHP: 7.1
 * Text Domain: wpforo
 * Domain Path: /languages
 */
 
 namespace wpforo;
 
-define( 'WPFORO_VERSION', '2.4.17' );
+define( 'WPFORO_VERSION', '3.0.0' );
 
 //Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;
@@ -29,7 +29,13 @@ use stdClass;
 use wpdb;
 use wpforo\classes\Actions;
 use wpforo\classes\Activity;
+use wpforo\classes\AIChatbot;
+use wpforo\classes\AIClient;
+use wpforo\classes\AIContentModeration;
+use wpforo\classes\AILogs;
+use wpforo\classes\AIWordPressIndexer;
 use wpforo\classes\API;
+use wpforo\classes\Blocks;
 use wpforo\classes\Boards;
 use wpforo\classes\Cache;
 use wpforo\classes\Feed;
@@ -46,8 +52,10 @@ use wpforo\classes\Posts;
 use wpforo\classes\RamCache;
 use wpforo\classes\SEO;
 use wpforo\classes\Settings;
+use wpforo\classes\TaskManager;
 use wpforo\classes\Template;
 use wpforo\classes\Topics;
+use wpforo\classes\VectorStorageManager;
 use wpforo\classes\UserGroups;
 use wpforo\modules\bookmarks\Bookmarks;
 use wpforo\modules\reactions\Reactions;
@@ -75,6 +83,15 @@ final class wpforo {
 	];
 	public  $_tables      = [
 		'activity',
+		'ai_cache',
+		'ai_chat_conversations',
+		'ai_chat_messages',
+		'ai_embeddings',
+		'ai_embeddings_cache',
+		'ai_logs',
+		'ai_moderation',
+		'ai_tasks',
+		'ai_task_logs',
 		'forums',
 		'languages',
 		'phrases',
@@ -132,6 +149,20 @@ final class wpforo {
 	public $activity;
 	/** @var API */
 	public $api;
+	/** @var AIClient */
+	public $ai_client;
+	/** @var AIChatbot */
+	public $ai_chatbot;
+	/** @var VectorStorageManager */
+	public $vector_storage;
+	/** @var TaskManager */
+	public $task_manager;
+	/** @var AIContentModeration */
+	public $ai_content_moderation;
+	/** @var AILogs */
+	public $ai_logs;
+	/** @var AIWordPressIndexer */
+	public $ai_wp_indexer;
 	/** @var Boards */
 	public $board;
 	/** @var Cache */
@@ -158,6 +189,8 @@ final class wpforo {
 	public $postmeta;
 	/** @var Posts */
 	public $post;
+	/** @var Blocks */
+	public $blocks;
 	/** @var RamCache */
 	public $ram_cache;
 	/** @var Revisions */
@@ -257,16 +290,32 @@ final class wpforo {
 		
 		$this->moderation = new Moderation();
 		$this->phrase     = new Phrases();
+		$this->blocks     = new Blocks();
 		
 		do_action( 'wpforo_after_init_base_classes' );
 	}
 	
 	private function init_classes() {
 		do_action( 'wpforo_before_init_classes' );
-		
-		$this->activity = new Activity();
-		$this->api      = new API();
-		$this->feed     = new Feed();
+
+		$this->activity  = new Activity();
+		$this->api       = new API();
+		// AIClient: Initialize globally for both admin and front-end features
+		// (semantic search, antispam, auto-translation, etc.)
+		$this->ai_client = new AIClient();
+		// AIChatbot: AI-powered chat functionality in AI Assistant widget
+		$this->ai_chatbot = new AIChatbot();
+		// VectorStorageManager: Unified abstraction for vector storage (local/cloud)
+		$this->vector_storage = new VectorStorageManager();
+		// TaskManager: Initialize for AI task scheduling and execution
+		$this->task_manager = new TaskManager();
+		// AIContentModeration: Central class for AI-powered content moderation
+		$this->ai_content_moderation = AIContentModeration::get_instance();
+		// AILogs: Logging of all AI actions for admin visibility
+		$this->ai_logs = new AILogs();
+		// AIWordPressIndexer: WordPress content type indexing for AI search
+		$this->ai_wp_indexer = new AIWordPressIndexer();
+		$this->feed      = new Feed();
 		$this->form     = new Forms();
 		$this->forum    = new Forums();
 		$this->log      = new Logs();
@@ -355,13 +404,15 @@ final class wpforo {
 			}
 		} );
 		
-		if( is_admin() || strpos( (string) $_SERVER['REQUEST_URI'], '/peepsoajax/' ) === 0 || preg_match(
+		// WP Cron: Ensure classes are initialized early for cron hook callbacks
+		if ( wp_doing_cron() || isset( $_GET['doing_wp_cron'] ) ) {
+			add_action( 'init', [ $this, 'init' ], 1 ); // Priority 1 - before cron runs
+		} elseif( is_admin() || strpos( (string) $_SERVER['REQUEST_URI'], '/peepsoajax/' ) === 0 || preg_match(
 				'#^/?(?:([^\s/?&=<>:\'\"*\\\|]*/)(?1)*)?[^\s/?&=<>:\'\"*\\\|]+\.(?:php|js|css|jpe?g|png|gif|bmp|webp|svg|tiff)/?(?:\?[^/]*)?$#iu',
 				(string) $_SERVER['REQUEST_URI']
 			) ) {
 			add_action( 'init', [ $this, 'init' ], 99 );
 			add_action( 'admin_init', [ $this, 'admin_init' ] );
-			$this->init_v3_upgrade_hooks();
 		} elseif( strpos( (string) $_SERVER['REQUEST_URI'], '/wp-json/' ) !== false ) {
 			add_filter( 'rest_authentication_errors', function( $r ) {
 				$this->init();
@@ -538,131 +589,7 @@ final class wpforo {
 			add_action( 'admin_notices', 'wpforo_cache_information', 10 );
 		}
 	}
-
-	/**
-	 * Register hooks for wpForo 3.0 major upgrade protection.
-	 *
-	 * - Blocks auto-updates from 2.x to 3.x
-	 * - Shows admin dashboard notice about wpForo 3.0 AI Edition
-	 * - Adds inline warning on Plugins page update row
-	 * - Replaces auto-update toggle text when major update is pending
-	 */
-	private function init_v3_upgrade_hooks() {
-		// 1. Block auto-updates for major version change (2.x → 3.x)
-		add_filter( 'auto_update_plugin', function( $update, $item ) {
-			if( ! isset( $item->plugin, $item->new_version ) || WPFORO_BASENAME !== $item->plugin ) {
-				return $update;
-			}
-			$current_major = explode( '.', WPFORO_VERSION )[0];
-			$new_major     = explode( '.', $item->new_version )[0];
-			if( $current_major !== $new_major ) {
-				return false;
-			}
-			return $update;
-		}, 10, 2 );
-
-		// 2. Replace auto-update toggle with explanation when major update is pending
-		add_filter( 'plugin_auto_update_setting_html', function( $html, $plugin_file, $plugin_data ) {
-			if( WPFORO_BASENAME !== $plugin_file ) {
-				return $html;
-			}
-			$update_plugins = get_site_transient( 'update_plugins' );
-			if( ! isset( $update_plugins->response[ $plugin_file ] ) ) {
-				return $html;
-			}
-			$new_version   = $update_plugins->response[ $plugin_file ]->new_version;
-			$current_major = explode( '.', WPFORO_VERSION )[0];
-			$new_major     = explode( '.', $new_version )[0];
-			if( $current_major !== $new_major ) {
-				return '<em style="color:#d63638;">'
-				       . esc_html__( 'Auto-updates disabled for this major release. Please update manually after creating a full backup.', 'wpforo' )
-				       . '</em>';
-			}
-			return $html;
-		}, 10, 3 );
-
-		// 3. Inline warning on Plugins page update row
-		add_action( 'in_plugin_update_message-' . WPFORO_BASENAME, function( $plugin_data, $response ) {
-			if( ! isset( $response->new_version ) ) {
-				return;
-			}
-			$current_major = explode( '.', WPFORO_VERSION )[0];
-			$new_major     = explode( '.', $response->new_version )[0];
-			if( $current_major !== $new_major ) {
-				echo '</p><p style="margin-top:8px;padding:10px 14px;background:#fef3e2;border-left:4px solid #dba617;font-size:13px;line-height:1.5;">';
-				echo '<strong style="color:#1d2327;">' . esc_html__( 'Important: Major Version Update!', 'wpforo' ) . '</strong><br>';
-				echo esc_html__( 'wpForo 3.0 AI Edition is a major release with significant changes. Please create a full backup of your site and database before updating.', 'wpforo' );
-				echo ' <a href="https://v3.wpforo.com/" target="_blank" style="white-space:nowrap;">' . esc_html__( 'Learn more about wpForo 3.0', 'wpforo' ) . ' &rarr;</a>';
-			}
-		}, 10, 2 );
-
-		// 4. Dashboard admin notice announcing wpForo 3.0 AI Edition
-		add_action( 'admin_notices', function() {
-			if( get_option( 'wpforo_v3_notice_dismissed' ) ) {
-				return;
-			}
-			$update_plugins = get_site_transient( 'update_plugins' );
-			$v3_available   = false;
-			if( isset( $update_plugins->response[ WPFORO_BASENAME ] ) ) {
-				$new_major  = explode( '.', $update_plugins->response[ WPFORO_BASENAME ]->new_version )[0];
-				$v3_available = ( $new_major === '3' );
-			}
-			?>
-			<div class="notice notice-info wpforo-v3-notice" style="padding:16px 20px;border-left-color:#2b96de;">
-				<div style="display:flex;align-items:flex-start;gap:16px;">
-					<div style="flex-shrink:0;width:48px;height:48px;background:linear-gradient(135deg,#2b96de 0%,#1a73b5 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-top:2px;">
-						<span style="color:#fff;font-size:18px;font-weight:800;">3.0</span>
-					</div>
-					<div style="flex:1;">
-						<h3 style="margin:0 0 6px;font-size:15px;color:#1d2327;">
-							<?php echo esc_html__( 'wpForo 3.0 AI Edition is Here!', 'wpforo' ); ?>
-						</h3>
-						<p style="margin:0 0 10px;font-size:13.5px;color:#50575e;line-height:1.6;">
-							<?php
-							echo esc_html__(
-								'The next version of wpForo is a major release with a brand-new theme, AI-powered features, improved layouts, and much more. We encourage you to test it on a staging site before updating your live forum.',
-								'wpforo'
-							);
-							?>
-						</p>
-						<p style="margin:0;display:flex;gap:10px;flex-wrap:wrap;">
-							<a href="https://v3.wpforo.com/" target="_blank" class="button button-primary">
-								<?php echo esc_html__( 'Explore wpForo 3.0', 'wpforo' ); ?>
-							</a>
-							<a href="https://wpforo.com/community/wpforo-3-beta-test/wpforo-3-0-ai-edition-we-start-early-access-beta-program/" target="_blank" class="button">
-								<?php echo esc_html__( 'Join the Beta Program', 'wpforo' ); ?>
-							</a>
-							<?php if( $v3_available ) : ?>
-							<a href="<?php echo esc_url( admin_url( 'update-core.php' ) ); ?>" class="button">
-								<?php echo esc_html__( 'Update Now', 'wpforo' ); ?>
-							</a>
-							<?php endif; ?>
-						</p>
-					</div>
-					<button type="button" class="notice-dismiss wpforo-v3-dismiss" style="position:relative;top:0;right:0;padding:0;flex-shrink:0;">
-						<span class="screen-reader-text"><?php echo esc_html__( 'Dismiss this notice.', 'wpforo' ); ?></span>
-					</button>
-				</div>
-			</div>
-			<script>
-			jQuery(function($){
-				$('.wpforo-v3-notice').on('click','.wpforo-v3-dismiss',function(){
-					$(this).closest('.notice').fadeOut(200);
-					$.post(ajaxurl,{action:'wpforo_dismiss_v3_notice',_wpnonce:'<?php echo esc_js( wp_create_nonce( 'wpforo_dismiss_v3' ) ); ?>'});
-				});
-			});
-			</script>
-			<?php
-		} );
-
-		// AJAX handler for persistent dismissal
-		add_action( 'wp_ajax_wpforo_dismiss_v3_notice', function() {
-			check_ajax_referer( 'wpforo_dismiss_v3', '_wpnonce' );
-			update_option( 'wpforo_v3_notice_dismissed', 1 );
-			wp_send_json_success();
-		} );
-	}
-
+	
 	public function init() {
 		do_action( 'wpforo_before_init' );
 		$this->init_classes();
@@ -925,7 +852,7 @@ final class wpforo {
 			
 			$posts = $this->topic->get_topics( [ 'orderby' => 'modified', 'order' => 'DESC', 'row_count' => $row_count, 'private' => 0, 'status' => 0, 'permgroup' => 4 ] );
 			$first = key( $posts );
-			if( isset( $posts[ $first ] ) && ! empty( $posts[ $first ] ) && $this->perm->forum_can( 'vf', $posts[ $first ]['forumid'] ) ) {
+			if( !is_null( $first ) && ! empty( $posts[ $first ] ) && $this->perm->forum_can( 'vf', $posts[ $first ]['forumid'] ) ) {
 				$stats['last_post_title'] = $posts[ $first ]['title'];
 				$stats['last_post_url']   = $this->post->get_url( $posts[ $first ]['last_post'] );
 			}
@@ -1158,7 +1085,7 @@ final class wpforo {
 					'postids'     => [],
 				];
 				if( ! empty( $get['wpfob'] ) ) {
-					$args['orderby'] = wpforo_sanitize_orderby( $get['wpfob'], 'search', 'relevancy' );
+					$args['orderby'] = sanitize_text_field( $get['wpfob'] );
 				} elseif( in_array( wpfval( $args, 'type' ), [ 'tag', 'user-posts', 'user-topics' ], true ) ) {
 					$args['orderby'] = 'date';
 				}
@@ -1199,7 +1126,7 @@ final class wpforo {
 					
 					if( wpfval( $args, 'prefixid' ) ) $args['prefix'] = (int) wpfval( $args, 'prefixid' );
 					$args['where']     = "`modified` > '" . gmdate( 'Y-m-d H:i:s', $end_date ) . "'";
-					$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? wpforo_sanitize_orderby( WPF()->GET['wpfob'], 'topics', 'modified' ) : 'modified';
+					$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? sanitize_text_field( WPF()->GET['wpfob'] ) : 'modified';
 					$args['order']     = 'DESC';
 					$args['offset']    = ( $current_object['paged'] - 1 ) * $current_object['items_per_page'];
 					$args['row_count'] = $current_object['items_per_page'];
@@ -1275,7 +1202,7 @@ final class wpforo {
 					$current_object['items_per_page'] = wpforo_setting( 'topics', 'posts_per_page' );
 					
 					if( $view !== 'unapproved' ) $args['where'] = "`created` > '" . gmdate( 'Y-m-d H:i:s', $end_date ) . "'";
-					$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? wpforo_sanitize_orderby( WPF()->GET['wpfob'], 'posts', 'created' ) : 'created';
+					$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? sanitize_text_field( WPF()->GET['wpfob'] ) : 'created';
 					$args['order']     = 'DESC';
 					$args['offset']    = ( $current_object['paged'] - 1 ) * $current_object['items_per_page'];
 					$args['row_count'] = $current_object['items_per_page'];
@@ -1287,6 +1214,72 @@ final class wpforo {
 				$args['view']           = $view;
 				$args['type']           = $type;
 				$current_object['args'] = $args;
+			} elseif( $this->current_object['template'] === 'recent-activity' ) {
+				$current_object['items_per_page'] = 20;
+				$current_object['items_count']    = 0;
+
+				// Get filter parameters from URL
+				$activity_type = ! empty( WPF()->GET['type'] ) ? sanitize_text_field( WPF()->GET['type'] ) : 'all';
+				$period        = ! empty( WPF()->GET['period'] ) ? sanitize_text_field( WPF()->GET['period'] ) : 'week';
+
+				// Calculate date_from based on period
+				$date_from = null;
+				switch( $period ) {
+					case 'day':
+						$date_from = time() - ( 24 * 60 * 60 );
+						break;
+					case 'week':
+						$date_from = time() - ( 7 * 24 * 60 * 60 );
+						break;
+					case 'month':
+						$date_from = time() - ( 30 * 24 * 60 * 60 );
+						break;
+					case 'all':
+					default:
+						$date_from = null;
+						break;
+				}
+
+				// Get enabled activity types from settings
+				$enabled_types = WPF()->settings->activity['enabled_types'] ?? [];
+
+				// Build activity query args
+				$args = [
+					'types_exclude' => [ 'new_reply' ], // Exclude notification-only types
+					'orderby'       => 'date',
+					'order'         => 'DESC',
+					'offset'        => ( $current_object['paged'] - 1 ) * $current_object['items_per_page'],
+					'row_count'     => $current_object['items_per_page'],
+					'date_from'     => $date_from,
+				];
+
+				// Filter by activity type
+				if( $activity_type !== 'all' ) {
+					$type_mapping = [
+						'topic'    => [ 'wpforo_topic', 'edit_topic' ],
+						'reply'    => [ 'wpforo_post', 'edit_post' ],
+						'reaction' => [ 'new_like', 'new_dislike', 'new_up_vote', 'new_down_vote', 'new_reaction' ],
+						'favorite' => [ 'new_favorite' ],
+						'solved'   => [ 'topic_solved' ],
+						'closed'   => [ 'topic_closed' ],
+						'answer'   => [ 'post_answer' ],
+					];
+					if( isset( $type_mapping[ $activity_type ] ) ) {
+						// Intersect with enabled types to respect settings
+						$args['types_include'] = array_intersect( $type_mapping[ $activity_type ], $enabled_types );
+					}
+				} else {
+					// Show all enabled types
+					if( ! empty( $enabled_types ) ) {
+						$args['types_include'] = $enabled_types;
+					}
+				}
+
+				$current_object['activities']  = WPF()->activity->get_activities( $args, $current_object['items_count'], true, true );
+				$current_object['args']        = [
+					'activity_type' => $activity_type,
+					'period'        => $period,
+				];
 			} elseif( $this->current_object['template'] === 'tags' ) {
 				$current_object['items_per_page'] = wpforo_setting( 'tags', 'per_page' );
 				$args                             = [

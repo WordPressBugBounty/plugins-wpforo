@@ -12,7 +12,7 @@ add_action( 'admin_menu', function() {
 }, 39 );
 
 function wpforo_admin_menu(){
-	if( wpforo_current_user_is( 'admin' ) || WPF()->usergroup->can( 'mf' ) || WPF()->usergroup->can( 'ms' ) || WPF()->usergroup->can( 'vm' ) || WPF()->usergroup->can( 'mp' ) || WPF()->usergroup->can( 'aum' ) || WPF()->usergroup->can( 'vmg' ) || WPF()->usergroup->can( 'mth' ) ) {
+	if( wpforo_current_user_is( 'admin' ) || WPF()->usergroup->can( 'mf' ) || WPF()->usergroup->can( 'ms' ) || WPF()->usergroup->can( 'mai' ) || WPF()->usergroup->can( 'vm' ) || WPF()->usergroup->can( 'mp' ) || WPF()->usergroup->can( 'aum' ) || WPF()->usergroup->can( 'vmg' ) || WPF()->usergroup->can( 'mth' ) ) {
 		$menu_position = apply_filters( 'wpforo_admin_menu_position', 23 );
 		$boards = WPF()->board->get_boards( [ 'status' => true ] );
 		$board = current( $boards );
@@ -58,6 +58,11 @@ function wpforo_admin_menu(){
 			if( WPF()->usergroup->can( 'ms' ) || wpforo_current_user_is( 'admin' ) ) {
 				add_submenu_page( $parent_slug, __( 'Settings', 'wpforo' ), __( 'Settings', 'wpforo' ), 'read', wpforo_prefix_slug( 'settings' ), function() {
 					require( WPFORO_DIR . '/admin/pages/settings.php' );
+				} );
+			}
+			if( WPF()->usergroup->can( 'mai' ) || wpforo_current_user_is( 'admin' ) ) {
+				add_submenu_page( $parent_slug, __( 'AI Features', 'wpforo' ), __( 'AI Features', 'wpforo' ), 'read', 'wpforo-ai', function() {
+					require( WPFORO_DIR . '/admin/pages/ai-features.php' );
 				} );
 			}
 			if( WPF()->usergroup->can( 'aum' ) || wpforo_current_user_is( 'admin' ) ) {
@@ -111,7 +116,7 @@ function wpforo_admin_menu(){
 }
 
 function wpforo_admin_menu_multiboard(){
-	if( wpforo_current_user_is( 'admin' ) || WPF()->usergroup->can( 'mf' ) || WPF()->usergroup->can( 'ms' ) || WPF()->usergroup->can( 'vm' ) || WPF()->usergroup->can( 'mp' ) || WPF()->usergroup->can( 'aum' ) || WPF()->usergroup->can( 'vmg' ) || WPF()->usergroup->can( 'mth' ) ) {
+	if( wpforo_current_user_is( 'admin' ) || WPF()->usergroup->can( 'mf' ) || WPF()->usergroup->can( 'ms' ) || WPF()->usergroup->can( 'mai' ) || WPF()->usergroup->can( 'vm' ) || WPF()->usergroup->can( 'mp' ) || WPF()->usergroup->can( 'aum' ) || WPF()->usergroup->can( 'vmg' ) || WPF()->usergroup->can( 'mth' ) ) {
 		$menu_position = apply_filters( 'wpforo_admin_menu_position', 23 );
 		$parent_slug = 'wpforo-overview';
 		$attention_count = WPF()->member->get_count( [ 'p.status' => ['banned', 'inactive'] ] );
@@ -154,6 +159,11 @@ function wpforo_admin_menu_multiboard(){
 		if( WPF()->usergroup->can( 'ms' ) || wpforo_current_user_is( 'admin' ) ) {
 			add_submenu_page( $parent_slug,  __( 'Settings', 'wpforo' ), __( 'Settings', 'wpforo' ), 'read', 'wpforo-base-settings', function() {
 				require( WPFORO_DIR . '/admin/pages/settings.php' );
+			} );
+		}
+		if( WPF()->usergroup->can( 'mai' ) || wpforo_current_user_is( 'admin' ) ) {
+			add_submenu_page( $parent_slug, __( 'AI Features', 'wpforo' ), __( 'AI Features', 'wpforo' ), 'read', 'wpforo-ai', function() {
+				require( WPFORO_DIR . '/admin/pages/ai-features.php' );
 			} );
 		}
 		if( WPF()->usergroup->can( 'mth' ) || wpforo_current_user_is( 'admin' ) ) {
@@ -248,3 +258,6 @@ add_action( 'admin_footer', function() {
 			</div>
 	</div>';
 } );
+
+// Feature Introduction Modal - shows once per admin after major updates
+new \wpforo\classes\FeatureIntro();

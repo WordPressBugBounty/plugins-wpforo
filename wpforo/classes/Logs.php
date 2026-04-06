@@ -15,9 +15,10 @@ class Logs {
 					$this->read_item( $data['topicid'], $data['topic']['last_post'], wpforo_prefix( 'read_topics' ) );
 				}
 				if( wpfval( $data, 'forumid' ) ) {
-					$end_date = time() - ( 14 * 24 * 60 * 60 );
-					$args     = [ 'read' => false, 'forumid' => $data['forumid'], 'orderby' => 'modified', 'order' => 'ASC', 'row_count' => 1, 'where' => "`modified` > '" . gmdate( 'Y-m-d H:i:s', $end_date ) . "'" ];
-					$topics   = WPF()->topic->get_topics( $args, $items_count );
+					$end_date    = time() - ( 14 * 24 * 60 * 60 );
+					$items_count = 0;
+					$args        = [ 'read' => false, 'forumid' => $data['forumid'], 'orderby' => 'modified', 'order' => 'ASC', 'row_count' => 1, 'where' => "`modified` > '" . gmdate( 'Y-m-d H:i:s', $end_date ) . "'" ];
+					$topics      = WPF()->topic->get_topics( $args, $items_count );
 					if( empty( $topics ) ) {
 						if( wpfval( $data, 'forum', 'last_postid' ) ) {
 							$last_postid = $data['forum']['last_postid'];
@@ -92,6 +93,7 @@ class Logs {
 
 	public function read_parent_items( $read_ids = [], $itemid = 0, $item_last_postid = 0 ) {
 		if( wpfval( $read_ids, $itemid ) && $item_last_postid ) {
+			$parents = [];
 			WPF()->forum->get_parents( $itemid, $parents );
 			foreach( $parents as $parent ) {
 				$read_ids[ $parent ] = $item_last_postid;
@@ -283,13 +285,34 @@ class Logs {
 		}
 		if( ! empty( $visitors ) ) {
 			$online_period = (int) time() - (int) wpforo_setting( 'profiles', 'online_status_timeout' );
+
+			// Batch-fetch the latest visit time per user to avoid N+1 queries
+			$online_user_ids = [];
+			foreach( $visitors as $visitor ) {
+				if( wpfval( $visitor, 'userid' ) && (int) $visitor['time'] >= $online_period ) {
+					$online_user_ids[ intval( $visitor['userid'] ) ] = true;
+				}
+			}
+			$user_max_times = [];
+			if( ! empty( $online_user_ids ) ) {
+				$id_list = implode( ',', array_keys( $online_user_ids ) );
+				$rows    = WPF()->db->get_results(
+					"SELECT `userid`, MAX(`time`) as max_time FROM `" . WPF()->tables->visits . "` WHERE `userid` IN (" . $id_list . ") GROUP BY `userid`",
+					ARRAY_A
+				);
+				foreach( $rows as $row ) {
+					$user_max_times[ (int) $row['userid'] ] = (int) $row['max_time'];
+				}
+			}
+
 			foreach( $visitors as $visitor ) {
 				if( wpfval( $visitor, 'userid' ) ) {
 					if( (int) $visitor['time'] < $online_period ) {
 						$data['users']['viewed'][] = $visitor;
 					} else {
-						$gone = WPF()->db->get_var( "SELECT `id` FROM `" . WPF()->tables->visits . "` WHERE `userid` = " . intval( $visitor['userid'] ) . " AND `time` > " . intval( $visitor['time'] ) . " LIMIT 1" );
-						if( $gone ) {
+						$uid      = intval( $visitor['userid'] );
+						$max_time = isset( $user_max_times[ $uid ] ) ? $user_max_times[ $uid ] : 0;
+						if( $max_time > (int) $visitor['time'] ) {
 							$data['users']['viewed'][] = $visitor;
 						} else {
 							$data['users']['viewing'][] = $visitor;

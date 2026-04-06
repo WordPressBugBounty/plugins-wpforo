@@ -59,6 +59,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
                             <span class="wpf-mod-message"><i class="fas fa-exclamation-circle" aria-hidden="true"></i> <?php wpforo_phrase( 'Awaiting moderation' ) ?></span>
 						<?php endif; ?>
 						<?php wpforo_topic_starter( $topic, $post ) ?>
+						<?php do_action( 'wpforo_post_content_top_left', $post ) ?>
                         <span class="wpf-post-date"><?php wpforo_date( $post['created'], 'd/m/Y g:i a' ); ?></span> &nbsp;
 						<?php wpforo_post_buttons( 'icon-text', 'link', $forum, $topic, $post ); ?>
 						<?php wpforo_share_toggle( $post_url, $post['body'], 'top' ); ?>
@@ -78,9 +79,9 @@ if( ! defined( 'ABSPATH' ) ) exit;
 	                <?php do_action( 'wpforo_post_bottom_start', $post, $topic, $forum, 1 ); ?>
                     <div class="bright">
 						<?php if( $post['is_first_post'] ) {
-							$buttons = [ 'reply', 'quote', 'solved', 'sticky', 'private', 'close', 'report', 'approved', 'edit', 'delete' ];
+							$buttons = [ 'custom-bottom', 'reply', 'quote', 'solved', 'sticky', 'private', 'close', 'report', 'approved', 'edit', 'delete' ];
 						} else {
-							$buttons = [ 'reply', 'quote', 'report', 'approved', 'edit', 'delete' ];
+							$buttons = [ 'custom-bottom', 'reply', 'quote', 'report', 'approved', 'edit', 'delete' ];
 						}
 						wpforo_post_buttons( 'icon-text', $buttons, $forum, $topic, $post ); ?>
                     </div>

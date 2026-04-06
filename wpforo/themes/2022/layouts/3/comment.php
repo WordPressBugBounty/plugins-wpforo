@@ -25,11 +25,12 @@ function wpforo_qa_comment_template($comment, $forum = array(), $topic = array()
                               <?php wpforo_member_link($comment_member); ?>
                               <?php wpforo_topic_starter($topic, $comment) ?>
                               <?php wpforo_date($comment['created'], 'd/m/Y g:i a'); ?>
+                              <?php do_action( 'wpforo_post_content_top_left', $comment ) ?>
                           </span>
                         <?php do_action( 'wpforo_tpl_post_loop_after_content', $comment, $comment_member ) ?>
                         <?php wpforo_post_edited($comment); ?>
                     </div>
-					<div class="wpforo-comment-text"><?php wpforo_content($comment); ?></div>
+					<div class="wpforo-comment-text"><?php wpforo_content($comment); ?><?php do_action( 'wpforo_post_content_footer', $comment, $topic, $forum, 3 ) ?></div>
 					<div class="wpforo-comment-action-links">&nbsp;
 						<?php
 						$buttons = array( 'report', 'approved', 'edit', 'delete', 'link' );

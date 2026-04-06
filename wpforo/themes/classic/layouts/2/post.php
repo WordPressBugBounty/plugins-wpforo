@@ -49,6 +49,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
                 </div><!-- left -->
                 <div class="wpf-right">
                     <div class="wpforo-post-content-top">
+						<?php do_action( 'wpforo_post_content_top_left', $post ) ?>
                         <div class="wpf-post-actions">
 							<?php if( $post['is_first_post'] ) {
 								$buttons = [ 'solved', 'sticky', 'private', 'close', 'report', 'delete', 'link' ];
@@ -70,7 +71,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
 						<?php endif; ?>
                         <div class="wpf-post-button-actions">
 							<?php
-							$buttons = [ 'reply', 'quote', 'approved', 'edit' ];
+							$buttons = [ 'custom-bottom', 'reply', 'quote', 'approved', 'edit' ];
 							wpforo_post_buttons( 'icon-text', $buttons, $forum, $topic, $post );
 							?>
 							<?php if( $post['status'] ): ?>

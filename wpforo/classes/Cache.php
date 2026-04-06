@@ -244,7 +244,7 @@ class Cache {
 	 * @param string        Item Type    (e.g.: 'forum', 'topic', 'post', 'user', 'widget', etc...)
 	 * @param array        Item data as array
 	 *
-	 * @return    NULL
+	 * @return void
 	 * @since 1.2.1
 	 *
 	 */

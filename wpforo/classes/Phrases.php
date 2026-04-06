@@ -114,8 +114,16 @@ class Phrases {
 		
 		$key = WPF()->tables->phrases . substr( md5( serialize( $args ) ), 0, 10 );
 		
-		extract( $args, EXTR_OVERWRITE );
-		
+		// Security: extract only expected keys instead of extract()
+		$include   = $args['include'];
+		$exclude   = $args['exclude'];
+		$langid    = $args['langid'];
+		$package   = $args['package'];
+		$orderby   = $args['orderby'];
+		$order     = $args['order'];
+		$offset    = $args['offset'];
+		$row_count = $args['row_count'];
+
 		$package = wpforo_parse_args( $package );
 		$include = wpforo_parse_args( $include );
 		$exclude = wpforo_parse_args( $exclude );
