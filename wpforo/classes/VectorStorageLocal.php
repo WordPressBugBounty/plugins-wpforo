@@ -584,27 +584,29 @@ class VectorStorageLocal {
 			'last_indexed_at'  => null,
 		];
 
-		// Total embeddings
-		$stats['total_embeddings'] = (int) $wpdb->get_var(
-			"SELECT COUNT(*) FROM " . WPF()->tables->ai_embeddings
+		// Combined query: total embeddings, unique topics, unique posts, last indexed
+		// (4 queries → 1 on the same table)
+		$combined = $wpdb->get_row(
+			"SELECT COUNT(*) as total_embeddings,
+				COUNT(DISTINCT topicid) as total_topics,
+				COUNT(DISTINCT postid) as total_posts,
+				MAX(updated_at) as last_indexed_at
+			FROM " . WPF()->tables->ai_embeddings,
+			ARRAY_A
 		);
+		if ( $combined ) {
+			$stats['total_embeddings'] = (int) $combined['total_embeddings'];
+			$stats['total_topics']     = (int) $combined['total_topics'];
+			$stats['total_posts']      = (int) $combined['total_posts'];
+			$stats['last_indexed_at']  = $combined['last_indexed_at'];
+		}
 
-		// Unique topics
-		$stats['total_topics'] = (int) $wpdb->get_var(
-			"SELECT COUNT(DISTINCT topicid) FROM " . WPF()->tables->ai_embeddings
-		);
-
-		// Total posts
-		$stats['total_posts'] = (int) $wpdb->get_var(
-			"SELECT COUNT(DISTINCT postid) FROM " . WPF()->tables->ai_embeddings
-		);
-
-		// Cache entries
+		// Cache entries (separate table)
 		$stats['cache_entries'] = (int) $wpdb->get_var(
 			"SELECT COUNT(*) FROM " . WPF()->tables->ai_embeddings_cache
 		);
 
-		// Storage size (approximate) - use exact table name without prefix for LIKE
+		// Storage size (approximate)
 		$table_name = WPF()->tables->ai_embeddings;
 		$table_status = $wpdb->get_row(
 			$wpdb->prepare( "SHOW TABLE STATUS WHERE Name = %s", $table_name )
@@ -612,11 +614,6 @@ class VectorStorageLocal {
 		if ( $table_status ) {
 			$stats['storage_size_mb'] = round( ( $table_status->Data_length + $table_status->Index_length ) / 1024 / 1024, 2 );
 		}
-
-		// Last indexed timestamp
-		$stats['last_indexed_at'] = $wpdb->get_var(
-			"SELECT MAX(updated_at) FROM " . WPF()->tables->ai_embeddings
-		);
 
 		return $stats;
 	}

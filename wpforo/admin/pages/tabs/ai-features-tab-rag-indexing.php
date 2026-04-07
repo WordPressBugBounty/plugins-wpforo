@@ -304,8 +304,16 @@ function wpforo_ai_render_rag_indexing_tab( $is_connected, $status ) {
 			</div>
 			<div class="wpforo-ai-box-body">
 				<?php
-				// Get total topics count
-				$total_topics_count = WPF()->topic->get_count();
+				// Get total topics count (transient-cached, board+storage specific)
+				$_ttc_cache_key = 'wpforo_ai_ttc_' . $current_boardid . '_' . $storage_mode;
+				$total_topics_count = get_transient( $_ttc_cache_key );
+				if ( false === $total_topics_count ) {
+					$total_topics_count = (int) WPF()->db->get_var(
+						"SELECT COUNT(*) FROM `" . WPF()->tables->topics . "`"
+					);
+					set_transient( $_ttc_cache_key, $total_topics_count, 10 * MINUTE_IN_SECONDS );
+				}
+				$total_topics_count = (int) $total_topics_count;
 
 				// Get available credits from status
 				$subscription = isset( $status['subscription'] ) && is_array( $status['subscription'] ) ? $status['subscription'] : [];
@@ -509,6 +517,19 @@ function wpforo_ai_render_rag_indexing_tab( $is_connected, $status ) {
 							// Get indexed counts from AI backend
 							$indexed_counts = wpforo_ai_get_indexed_counts_by_forum();
 
+							// Get all forum topic counts in a single GROUP BY query
+							// instead of calling WPF()->topic->get_count() per forum (N+1 problem)
+							$forum_topic_counts = [];
+							$_ftc_rows = WPF()->db->get_results(
+								"SELECT `forumid`, COUNT(*) as `cnt` FROM `" . WPF()->tables->topics . "` GROUP BY `forumid`",
+								ARRAY_A
+							);
+							if ( $_ftc_rows ) {
+								foreach ( $_ftc_rows as $_ftc_row ) {
+									$forum_topic_counts[ (int) $_ftc_row['forumid'] ] = (int) $_ftc_row['cnt'];
+								}
+							}
+
 							if ( ! empty( $all_forums ) ) :
 							?>
 								<div class="wpforo-ai-forum-checklist">
@@ -519,8 +540,8 @@ function wpforo_ai_render_rag_indexing_tab( $is_connected, $status ) {
 										$parent_id = isset( $forum['parentid'] ) ? (int) $forum['parentid'] : 0;
 										$is_cat = isset( $forum['is_cat'] ) ? (int) $forum['is_cat'] : 0;
 
-										// Get topic count for this forum
-										$topic_count = WPF()->topic->get_count([ 'forumid' => $forum_id ]);
+										// Get topic count for this forum (from pre-fetched GROUP BY)
+										$topic_count = isset( $forum_topic_counts[ $forum_id ] ) ? $forum_topic_counts[ $forum_id ] : 0;
 
 										// Get indexed count for this forum
 										$indexed_count = isset( $indexed_counts[ $forum_id ] ) ? $indexed_counts[ $forum_id ] : 0;

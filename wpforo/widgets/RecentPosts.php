@@ -184,6 +184,9 @@ class RecentPosts extends WP_Widget {
             // Remove dangerous 'where' parameter
             unset( $post_args['where'] );
 
+            // Force permission checks — prevents check_private=false injection
+            $post_args['check_private'] = true;
+
             // Validate 'orderby' parameter against whitelist
             if( isset( $post_args['orderby'] ) ) {
                 if( ! key_exists( $post_args['orderby'], $this->orderby_fields ) ) {

@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 6.9
-Stable tag: 3.0.1
+Stable tag: 3.0.2
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -232,18 +232,27 @@ IMPORTANT NOTES for UPDATE
  - After the update, please delete all caches and purge CDN if you have
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
-
-
-= wpForo Forum 3.0.0 - 3.0.1 | 07.04.2026 =
-
 [wpForo Forum v3.0 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-0-is-released/)
+
+
+
+= wpForo Forum 3.0.2 | 08.04.2026 =
+
+* Fixed: Subscription Manager shows empty forum tree on multi-board installations
+* Fixed: Stale user permissions after switching boards on profile tabs
+* Fixed: Board switcher only works one direction on profile pages (multi-board)
+* Fixed: AI checkbox settings (chatbot_allowed_groups, bot_reply_includes) reset to defaults on every page load
+* Improved: AI Content Indexing admin page performance on large forums
+* Security: Prevent unauthenticated post disclosure via RecentPosts widget (Broken Access Control)
+
+
+= wpForo Forum 3.0.1 | 07.04.2026 =
 
 * Version 3.0.1
 * Fixed: Simplified and threaded forum layout issues on mobile screen
 * Fixed: reCAPTCHA v3 doesn't work in some cases
 
-* --
-* Version 3.0.0
+= wpForo Forum 3.0.0 | 06.04.2026 =
 
 * New Theme: 2026
     - New default theme - Modern, clean design with improved readability

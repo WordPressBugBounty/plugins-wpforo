@@ -20,6 +20,9 @@ class Permissions {
 		add_action( 'wpforo_after_init_classes', function() {
 			if( WPF()->is_installed() ) $this->init_current_user_accesses();
 		} );
+		add_action( 'wpforo_after_change_board', function() {
+			if( WPF()->is_installed() && ! is_null( WPF()->forum ) ) $this->init_current_user_accesses();
+		} );
 	}
 
 	private function init_defaults() {

@@ -3092,12 +3092,13 @@ class Template {
         if( ! $template ) $template = WPF()->current_object['template'];
         if( is_null( $active_boardid ) ) $active_boardid = ( wpfkey( WPF()->GET, 'boardid' ) ? (int) WPF()->GET['boardid'] : WPF()->board->get_current( 'boardid' ) );
         $links = '';
+        $base_profile_url = remove_query_arg( 'boardid', WPF()->member->get_profile_url( $user, $template ) );
         foreach( WPF()->board->get_boards( [ 'status' => true ] ) as $board ) {
             if( $template === 'subscriptions' && ! wpforo_is_module_enabled( 'subscriptions', $board ) ) continue;
             $links .= sprintf(
                     '<span class="wpf-member-template-link wpf-ajax-link %1$s"><a href="%2$s" title="%3$s">%4$s</a></span>',
                     ( $active_boardid === $board['boardid'] ? 'wpf-active' : '' ),
-                    WPF()->user_trailingslashit( trim( WPF()->member->get_profile_url( $user, $template ), '/' ) . '/?boardid=' . $board['boardid'] ),
+                    add_query_arg( 'boardid', $board['boardid'], $base_profile_url ),
                     $board['title'],
                     wpforo_text( $board['title'], 10, false )
             );

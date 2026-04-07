@@ -2361,6 +2361,11 @@ function wpforo_get_option( $option, $default = null, $cache = true ) {
 		if( preg_match( '#_activity$#iu', (string) $option ) ) {
 			if( wpfkey( $default, 'enabled_types' ) ) $default['enabled_types'] = [];
 		}
+		if( preg_match( '#_ai$#iu', (string) $option ) ) {
+			foreach( [ 'chatbot_allowed_groups', 'bot_reply_includes' ] as $k ) {
+				if( wpfkey( $default, $k ) ) $default[ $k ] = [];
+			}
+		}
 		$default = apply_filters( 'wpforo_get_option_default_arg_before_cast', $default, $option );
 
 		$value = wpforo_settype( $value, gettype( $default ) );

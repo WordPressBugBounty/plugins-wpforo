@@ -321,8 +321,18 @@ class VectorStorageManager {
 	 * }
 	 */
 	public function get_storage_recommendation() {
+		// Cache the recommendation to avoid heavy COUNT(*) on posts table
+		// Board and storage mode specific to prevent stale data across switches
+		$cache_key = 'wpforo_ai_srec_' . $this->board_id . '_' . $this->get_storage_mode();
+		$cached = get_transient( $cache_key );
+		if ( false !== $cached && is_array( $cached ) ) {
+			return $cached;
+		}
+
 		$local = $this->get_local_storage();
-		return $local->get_storage_recommendation();
+		$result = $local->get_storage_recommendation();
+		set_transient( $cache_key, $result, 10 * MINUTE_IN_SECONDS );
+		return $result;
 	}
 
 	/**
