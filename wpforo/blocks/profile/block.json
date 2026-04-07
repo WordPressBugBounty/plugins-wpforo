@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "wpforo/profile",
+  "version": "1.0.0",
+  "title": "wpForo User Profile & Notifications",
+  "category": "widgets",
+  "description": "wpForo profile data and notifications",
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "My Profile"
+    },
+    "title_guest": {
+      "type": "string",
+      "default": "Join Us!"
+    },
+    "hide_avatar": {
+      "type": "boolean",
+      "default": false
+    },
+    "hide_name": {
+      "type": "boolean",
+      "default": false
+    },
+    "hide_notification": {
+      "type": "boolean",
+      "default": false
+    },
+    "hide_data": {
+      "type": "boolean",
+      "default": false
+    },
+    "hide_buttons": {
+      "type": "boolean",
+      "default": false
+    },
+    "hide_for_guests": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "textdomain": "wpforo",
+  "editorScript": "wpforo-profile-editor-script",
+  "editorStyle": "wpforo-profile-editor-style",
+  "render": "file:./render.php"
+}

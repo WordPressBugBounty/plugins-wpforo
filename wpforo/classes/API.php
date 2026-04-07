@@ -533,6 +533,17 @@ class API {
 						}
 					});
 				};
+				var wpForoReCaptchaV3Submit = function(form){
+					var btn = form.querySelector('input[type=\"submit\"], button[type=\"submit\"]');
+					if( btn && btn.name && !form.querySelector('input[type=\"hidden\"][name=\"' + btn.name + '\"]') ){
+						var h = document.createElement('input');
+						h.type = 'hidden';
+						h.name = btn.name;
+						h.value = btn.value || '1';
+						form.appendChild(h);
+					}
+					form.submit();
+				};
 				var wpForoReCaptchaV3Init = function(){
 					var forms = document.querySelectorAll('form[data-wpforo-recaptcha-v3]');
 					forms.forEach(function(form){
@@ -543,10 +554,10 @@ class API {
 								var action = form.getAttribute('data-wpforo-recaptcha-action') || 'wpforo_form';
 								wpForoReCaptchaV3Execute(action).then(function(token){
 									tokenInput.value = token;
-									form.submit();
+									wpForoReCaptchaV3Submit(form);
 								}).catch(function(error){
 									console.error('reCAPTCHA error:', error);
-									form.submit();
+									wpForoReCaptchaV3Submit(form);
 								});
 							}
 						});

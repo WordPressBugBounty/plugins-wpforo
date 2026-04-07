@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "wpforo/online-members",
+  "version": "1.0.0",
+  "title": "wpForo Online Members",
+  "category": "widgets",
+  "description": "Online members.",
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "Online Members"
+    },
+    "count": {
+      "type": "number",
+      "default": 15
+    },
+    "display_avatar": {
+      "type": "boolean",
+      "default": true
+    },
+    "groupids": {
+      "type": "array",
+      "default": []
+    },
+    "refresh_interval": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "textdomain": "wpforo",
+  "editorScript": "wpforo-online-members-editor-script",
+  "editorStyle": "wpforo-online-members-editor-style",
+  "render": "file:./render.php"
+}

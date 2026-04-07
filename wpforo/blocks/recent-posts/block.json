@@ -1,0 +1,78 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "wpforo/recent-posts",
+  "version": "1.0.0",
+  "title": "wpForo Recent Posts",
+  "category": "widgets",
+  "description": "Your forum's recent posts.",
+  "attributes": {
+    "boardid": {
+      "type": "number",
+      "default": 0
+    },
+    "title": {
+      "type": "string",
+      "default": "Recent Posts"
+    },
+    "forumids": {
+      "type": "array",
+      "default": []
+    },
+    "orderby": {
+      "type": "string",
+      "default": "created"
+    },
+    "order": {
+      "type": "string",
+      "default": "DESC"
+    },
+    "count": {
+      "type": "number",
+      "default": 9
+    },
+    "limit_per_topic": {
+      "type": "number",
+      "default": 0
+    },
+    "display_avatar": {
+      "type": "boolean",
+      "default": true
+    },
+    "forumids_filter": {
+      "type": "boolean",
+      "default": false
+    },
+    "current_forumid_filter": {
+      "type": "boolean",
+      "default": false
+    },
+    "exclude_firstposts": {
+      "type": "boolean",
+      "default": false
+    },
+    "display_only_unread": {
+      "type": "boolean",
+      "default": false
+    },
+    "display_new_indicator": {
+      "type": "boolean",
+      "default": false
+    },
+    "refresh_interval": {
+      "type": "number",
+      "default": 0
+    },
+    "excerpt_length": {
+      "type": "number",
+      "default": 55
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "textdomain": "wpforo",
+  "editorScript": "wpforo-recent-posts-editor-script",
+  "editorStyle": "wpforo-recent-posts-editor-style",
+  "render": "file:./render.php"
+}

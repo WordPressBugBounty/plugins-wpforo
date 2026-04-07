@@ -1,0 +1,34 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "wpforo/tags",
+  "version": "1.0.0",
+  "title": "wpForo Topic Tags",
+  "category": "widgets",
+  "description": "List of most popular tags.",
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "Topic Tags"
+    },
+    "boardid": {
+      "type": "number",
+      "default": 0
+    },
+    "topics": {
+      "type": "boolean",
+      "default": true
+    },
+    "count": {
+      "type": "number",
+      "default": 20
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "textdomain": "wpforo",
+  "editorScript": "wpforo-tags-editor-script",
+  "editorStyle": "wpforo-tags-editor-style",
+  "render": "file:./render.php"
+}

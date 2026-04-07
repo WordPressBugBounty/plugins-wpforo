@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 6.9
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -234,10 +234,16 @@ IMPORTANT NOTES for UPDATE
 
 
 
-= wpForo Forum 3.0.0 | 06.04.2026 =
+= wpForo Forum 3.0.0 - 3.0.1 | 07.04.2026 =
 
 [wpForo Forum v3.0 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-0-is-released/)
 
+* Version 3.0.1
+* Fixed: Simplified and threaded forum layout issues on mobile screen
+* Fixed: reCAPTCHA v3 doesn't work in some cases
+
+* --
+* Version 3.0.0
 
 * New Theme: 2026
     - New default theme - Modern, clean design with improved readability
@@ -309,6 +315,10 @@ IMPORTANT NOTES for UPDATE
     - Topic Suggestions with related topicsTranslation support
     - Activity retention settings
     - Multi-board support for analytics
+
+* Security: Unauthenticated SQL Injection via 'referer' Parameter
+* Security: Missing Authorization to Authenticated (Subscriber+) Arbitrary Forum Post Modification via 'guestposting' Parameter
+
 
 
 = wpForo Forum 2.4.17 - Last 2.x Version | 15.03.2026 =

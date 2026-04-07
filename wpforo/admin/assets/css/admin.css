@@ -23,7 +23,7 @@
 #wpf-admin-wrap .wpf-td-label{ font-weight:bold; font-size:13px; line-height:16px; cursor: pointer;}
 #wpf-admin-wrap .wpf-td-label-left{ font-weight:bold; font-size:13px; line-height:16px; text-align:left; vertical-align:top; }
 #wpf-admin-wrap .wpf-td-label-left-p{ font-weight:bold; font-size:13px; line-height:16px; text-align:left; vertical-align:top; padding:5px 1px; }
-#wpf-admin-wrap .wpf-dw-td{ vertical-align:top; text-align:left; width:40%; font-weight:bold;line-height: 1.5em; }
+#wpf-admin-wrap .wpf-dw-td{ vertical-align:top; text-align:left; width:40%; font-weight:bold;line-height: 1.7em; }
 #wpf-admin-wrap .wpf-dw-td-nowrap{width: 90%; vertical-align:top; text-align:left; font-weight:bold; white-space:nowrap; line-height: 1.5em; }
 #wpf-admin-wrap .wpf-dw-td-value{ vertical-align:top; text-align:left;line-height: 1.5em; }
 #wpf-admin-wrap .wpf-dw-td-g{ width:50%; text-align:right; vertical-align:top; padding-right:10px; font-weight:bold; }

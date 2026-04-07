@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "wpforo/search",
+  "version": "1.0.0",
+  "title": "wpForo Search",
+  "category": "widgets",
+  "description": "wpForo search form.",
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "Forum Search"
+    },
+    "boardid": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "textdomain": "wpforo",
+  "editorScript": "wpforo-search-editor-script",
+  "editorStyle": "wpforo-search-editor-style",
+  "render": "file:./render.php"
+}

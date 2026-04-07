@@ -1,0 +1,62 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "wpforo/recent-topics",
+  "version": "1.0.0",
+  "title": "wpForo Recent Topics",
+  "category": "widgets",
+  "description": "Your forum's recent topics.",
+  "attributes": {
+    "boardid": {
+      "type": "number",
+      "default": 0
+    },
+    "title": {
+      "type": "string",
+      "default": "Recent Topics"
+    },
+    "forumids": {
+      "type": "array",
+      "default": []
+    },
+    "orderby": {
+      "type": "string",
+      "default": "created"
+    },
+    "order": {
+      "type": "string",
+      "default": "DESC"
+    },
+    "count": {
+      "type": "number",
+      "default": 9
+    },
+    "display_avatar": {
+      "type": "boolean",
+      "default": true
+    },
+    "forumids_filter": {
+      "type": "boolean",
+      "default": false
+    },
+    "current_forumid_filter": {
+      "type": "boolean",
+      "default": false
+    },
+    "goto_unread": {
+      "type": "boolean",
+      "default": false
+    },
+    "refresh_interval": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "textdomain": "wpforo",
+  "editorScript": "wpforo-recent-topics-editor-script",
+  "editorStyle": "wpforo-recent-topics-editor-style",
+  "render": "file:./render.php"
+}

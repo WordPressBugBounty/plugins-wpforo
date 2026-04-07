@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "wpforo/forums",
+  "version": "1.0.0",
+  "title": "wpForo Forums",
+  "category": "widgets",
+  "description": "Forum tree.",
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "Forums"
+    },
+    "boardid": {
+      "type": "number",
+      "default": 0
+    },
+    "dropdown": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "textdomain": "wpforo",
+  "editorScript": "wpforo-forums-editor-script",
+  "editorStyle": "wpforo-forums-editor-style",
+  "render": "file:./render.php"
+}
