@@ -105,8 +105,9 @@ function wpforo_ai_render_rag_indexing_tab( $is_connected, $status ) {
 	$has_pending_cron_jobs = $pending_jobs_info['has_pending_jobs'];
 	$pending_topics_count_early = $pending_jobs_info['pending_topics'];
 
-	// Consider "active" if either storage says indexing OR we have local pending cron jobs
-	$is_processing = $is_indexing || $has_pending_cron_jobs;
+	// Only show the spinner when actually indexing (backend is processing or cron batch is running).
+	// Queued topics waiting for their scheduled time should NOT trigger the spinner.
+	$is_processing = $is_indexing || $pending_jobs_info['is_actively_processing'];
 
 	// Get storage recommendation
 	$recommendation = $storage_manager->get_storage_recommendation();
@@ -139,7 +140,7 @@ function wpforo_ai_render_rag_indexing_tab( $is_connected, $status ) {
                             <span class="dashicons dashicons-format-chat"></span>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-value" id="rag-total-topics"><?php echo number_format( $total_topics ); ?></div>
+                            <div class="stat-value" id="rag-total-topics"><?php echo number_format( $total_topics ); ?><?php if ( $pending_topics_count_early > 0 ) : ?> <small class="rag-queued-count">| <?php echo number_format( $pending_topics_count_early ); ?> <?php _e( 'queued...', 'wpforo' ); ?></small><?php endif; ?></div>
                             <div class="stat-label"><?php _e( 'Total Threads Indexed', 'wpforo' ); ?></div>
                         </div>
                     </div>
@@ -151,10 +152,8 @@ function wpforo_ai_render_rag_indexing_tab( $is_connected, $status ) {
                         <div class="stat-info">
                             <div class="stat-value <?php echo $is_processing ? 'status-active' : 'status-idle'; ?>" id="rag-indexing-status">
                                 <?php
-                                if ( $is_indexing ) {
+                                if ( $is_processing ) {
                                     _e( 'Indexing...', 'wpforo' );
-                                } elseif ( $has_pending_cron_jobs ) {
-                                    _e( 'Processing...', 'wpforo' );
                                 } else {
                                     _e( 'Idle', 'wpforo' );
                                 }

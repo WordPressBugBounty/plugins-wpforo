@@ -2293,6 +2293,17 @@ class Template {
                         return ( $data == 'icon' ) ? implode( ' ', $icon ) : $icon['title'];
                     }
                 }
+                if( $item['type'] == 1 ) {
+                    $icon['class'] = 'fas fa-thumbtack';
+                    $icon['color'] = 'wpfcl-10';
+                    $icon['title'] = wpforo_phrase( 'Sticky', false );
+                    if( $echo ) {
+                        $status = true;
+                        echo ( $data == 'icon' ) ? implode( ' ', $icon ) : $icon['title'];
+                    } else {
+                        return ( $data == 'icon' ) ? implode( ' ', $icon ) : $icon['title'];
+                    }
+                }
                 if( wpforo_topic( $item['topicid'], 'solved' ) ) {
                     $icon['class'] = 'fas fa-check-circle';
                     $icon['color'] = 'wpfcl-8';
@@ -2306,30 +2317,10 @@ class Template {
                 }
             }
 
-            if( $item['closed'] && $item['type'] == 1 ) {
+            if( $item['closed'] ) {
                 $icon['class'] = 'fas fa-lock';
                 $icon['color'] = 'wpfcl-1';
                 $icon['title'] = wpforo_phrase( 'Closed', false );
-                if( $echo ) {
-                    $status = true;
-                    echo ( $data == 'icon' ) ? implode( ' ', $icon ) : $icon['title'];
-                } else {
-                    return ( $data == 'icon' ) ? implode( ' ', $icon ) : $icon['title'];
-                }
-            } elseif( $item['closed'] && $item['type'] != 1 ) {
-                $icon['class'] = 'fas fa-lock';
-                $icon['color'] = 'wpfcl-1';
-                $icon['title'] = wpforo_phrase( 'Closed', false );
-                if( $echo ) {
-                    $status = true;
-                    echo ( $data == 'icon' ) ? implode( ' ', $icon ) : $icon['title'];
-                } else {
-                    return ( $data == 'icon' ) ? implode( ' ', $icon ) : $icon['title'];
-                }
-            } elseif( ! $item['closed'] && $item['type'] == 1 ) {
-                $icon['class'] = 'fas fa-thumbtack';
-                $icon['color'] = 'wpfcl-10';
-                $icon['title'] = wpforo_phrase( 'Sticky', false );
                 if( $echo ) {
                     $status = true;
                     echo ( $data == 'icon' ) ? implode( ' ', $icon ) : $icon['title'];

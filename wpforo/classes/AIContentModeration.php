@@ -889,7 +889,8 @@ class AIContentModeration {
 
 			// Add context settings for spam
 			if ( $spam_enabled ) {
-				$request_data['use_forum_context']  = $this->use_spam_context();
+				// Forum context only works in cloud mode (local mode has no S3 Vectors index)
+				$request_data['use_forum_context']  = $this->use_spam_context() && ! WPF()->vector_storage->is_local_mode();
 				$request_data['min_indexed_topics'] = $this->get_setting( 'spam', 'min_indexed', 100 );
 				$request_data['board_id']           = $this->board_id;
 			}
@@ -897,7 +898,8 @@ class AIContentModeration {
 			$endpoint = '/moderation/analyze';
 		} else {
 			// Use spam-only endpoint (more efficient)
-			$request_data['use_forum_context']  = $this->use_spam_context();
+			// Forum context only works in cloud mode (local mode has no S3 Vectors index)
+			$request_data['use_forum_context']  = $this->use_spam_context() && ! WPF()->vector_storage->is_local_mode();
 			$request_data['min_indexed_topics'] = $this->get_setting( 'spam', 'min_indexed', 100 );
 			$request_data['board_id']           = $this->board_id;
 

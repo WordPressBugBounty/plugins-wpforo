@@ -1742,6 +1742,12 @@ button .dashicons {
 	color: #999;
 }
 
+.rag-stat-item .stat-value .rag-queued-count {
+	font-size: 16px;
+	font-weight: 400;
+	color: #da3cdf;
+}
+
 .rag-stat-item .stat-label {
 	font-size: 13px;
 	color: #666;

@@ -246,19 +246,55 @@ class VectorStorageManager {
 		$local = $this->get_local_storage();
 		$stats = $local->get_stats();
 
-		// Check for pending WP Cron jobs
-		$pending_jobs = $this->get_pending_cron_jobs();
+		// Only report is_indexing when a batch is actually being processed
+		// (lock transient is held), not when topics are merely queued.
+		$board_id = $this->board_id;
+		$is_actively_indexing = (bool) get_transient( 'wpforo_ai_indexing_lock_local_' . $board_id )
+		                     || (bool) get_transient( 'wpforo_ai_indexing_lock_' . $board_id );
 
 		return [
 			'total_indexed'     => (int) ( $stats['total_embeddings'] ?? 0 ),
 			'total_topics'      => (int) ( $stats['total_topics'] ?? 0 ),
-			'indexing_progress' => 0, // Local doesn't track progress the same way
-			'is_indexing'       => $pending_jobs['has_pending_jobs'],
+			'indexing_progress' => $this->calculate_local_indexing_progress( $board_id ),
+			'is_indexing'       => $is_actively_indexing,
 			'last_indexed_at'   => $stats['last_indexed_at'] ?? null,
 			'storage_mode'      => self::MODE_LOCAL,
 			'storage_size'      => $stats['storage_size_mb'] ?? '0',
 			'storage_size_mb'   => $stats['storage_size_mb'] ?? '0',
 		];
+	}
+
+	/**
+	 * Calculate local indexing progress percentage.
+	 *
+	 * Reads the queue and settings options to calculate how many topics
+	 * have been processed out of the total queued for indexing.
+	 *
+	 * @param int $board_id Board ID
+	 * @return int Progress percentage (0-100), or 0 if no indexing in progress
+	 */
+	private function calculate_local_indexing_progress( $board_id ) {
+		$settings_key = 'wpforo_ai_indexing_settings_' . $board_id;
+		$settings = get_option( $settings_key, [] );
+
+		// No settings = no indexing session started
+		$total = (int) ( $settings['total_topics'] ?? 0 );
+		if ( $total <= 0 ) {
+			return 0;
+		}
+
+		// Count remaining topics in queue
+		$queue_key = 'wpforo_ai_indexing_queue_' . $board_id;
+		$pending = get_option( $queue_key, [] );
+		$remaining = is_array( $pending ) ? count( $pending ) : 0;
+
+		// Calculate progress
+		$processed = $total - $remaining;
+		if ( $processed < 0 ) {
+			$processed = 0; // Safety: queue grew larger than original total
+		}
+
+		return (int) round( ( $processed / $total ) * 100 );
 	}
 
 	/**
@@ -276,9 +312,9 @@ class VectorStorageManager {
 			$rag_status = [];
 		}
 
-		// Check for pending WP Cron jobs
-		$pending_jobs = $this->get_pending_cron_jobs();
-		$is_indexing = ( $rag_status['is_indexing'] ?? false ) || $pending_jobs['has_pending_jobs'];
+		// Only report is_indexing when the backend is actively processing.
+		// Queued WP Cron topics are reported separately via pending_cron_jobs.
+		$is_indexing = (bool) ( $rag_status['is_indexing'] ?? false );
 
 		// Use local cloud column for accurate count (reflects manual changes)
 		$total_indexed = (int) $wpdb->get_var(
@@ -466,16 +502,15 @@ class VectorStorageManager {
 
 		$local = $this->get_local_storage();
 		$indexed_count = 0;
+		$noise_filtered_count = 0;
 		$errors = [];
 		$is_first = true;
 
 		foreach ( $posts as $post ) {
 			// Mark first post for special handling
 			$post['is_first_post'] = $is_first;
+			$current_is_first = $is_first;
 			$is_first = false;
-
-			// Generate content for embedding
-			$content = $this->prepare_content_for_embedding( $post, $topic );
 
 			// Extract images if image indexing is enabled
 			$images = [];
@@ -488,6 +523,19 @@ class VectorStorageManager {
 			if ( $include_documents && ! empty( $post['body'] ) ) {
 				$documents = $ai_client->extract_post_documents( $post['body'] );
 			}
+
+			// Skip noise posts, but NEVER skip:
+			// - First post (topic body is always indexed)
+			// - Posts with images/documents that WILL be indexed (attachments have value even with short text)
+			// Note: $images/$documents are only populated if indexing is enabled, so this check is correct
+			$has_indexable_attachments = ! empty( $images ) || ! empty( $documents );
+			if ( ! $current_is_first && ! $has_indexable_attachments && $this->is_noise_post( $post['body'] ?? '' ) ) {
+				$noise_filtered_count++;
+				continue;
+			}
+
+			// Generate content for embedding
+			$content = $this->prepare_content_for_embedding( $post, $topic );
 
 			// Use content hash for deduplication
 			// Include image and document counts so re-index happens when attachments change
@@ -556,10 +604,11 @@ class VectorStorageManager {
 		}
 
 		$response = [
-			'success'       => true,
-			'indexed_count' => $indexed_count,
-			'total_posts'   => count( $posts ),
-			'errors'        => $errors,
+			'success'              => true,
+			'indexed_count'        => $indexed_count,
+			'noise_filtered_count' => $noise_filtered_count,
+			'total_posts'          => count( $posts ),
+			'errors'               => $errors,
 		];
 
 		// Add image processing stats if images were processed
@@ -621,11 +670,12 @@ class VectorStorageManager {
 	public function index_topics_batch_local( $topic_ids, $options = [] ) {
 		if ( empty( $topic_ids ) ) {
 			return [
-				'success'        => true,
-				'indexed_count'  => 0,
-				'skipped_count'  => 0,
-				'total_posts'    => 0,
-				'errors'         => [],
+				'success'              => true,
+				'indexed_count'        => 0,
+				'skipped_count'        => 0,
+				'noise_filtered_count' => 0,
+				'total_posts'          => 0,
+				'errors'               => [],
 			];
 		}
 
@@ -645,6 +695,7 @@ class VectorStorageManager {
 		$items_with_images = [];    // Items with images or documents (single endpoint)
 		$post_metadata = [];        // Metadata for storing after embedding
 		$skipped_count = 0;
+		$noise_filtered_count = 0;  // Posts filtered as noise (short, gratitude, etc.)
 		$topics_with_embeddings = [];  // Topics that have at least one indexed post
 
 		// Batch-fetch all topics in one query to avoid N+1
@@ -699,11 +750,8 @@ class VectorStorageManager {
 			$is_first = true;
 			foreach ( $posts as $post ) {
 				$post['is_first_post'] = $is_first;
+				$current_is_first = $is_first;
 				$is_first = false;
-
-				// Prepare content for embedding
-				$content = $this->prepare_content_for_embedding( $post, $topic );
-				$post_id = $post['postid'];
 
 				// Extract images if image indexing is enabled
 				$images = [];
@@ -716,6 +764,20 @@ class VectorStorageManager {
 				if ( $include_documents && ! empty( $post['body'] ) ) {
 					$documents = $ai_client->extract_post_documents( $post['body'] );
 				}
+
+				// Skip noise posts, but NEVER skip:
+				// - First post (topic body is always indexed)
+				// - Posts with images/documents that WILL be indexed (attachments have value even with short text)
+				// Note: Only exempt if indexing is enabled AND post actually has attachments
+				$has_indexable_attachments = ! empty( $images ) || ! empty( $documents );
+				if ( ! $current_is_first && ! $has_indexable_attachments && $this->is_noise_post( $post['body'] ?? '' ) ) {
+					$noise_filtered_count++;
+					continue;
+				}
+
+				// Prepare content for embedding
+				$content = $this->prepare_content_for_embedding( $post, $topic );
+				$post_id = $post['postid'];
 
 				// Stable hash from raw content — not from prepare_content_for_embedding() output.
 				// This ensures enrichment formatting changes don't invalidate all existing hashes.
@@ -769,12 +831,13 @@ class VectorStorageManager {
 			}
 
 			return [
-				'success'        => true,
-				'indexed_count'  => 0,
-				'skipped_count'  => $skipped_count,
-				'total_posts'    => $skipped_count,
-				'errors'         => [],
-				'message'        => sprintf( wpforo_phrase( 'All %d posts already indexed (unchanged).', false ), $skipped_count ),
+				'success'              => true,
+				'indexed_count'        => 0,
+				'skipped_count'        => $skipped_count,
+				'noise_filtered_count' => $noise_filtered_count,
+				'total_posts'          => $skipped_count + $noise_filtered_count,
+				'errors'               => [],
+				'message'              => sprintf( wpforo_phrase( 'All %d posts already indexed (unchanged).', false ), $skipped_count ),
 			];
 		}
 
@@ -935,11 +998,12 @@ class VectorStorageManager {
 			}
 
 			return [
-				'success'        => false,
-				'indexed_count'  => 0,
-				'skipped_count'  => $skipped_count,
-				'total_posts'    => $total_items + $skipped_count,
-				'errors'         => $errors,
+				'success'              => false,
+				'indexed_count'        => 0,
+				'skipped_count'        => $skipped_count,
+				'noise_filtered_count' => $noise_filtered_count,
+				'total_posts'          => $total_items + $skipped_count + $noise_filtered_count,
+				'errors'               => $errors,
 			];
 		}
 
@@ -991,12 +1055,13 @@ class VectorStorageManager {
 		}
 
 		$response = [
-			'success'        => true,
-			'indexed_count'  => $indexed_count,
-			'skipped_count'  => $skipped_count,
-			'total_posts'    => $total_items + $skipped_count,
-			'credits_used'   => $total_credits_used > 0 ? $total_credits_used : count( $topic_ids ),
-			'errors'         => $errors,
+			'success'              => true,
+			'indexed_count'        => $indexed_count,
+			'skipped_count'        => $skipped_count,
+			'noise_filtered_count' => $noise_filtered_count,
+			'total_posts'          => $total_items + $skipped_count + $noise_filtered_count,
+			'credits_used'         => $total_credits_used > 0 ? $total_credits_used : count( $topic_ids ),
+			'errors'               => $errors,
 		];
 
 		// Add image processing stats if images were processed
@@ -1133,6 +1198,150 @@ class VectorStorageManager {
 		}
 
 		return $preview;
+	}
+
+	/**
+	 * Noise filtering patterns - matches cloud mode (rag_ingestion/handler.py)
+	 * These patterns identify non-informative content that shouldn't be indexed.
+	 */
+	private static $gratitude_patterns = [
+		'/^thanks?\.?!?$/i',
+		'/^thank you\.?!?$/i',
+		'/^thx\.?!?$/i',
+		'/^ty\.?!?$/i',
+		'/^thanks?,?\s*(a lot|so much|for .{0,30})\.?!?$/i',
+		'/^(great|awesome|perfect|helpful|nice|good),?\s*thanks?\.?!?$/i',
+		'/^thanks?,?\s*(it works|that worked|that fixed it|that helped)\.?!?$/i',
+	];
+
+	private static $agreement_patterns = [
+		'/^i agree\.?!?$/i',
+		'/^same here\.?!?$/i',
+		'/^me too\.?!?$/i',
+		'/^same (problem|issue)\.?!?$/i',
+		'/^\+1\.?$/i',
+		'/^this\.?!?$/i',
+		'/^exactly\.?!?$/i',
+		'/^(yes|no|correct|right|true|indeed|absolutely|definitely)\.?!?$/i',
+	];
+
+	private static $bump_patterns = [
+		'/^bump\.?!?$/i',
+		'/^following\.?$/i',
+		'/^subscribing\.?$/i',
+		'/^watching\.?$/i',
+		'/^any ?one\??$/i',
+		'/^any updates?\??$/i',
+		'/^hello\??$/i',
+		'/^still waiting\.?$/i',
+		'/^\?\?\?+$/i',
+	];
+
+	private static $noise_phrases = [ 'ok', 'okay', 'k', 'up' ];
+
+	/** Minimum character count for indexing */
+	const MIN_CHAR_COUNT = 20;
+
+	/** Minimum word count for indexing */
+	const MIN_WORD_COUNT = 5;
+
+	/** Cached locale check result for performance */
+	private static $is_english_locale = null;
+
+	/**
+	 * Check if the current locale is English-like.
+	 * Cached for performance since it doesn't change during a request.
+	 *
+	 * @return bool True if locale is English (en, en_US, en_GB, etc.)
+	 */
+	private function is_english_locale() {
+		if ( self::$is_english_locale === null ) {
+			$locale = get_locale();
+			// Match en, en_US, en_GB, en_AU, etc.
+			self::$is_english_locale = ( $locale === 'en' || strpos( $locale, 'en_' ) === 0 );
+		}
+		return self::$is_english_locale;
+	}
+
+	/**
+	 * Check if a post is noise content that shouldn't be indexed.
+	 *
+	 * Filters out non-informative content to improve search quality:
+	 * - Length < 20 characters (all languages)
+	 * - Word count < 5 words (all languages)
+	 * - Only emojis (no alphanumeric text) (all languages)
+	 * - Gratitude-only posts ("thanks", etc.) (English only)
+	 * - Agreement-only posts ("+1", "I agree", etc.) (English only)
+	 * - Bump/follow posts ("bump", "following", etc.) (English only)
+	 * - Common noise phrases ("ok", etc.) (English only)
+	 *
+	 * Pattern matching is only applied for English locales to avoid
+	 * wasting resources on non-English forums where patterns won't match.
+	 *
+	 * Matches cloud mode behavior (rag_ingestion/handler.py:is_noise_reply).
+	 *
+	 * @param string $body Post body content (HTML allowed, will be stripped)
+	 * @return bool True if post is noise and should be skipped, false if it should be indexed
+	 */
+	public function is_noise_post( $body ) {
+		// Strip HTML and normalize whitespace
+		$cleaned = wp_strip_all_tags( $body );
+		$cleaned = preg_replace( '/\s+/', ' ', $cleaned );
+		$cleaned = trim( $cleaned );
+
+		// Rule 1: Minimum character count (language-agnostic)
+		if ( mb_strlen( $cleaned ) < self::MIN_CHAR_COUNT ) {
+			return true;
+		}
+
+		// Rule 2: Minimum word count (language-agnostic)
+		$words = preg_split( '/\s+/', $cleaned, -1, PREG_SPLIT_NO_EMPTY );
+		if ( count( $words ) < self::MIN_WORD_COUNT ) {
+			return true;
+		}
+
+		// Rule 3: Check if only emojis/symbols (no alphanumeric chars) (language-agnostic)
+		if ( ! preg_match( '/[a-zA-Z0-9]/', $cleaned ) ) {
+			return true;
+		}
+
+		// Pattern matching only for English locales - skip for other languages
+		// to avoid wasting CPU cycles on patterns that won't match
+		if ( ! $this->is_english_locale() ) {
+			return false;
+		}
+
+		// Prepare for pattern matching (English only from here)
+		$lower_text = mb_strtolower( $cleaned );
+
+		// Rule 4: Gratitude-only detection
+		foreach ( self::$gratitude_patterns as $pattern ) {
+			if ( preg_match( $pattern, $lower_text ) ) {
+				return true;
+			}
+		}
+
+		// Rule 5: Agreement-only detection
+		foreach ( self::$agreement_patterns as $pattern ) {
+			if ( preg_match( $pattern, $lower_text ) ) {
+				return true;
+			}
+		}
+
+		// Rule 6: Bump/follow detection
+		foreach ( self::$bump_patterns as $pattern ) {
+			if ( preg_match( $pattern, $lower_text ) ) {
+				return true;
+			}
+		}
+
+		// Rule 7: Legacy noise phrases (exact match)
+		if ( in_array( $lower_text, self::$noise_phrases, true ) ) {
+			return true;
+		}
+
+		// Passed all filters - keep this post
+		return false;
 	}
 
 	/**
@@ -2238,6 +2447,23 @@ class VectorStorageManager {
 	 * @return array|WP_Error Search results or error
 	 */
 	public function semantic_search( $query, $limit = 10, $filters = [] ) {
+		// Add forum access filtering (restrict to forums user can view)
+		// This applies to BOTH local and cloud modes
+		$ai_client = $this->get_ai_client();
+		$accessible_forumids = $ai_client->get_accessible_forumids();
+
+		if ( $accessible_forumids !== null ) {
+			// User has restricted access - if empty array, they can't access any forums
+			if ( empty( $accessible_forumids ) ) {
+				return [
+					'results' => [],
+					'total'   => 0,
+					'message' => wpforo_phrase( 'No results found', false ),
+				];
+			}
+			$filters['accessible_forumids'] = $accessible_forumids;
+		}
+
 		if ( $this->is_local_mode() ) {
 			return $this->semantic_search_local( $query, $limit, $filters );
 		} else {
@@ -2257,9 +2483,19 @@ class VectorStorageManager {
 		// Inject score threshold from settings so VectorStorageLocal filters at search time.
 		// Local cosine similarities are on a different scale (5-25%) than cloud scores (30-90%),
 		// so apply 1/3 of the configured threshold for local mode.
+		// Minimum absolute threshold of 15% prevents garbage results from nonsense queries
+		// (random vectors have ~5-15% cosine similarity with any query).
 		$min_score_setting = (int) wpfval( WPF()->settings->ai, 'search_min_score' );
-		if ( $min_score_setting > 0 && ! isset( $filters['min_score'] ) ) {
-			$filters['min_score'] = ( $min_score_setting / 100 ) / 3;
+		$local_threshold   = $min_score_setting > 0 ? ( $min_score_setting / 100 ) / 3 : 0;
+		$absolute_min      = 0.15; // 15% - below this, results are definitely garbage
+		if ( ! isset( $filters['min_score'] ) ) {
+			$filters['min_score'] = max( $local_threshold, $absolute_min );
+		}
+
+		// Convert accessible_forumids to forumids for local storage (include filter)
+		if ( ! empty( $filters['accessible_forumids'] ) && empty( $filters['forumids'] ) ) {
+			$filters['forumids'] = $filters['accessible_forumids'];
+			unset( $filters['accessible_forumids'] );
 		}
 
 		// Generate embedding for query
@@ -2369,6 +2605,46 @@ class VectorStorageManager {
 			'total'   => count( $results ),
 		];
 
+		// Collect topic and post IDs for forum results to batch fetch (avoids N+1 queries)
+		$topic_ids = [];
+		$post_ids  = [];
+		foreach ( $results as $result ) {
+			$content_type = $result['content_type'] ?? 'forum';
+			if ( $content_type === 'forum' ) {
+				$topic_ids[] = (int) $result['topicid'];
+				$post_ids[]  = (int) $result['postid'];
+			}
+		}
+
+		// Batch fetch topics and posts in 2 queries instead of 2*N queries
+		$topics_map = [];
+		$posts_map  = [];
+
+		if ( ! empty( $topic_ids ) ) {
+			$topic_ids  = array_unique( array_filter( $topic_ids ) );
+			$_count     = 0;
+			$all_topics = WPF()->topic->get_topics( [
+				'include'   => $topic_ids,
+				'row_count' => count( $topic_ids ),
+			], $_count, false );
+			foreach ( $all_topics as $t ) {
+				$topics_map[ (int) $t['topicid'] ] = $t;
+			}
+		}
+
+		if ( ! empty( $post_ids ) ) {
+			$post_ids  = array_unique( array_filter( $post_ids ) );
+			$_count    = 0;
+			$all_posts = WPF()->post->get_posts( [
+				'include'   => $post_ids,
+				'row_count' => count( $post_ids ),
+			], $_count, false );
+			foreach ( $all_posts as $p ) {
+				$posts_map[ (int) $p['postid'] ] = $p;
+			}
+		}
+
+		// Process results using pre-fetched maps
 		foreach ( $results as $result ) {
 			$content_type = $result['content_type'] ?? 'forum';
 
@@ -2402,27 +2678,54 @@ class VectorStorageManager {
 				continue;
 			}
 
-			// Get full topic and post data
-			$topic = WPF()->topic->get_topic( $result['topicid'] );
-			$post = WPF()->post->get_post( $result['postid'] );
+			// Forum result - use pre-fetched maps
+			$topic = $topics_map[ (int) $result['topicid'] ] ?? null;
+			$post  = $posts_map[ (int) $result['postid'] ] ?? null;
 
 			if ( ! $topic || ! $post ) {
 				continue;
 			}
 
+			// Calculate quality boost for ranking (uses live data, no schema changes)
+			// Boost is applied to ranking only; original score is preserved for display
+			$base_score = (float) $result['similarity'];
+			$boost = 1.0;
+			if ( ! empty( $topic['solved'] ) ) {
+				$boost += 0.05; // +5% for solved topics
+			}
+			if ( ! empty( $post['is_answer'] ) ) {
+				$boost += 0.10; // +10% for best answer posts
+			}
+			if ( ! empty( $post['votes'] ) && (int) $post['votes'] > 5 ) {
+				$boost += 0.03; // +3% for well-voted posts (>5 votes)
+			}
+
 			$formatted['results'][] = [
-				'topic_id'    => (int) $result['topicid'],
-				'post_id'     => (int) $result['postid'],
-				'forum_id'    => (int) $result['forumid'],
-				'title'       => $topic['title'] ?? '',
-				'content'     => preg_replace( '/\[(?:FORUM|SOLVED|BEST ANSWER)[^\]]*\]/', '', $result['content_preview'] ?? preg_replace( '/\[(?:\/)?[a-zA-Z0-9_-]+(?:\s[^\]]*?)?\]/', '', strip_tags( $post['body'] ) ) ),
-				'score'       => (float) $result['similarity'],
-				'url'         => WPF()->topic->get_url( $result['topicid'] ),
-				'post_url'    => WPF()->post->get_url( $result['postid'] ),
-				'created'     => $post['created'] ?? null,
-				'user_id'     => (int) ( $result['userid'] ?? 0 ),
-				'content_type' => 'forum',
+				'topic_id'      => (int) $result['topicid'],
+				'post_id'       => (int) $result['postid'],
+				'forum_id'      => (int) $result['forumid'],
+				'title'         => $topic['title'] ?? '',
+				'content'       => preg_replace( '/\[(?:FORUM|SOLVED|BEST ANSWER)[^\]]*\]/', '', $result['content_preview'] ?? preg_replace( '/\[(?:\/)?[a-zA-Z0-9_-]+(?:\s[^\]]*?)?\]/', '', strip_tags( $post['body'] ) ) ),
+				'score'         => $base_score, // Original similarity for display
+				'_boost_score'  => $base_score * $boost, // Internal: for sorting only
+				'url'           => WPF()->topic->get_url( $topic ),  // Pass array to avoid extra query
+				'post_url'      => WPF()->post->get_url( $post ),    // Pass array to avoid extra query
+				'created'       => $post['created'] ?? null,
+				'user_id'       => (int) ( $result['userid'] ?? 0 ),
+				'content_type'  => 'forum',
 			];
+		}
+
+		// Re-sort by boosted score (quality signals affect ranking)
+		if ( ! empty( $formatted['results'] ) ) {
+			usort( $formatted['results'], function( $a, $b ) {
+				return ( $b['_boost_score'] ?? $b['score'] ) <=> ( $a['_boost_score'] ?? $a['score'] );
+			} );
+			// Remove internal boost score from output
+			foreach ( $formatted['results'] as &$r ) {
+				unset( $r['_boost_score'] );
+			}
+			unset( $r );
 		}
 
 		return $formatted;

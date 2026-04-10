@@ -103,6 +103,10 @@ function wpforo_upgrade() {
 		wpforo_migrate_recent_activity_menu();
 		wpforo_migrate_theme_styles();
 	}
+
+	// Migrate AI quality defaults to faster tiers (3.0.3+)
+	// Runs for all versions - has its own one-time flag check
+	wpforo_migrate_ai_quality_defaults();
 }
 
 function wpforo_create_tables() {
@@ -1799,4 +1803,71 @@ function wpforo_migrate_theme_styles() {
 
 	// Mark migration as complete
 	update_option( 'wpforo_theme_styles_migrated', 1 );
+}
+
+/**
+ * Migrate AI quality settings to optimized defaults for better performance.
+ * Changes quality tiers from 'advanced' to 'fast'/'balanced' to reduce API timeouts.
+ * This only runs once during plugin update.
+ *
+ * New defaults (3.0.3+):
+ * - search_quality: 'fast' (was 'balanced')
+ * - search_enhance_quality: 'balanced' (was 'advanced')
+ * - translation_quality: 'fast' (was 'advanced')
+ * - topic_summary_quality: 'balanced' (was 'advanced')
+ * - moderation_spam_quality: 'balanced' (was 'advanced')
+ * - chatbot_quality: 'balanced' (was 'fast')
+ *
+ * @since 3.0.3
+ */
+function wpforo_migrate_ai_quality_defaults() {
+	// Only run this migration once
+	if( get_option( 'wpforo_ai_quality_defaults_migrated' ) ) {
+		return;
+	}
+
+	// Define quality settings to update (old_value => new_value)
+	$quality_changes = [
+		'search_quality'         => 'fast',
+		'search_enhance_quality' => 'balanced',
+		'translation_quality'    => 'fast',
+		'topic_summary_quality'  => 'balanced',
+		'moderation_spam_quality' => 'balanced',
+		'chatbot_quality'        => 'balanced',
+	];
+
+	// Get all board IDs (including default board 0)
+	$boardids = [ 0 ];
+	if( class_exists( 'wpforo\\classes\\Board' ) && method_exists( WPF()->board, 'get_active_boardids' ) ) {
+		$boardids = array_unique( array_merge( $boardids, (array) WPF()->board->get_active_boardids() ) );
+	}
+
+	foreach( $boardids as $boardid ) {
+		// Build option name: wpforo_ai (board 0) or wpforo_{boardid}_ai (other boards)
+		$option_name = 'wpforo_' . ( $boardid ? $boardid . '_' : '' ) . 'ai';
+		$ai_settings = get_option( $option_name, [] );
+
+		// Skip if no settings saved (new install, will use new defaults)
+		if( empty( $ai_settings ) ) {
+			continue;
+		}
+
+		// Update only the quality settings
+		$updated = false;
+		foreach( $quality_changes as $key => $new_value ) {
+			// Only update if the key exists (user has this setting saved)
+			if( isset( $ai_settings[ $key ] ) ) {
+				$ai_settings[ $key ] = $new_value;
+				$updated = true;
+			}
+		}
+
+		// Save updated settings
+		if( $updated ) {
+			update_option( $option_name, $ai_settings );
+		}
+	}
+
+	// Mark migration as complete
+	update_option( 'wpforo_ai_quality_defaults_migrated', 1 );
 }

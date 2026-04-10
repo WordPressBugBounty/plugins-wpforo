@@ -186,8 +186,10 @@ class API {
 			
 			//Load reCAPTCHA API and Widget for Topic and Post Editor
 			if( in_array( $template, [ 'forum', 'topic', 'post', 'add-topic' ], true ) ) {
-				add_action( 'wp_enqueue_scripts', [ $this, 'rc_enqueue' ] );
-				add_action( 'wpforo_verify_form_end', [ $this, 'rc_verify' ] );
+				if( wpforo_setting( 'recaptcha', 'topic_editor' ) || wpforo_setting( 'recaptcha', 'post_editor' ) ) {
+					add_action( 'wp_enqueue_scripts', [ $this, 'rc_enqueue' ] );
+					add_action( 'wpforo_verify_form_end', [ $this, 'rc_verify' ] );
+				}
 				if( wpforo_setting( 'recaptcha', 'topic_editor' ) ) {
 					add_action( 'wpforo_topic_form_extra_fields_after', [ $this, 'rc_widget' ] );
 				}

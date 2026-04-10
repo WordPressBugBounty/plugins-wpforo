@@ -2832,29 +2832,26 @@
 				$('#index-credits-available').text(this.formatNumber(data.credits_remaining));
 			}
 
-			// Update indexing status
+			// Update indexing status — only show spinner when backend is actively indexing
+			// or a cron batch is actively running. Queued topics with a future schedule
+			// (e.g. 24h auto-indexing delay) should NOT trigger the spinner.
 			if (typeof data.is_indexing !== 'undefined') {
 				const $statusElement = $('#rag-indexing-status');
 				const $statusIcon = $statusElement.closest('.rag-stat-item').find('.dashicons');
-
-				// Check for pending cron jobs (from pending_cron_jobs in response)
-				// This is important: is_indexing might be false briefly between batches,
-				// but pending_cron_jobs will be true if there are still topics in queue
-				const hasPendingJobs = data.pending_cron_jobs && data.pending_cron_jobs.has_pending_jobs;
-				const isActivelyProcessing = data.is_indexing || hasPendingJobs;
+				const cronActive = data.pending_cron_jobs && data.pending_cron_jobs.is_actively_processing;
+				const isActivelyProcessing = data.is_indexing || cronActive;
 
 				// Track previous state to detect completion
 				const wasProcessing = this.previousProcessingState === true;
 				this.previousProcessingState = isActivelyProcessing;
 
 				if (isActivelyProcessing) {
-					// Show processing state (either indexing or has pending cron jobs)
-					// If stop was requested, show "Stopping..." instead
+					// Show indexing state
 					let statusText;
 					if (this.indexingStopping) {
 						statusText = 'Stopping...';
 					} else {
-						statusText = data.is_indexing ? 'Indexing...' : 'Processing...';
+						statusText = 'Indexing...';
 					}
 					$statusElement
 						.text(statusText)
@@ -2863,12 +2860,6 @@
 					$statusIcon
 						.removeClass('dashicons-saved')
 						.addClass('dashicons-update-alt wpforo-rag-status-spin');
-
-					// Update pending topics count if available
-					if (data.pending_cron_jobs && data.pending_cron_jobs.pending_topics > 0) {
-						const pendingCount = data.pending_cron_jobs.pending_topics;
-						$('#rag-pending-topics').text(pendingCount);
-					}
 				} else {
 					// Clear stopping flag when process is fully stopped
 					this.indexingStopping = false;
@@ -2882,15 +2873,30 @@
 						.removeClass('dashicons-update-alt wpforo-rag-status-spin')
 						.addClass('dashicons-saved');
 
-					// Stop polling only when BOTH is_indexing is false AND no pending cron jobs
+					// Stop polling when backend is no longer indexing
 					this.stopRAGStatusPolling();
 
 					// Reload page when processing completes to refresh all counts
 					if (wasProcessing) {
 						setTimeout(function() {
 							window.location.reload();
-						}, 1000); // Wait 1 second to allow user to see the "Idle" status
+						}, 1000);
 					}
+				}
+			}
+
+			// Update queued topics count in the "Total Threads Indexed" stat
+			if (data.pending_cron_jobs) {
+				const pendingTopics = data.pending_cron_jobs.pending_topics || 0;
+				const $queuedCount = $('#rag-total-topics .rag-queued-count');
+				if (pendingTopics > 0) {
+					if ($queuedCount.length) {
+						$queuedCount.text('| ' + this.formatNumber(pendingTopics) + ' queued...');
+					} else {
+						$('#rag-total-topics').append(' <small class="rag-queued-count">| ' + this.formatNumber(pendingTopics) + ' queued...</small>');
+					}
+				} else {
+					$queuedCount.remove();
 				}
 			}
 

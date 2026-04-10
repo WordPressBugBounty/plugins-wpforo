@@ -432,6 +432,7 @@ class AIChatbot {
 		$use_local = (bool) wpforo_setting( 'ai', 'chatbot_use_local_context' );
 		$context_threshold = (int) wpforo_setting( 'ai', 'chatbot_context_update_threshold' ) ?: self::DEFAULT_CONTEXT_UPDATE_THRESHOLD;
 		$no_content_message = wpforo_setting( 'ai', 'chatbot_no_content_message' ) ?: '';
+		$min_score_setting = (int) wpforo_setting( 'ai', 'chatbot_min_score' );
 
 		// Get response language
 		$language = WPF()->ai_client->get_user_language( null, 'chatbot_language' );
@@ -448,6 +449,12 @@ class AIChatbot {
 				'no_content_message'        => $no_content_message,
 			],
 		];
+
+		// Add min_score to settings if set (for cloud RAG filtering)
+		// Converted from percentage (30) to decimal (0.3) for API
+		if ( $min_score_setting > 0 ) {
+			$request_data['settings']['min_score'] = $min_score_setting / 100;
+		}
 
 		// Add local context if enabled
 		if ( $use_local && ! empty( $local_context ) ) {
@@ -474,8 +481,8 @@ class AIChatbot {
 		$this->add_message( $conversation_id, 'user', $message );
 
 		// Store assistant response
-		$credits_map = [ 'fast' => 1, 'balanced' => 2, 'advanced' => 3 ];
-		$credits = $credits_map[ $quality ] ?? 1;
+		$credits_map = [ 'fast' => 1, 'balanced' => 2, 'advanced' => 3, 'premium' => 4 ];
+		$credits = $credits_map[ $quality ] ?? 2;
 
 		$this->add_message( $conversation_id, 'assistant', $response['response'], [
 			'tokens_used'     => $response['tokens_used'] ?? 0,
@@ -686,8 +693,16 @@ class AIChatbot {
 	 * @return array|WP_Error Array of RAG results or WP_Error on failure
 	 */
 	private function perform_local_rag_search( $query, $limit = 5 ) {
-		// Perform semantic search using VectorStorageManager
-		$search_results = WPF()->vector_storage->semantic_search( $query, $limit );
+		// Get chatbot-specific min_score setting and apply local mode scaling
+		// Local cosine similarities are on a different scale (5-25%) than cloud scores (30-90%),
+		// so apply 1/3 of the configured threshold for local mode with 15% absolute minimum.
+		$min_score_setting = (int) wpforo_setting( 'ai', 'chatbot_min_score' );
+		$local_threshold   = $min_score_setting > 0 ? ( $min_score_setting / 100 ) / 3 : 0;
+		$absolute_min      = 0.15; // 15% - below this, results are definitely garbage
+		$filters           = [ 'min_score' => max( $local_threshold, $absolute_min ) ];
+
+		// Perform semantic search using VectorStorageManager with chatbot's score threshold
+		$search_results = WPF()->vector_storage->semantic_search( $query, $limit, $filters );
 
 		if ( is_wp_error( $search_results ) ) {
 			return $search_results;

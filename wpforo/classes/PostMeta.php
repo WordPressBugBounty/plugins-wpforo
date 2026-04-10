@@ -408,7 +408,14 @@ class PostMeta {
 					$fileurl = (string) wpfval( $file, 'fileurl' );
 					$filedir = wpforo_fix_upload_dir( $fileurl );
 					if( $mediaid ) wp_delete_attachment( $mediaid );
-					wp_delete_file( $filedir );
+					// Security: Only delete files within wpforo upload directory
+					if( $filedir ) {
+						$realpath    = realpath( $filedir );
+						$upload_base = realpath( WPF()->folders['wp_upload']['dir'] );
+						if( $realpath && $upload_base && strpos( $realpath, $upload_base . DIRECTORY_SEPARATOR . 'wpforo' ) === 0 ) {
+							wp_delete_file( $filedir );
+						}
+					}
 				}
 				$this->delete( [ 'postid' => $postid, 'metakey' => $metakey ] );
 			}
@@ -527,6 +534,9 @@ class PostMeta {
 			$fields_list = WPF()->post->get_topic_fields_list( false, $forum, ! WPF()->current_userid );
 			foreach( $topic['postmetas'] as $metakey => $metavalue ) {
 				if( in_array( $metakey, $fields_list ) ) {
+					// Security: Only accept array values for file-type fields to prevent file path injection
+					$field = WPF()->post->get_field( $metakey, 'topic', $forum );
+					if( is_array( $metavalue ) && wpfval( $field, 'type' ) !== 'file' ) continue;
 					$postmeta = [
 						'postid'        => $topic['first_postid'],
 						'metakey'       => $metakey,
@@ -550,6 +560,9 @@ class PostMeta {
 			$fields_list = WPF()->post->get_topic_fields_list( false, $forum, ! WPF()->current_userid );
 			foreach( $args['postmetas'] as $metakey => $metavalue ) {
 				if( in_array( $metakey, $fields_list ) ) {
+					// Security: Only accept array values for file-type fields to prevent file path injection
+					$field = WPF()->post->get_field( $metakey, 'topic', $forum );
+					if( is_array( $metavalue ) && wpfval( $field, 'type' ) !== 'file' ) continue;
 					$postmeta = [
 						'metavalue'     => $metavalue,
 						'forumid'       => $topic['forumid'],
@@ -580,6 +593,9 @@ class PostMeta {
 			$fields_list = WPF()->post->get_post_fields_list( false, $forum, ! WPF()->current_userid );
 			foreach( $post['postmetas'] as $metakey => $metavalue ) {
 				if( in_array( $metakey, $fields_list ) ) {
+					// Security: Only accept array values for file-type fields to prevent file path injection
+					$field = WPF()->post->get_field( $metakey, 'post', $forum );
+					if( is_array( $metavalue ) && wpfval( $field, 'type' ) !== 'file' ) continue;
 					$postmeta = [
 						'postid'        => $post['postid'],
 						'metakey'       => $metakey,
@@ -603,6 +619,9 @@ class PostMeta {
 			$fields_list = WPF()->post->get_post_fields_list( false, $forum, ! WPF()->current_userid );
 			foreach( $args['postmetas'] as $metakey => $metavalue ) {
 				if( in_array( $metakey, $fields_list ) ) {
+					// Security: Only accept array values for file-type fields to prevent file path injection
+					$field = WPF()->post->get_field( $metakey, 'post', $forum );
+					if( is_array( $metavalue ) && wpfval( $field, 'type' ) !== 'file' ) continue;
 					$postmeta = [
 						'metavalue'     => $metavalue,
 						'forumid'       => $post['forumid'],

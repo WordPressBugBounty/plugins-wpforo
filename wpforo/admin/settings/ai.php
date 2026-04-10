@@ -61,6 +61,7 @@ WPF()->settings->header( 'ai' );
         <?php
         WPF()->settings->form_field( 'ai', 'search' );
         WPF()->settings->form_field( 'ai', 'search_quality' );
+        WPF()->settings->form_field( 'ai', 'search_min_score' );
         WPF()->settings->form_field( 'ai', 'search_enhance' );
         WPF()->settings->form_field( 'ai', 'search_enhance_quality' );
         WPF()->settings->form_field( 'ai', 'search_language' );
@@ -432,6 +433,7 @@ $wpf_ai_chatbot_available = isset( WPF()->ai_client ) && WPF()->ai_client->is_fe
             WPF()->settings->form_field( 'ai', 'chatbot_use_local_context' );
             WPF()->settings->form_field( 'ai', 'chatbot_allowed_groups' );
             WPF()->settings->form_field( 'ai', 'chatbot_language' );
+            WPF()->settings->form_field( 'ai', 'chatbot_min_score' );
             ?>
         <?php else : ?>
             <div class="wpf-opt-row">

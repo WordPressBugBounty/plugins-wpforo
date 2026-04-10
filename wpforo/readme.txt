@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 6.9
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -236,6 +236,22 @@ IMPORTANT NOTES for UPDATE
 
 
 
+= wpForo Forum 3.0.3 | 10.04.2026 =
+
+* Security: Prevent arbitrary file deletion
+* New: Boxed Layout - Forum cover image is now fully clickable
+* New: AI Search - Quality signal boosting for better result ranking
+* New: AI Indexing - Progress tracking during local storage indexing
+* New: AI Indexing - Noise filtering to improve search quality
+* Improved: AI Topic Suggestions now respect forum access permissions
+* Improved: AI performance with optimized default quality settings
+* Improved: reCAPTCHA only loads on forum pages when needed
+* Fixed: Auto-indexing spinner showing endlessly on active forums
+* Fixed: Sticky topic icon priority in mixed layout mode
+* Fixed: Local semantic search relevance thresholds
+* Fixed: Empty forum access array causing search errors
+
+
 = wpForo Forum 3.0.2 | 08.04.2026 =
 
 * Fixed: Subscription Manager shows empty forum tree on multi-board installations
@@ -251,6 +267,7 @@ IMPORTANT NOTES for UPDATE
 * Version 3.0.1
 * Fixed: Simplified and threaded forum layout issues on mobile screen
 * Fixed: reCAPTCHA v3 doesn't work in some cases
+
 
 = wpForo Forum 3.0.0 | 06.04.2026 =
 

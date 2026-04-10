@@ -2644,6 +2644,9 @@ function wpforo_fix_upload_dir( $upload_dir ) {
 	if( $folders && preg_match( '#[/\\\]wpforo(?:_\d+)?[/\\\](?:' . implode( '|', $folders ) . ')[/\\\].+?$#iu', (string) $upload_dir, $match ) ) {
 		$upload_dir = wpforo_fix_dir_sep( WPF()->folders['wp_upload']['dir'] . $match[0] );
 		$upload_dir = urldecode( (string) $upload_dir );
+	} else {
+		// Security: Return empty string for paths outside wpforo uploads to prevent arbitrary file operations
+		$upload_dir = '';
 	}
 
 	return $upload_dir;

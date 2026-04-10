@@ -5,7 +5,7 @@
 * Description: WordPress Forum plugin. wpForo is the only AI powered forum solution for your community. Modern design and 5 forum layouts.
 * Author: gVectors Team
 * Author URI: https://gvectors.com/
-* Version: 3.0.2
+* Version: 3.0.3
 * Requires at least: 5.2
 * Requires PHP: 7.1
 * Text Domain: wpforo
@@ -14,7 +14,7 @@
 
 namespace wpforo;
 
-define( 'WPFORO_VERSION', '3.0.2' );
+define( 'WPFORO_VERSION', '3.0.3' );
 
 //Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;

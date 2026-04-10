@@ -80,7 +80,8 @@ $cover_styles = wpforo_get_forum_cover_styles( $cat );
             ?>
             <div id="wpf-forum-<?php echo intval( $forum['forumid'] ) ?>" class="wpforo-forum-card <?php wpforo_unread( $forum['forumid'], 'forum' ) ?>">
 
-                <!-- Card Cover with Stats Overlay -->
+                <!-- Card Cover with Stats Overlay (Clickable) -->
+                <a href="<?php echo esc_url( (string) $forum_url ); ?>" class="forum-card-cover-link">
                 <div class="forum-card-cover" <?php if( $cover_image_url ): ?>style="background-image: url('<?php echo esc_url( $cover_image_url ); ?>');"<?php else: ?>style="background: linear-gradient(135deg, <?php echo esc_attr( $forum['color'] ); ?>55 0%, <?php echo esc_attr( $forum['color'] ); ?>99 100%);"<?php endif; ?>>
 
                     <!-- Stats and Avatars Overlay -->
@@ -116,6 +117,7 @@ $cover_styles = wpforo_get_forum_cover_styles( $cat );
                         <?php endif; ?>
                     </div>
                 </div>
+                </a>
 
                 <!-- Card Info (Icon + Title + Description) -->
                 <div class="forum-card-info">

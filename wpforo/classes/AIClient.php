@@ -2655,6 +2655,47 @@ class AIClient {
 	}
 
 	/**
+	 * Get forum IDs the current user can view (for search filtering)
+	 *
+	 * Uses cached WPF()->current_user_accesses (board-specific).
+	 * Returns null if user can access all forums (no filtering needed).
+	 *
+	 * @return array|null Array of accessible forum IDs, or null for full access
+	 */
+	public function get_accessible_forumids() {
+		// Admins see everything
+		if ( current_user_can( 'administrator' ) ) {
+			return null;
+		}
+
+		// Get all forums for current board (cached by usergroup)
+		$all_forums = WPF()->forum->get_forums( [ 'type' => 'forum' ] );
+		if ( empty( $all_forums ) ) {
+			return null;
+		}
+
+		$accessible   = [];
+		$total_forums = 0;
+
+		foreach ( $all_forums as $forum ) {
+			if ( empty( $forum['is_cat'] ) ) { // Skip categories
+				$total_forums++;
+				// 'vf' = can view forum
+				if ( WPF()->perm->forum_can( 'vf', $forum['forumid'] ) ) {
+					$accessible[] = (int) $forum['forumid'];
+				}
+			}
+		}
+
+		// If user can access all forums, return null (no filtering needed)
+		if ( count( $accessible ) === $total_forums ) {
+			return null;
+		}
+
+		return $accessible;
+	}
+
+	/**
 	 * Perform semantic search query
 	 *
 	 * @param string $query Search query text
@@ -2683,6 +2724,16 @@ class AIClient {
 		$current_boardid = (string) WPF()->board->get_current( 'boardid' );
 		if ( ! isset( $filters['board_id'] ) ) {
 			$filters['board_id'] = $current_boardid;
+		}
+
+		// Add forum access filtering (only forums current user can view)
+		// Skip if already set by VectorStorageManager (avoids double-add)
+		// Returns null for admins or users with full access (no filtering needed)
+		if ( ! isset( $filters['accessible_forumids'] ) ) {
+			$accessible_forumids = $this->get_accessible_forumids();
+			if ( $accessible_forumids !== null ) {
+				$filters['accessible_forumids'] = $accessible_forumids;
+			}
 		}
 
 		$data = [
@@ -3366,9 +3417,29 @@ class AIClient {
 		// Get minimum score threshold from settings (default 30%)
 		// Local cosine similarities are on a different scale (5-25%) than cloud scores (30-90%),
 		// so apply 1/3 of the configured threshold for local mode.
+		// Absolute minimum of 15% for local mode prevents garbage results (random vectors
+		// have ~5-15% cosine similarity with any query).
 		$is_local_mode = WPF()->vector_storage && WPF()->vector_storage->is_local_mode();
 		$min_score_setting = (int) wpfval( WPF()->settings->ai, 'search_min_score' );
-		$min_score_percent = $is_local_mode ? max( 0, min( 100, round( $min_score_setting / 3 ) ) ) : max( 0, min( 100, $min_score_setting ) );
+		if ( $is_local_mode ) {
+			$local_threshold   = round( $min_score_setting / 3 );
+			$min_score_percent = max( 15, $local_threshold ); // Absolute minimum 15%
+		} else {
+			$min_score_percent = max( 0, min( 100, $min_score_setting ) );
+		}
+
+		// Relevance label thresholds - different for local vs cloud modes
+		// Local cosine scores: 5-25% range (raw similarity)
+		// Cloud re-ranked scores: 30-90% range (LLM re-ranked)
+		if ( $is_local_mode ) {
+			$threshold_excellent = 25;
+			$threshold_good      = 20;
+			$threshold_relevant  = 15;
+		} else {
+			$threshold_excellent = 80;
+			$threshold_good      = 60;
+			$threshold_relevant  = 40;
+		}
 
 		// Enrich results with wpForo/WordPress data
 		// Cloud API returns: id, score, title, excerpt, url, content_source, metadata{...}
@@ -3402,11 +3473,11 @@ class AIClient {
 
 				if ( $min_score_percent > 0 && $score_percent < $min_score_percent ) continue;
 
-				if ( $score_percent >= 80 ) {
+				if ( $score_percent >= $threshold_excellent ) {
 					$relevance_label = wpforo_phrase( 'Excellent match', false );
-				} elseif ( $score_percent >= 60 ) {
+				} elseif ( $score_percent >= $threshold_good ) {
 					$relevance_label = wpforo_phrase( 'Good match', false );
-				} elseif ( $score_percent >= 40 ) {
+				} elseif ( $score_percent >= $threshold_relevant ) {
 					$relevance_label = wpforo_phrase( 'Relevant', false );
 				} else {
 					$relevance_label = wpforo_phrase( 'Possibly relevant', false );
@@ -3467,11 +3538,11 @@ class AIClient {
 					continue;
 				}
 
-				if ( $score_percent >= 80 ) {
+				if ( $score_percent >= $threshold_excellent ) {
 					$relevance_label = wpforo_phrase( 'Excellent match', false );
-				} elseif ( $score_percent >= 60 ) {
+				} elseif ( $score_percent >= $threshold_good ) {
 					$relevance_label = wpforo_phrase( 'Good match', false );
-				} elseif ( $score_percent >= 40 ) {
+				} elseif ( $score_percent >= $threshold_relevant ) {
 					$relevance_label = wpforo_phrase( 'Relevant', false );
 				} else {
 					$relevance_label = wpforo_phrase( 'Possibly relevant', false );
@@ -4953,7 +5024,9 @@ class AIClient {
 		$crons = _get_cron_array();
 		$pending_jobs = 0;
 		$pending_topics = 0;
+		$is_actively_processing = false;
 		$board_id = WPF()->board->get_current( 'boardid' ) ?: 0;
+		$now = time();
 
 		// Check for queue-based processing (self-rescheduling pattern)
 		// Mode-specific keys (current format): wpforo_ai_indexing_queue_{mode}_{board_id}
@@ -4967,11 +5040,24 @@ class AIClient {
 			}
 		}
 
-		// Also check if any queue processor cron is scheduled (mode-specific or legacy)
+		// Check if any queue processor cron is scheduled (mode-specific or legacy)
+		// and whether it's due now (actively processing) or scheduled for the future (just queued)
 		foreach ( [ 'wpforo_ai_process_queue_local', 'wpforo_ai_process_queue_cloud', 'wpforo_ai_process_queue' ] as $cron_hook ) {
-			if ( wp_next_scheduled( $cron_hook, [ $board_id ] ) ) {
+			$next = wp_next_scheduled( $cron_hook, [ $board_id ] );
+			if ( $next ) {
 				$pending_jobs = max( $pending_jobs, 1 );
+				// Cron is due or overdue — batch processing is imminent or in progress
+				if ( $next <= $now ) {
+					$is_actively_processing = true;
+				}
 			}
+		}
+
+		// Also check if a processing lock is held (batch is running right now)
+		if ( get_transient( 'wpforo_ai_indexing_lock_local_' . $board_id )
+		  || get_transient( 'wpforo_ai_indexing_lock_cloud_' . $board_id )
+		  || get_transient( 'wpforo_ai_indexing_lock_' . $board_id ) ) {
+			$is_actively_processing = true;
 		}
 
 		// Legacy: Search for wpforo_ai_process_batch scheduled events (old pattern)
@@ -4980,6 +5066,9 @@ class AIClient {
 				if ( isset( $cron['wpforo_ai_process_batch'] ) ) {
 					foreach ( $cron['wpforo_ai_process_batch'] as $key => $job ) {
 						$pending_jobs++;
+						if ( $timestamp <= $now ) {
+							$is_actively_processing = true;
+						}
 						// Count topics in this batch
 						$args = isset( $job['args'] ) ? $job['args'] : [];
 						if ( isset( $args[0] ) && is_array( $args[0] ) ) {
@@ -4993,9 +5082,10 @@ class AIClient {
 		}
 
 		return [
-			'has_pending_jobs' => $pending_jobs > 0,
-			'pending_jobs' => $pending_jobs,
-			'pending_topics' => $pending_topics,
+			'has_pending_jobs'       => $pending_jobs > 0,
+			'is_actively_processing' => $is_actively_processing,
+			'pending_jobs'           => $pending_jobs,
+			'pending_topics'         => $pending_topics,
 		];
 	}
 
@@ -7344,6 +7434,13 @@ class AIClient {
 			}
 		}
 
+		// Add forum access filtering (only show suggestions from forums user can access)
+		// Returns null for admins or users with full access (no filtering needed)
+		$accessible_forumids = $this->get_accessible_forumids();
+		if ( $accessible_forumids !== null ) {
+			$payload['accessible_forumids'] = $accessible_forumids;
+		}
+
 		// Make API request to suggestions endpoint
 		$response = $this->post( '/suggestions/suggest', $payload );
 
@@ -7502,8 +7599,10 @@ class AIClient {
 		}
 
 		// Convert similarity threshold from percentage to decimal
-		$threshold_decimal = $similarity_threshold / 100;
-		$related_threshold = max( 0.3, $threshold_decimal - 0.2 ); // 20% lower for related topics
+		// Local cosine similarities are on a different scale (5-25%) than cloud scores (30-90%),
+		// so apply 1/3 of the configured threshold for local mode with minimum of 15%
+		$threshold_decimal = max( 0.15, ( $similarity_threshold / 100 ) / 3 );
+		$related_threshold = max( 0.10, $threshold_decimal - 0.05 ); // 5% lower for related topics
 
 		// Group by topic (take best match per topic)
 		$by_topic = [];
