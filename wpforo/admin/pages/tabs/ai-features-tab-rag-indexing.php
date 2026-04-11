@@ -518,15 +518,21 @@ function wpforo_ai_render_rag_indexing_tab( $is_connected, $status ) {
 
 							// Get all forum topic counts in a single GROUP BY query
 							// instead of calling WPF()->topic->get_count() per forum (N+1 problem)
-							$forum_topic_counts = [];
-							$_ftc_rows = WPF()->db->get_results(
-								"SELECT `forumid`, COUNT(*) as `cnt` FROM `" . WPF()->tables->topics . "` GROUP BY `forumid`",
-								ARRAY_A
-							);
-							if ( $_ftc_rows ) {
-								foreach ( $_ftc_rows as $_ftc_row ) {
-									$forum_topic_counts[ (int) $_ftc_row['forumid'] ] = (int) $_ftc_row['cnt'];
+							// Cache for 5 minutes to avoid heavy GROUP BY on large forums
+							$_ftc_cache_key = 'wpforo_ai_ftc_' . $current_boardid;
+							$forum_topic_counts = get_transient( $_ftc_cache_key );
+							if ( false === $forum_topic_counts ) {
+								$forum_topic_counts = [];
+								$_ftc_rows = WPF()->db->get_results(
+									"SELECT `forumid`, COUNT(*) as `cnt` FROM `" . WPF()->tables->topics . "` GROUP BY `forumid`",
+									ARRAY_A
+								);
+								if ( $_ftc_rows ) {
+									foreach ( $_ftc_rows as $_ftc_row ) {
+										$forum_topic_counts[ (int) $_ftc_row['forumid'] ] = (int) $_ftc_row['cnt'];
+									}
 								}
+								set_transient( $_ftc_cache_key, $forum_topic_counts, 5 * MINUTE_IN_SECONDS );
 							}
 
 							if ( ! empty( $all_forums ) ) :

@@ -1032,10 +1032,16 @@ class AIClient {
 				$summary['options_deleted']++;
 			}
 
-			// Per-board 2-min batch lock (ai-features-helpers.php uses this to
-			// serialize AJAX + WP-Cron processing). If it's stale, new batches
-			// refuse to run until the TTL expires.
+			// Per-board batch locks (serialize AJAX + WP-Cron processing).
+			// Clear all variants: legacy, local-mode, and cloud-mode locks.
+			// If any are stale, new batches refuse to run until TTL expires.
 			if ( delete_transient( 'wpforo_ai_indexing_lock_' . $board_id ) ) {
+				$summary['transients_deleted']++;
+			}
+			if ( delete_transient( 'wpforo_ai_indexing_lock_local_' . $board_id ) ) {
+				$summary['transients_deleted']++;
+			}
+			if ( delete_transient( 'wpforo_ai_indexing_lock_cloud_' . $board_id ) ) {
 				$summary['transients_deleted']++;
 			}
 
@@ -1080,6 +1086,13 @@ class AIClient {
 			// WP indexing status cache (5-min TTL) — deleting it forces the
 			// UI to query fresh state.
 			if ( delete_transient( 'wpforo_ai_wp_indexing_status' ) ) {
+				$summary['transients_deleted']++;
+			}
+
+			// WP indexing lock transient — must be cleared so new indexing
+			// can start immediately after stop/clear. Without this, user
+			// would have to wait up to 300s for the lock to auto-expire.
+			if ( delete_transient( 'wpforo_ai_wp_indexing_lock' ) ) {
 				$summary['transients_deleted']++;
 			}
 
@@ -4371,6 +4384,8 @@ class AIClient {
 		if ( $result !== false && $result > 0 ) {
 			$this->log_info( 'topics_indexed_status_cleared', [ 'count' => $result ] );
 			wpforo_clean_cache( 'topic' );
+			// Clear indexing stats cache for fresh counts
+			WPF()->vector_storage->clear_indexing_stats_cache();
 		}
 
 		return (int) $result;
@@ -4865,11 +4880,11 @@ class AIClient {
 	 * forever and the admin sees "Indexing..." with zero progress.
 	 *
 	 * Scope — this is intentionally narrow:
-	 * - Only the per-board queue hooks: wpforo_ai_process_queue_cloud,
+	 * - Per-board forum queue hooks: wpforo_ai_process_queue_cloud,
 	 *   wpforo_ai_process_queue_local, wpforo_ai_process_queue.
-	 * - Only events whose first arg equals the CURRENT board id (admins
-	 *   view AI settings one board at a time; nudge only the board they
-	 *   are looking at — never other boards, never non-board hooks).
+	 *   Only events whose first arg equals the CURRENT board id.
+	 * - WordPress content hook: wpforo_ai_process_wp_batch (global, no
+	 *   board scope — WP posts/pages are site-wide, not per-board).
 	 * - Only events overdue by >= 2 minutes.
 	 * - No other plugin's cron jobs, ever.
 	 *
@@ -4891,9 +4906,12 @@ class AIClient {
 	 * user asking "please run any stalled indexing work right now".
 	 *
 	 * Safety notes:
-	 * - The indexing processors have their own lock transient
+	 * - The forum indexing processors have their own lock transient
 	 *   (`wpforo_ai_indexing_lock_{mode}_{board_id}`, 300s TTL) so rapid
 	 *   refreshes cannot cause duplicate batch processing.
+	 * - The WP content indexer has its own lock transient
+	 *   (`wpforo_ai_wp_indexing_lock`, 300s TTL) to prevent duplicate
+	 *   batch processing on rapid admin refreshes.
 	 * - We only fire hooks that are already OVERDUE (>= 2 min past due).
 	 *   On a healthy site WP-Cron fires events on schedule, nothing is
 	 *   overdue, and this is a pure no-op.
@@ -4930,16 +4948,20 @@ class AIClient {
 		// does not trigger the inline run.
 		$overdue_threshold = 120;
 
-		// Only the per-board indexing queue hooks. These are the hooks
-		// scheduled by VectorStorageManager with args = [ $board_id ] and
-		// protected by the wpforo_ai_indexing_lock_{mode}_{board_id}
-		// transient. We do NOT touch any other cron jobs on the site —
-		// not other plugins, not other wpForo hooks, not even other
-		// wpForo AI hooks that are not per-board scoped.
-		$our_hooks = [
+		// Per-board forum indexing hooks. These are scheduled by
+		// VectorStorageManager with args = [ $board_id ] and protected by
+		// the wpforo_ai_indexing_lock_{mode}_{board_id} transient.
+		$forum_hooks = [
 			'wpforo_ai_process_queue_cloud' => true,
 			'wpforo_ai_process_queue_local' => true,
 			'wpforo_ai_process_queue'       => true,
+		];
+
+		// Global WordPress content indexing hook (no board scope).
+		// Protected by wpforo_ai_wp_indexing_lock transient in
+		// AIWordPressIndexer::process_batch_with_lock().
+		$wp_content_hooks = [
+			'wpforo_ai_process_wp_batch' => true,
 		];
 
 		$crons = _get_cron_array();
@@ -4947,7 +4969,9 @@ class AIClient {
 			return;
 		}
 
-		// Collect overdue events for the current board only.
+		// Collect overdue events.
+		// Forum hooks: must match current board.
+		// WP content hooks: global (no board scope), always include if overdue.
 		$to_run = [];
 		foreach ( $crons as $timestamp => $events ) {
 			if ( ( $now - $timestamp ) < $overdue_threshold ) {
@@ -4957,16 +4981,28 @@ class AIClient {
 				continue;
 			}
 			foreach ( $events as $hook => $dings ) {
-				if ( ! isset( $our_hooks[ $hook ] ) || ! is_array( $dings ) ) {
+				$is_forum_hook      = isset( $forum_hooks[ $hook ] );
+				$is_wp_content_hook = isset( $wp_content_hooks[ $hook ] );
+
+				if ( ! $is_forum_hook && ! $is_wp_content_hook ) {
 					continue;
 				}
+				if ( ! is_array( $dings ) ) {
+					continue;
+				}
+
 				foreach ( $dings as $sig => $event ) {
 					$args = isset( $event['args'] ) ? (array) $event['args'] : [];
-					// Must be scoped to the board the admin is viewing.
-					$event_board_id = isset( $args[0] ) ? (int) $args[0] : 0;
-					if ( $event_board_id !== $current_board_id ) {
-						continue;
+
+					// Forum hooks: must be scoped to the board admin is viewing.
+					if ( $is_forum_hook ) {
+						$event_board_id = isset( $args[0] ) ? (int) $args[0] : 0;
+						if ( $event_board_id !== $current_board_id ) {
+							continue;
+						}
 					}
+					// WP content hooks: global, no board scope check needed.
+
 					$to_run[] = [
 						'timestamp' => $timestamp,
 						'hook'      => $hook,
@@ -5116,6 +5152,12 @@ class AIClient {
 		wp_clear_scheduled_hook( 'wpforo_ai_process_queue_cloud', [ $board_id ] );
 		wp_clear_scheduled_hook( 'wpforo_ai_process_queue', [ $board_id ] );
 
+		// Clear forum indexing lock transients (legacy and mode-specific)
+		// so new indexing can start immediately after stop.
+		delete_transient( 'wpforo_ai_indexing_lock_' . $board_id );
+		delete_transient( 'wpforo_ai_indexing_lock_local_' . $board_id );
+		delete_transient( 'wpforo_ai_indexing_lock_cloud_' . $board_id );
+
 		// Legacy: Find and remove all wpforo_ai_process_batch scheduled events
 		if ( ! empty( $crons ) ) {
 			foreach ( $crons as $timestamp => $cron ) {
@@ -5139,6 +5181,24 @@ class AIClient {
 
 		// Also clear any recurring hooks (just in case)
 		wp_clear_scheduled_hook( 'wpforo_ai_process_batch' );
+
+		// Clear WordPress content indexing state (global, not board-scoped).
+		// This ensures Stop Indexing works for WP content as well as forum.
+		$wp_queue = get_option( 'wpforo_ai_wp_indexing_queue' );
+		if ( ! empty( $wp_queue ) ) {
+			$wp_posts_count = 0;
+			if ( isset( $wp_queue['batches'] ) && is_array( $wp_queue['batches'] ) ) {
+				foreach ( $wp_queue['batches'] as $batch ) {
+					$wp_posts_count += is_array( $batch ) ? count( $batch ) : 0;
+				}
+			}
+			$cleared_topics += $wp_posts_count;
+			$cleared_jobs++;
+			delete_option( 'wpforo_ai_wp_indexing_queue' );
+		}
+		wp_clear_scheduled_hook( 'wpforo_ai_process_wp_batch' );
+		delete_transient( 'wpforo_ai_wp_indexing_status' );
+		delete_transient( 'wpforo_ai_wp_indexing_lock' );
 
 		return [
 			'cleared_jobs' => $cleared_jobs,

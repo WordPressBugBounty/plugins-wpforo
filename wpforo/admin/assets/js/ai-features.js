@@ -1667,6 +1667,8 @@
 			// Load initial WordPress indexing status
 			if ($('.wpforo-ai-wordpress-indexing-box').length) {
 				this.loadWPIndexingStatus();
+				// Check if we should continue auto-refresh cycle for disabled-cron hosts
+				this.checkWPIndexingAutoRefresh();
 			}
 		},
 
@@ -1750,6 +1752,94 @@
 			if (this.wpIndexingPollInterval) {
 				clearInterval(this.wpIndexingPollInterval);
 				this.wpIndexingPollInterval = null;
+			}
+		},
+
+		/**
+		 * Start auto page refresh for WordPress content indexing.
+		 *
+		 * On hosts with disabled WP-Cron, batches are processed via inline
+		 * cron nudge which fires on page refresh (maybe_nudge_wp_cron in
+		 * AIClient.php). This function auto-refreshes the page every 20
+		 * seconds while indexing is active, triggering batch processing.
+		 *
+		 * Same principle as forum CLOUD indexing - cron-based processing
+		 * with inline nudge fallback on page refresh.
+		 */
+		startWPIndexingAutoRefresh: function() {
+			// Store flag to indicate we're in auto-refresh mode
+			try {
+				localStorage.setItem('wpforo_wp_indexing_auto_refresh', '1');
+			} catch (e) { /* localStorage may be blocked */ }
+
+			// Reload page - the refresh triggers maybe_nudge_wp_cron() which
+			// fires the stalled cron hook inline if overdue by 2+ minutes.
+			// On page load, checkWPIndexingAutoRefresh() will continue the cycle.
+			console.log('WP content indexing: reloading page to trigger cron nudge...');
+			window.location.reload();
+		},
+
+		/**
+		 * Check on page load if auto-refresh should continue.
+		 * Called from initWordPressIndexingFeatures().
+		 */
+		checkWPIndexingAutoRefresh: function() {
+			const self = this;
+
+			// Check if we're in auto-refresh mode
+			let inAutoRefresh = false;
+			try {
+				inAutoRefresh = localStorage.getItem('wpforo_wp_indexing_auto_refresh') === '1';
+			} catch (e) { /* localStorage may be blocked */ }
+
+			if (!inAutoRefresh) {
+				return;
+			}
+
+			// Check current indexing status
+			$.ajax({
+				url: wpforoAIAdmin.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'wpforo_ai_wp_get_indexing_status',
+					security: wpforoAIAdmin.adminNonce
+				},
+				success: function(response) {
+					if (response.success && response.data) {
+						self.updateWPIndexingDisplay(response.data);
+
+						// Check if still processing
+						if (response.data.queue && response.data.queue.status === 'processing') {
+							console.log('WP indexing in progress, will refresh in 20 seconds...');
+							// Schedule next refresh in 20 seconds
+							self._wpAutoRefreshTimeout = setTimeout(function() {
+								window.location.reload();
+							}, 20000);
+						} else {
+							// Done - clear auto-refresh flag
+							console.log('WP content indexing complete');
+							self.stopWPIndexingAutoRefresh();
+						}
+					}
+				},
+				error: function() {
+					// On error, stop auto-refresh to avoid infinite reload loop
+					self.stopWPIndexingAutoRefresh();
+				}
+			});
+		},
+
+		/**
+		 * Stop auto page refresh and clear the flag.
+		 */
+		stopWPIndexingAutoRefresh: function() {
+			try {
+				localStorage.removeItem('wpforo_wp_indexing_auto_refresh');
+			} catch (e) { /* localStorage may be blocked */ }
+
+			if (this._wpAutoRefreshTimeout) {
+				clearTimeout(this._wpAutoRefreshTimeout);
+				this._wpAutoRefreshTimeout = null;
 			}
 		},
 
@@ -1972,17 +2062,15 @@
 				data: requestData,
 				success: function(response) {
 					if (response.success) {
-						alert('Indexing queued: ' + response.data.total_posts + ' posts in ' + response.data.batches + ' batches.');
-						// Start polling for progress
-						WpForoAI.loadWPIndexingStatus();
+						// Start auto page refresh - each refresh triggers inline cron nudge
+						WpForoAI.startWPIndexingAutoRefresh();
 					} else {
 						alert('Error: ' + (response.data?.message || 'Unknown error'));
+						$button.prop('disabled', false).html('<span class="dashicons dashicons-upload"></span> Index Selected Terms');
 					}
 				},
 				error: function() {
 					alert('Error starting indexing. Please try again.');
-				},
-				complete: function() {
 					$button.prop('disabled', false).html('<span class="dashicons dashicons-upload"></span> Index Selected Terms');
 				}
 			});
@@ -2023,16 +2111,15 @@
 				data: data,
 				success: function(response) {
 					if (response.success) {
-						alert('Indexing queued: ' + response.data.total_posts + ' posts in ' + response.data.batches + ' batches.');
-						WpForoAI.loadWPIndexingStatus();
+						// Start auto page refresh - each refresh triggers inline cron nudge
+						WpForoAI.startWPIndexingAutoRefresh();
 					} else {
 						alert('Error: ' + (response.data?.message || 'Unknown error'));
+						$button.prop('disabled', false).html('<span class="dashicons dashicons-upload"></span> Index Selected Content');
 					}
 				},
 				error: function() {
 					alert('Error starting indexing. Please try again.');
-				},
-				complete: function() {
 					$button.prop('disabled', false).html('<span class="dashicons dashicons-upload"></span> Index Selected Content');
 				}
 			});
@@ -2066,17 +2153,16 @@
 				data: data,
 				success: function(response) {
 					if (response.success) {
-						alert('Indexing queued: ' + response.data.total_posts + ' posts in ' + response.data.batches + ' batches.');
-						WpForoAI.loadWPIndexingStatus();
 						$form.find('#wp-post-ids').val(''); // Clear the field
+						// Start auto page refresh - each refresh triggers inline cron nudge
+						WpForoAI.startWPIndexingAutoRefresh();
 					} else {
 						alert('Error: ' + (response.data?.message || 'Unknown error'));
+						$button.prop('disabled', false).html('<span class="dashicons dashicons-upload"></span> Index by IDs');
 					}
 				},
 				error: function() {
 					alert('Error starting indexing. Please try again.');
-				},
-				complete: function() {
 					$button.prop('disabled', false).html('<span class="dashicons dashicons-upload"></span> Index by IDs');
 				}
 			});
@@ -2106,6 +2192,8 @@
 				},
 				success: function(response) {
 					if (response.success) {
+						// Stop any auto-refresh cycle
+						WpForoAI.stopWPIndexingAutoRefresh();
 						alert('WordPress index cleared successfully.');
 						WpForoAI.loadWPIndexingStatus();
 					} else {
@@ -2652,8 +2740,10 @@
 			// indexing (see handleStopIndexing / checkLocalIndexingProgress).
 			try {
 				localStorage.removeItem('wpforo_indexing_stopping');
+				localStorage.removeItem('wpforo_wp_indexing_auto_refresh');
 			} catch (err) { /* localStorage may be blocked in some contexts */ }
 			this.indexingStopping = false;
+			this.stopWPIndexingAutoRefresh();
 
 			const self = this;
 			$.ajax({

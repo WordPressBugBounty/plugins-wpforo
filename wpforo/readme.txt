@@ -3,12 +3,12 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 6.9
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Number one WordPress forum plugin with AI features. Full-fledged forum solution with modern and responsive forum design. Community builder WordPress forum plugin.
+Number one WordPress forum plugin with AI features. Full-fledged forum solution with modern forum design. Community builder WordPress forum plugin.
 
 == Description ==
 
@@ -236,6 +236,14 @@ IMPORTANT NOTES for UPDATE
 
 
 
+= wpForo Forum 3.0.4 | 12.04.2026 =
+
+* Fixed: AI WordPress Content Indexing now works on hosts with disabled WP-Cron
+* Fixed: AI Content Indexing admin page performance on large forums
+* Fixed: Registration form losing field values when validation error occurs
+* Fixed: Spam protection flow issues, enabled 'Can pass moderation' allows new users to pass the moderation
+
+
 = wpForo Forum 3.0.3 | 10.04.2026 =
 
 * Security: Prevent arbitrary file deletion
@@ -453,52 +461,3 @@ IMPORTANT NOTES for UPDATE
 * SEO Optimization: Added `rel="nofollow"` to links in  the user activity and favored pages.
 * Changed: Topic and post shortlinks previously showed a 404 error if the content was private or unapproved. Now, they redirect to the login page to authorize the user before displaying the content.
 * New Addon: [wpForo - Advanced Reactions](https://gvectors.com/product/wpforo_reactions/)
-
-
-= wpForo Forum 2.3.0 - 2.3.5 | 01.08.2024 =
-
-[wpForo Forum v2.3 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-2-3-is-released/)
-
-* Version 2.3.5
-* Compatibility: WordPress 6.6
-* Changed: Display access title instead of the key in the forum access table
-* Fixed Bug: Issue with deleting own account
-* Fixed Bug: Vulnerability issue (Sensitive Data Exposure)
-* ---------
-* Version 2.3.4
-* Fixed Bug: Vulnerability issue (By authenticated (Contributor+ users) SQL Injection)
-* Fixed Bug: Invisible replies in private topics
-* Fixed Bug: Prevent reCaptcha from being checked more than once
-* ---------
-* Version 2.3.3
-* Changed: File naming logic of profile cover images
-* Changed: Ordering of forums and sub-forums in Threaded Layout
-* Changed: Using post's short URL for `[post_link]` shortcode in email templates
-* Fixed Bug: Performance issue with large number of members
-* Fixed Bug: Permission issue with subscriptions and email notifications
-* ---------
-* Version 2.3.2
-* Fixed Bug: Compatibility issue with some page builders
-* Fixed Bug: Dynamic Usergroup and User Role synchronization issues
-* Fixed Bug: Member search ordering issue (used by User Mentioning addon)
-* Fixed Bug: Custom values for max and minimum number of characters in the user password
-* ---------
-* Version 2.3.1
-* Fixed Bug: Member search issue when use profile title
-* Fixed Bug: Usergroup and User Role synchronization issues
-* Fixed Bug: Editor focusing issue when using stickers and emojis
-* Fixed Bug: Permission issue for Authors to use Cross Posting addon
-* Fixed Bug: CSS Issue with the red circle notification on the admin bar
-* New Addon: [wpForo - Groups Plugin Integration](https://gvectors.com/product/wpforo-groups-membership/)
-* ---------
-* Version 2.3.0
-* Added: Option to change wpForo sidebar location (left or right)
-* Added: Red circle notification on the forum menu when there are unapproved posts
-* Added: Extended the max rating level to 14, use `wpforo_max_rating_levels` hook
-  - PHP code snippet example:
-    - `add_filter('wpforo_max_rating_levels', function($count){return 14;});`
-* Improved: Topic search and suggestion when creating a new topic
-* Fixed Bug: Last login is incorrectly displaying current time in Dashboard > Members
-* Fixed Bug: Database Error: Syntax error, unexpected '@', when search words contain @
-* Fixed Bug: Database Error on duplication key in `_wpforo_visits` table
-* Fixed Bug: PHP Error: Trying to access array on null in /profile-subscriptions.php on line 18

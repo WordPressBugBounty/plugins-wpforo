@@ -24,24 +24,22 @@ class Moderation {
 	
 	private function init() {
 		if( is_admin() ) add_action( 'wpforo_after_init', [ $this, 'init_list_table' ] );
-		if( ! WPF()->usergroup->can( 'aup' ) ) {
-            if( wpforo_setting( 'antispam', 'spam_filter' ) ){
-                if( WPF()->member->current_user_is_new() ) {
-                    if( class_exists( 'Akismet' ) ) {
-                        add_filter( 'wpforo_add_topic_data_filter', [ &$this, 'akismet_topic' ], 8 );
-                        add_filter( 'wpforo_edit_topic_data_filter', [ &$this, 'akismet_topic' ], 8 );
-                        add_filter( 'wpforo_add_post_data_filter', [ &$this, 'akismet_post' ], 8 );
-                        add_filter( 'wpforo_edit_post_data_filter', [ &$this, 'akismet_post' ], 8 );
-                    }
-                    add_filter( 'wpforo_add_topic_data_filter', [ &$this, 'spam_topic' ], 9 );
-                    add_filter( 'wpforo_edit_topic_data_filter', [ &$this, 'spam_topic' ], 9 );
-                    add_filter( 'wpforo_add_topic_data_filter', [ &$this, 'spam_post' ], 9 );
-                    add_filter( 'wpforo_edit_topic_data_filter', [ &$this, 'spam_post' ], 9 );
-                    add_filter( 'wpforo_add_post_data_filter', [ &$this, 'spam_post' ], 9 );
-                    add_filter( 'wpforo_edit_post_data_filter', [ &$this, 'spam_post' ], 9 );
+        if ( wpforo_setting( 'antispam', 'spam_filter' ) ){
+            add_filter( 'wpforo_add_topic_data_filter', [ &$this, 'auto_moderate' ], 8 );
+            add_filter( 'wpforo_add_post_data_filter', [ &$this, 'auto_moderate' ], 8 );
+            if( WPF()->member->current_user_is_new() ){
+                if( class_exists( 'Akismet' ) ) {
+                    add_filter( 'wpforo_add_topic_data_filter', [ &$this, 'akismet_topic' ], 9 );
+                    add_filter( 'wpforo_edit_topic_data_filter', [ &$this, 'akismet_topic' ], 9 );
+                    add_filter( 'wpforo_add_post_data_filter', [ &$this, 'akismet_post' ], 9 );
+                    add_filter( 'wpforo_edit_post_data_filter', [ &$this, 'akismet_post' ], 9 );
                 }
-                add_filter( 'wpforo_add_topic_data_filter', [ &$this, 'auto_moderate' ], 10 );
-                add_filter( 'wpforo_add_post_data_filter', [ &$this, 'auto_moderate' ], 10 );
+                add_filter( 'wpforo_add_topic_data_filter', [ &$this, 'spam_topic' ], 10 );
+                add_filter( 'wpforo_edit_topic_data_filter', [ &$this, 'spam_topic' ], 10 );
+                add_filter( 'wpforo_add_topic_data_filter', [ &$this, 'spam_post' ], 10 );
+                add_filter( 'wpforo_edit_topic_data_filter', [ &$this, 'spam_post' ], 10 );
+                add_filter( 'wpforo_add_post_data_filter', [ &$this, 'spam_post' ], 10 );
+                add_filter( 'wpforo_edit_post_data_filter', [ &$this, 'spam_post' ], 10 );
             }
             if( ! WPF()->perm->can_link() ) {
                 add_filter( 'wpforo_add_topic_data_filter', [ &$this, 'remove_links' ], 20 );
@@ -49,7 +47,7 @@ class Moderation {
                 add_filter( 'wpforo_add_post_data_filter', [ &$this, 'remove_links' ], 20 );
                 add_filter( 'wpforo_edit_post_data_filter', [ &$this, 'remove_links' ], 20 );
             }
-		}
+        }
 	}
 	
 	public function init_list_table() {
@@ -99,9 +97,10 @@ class Moderation {
 	
 	public function akismet_topic( $item ) {
 		// Skip for AI-generated content (created by AI Tasks)
-		if ( ! empty( $item['is_ai_generated'] ) ) {
-			return $item;
-		}
+		if ( ! empty( $item['is_ai_generated'] ) ) return $item;
+
+        // Skip unapproved topics
+        if( $item['status'] === 1 ) return $item;
 
 		$post                 = [];
 		$post['user_ip']      = ( isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : null );
@@ -147,9 +146,9 @@ class Moderation {
 
 	public function akismet_post( $item ) {
 		// Skip for AI-generated content (created by AI Tasks)
-		if ( ! empty( $item['is_ai_generated'] ) ) {
-			return $item;
-		}
+		if ( ! empty( $item['is_ai_generated'] ) ) return $item;
+        // Skip unapproved posts
+        if( $item['status'] === 1 ) return $item;
 
 		$post                 = [];
 		$post['user_ip']      = ( isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : null );
@@ -280,9 +279,11 @@ class Moderation {
 	public function spam_topic( $topic ) {
 		if( empty( $topic ) ) return $topic;
 		// Skip for AI-generated content (created by AI Tasks)
-		if ( ! empty( $topic['is_ai_generated'] ) ) {
-			return $topic;
-		}
+		if ( ! empty( $topic['is_ai_generated'] ) ) return $topic;
+
+        //Skip unapproved topics
+        if( $topic['status'] === 1 ) return $topic;
+
 		if( isset( $topic['title'] ) ) {
 			$item = $topic['title'];
 		} else {
@@ -370,9 +371,11 @@ class Moderation {
 	public function spam_post( $post ) {
 		if( empty( $post ) ) return $post;
 		// Skip for AI-generated content (created by AI Tasks)
-		if ( ! empty( $post['is_ai_generated'] ) ) {
-			return $post;
-		}
+		if ( ! empty( $post['is_ai_generated'] ) ) return $post;
+
+        //Skip unapproved posts
+        if( $post['status'] === 1 ) return $post;
+
 		if( isset( $post['body'] ) ) {
 			$item = $post['body'];
 		} else {

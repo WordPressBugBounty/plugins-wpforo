@@ -210,6 +210,39 @@ class VectorStorageManager {
 		$this->storage_mode = null;
 	}
 
+	/**
+	 * Clear indexing statistics caches
+	 *
+	 * Call this after batch indexing completes, after clearing embeddings,
+	 * or after any bulk operation that changes indexed topic counts.
+	 * Individual topic indexing does NOT need to call this - the 5-minute
+	 * TTL handles gradual updates during indexing.
+	 *
+	 * @param int|null $board_id Specific board ID, or null for current board
+	 * @return void
+	 */
+	public function clear_indexing_stats_cache( $board_id = null ) {
+		$board_id = $board_id ?? $this->board_id;
+
+		// Clear cloud indexed count cache
+		delete_transient( 'wpforo_ai_cloud_indexed_count_' . $board_id );
+
+		// Clear indexed-by-forum caches (both modes)
+		delete_transient( 'wpforo_ai_indexed_by_forum_local_' . $board_id );
+		delete_transient( 'wpforo_ai_indexed_by_forum_cloud_' . $board_id );
+
+		// Clear storage recommendation cache
+		delete_transient( 'wpforo_ai_srec_' . $board_id . '_local' );
+		delete_transient( 'wpforo_ai_srec_' . $board_id . '_cloud' );
+
+		// Clear total topics count cache (from admin page, includes storage mode suffix)
+		delete_transient( 'wpforo_ai_ttc_' . $board_id . '_local' );
+		delete_transient( 'wpforo_ai_ttc_' . $board_id . '_cloud' );
+
+		// Clear forum topic counts cache (from admin page)
+		delete_transient( 'wpforo_ai_ftc_' . $board_id );
+	}
+
 	// =========================================================================
 	// STATISTICS & STATUS
 	// =========================================================================
@@ -317,9 +350,16 @@ class VectorStorageManager {
 		$is_indexing = (bool) ( $rag_status['is_indexing'] ?? false );
 
 		// Use local cloud column for accurate count (reflects manual changes)
-		$total_indexed = (int) $wpdb->get_var(
-			"SELECT COUNT(*) FROM `" . WPF()->tables->topics . "` WHERE `cloud` = 1"
-		);
+		// Cache for 5 minutes to avoid heavy COUNT on large forums
+		$cache_key = 'wpforo_ai_cloud_indexed_count_' . $this->board_id;
+		$total_indexed = get_transient( $cache_key );
+		if ( false === $total_indexed ) {
+			$total_indexed = (int) $wpdb->get_var(
+				"SELECT COUNT(*) FROM `" . WPF()->tables->topics . "` WHERE `cloud` = 1"
+			);
+			set_transient( $cache_key, $total_indexed, 5 * MINUTE_IN_SECONDS );
+		}
+		$total_indexed = (int) $total_indexed;
 
 		return [
 			'total_indexed'     => $total_indexed,
@@ -374,14 +414,27 @@ class VectorStorageManager {
 	/**
 	 * Get indexed counts grouped by forum
 	 *
+	 * Cached for 5 minutes to avoid heavy GROUP BY queries on large forums.
+	 *
 	 * @return array Forum ID => count mapping
 	 */
 	public function get_indexed_counts_by_forum() {
-		if ( $this->is_local_mode() ) {
-			return $this->get_local_indexed_counts_by_forum();
-		} else {
-			return $this->get_cloud_indexed_counts_by_forum();
+		$mode = $this->is_local_mode() ? 'local' : 'cloud';
+		$cache_key = 'wpforo_ai_indexed_by_forum_' . $mode . '_' . $this->board_id;
+
+		$cached = get_transient( $cache_key );
+		if ( false !== $cached && is_array( $cached ) ) {
+			return $cached;
 		}
+
+		if ( $this->is_local_mode() ) {
+			$counts = $this->get_local_indexed_counts_by_forum();
+		} else {
+			$counts = $this->get_cloud_indexed_counts_by_forum();
+		}
+
+		set_transient( $cache_key, $counts, 5 * MINUTE_IN_SECONDS );
+		return $counts;
 	}
 
 	/**
@@ -1629,10 +1682,13 @@ class VectorStorageManager {
 				"UPDATE `" . WPF()->tables->topics . "` SET `indexed` = NULL, `local` = 0 WHERE `indexed` IS NOT NULL OR `local` = 1"
 			);
 			wpforo_clean_cache( 'topic' );
+			$this->clear_indexing_stats_cache();
 			return true;
 		} else {
 			$ai_client = $this->get_ai_client();
-			return $ai_client->clear_rag_database( $this->board_id );
+			$result = $ai_client->clear_rag_database( $this->board_id );
+			$this->clear_indexing_stats_cache();
+			return $result;
 		}
 	}
 
@@ -2283,6 +2339,9 @@ class VectorStorageManager {
 			if ( ! wp_next_scheduled( $cron_hook, $cron_args ) ) {
 				wp_schedule_single_event( time() + 30, $cron_hook, $cron_args );
 			}
+		} else {
+			// Queue empty - indexing complete, clear stats cache for fresh counts
+			$this->clear_indexing_stats_cache( $board_id );
 		}
 	}
 
@@ -2322,6 +2381,7 @@ class VectorStorageManager {
 
 		if ( $updated > 0 ) {
 			wpforo_clean_cache( 'topic' );
+			$this->clear_indexing_stats_cache();
 		}
 
 		return (int) $updated;
@@ -2840,6 +2900,11 @@ class VectorStorageManager {
 			"SELECT COUNT(DISTINCT topicid) FROM `{$embeddings_table}` WHERE topicid > 0"
 		);
 
+		// Clear stats cache for fresh counts
+		if ( $updated > 0 || $cleared > 0 ) {
+			$this->clear_indexing_stats_cache();
+		}
+
 		return [
 			'updated'       => $updated,
 			'cleared'       => $cleared,
@@ -2900,6 +2965,8 @@ class VectorStorageManager {
 		// This is critical for force_reindex to work correctly
 		if ( $updated > 0 || $cleared > 0 ) {
 			wpforo_clean_cache( 'topic' );
+			// Clear indexing stats cache for fresh counts
+			$this->clear_indexing_stats_cache();
 		}
 
 		return [

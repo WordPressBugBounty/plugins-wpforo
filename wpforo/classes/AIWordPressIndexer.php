@@ -127,7 +127,40 @@ class AIWordPressIndexer {
 		// Register WP Cron handler for batch processing
 		// IMPORTANT: Must be registered unconditionally (not only in admin context)
 		// because WP Cron runs in a separate request where is_admin() returns FALSE
-		add_action( 'wpforo_ai_process_wp_batch', [ $this, 'process_batch' ] );
+		add_action( 'wpforo_ai_process_wp_batch', [ $this, 'process_batch_with_lock' ] );
+	}
+
+	/**
+	 * Wrapper for process_batch() with transient-based lock.
+	 *
+	 * Prevents concurrent batch processing when inline cron nudge fires
+	 * simultaneously with WP-Cron or multiple admin page refreshes.
+	 * Follows same pattern as VectorStorageManager::cron_process_queue_mode().
+	 *
+	 * @return array|WP_Error Result from process_batch() or lock status
+	 */
+	public function process_batch_with_lock() {
+		$lock_key = 'wpforo_ai_wp_indexing_lock';
+
+		// Check if already processing
+		if ( get_transient( $lock_key ) ) {
+			// Reschedule as backup (same pattern as forum indexing)
+			if ( ! wp_next_scheduled( 'wpforo_ai_process_wp_batch' ) ) {
+				wp_schedule_single_event( time() + 60, 'wpforo_ai_process_wp_batch' );
+			}
+			return [ 'status' => 'locked', 'message' => 'Another batch is being processed' ];
+		}
+
+		// Acquire lock (300s TTL - matches forum indexing)
+		set_transient( $lock_key, 'processing_' . time(), 300 );
+
+		// Process the batch
+		$result = $this->process_batch();
+
+		// Release lock
+		delete_transient( $lock_key );
+
+		return $result;
 	}
 
 	/**
