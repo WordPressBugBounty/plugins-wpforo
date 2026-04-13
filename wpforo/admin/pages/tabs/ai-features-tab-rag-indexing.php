@@ -1181,8 +1181,9 @@ function wpforo_ai_render_rag_indexing_tab( $is_connected, $status ) {
 				<?php endif; ?>
 			}
 
-			// Auto-refresh page when background jobs are pending
-			<?php if ( $has_pending_jobs ) : ?>
+			// Auto-refresh page only when actively processing (cron is due or batch running).
+			// Queued topics scheduled for future (e.g., 1h/24h auto-indexing) should NOT trigger refresh.
+			<?php if ( $pending_jobs_info['is_actively_processing'] ) : ?>
 				setTimeout(function() {
 					window.location.reload();
 				}, 30000); // Refresh after 30 seconds

@@ -748,7 +748,7 @@ class TaskManager {
 		}
 
 		// Auto: resolve from board locale
-		$board_locale = WPF()->board->locale;
+		$board_locale = WPF()->board->get_current( 'locale' );
 		foreach ( $languages as $lang ) {
 			if ( $lang['locale'] === $board_locale ) {
 				return $lang['name'];

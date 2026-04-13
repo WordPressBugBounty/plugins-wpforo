@@ -5,7 +5,7 @@
 * Description: WordPress Forum plugin. wpForo is the only AI powered forum solution for your community. Modern design and 5 forum layouts.
 * Author: gVectors Team
 * Author URI: https://gvectors.com/
-* Version: 3.0.4
+* Version: 3.0.5
 * Requires at least: 5.2
 * Requires PHP: 7.1
 * Text Domain: wpforo
@@ -14,7 +14,7 @@
 
 namespace wpforo;
 
-define( 'WPFORO_VERSION', '3.0.4' );
+define( 'WPFORO_VERSION', '3.0.5' );
 
 //Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;
@@ -1090,7 +1090,7 @@ final class wpforo {
 					'postids'     => [],
 				];
 				if( ! empty( $get['wpfob'] ) ) {
-					$args['orderby'] = sanitize_text_field( $get['wpfob'] );
+					$args['orderby'] = wpforo_sanitize_orderby( $get['wpfob'], 'search', 'relevancy' );
 				} elseif( in_array( wpfval( $args, 'type' ), [ 'tag', 'user-posts', 'user-topics' ], true ) ) {
 					$args['orderby'] = 'date';
 				}
@@ -1131,7 +1131,7 @@ final class wpforo {
 					
 					if( wpfval( $args, 'prefixid' ) ) $args['prefix'] = (int) wpfval( $args, 'prefixid' );
 					$args['where']     = "`modified` > '" . gmdate( 'Y-m-d H:i:s', $end_date ) . "'";
-					$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? sanitize_text_field( WPF()->GET['wpfob'] ) : 'modified';
+					$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? wpforo_sanitize_orderby( WPF()->GET['wpfob'], 'topics', 'modified' ) : 'modified';
 					$args['order']     = 'DESC';
 					$args['offset']    = ( $current_object['paged'] - 1 ) * $current_object['items_per_page'];
 					$args['row_count'] = $current_object['items_per_page'];
@@ -1207,7 +1207,7 @@ final class wpforo {
 					$current_object['items_per_page'] = wpforo_setting( 'topics', 'posts_per_page' );
 					
 					if( $view !== 'unapproved' ) $args['where'] = "`created` > '" . gmdate( 'Y-m-d H:i:s', $end_date ) . "'";
-					$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? sanitize_text_field( WPF()->GET['wpfob'] ) : 'created';
+					$args['orderby']   = ( ! empty( WPF()->GET['wpfob'] ) ) ? wpforo_sanitize_orderby( WPF()->GET['wpfob'], 'posts', 'created' ) : 'created';
 					$args['order']     = 'DESC';
 					$args['offset']    = ( $current_object['paged'] - 1 ) * $current_object['items_per_page'];
 					$args['row_count'] = $current_object['items_per_page'];

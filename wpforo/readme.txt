@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 6.9
-Stable tag: 3.0.4
+Stable tag: 3.0.5
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -234,6 +234,14 @@ IMPORTANT NOTES for UPDATE
 
 [wpForo Forum v3.0 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-0-is-released/)
 
+
+
+= wpForo Forum 3.0.5 | 13.04.2026 =
+
+* Security: Hardened sorting parameter validation
+* Fixed: PHP warning for undefined board locale property in Task Manager
+* Fixed: PHP warning for non-existent ram_cache method in AI Content Moderation
+* Fixed: AI Indexing admin page unnecessary auto-refresh when jobs queued for future
 
 
 = wpForo Forum 3.0.4 | 12.04.2026 =

@@ -2495,7 +2495,7 @@ class AIContentModeration {
 			[ $id_column => $id ]
 		);
 
-		WPF()->ram_cache->clean( $content_type );
+		WPF()->ram_cache->reset( $content_type );
 
 		return $result !== false;
 	}
