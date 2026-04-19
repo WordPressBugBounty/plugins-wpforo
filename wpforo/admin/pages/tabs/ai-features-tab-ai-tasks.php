@@ -75,9 +75,9 @@ function wpforo_ai_render_ai_tasks_tab( $is_connected, $status ) {
 	$boards = WPF()->board->get_boards();
 	$current_boardid = isset( $_GET['boardid'] ) ? intval( $_GET['boardid'] ) : 0;
 
-	// Validate boardid exists
-	$valid_boardids = array_column( $boards, 'boardid' );
-	if ( ! in_array( $current_boardid, $valid_boardids ) ) {
+	// Validate boardid exists (use strict comparison for type safety)
+	$valid_boardids = array_map( 'intval', array_column( $boards, 'boardid' ) );
+	if ( ! in_array( $current_boardid, $valid_boardids, true ) ) {
 		$current_boardid = 0; // Default to main board
 	}
 
@@ -189,7 +189,7 @@ function wpforo_ai_render_ai_tasks_tab( $is_connected, $status ) {
 					<?php wp_nonce_field( 'wpforo_ai_task_nonce', 'wpforo_ai_task_nonce' ); ?>
 					<input type="hidden" id="wpforo-ai-task-nonce" value="<?php echo esc_attr( wp_create_nonce( 'wpforo_ai_task_nonce' ) ); ?>">
 					<input type="hidden" name="task_id" id="wpforo-ai-task-id" value="">
-					<input type="hidden" name="board_id" value="<?php echo esc_attr( $current_boardid ); ?>">
+					<input type="hidden" name="board_id" id="wpforo-ai-task-board-id" value="<?php echo esc_attr( $current_boardid ); ?>">
 
 					<!-- Basic Information Section -->
 					<div class="wpforo-ai-form-section">
@@ -590,8 +590,36 @@ function wpforo_ai_render_task_row( $task ) {
  * @param int $board_id Current board ID
  */
 function wpforo_ai_render_task_type_templates( $board_id = 0 ) {
-	// Get forums for the current board
+	// Get forums for the current board and sort hierarchically
 	$forums = WPF()->forum->get_forums();
+
+	// Sort forums hierarchically: parents first, then children under each parent
+	$forums_by_parent = [];
+	foreach ( $forums as $forum ) {
+		$parent = (int) ( $forum['parentid'] ?? 0 );
+		if ( ! isset( $forums_by_parent[ $parent ] ) ) {
+			$forums_by_parent[ $parent ] = [];
+		}
+		$forums_by_parent[ $parent ][] = $forum;
+	}
+	foreach ( $forums_by_parent as &$children ) {
+		usort( $children, function( $a, $b ) {
+			return (int) ( $a['order'] ?? 0 ) - (int) ( $b['order'] ?? 0 );
+		} );
+	}
+	unset( $children );
+	$sorted_forums = [];
+	$add_forums_recursive = function( $parentid ) use ( &$add_forums_recursive, &$sorted_forums, &$forums_by_parent ) {
+		if ( ! isset( $forums_by_parent[ $parentid ] ) ) {
+			return;
+		}
+		foreach ( $forums_by_parent[ $parentid ] as $forum ) {
+			$sorted_forums[] = $forum;
+			$add_forums_recursive( (int) $forum['forumid'] );
+		}
+	};
+	$add_forums_recursive( 0 );
+	$forums = $sorted_forums;
 	?>
 
 	<!-- Topic Generator Configuration Template -->

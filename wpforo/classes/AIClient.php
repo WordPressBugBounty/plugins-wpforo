@@ -175,6 +175,9 @@ class AIClient {
 		// Clean up embeddings when topics are deleted
 		add_action( 'wpforo_after_delete_topic', [ $this, 'on_topic_delete' ], 10, 1 );
 
+		// Clean up embeddings when topics become private (priority 15 to run after Forums/PostMeta hooks)
+		add_action( 'wpforo_topic_private_update', [ $this, 'on_topic_private_update' ], 15, 2 );
+
 		// Add AI suggestions panel right after title field using form fields filter
 		add_filter( 'wpforo_form_fields', [ $this, 'add_ai_suggestions_after_title' ] );
 
@@ -3379,26 +3382,22 @@ class AIClient {
 			], 400 );
 		}
 
-		// Build cache key for semantic search (include quality tier to prevent stale cache on tier change)
 		$current_boardid = (string) WPF()->board->get_current( 'boardid' );
 		$search_quality = wpfval( WPF()->settings->ai, 'search_quality' ) ?: 'balanced';
-		$search_cache_key = $this->build_search_cache_key( $query, $limit, $offset, $current_boardid, $search_quality );
+		$accessible_forumids = $this->get_accessible_forumids();
+		$search_cache_key = $this->build_search_cache_key( $query, $limit, $offset, $current_boardid, $search_quality, $accessible_forumids );
 		$search_from_cache = false;
 
-		// Check cache first
 		$cached_results = $this->get_ai_cache( self::CACHE_TYPE_SEARCH, $search_cache_key );
 
 		if ( $cached_results ) {
-			// Cache hit - use cached response
 			$results = $cached_results;
 			$search_from_cache = true;
 		} else {
-			// Cache miss - check rate limit before making API call
-			// Rate limit is only checked for non-cached requests that consume API resources
 			$this->check_rate_limit( 'search' );
 
-			// Cache miss - perform semantic search via VectorStorageManager (fetch more results for pagination)
-			$results = WPF()->vector_storage->semantic_search( $query, $limit + $offset );
+			$filters = [ 'accessible_forumids' => $accessible_forumids ];
+			$results = WPF()->vector_storage->semantic_search( $query, $limit + $offset, $filters );
 
 			if ( is_wp_error( $results ) ) {
 				wp_send_json_error( [
@@ -3406,7 +3405,6 @@ class AIClient {
 				], 500 );
 			}
 
-			// Cache the results for future requests (24h TTL)
 			$this->set_ai_cache( self::CACHE_TYPE_SEARCH, $search_cache_key, $results );
 		}
 
@@ -3522,6 +3520,10 @@ class AIClient {
 
 				$topic = wpforo_topic( $topic_id );
 				if ( empty( $topic ) ) {
+					continue;
+				}
+
+				if ( ! WPF()->topic->view_access( $topic ) ) {
 					continue;
 				}
 
@@ -4155,7 +4157,10 @@ class AIClient {
 		$threads = [];
 
 		foreach ( $topic_ids as $topic_id ) {
-			$topic = wpforo_topic( $topic_id );
+			// Bypass user permission check - this is admin-initiated backend indexing.
+			// Private/unapproved topics are filtered below; forum-level permissions
+			// don't apply because WP Cron runs without a logged-in user.
+			$topic = WPF()->topic->get_topic( $topic_id, false );
 
 			if ( empty( $topic ) ) {
 				$this->log_error( 'topic_not_found', "Topic ID {$topic_id} not found" );
@@ -4175,11 +4180,15 @@ class AIClient {
 			}
 
 			// Get topic posts/replies
+			// Bypass user permission check - this is admin-initiated backend indexing,
+			// not a user-facing request. Private/unapproved topics are already filtered
+			// at the SQL level in forum_ingest handler and above in this function.
 			$posts = WPF()->post->get_posts(
 				[
-					'topicid' => $topic_id,
-					'orderby' => 'created',
-					'order'   => 'ASC',
+					'topicid'       => $topic_id,
+					'orderby'       => 'created',
+					'order'         => 'ASC',
+					'check_private' => false,
 				]
 			);
 
@@ -4652,6 +4661,45 @@ class AIClient {
 			'message' => $response['message'] ?? wpforo_phrase( 'Database clear operation queued', false ),
 			'status'  => 'clearing',
 			'note'    => $response['note'] ?? wpforo_phrase( 'The database is being cleared in the background. This may take a few minutes.', false ),
+		];
+	}
+
+	/**
+	 * Clear index for specific forums.
+	 *
+	 * @param array $forum_ids Forum IDs to clear
+	 * @param int   $board_id  Board ID
+	 * @return array|WP_Error Result or error
+	 */
+	public function clear_forum_index( $forum_ids, $board_id = 0 ) {
+		$response = $this->delete( '/rag/forums', [
+			'forum_ids' => array_values( array_map( 'intval', (array) $forum_ids ) ),
+			'board_id'  => (int) $board_id,
+		] );
+
+		if ( is_wp_error( $response ) ) {
+			$this->log_error( 'clear_forum_index_failed', $response->get_error_message(), [ 'forum_ids' => $forum_ids ] );
+			return $response;
+		}
+
+		$this->log_info( 'forum_index_clear_queued', [
+			'forum_ids'    => $forum_ids,
+			'board_id'     => $board_id,
+			'forums_count' => $response['forums_count'] ?? count( $forum_ids ),
+		] );
+
+		$this->clear_rag_status_cache();
+
+		// Set clearing lock to prevent new indexing during async clear
+		// Lock expires after 5 minutes (same as full clear)
+		$this->set_clearing_lock();
+
+		// Return async response - actual deletion happens in background
+		return [
+			'success'      => true,
+			'status'       => 'clearing',
+			'message'      => $response['message'] ?? wpforo_phrase( 'Forum index clear operation queued. Processing in background.', false ),
+			'forums_count' => $response['forums_count'] ?? count( $forum_ids ),
 		];
 	}
 
@@ -5886,19 +5934,31 @@ class AIClient {
 	/**
 	 * Build cache key for semantic search
 	 *
-	 * Cache key is based on: query + limit + offset + board_id + quality
+	 * Cache key is based on: query + limit + offset + board_id + quality + accessible_forumids
 	 * Quality tier is included to prevent serving stale cached results
 	 * when the admin changes the search quality setting.
+	 * Accessible forumids ensure users with different permissions get different cache entries.
 	 *
 	 * @param string $query Search query
 	 * @param int $limit Result limit
 	 * @param int $offset Result offset
 	 * @param string $board_id Board ID for multi-board support
 	 * @param string $quality Search quality tier (fast, balanced, advanced, premium)
+	 * @param array|null $accessible_forumids Forums user can access (null = full access, [] = no access)
 	 * @return string Raw MD5 hash (16 bytes binary)
 	 */
-	private function build_search_cache_key( $query, $limit, $offset, $board_id, $quality = 'fast' ) {
-		$cache_string = 'search:' . strtolower( trim( $query ) ) . '|limit:' . intval( $limit ) . '|offset:' . intval( $offset ) . '|board:' . $board_id . '|quality:' . $quality;
+	private function build_search_cache_key( $query, $limit, $offset, $board_id, $quality = 'fast', $accessible_forumids = null ) {
+		if ( $accessible_forumids === null ) {
+			$forums_hash = 'all';
+		} elseif ( empty( $accessible_forumids ) ) {
+			$forums_hash = 'none';
+		} else {
+			$sorted_forumids = $accessible_forumids;
+			sort( $sorted_forumids ); // Ensure consistent ordering
+			$forums_hash = md5( implode( ',', $sorted_forumids ) );
+		}
+
+		$cache_string = 'search:' . strtolower( trim( $query ) ) . '|limit:' . intval( $limit ) . '|offset:' . intval( $offset ) . '|board:' . $board_id . '|quality:' . $quality . '|forums:' . $forums_hash;
 
 		// Return raw binary MD5 (16 bytes) for BINARY(16) column
 		return md5( $cache_string, true );
@@ -6457,6 +6517,53 @@ class AIClient {
 		$this->log_info( 'topic_deleted_cleanup', [
 			'topicid' => $topicid,
 		] );
+	}
+
+	/**
+	 * Callback for topic private status change
+	 *
+	 * When a topic becomes private:
+	 * - Delete all embeddings (local and cloud)
+	 * - Mark topic as not indexed
+	 * - Clear caches
+	 *
+	 * When a topic becomes public again:
+	 * - Queue for auto-indexing (if enabled)
+	 *
+	 * @param int $topicid Topic ID
+	 * @param int $private New private status (1 = private, 0 = public)
+	 */
+	public function on_topic_private_update( $topicid, $private ) {
+		if ( ! $topicid ) {
+			return;
+		}
+
+		if ( $private ) {
+			$topic = wpforo_topic( $topicid );
+			if ( empty( $topic ) ) {
+				return;
+			}
+
+			$is_indexed = ! empty( $topic['local'] ) || ! empty( $topic['cloud'] );
+			if ( ! $is_indexed ) {
+				$this->log_info( 'topic_private_not_indexed', [ 'topicid' => $topicid ] );
+				return;
+			}
+
+			if ( WPF()->vector_storage ) {
+				WPF()->vector_storage->delete_topic_embeddings( $topicid );
+				WPF()->vector_storage->mark_topic_not_indexed( $topicid );
+			}
+			$this->clear_topic_summary_cache( $topicid );
+			delete_transient( 'wpforo_ai_indexed_counts' );
+
+			$this->log_info( 'topic_removed_on_private', [ 'topicid' => $topicid ] );
+		} else {
+			if ( WPF()->vector_storage ) {
+				WPF()->vector_storage->queue_topic_for_auto_indexing( $topicid );
+			}
+			$this->log_info( 'topic_queued_on_unprivate', [ 'topicid' => $topicid ] );
+		}
 	}
 
 	/**

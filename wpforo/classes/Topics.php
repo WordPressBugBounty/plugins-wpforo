@@ -1661,6 +1661,7 @@ class Topics {
 			'read'         => null,       //true / false
 			'prefix'       => null,       //23 / 23,24,50
 			'where'        => null,
+			'access_filter' => true,      //false to skip forum permission filtering (admin backend ops)
 		];
 		
 		$args = wpforo_parse_args( $args, $default );
@@ -1683,8 +1684,9 @@ class Topics {
 		$row_count = $args['row_count'];
 		$permgroup = $args['permgroup'];
 		$read      = $args['read'];
-		$prefix    = $args['prefix'];
-		$where     = $args['where'];
+		$prefix        = $args['prefix'];
+		$where         = $args['where'];
+		$access_filter = $args['access_filter'];
 
 		if( $row_count === 0 ) return [];
 
@@ -1818,8 +1820,8 @@ class Topics {
 			$object_cache = WPF()->cache->get( $object_key );
 			if( ! empty( $object_cache ) ) {
 				if( ! empty( $object_cache['items'] ) ) {
-					$access_filter = apply_filters( 'wpforo_topic_access_filter_cache', true );
-					if( $access_filter ) {
+					$do_access_filter = $access_filter && apply_filters( 'wpforo_topic_access_filter_cache', true );
+					if( $do_access_filter ) {
 						$object_cache['items'] = $this->access_filter(
 							$object_cache['items'],
 							[
@@ -1828,11 +1830,8 @@ class Topics {
 								) ?: null ),
 							]
 						);
-						
-						return apply_filters( 'wpforo_get_topics', $object_cache['items'] );
-					} else {
-						return apply_filters( 'wpforo_get_topics', $object_cache['items'] );
 					}
+					return apply_filters( 'wpforo_get_topics', $object_cache['items'] );
 				}
 			}
 		}
@@ -1844,7 +1843,7 @@ class Topics {
 			self::$cache['topics'][ $object_key ]['items_count'] = $items_count;
 		}
 		
-		if( ! empty( $forumids ) || ! $forumid ) {
+		if( $access_filter && ( ! empty( $forumids ) || ! $forumid ) ) {
 			$topics = $this->access_filter(
 				$topics,
 				[
@@ -1854,7 +1853,7 @@ class Topics {
 				]
 			);
 		}
-		
+
 		return apply_filters( 'wpforo_get_topics', $topics );
 	}
 	

@@ -373,10 +373,27 @@
 		 */
 		handleFormSubmit: function(e) {
 			const $form = $(e.currentTarget);
-			const $submitButton = $form.find('button[type="submit"]');
+			const $submitButtons = $form.find('button[type="submit"]');
 
-			// Add loading state to button
-			$submitButton.addClass('loading').prop('disabled', true);
+			// Get the clicked button - use submitter (modern browsers) or activeElement
+			const clickedButton = e.originalEvent?.submitter || document.activeElement;
+			const $clickedButton = $(clickedButton);
+
+			// If clicked button has a name/value, update hidden field before disabling
+			// (disabled buttons don't submit their values)
+			if ($clickedButton.is('button[type="submit"]') && $clickedButton.attr('name') && $clickedButton.attr('value')) {
+				const name = $clickedButton.attr('name');
+				const value = $clickedButton.attr('value');
+				let $hidden = $form.find('input[type="hidden"][name="' + name + '"]');
+				if ($hidden.length) {
+					$hidden.val(value);
+				} else {
+					$form.prepend('<input type="hidden" name="' + name + '" value="' + value + '">');
+				}
+			}
+
+			// Add loading state to all buttons
+			$submitButtons.addClass('loading').prop('disabled', true);
 
 			// Note: Form will submit normally, this just adds visual feedback
 			// The page will reload after submission completes
@@ -3817,43 +3834,53 @@ jQuery(document).ready(function($) {
 		$('.wpforo-ai-forum-checklist input[type="checkbox"]').prop('checked', false);
 	});
 
-	// Parent-child checkbox logic
+	// Parent-child checkbox logic with recursive cascade
 	$('.wpforo-ai-forum-checklist input[type="checkbox"]').on('change', function() {
 		const $checkbox = $(this);
+		const $checklist = $checkbox.closest('.wpforo-ai-forum-checklist');
 		const forumId = $checkbox.data('forum-id');
 		const parentId = $checkbox.data('parent-id');
-		const isCategory = $checkbox.data('is-category') == 1;
 		const isChecked = $checkbox.prop('checked');
 
-		// If this is a parent/category being checked
-		if (isCategory && parentId == 0) {
-			// Find all children of this parent
-			const $children = $('.wpforo-ai-forum-checklist input[data-parent-id="' + forumId + '"]');
-
-			// Set all children to match parent state
-			$children.prop('checked', isChecked);
+		// Recursive function to check/uncheck all descendants
+		function setDescendants(fid, checked) {
+			const $children = $checklist.find('input[data-parent-id="' + fid + '"]');
+			$children.each(function() {
+				$(this).prop('checked', checked);
+				setDescendants($(this).data('forum-id'), checked);
+			});
 		}
 
-		// If this is a child being unchecked
-		if (!isChecked && parentId > 0) {
-			// Find the parent checkbox
-			const $parent = $('.wpforo-ai-forum-checklist input[data-forum-id="' + parentId + '"]');
-
-			// Uncheck the parent if child is unchecked
-			$parent.prop('checked', false);
-		}
-
-		// If this is a child being checked
-		if (isChecked && parentId > 0) {
-			// Check if all siblings are now checked
-			const $siblings = $('.wpforo-ai-forum-checklist input[data-parent-id="' + parentId + '"]');
-			const allSiblingsChecked = $siblings.length === $siblings.filter(':checked').length;
-
-			// If all children are checked, check the parent
-			if (allSiblingsChecked) {
-				const $parent = $('.wpforo-ai-forum-checklist input[data-forum-id="' + parentId + '"]');
-				$parent.prop('checked', true);
+		// Recursive function to uncheck all ancestors
+		function uncheckAncestors(pid) {
+			if (pid <= 0) return;
+			const $parent = $checklist.find('input[data-forum-id="' + pid + '"]');
+			if ($parent.length) {
+				$parent.prop('checked', false);
+				uncheckAncestors($parent.data('parent-id'));
 			}
+		}
+
+		// Recursive function to check ancestors if all siblings checked
+		function checkAncestorsIfAllSiblings(pid) {
+			if (pid <= 0) return;
+			const $siblings = $checklist.find('input[data-parent-id="' + pid + '"]');
+			const allChecked = $siblings.length === $siblings.filter(':checked').length;
+			if (allChecked) {
+				const $parent = $checklist.find('input[data-forum-id="' + pid + '"]');
+				$parent.prop('checked', true);
+				checkAncestorsIfAllSiblings($parent.data('parent-id'));
+			}
+		}
+
+		// Cascade to all descendants
+		setDescendants(forumId, isChecked);
+
+		// Handle ancestor state
+		if (!isChecked && parentId > 0) {
+			uncheckAncestors(parentId);
+		} else if (isChecked && parentId > 0) {
+			checkAncestorsIfAllSiblings(parentId);
 		}
 	});
 });
@@ -4368,39 +4395,56 @@ jQuery(document).ready(function($) {
 				$(this).closest('.wpforo-ai-form-field').find('.wpforo-ai-forum-checkbox-item input[type="checkbox"]').prop('checked', false);
 			});
 
-			// Initialize parent/category checkbox toggle behavior
+			// Initialize parent/category checkbox toggle behavior with recursive cascade
 			$container.find('.forum-parent-toggle').off('change').on('change', function() {
 				const $parent = $(this);
 				const parentId = $parent.data('forum-id');
 				const isChecked = $parent.prop('checked');
 				const $checklist = $parent.closest('.wpforo-ai-forum-checklist');
 
-				// Find all child forums (forums with this parent ID)
-				$checklist.find('.forum-checkbox').each(function() {
-					const $child = $(this);
-					if ($child.data('parent-id') == parentId) {
-						$child.prop('checked', isChecked);
-					}
-				});
+				// Recursive function to set all descendants
+				function setDescendants(fid, checked) {
+					$checklist.find('.forum-checkbox[data-parent-id="' + fid + '"]').each(function() {
+						$(this).prop('checked', checked);
+						setDescendants($(this).data('forum-id'), checked);
+					});
+				}
+
+				setDescendants(parentId, isChecked);
 			});
 
 			// Update parent checkbox state when child checkboxes change
 			$container.find('.forum-checkbox:not(.forum-parent-toggle)').off('change').on('change', function() {
 				const $child = $(this);
-				const parentId = $child.data('parent-id');
-				if (!parentId) return;
-
 				const $checklist = $child.closest('.wpforo-ai-forum-checklist');
-				const $parent = $checklist.find('.forum-parent-toggle[data-forum-id="' + parentId + '"]');
-				if (!$parent.length) return;
+				const forumId = $child.data('forum-id');
+				const parentId = $child.data('parent-id');
+				const isChecked = $child.prop('checked');
 
-				// Check if all children of this parent are checked
-				const $siblings = $checklist.find('.forum-checkbox[data-parent-id="' + parentId + '"]:not(.forum-parent-toggle)');
-				const allChecked = $siblings.length > 0 && $siblings.filter(':checked').length === $siblings.length;
-				const someChecked = $siblings.filter(':checked').length > 0;
+				// Cascade to descendants
+				function setDescendants(fid, checked) {
+					$checklist.find('.forum-checkbox[data-parent-id="' + fid + '"]').each(function() {
+						$(this).prop('checked', checked);
+						setDescendants($(this).data('forum-id'), checked);
+					});
+				}
+				setDescendants(forumId, isChecked);
 
-				$parent.prop('checked', allChecked);
-				$parent.prop('indeterminate', someChecked && !allChecked);
+				// Update ancestor states
+				function updateAncestors(pid) {
+					if (!pid) return;
+					const $parent = $checklist.find('.forum-checkbox[data-forum-id="' + pid + '"]');
+					if (!$parent.length) return;
+
+					const $siblings = $checklist.find('.forum-checkbox[data-parent-id="' + pid + '"]');
+					const allChecked = $siblings.length > 0 && $siblings.filter(':checked').length === $siblings.length;
+					const someChecked = $siblings.filter(':checked').length > 0;
+
+					$parent.prop('checked', allChecked);
+					$parent.prop('indeterminate', someChecked && !allChecked);
+					updateAncestors($parent.data('parent-id'));
+				}
+				updateAncestors(parentId);
 			});
 
 			// Initialize duplicate prevention toggle state
@@ -4529,7 +4573,7 @@ jQuery(document).ready(function($) {
 			const data = {
 				task_name: $('#wpforo-ai-task-name').val(),
 				task_type: taskType,
-				board_id: $('input[name="board_id"]').val() || 0,
+				board_id: $('#wpforo-ai-task-board-id').val() || 0,
 				status: $('input[name="status"]:checked').val() || 'paused'
 			};
 
@@ -4798,6 +4842,7 @@ jQuery(document).ready(function($) {
 				data: {
 					action: 'wpforo_ai_get_task',
 					task_id: taskId,
+					board_id: $('#wpforo-ai-task-board-id').val() || 0,
 					_wpnonce: $('#wpforo-ai-task-nonce').val()
 				},
 				success: function(response) {
@@ -5174,6 +5219,7 @@ jQuery(document).ready(function($) {
 				data: {
 					action: 'wpforo_ai_delete_task',
 					task_id: taskId,
+					board_id: $('#wpforo-ai-task-board-id').val() || 0,
 					_wpnonce: $('#wpforo-ai-task-nonce').val()
 				},
 				success: function(response) {
@@ -5233,6 +5279,7 @@ jQuery(document).ready(function($) {
 				data: {
 					action: 'wpforo_ai_run_task',
 					task_id: taskId,
+					board_id: $('#wpforo-ai-task-board-id').val() || 0,
 					_wpnonce: $('#wpforo-ai-task-nonce').val()
 				},
 				success: function(response) {
@@ -5295,6 +5342,7 @@ jQuery(document).ready(function($) {
 					action: 'wpforo_ai_update_task_status',
 					task_id: taskId,
 					status: newStatus,
+					board_id: $('#wpforo-ai-task-board-id').val() || 0,
 					_wpnonce: $('#wpforo-ai-task-nonce').val()
 				},
 				success: function(response) {
@@ -5360,6 +5408,7 @@ jQuery(document).ready(function($) {
 				data: {
 					action: 'wpforo_ai_duplicate_task',
 					task_id: taskId,
+					board_id: $('#wpforo-ai-task-board-id').val() || 0,
 					_wpnonce: $('#wpforo-ai-task-nonce').val()
 				},
 				success: function(response) {
@@ -5393,6 +5442,7 @@ jQuery(document).ready(function($) {
 				data: {
 					action: 'wpforo_ai_get_task_stats',
 					task_id: taskId,
+					board_id: $('#wpforo-ai-task-board-id').val() || 0,
 					_wpnonce: $('#wpforo-ai-task-nonce').val()
 				},
 				success: function(response) {
@@ -5476,6 +5526,7 @@ jQuery(document).ready(function($) {
 					action: 'wpforo_ai_get_task_logs',
 					task_id: taskId,
 					limit: 50,
+					board_id: $('#wpforo-ai-task-board-id').val() || 0,
 					_wpnonce: $('#wpforo-ai-task-nonce').val()
 				},
 				success: function(response) {
@@ -5585,6 +5636,7 @@ jQuery(document).ready(function($) {
 					action: 'wpforo_ai_bulk_task_action',
 					bulk_action: action,
 					task_ids: selectedIds,
+					board_id: $('#wpforo-ai-task-board-id').val() || 0,
 					_wpnonce: $('#wpforo-ai-task-nonce').val()
 				},
 				success: function(response) {

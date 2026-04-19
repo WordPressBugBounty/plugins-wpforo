@@ -235,7 +235,11 @@ function wpforo_ai_handle_form_actions() {
 	$action = sanitize_key( $_POST['wpforo_ai_action'] );
 
 	// Verify nonce
-	$nonce_action = 'wpforo_ai_' . $action;
+	// Some actions share a form/nonce with another action
+	$shared_nonce_actions = [
+		'clear_forum_index' => 'forum_ingest', // Clear and Index share the same form
+	];
+	$nonce_action = 'wpforo_ai_' . ( isset( $shared_nonce_actions[ $action ] ) ? $shared_nonce_actions[ $action ] : $action );
 	if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], $nonce_action ) ) {
 		return [
 			'type'    => 'error',
@@ -276,6 +280,9 @@ function wpforo_ai_handle_form_actions() {
 
 		case 'forum_ingest':
 			return wpforo_ai_handle_forum_ingest();
+
+		case 'clear_forum_index':
+			return wpforo_ai_handle_clear_forum_index();
 
 		case 'reindex_all':
 			return wpforo_ai_handle_reindex_all();
@@ -576,6 +583,17 @@ function wpforo_ai_display_notice( $notice ) {
 		<p><?php echo wp_kses_post( $message ); ?></p>
 	</div>
 	<?php
+	if ( ! empty( $notice['needs_refresh'] ) ) :
+	?>
+	<script>
+	(function() {
+		setTimeout(function() {
+			window.location.reload();
+		}, 5000);
+	})();
+	</script>
+	<?php
+	endif;
 }
 
 /**
@@ -1250,8 +1268,85 @@ function wpforo_ai_handle_forum_ingest() {
 	$base_message .= ' ' . __( 'Check the status box for progress.', 'wpforo' );
 
 	return [
-		'type'    => 'success',
-		'message' => $base_message,
+		'type'          => 'success',
+		'message'       => $base_message,
+		'needs_refresh' => true,
+	];
+}
+
+/**
+ * Handle clear forum index - remove embeddings for selected forums only.
+ *
+ * @return array Notice data
+ */
+function wpforo_ai_handle_clear_forum_index() {
+	// Nonce already verified in wpforo_ai_handle_form_actions() using shared nonce mapping
+
+	$forum_ids = isset( $_POST['forum_ids'] ) && is_array( $_POST['forum_ids'] ) ? array_map( 'intval', $_POST['forum_ids'] ) : [];
+	$forum_ids = array_values( array_filter( $forum_ids, function( $id ) { return $id > 0; } ) );
+
+	if ( empty( $forum_ids ) ) {
+		return [
+			'type'    => 'error',
+			'message' => __( 'Please select at least one forum to clear.', 'wpforo' ),
+		];
+	}
+
+	if ( ! WPF()->vector_storage ) {
+		return [
+			'type'    => 'error',
+			'message' => __( 'Vector storage is not available.', 'wpforo' ),
+		];
+	}
+
+	$result = WPF()->vector_storage->clear_forum_embeddings( $forum_ids );
+
+	if ( is_wp_error( $result ) ) {
+		return [
+			'type'    => 'error',
+			'message' => sprintf( __( 'Failed to clear forum index: %s', 'wpforo' ), $result->get_error_message() ),
+		];
+	}
+
+	$is_local = WPF()->vector_storage->is_local_mode();
+	$mode     = $is_local ? __( 'local', 'wpforo' ) : __( 'cloud', 'wpforo' );
+
+	// Cloud mode returns async response, local mode returns sync counts
+	if ( ! $is_local && isset( $result['status'] ) && 'clearing' === $result['status'] ) {
+		// Cloud async response
+		return [
+			'type'          => 'success',
+			'message'       => sprintf(
+				_n(
+					'Forum index clear queued for %1$d forum (%2$s storage mode). Clearing in background - this may take a few minutes.',
+					'Forum index clear queued for %1$d forums (%2$s storage mode). Clearing in background - this may take a few minutes.',
+					count( $forum_ids ),
+					'wpforo'
+				),
+				count( $forum_ids ),
+				$mode
+			),
+			'needs_refresh' => true,
+		];
+	}
+
+	// Local sync response
+	$deleted = isset( $result['deleted_embeddings'] ) ? (int) $result['deleted_embeddings'] : 0;
+
+	return [
+		'type'          => 'success',
+		'message'       => sprintf(
+			_n(
+				'Cleared %1$d embedding(s) from %2$d forum (%3$s storage mode). Topics can now be re-indexed.',
+				'Cleared %1$d embedding(s) from %2$d forums (%3$s storage mode). Topics can now be re-indexed.',
+				count( $forum_ids ),
+				'wpforo'
+			),
+			$deleted,
+			count( $forum_ids ),
+			$mode
+		),
+		'needs_refresh' => true,
 	];
 }
 
@@ -2229,3 +2324,38 @@ function wpforo_ai_handle_clear_local_embeddings() {
 		'message' => __( 'Local embeddings cleared successfully.', 'wpforo' ),
 	];
 }
+
+/**
+ * Clear the forum topic counts cache used in AI Content Indexing
+ *
+ * This cache stores topic counts per forum to avoid N+1 queries.
+ * It should be cleared when topics are created, deleted, or moved.
+ *
+ * @param int|null $board_id Specific board ID to clear, or null for all boards
+ */
+function wpforo_ai_clear_forum_topic_counts_cache( $board_id = null ) {
+	if ( $board_id !== null ) {
+		delete_transient( 'wpforo_ai_ftc_' . intval( $board_id ) );
+	} else {
+		global $wpdb;
+		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wpforo_ai_ftc_%' OR option_name LIKE '_transient_timeout_wpforo_ai_ftc_%'" );
+	}
+}
+
+/**
+ * Hook callback to clear forum topic counts cache when topics change
+ *
+ * Called on topic create, delete, move, merge, and edit actions.
+ * Clears only the current board's cache for efficiency.
+ */
+function wpforo_ai_on_topic_count_changed() {
+	$board_id = WPF()->board->get_current( 'boardid' );
+	wpforo_ai_clear_forum_topic_counts_cache( $board_id );
+}
+
+// Register hooks to clear forum topic counts cache when topics change
+add_action( 'wpforo_after_add_topic', 'wpforo_ai_on_topic_count_changed', 20 );
+add_action( 'wpforo_after_delete_topic', 'wpforo_ai_on_topic_count_changed', 20 );
+add_action( 'wpforo_after_move_topic', 'wpforo_ai_on_topic_count_changed', 20 );
+add_action( 'wpforo_after_merge_topic', 'wpforo_ai_on_topic_count_changed', 20 );
+add_action( 'wpforo_after_edit_topic', 'wpforo_ai_on_topic_count_changed', 20 );

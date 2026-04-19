@@ -77,9 +77,11 @@ class TaskManager {
 			add_action( 'wp_ajax_wpforo_ai_get_task_stats', [ $this, 'ajax_get_task_stats' ] );
 		}
 
-		// Register cron hooks
-		add_action( 'wpforo_ai_execute_task', [ $this, 'cron_execute_task' ], 10, 1 );
+		// Register cron hooks (2 args: task_id, board_id)
+		add_action( 'wpforo_ai_execute_task', [ $this, 'cron_execute_task' ], 10, 2 );
 		add_action( 'wpforo_ai_check_scheduled_tasks', [ $this, 'cron_check_scheduled_tasks' ] );
+		// Hook for run_on_approval tasks (3 args: task_id, topic_id, board_id)
+		add_action( 'wpforo_ai_execute_task_for_topic', [ $this, 'cron_execute_task_for_topic' ], 10, 3 );
 
 		// Schedule the task checker if not already scheduled
 		if ( ! wp_next_scheduled( 'wpforo_ai_check_scheduled_tasks' ) ) {
@@ -101,6 +103,7 @@ class TaskManager {
 	/**
 	 * Reschedule overdue active tasks
 	 * Called on admin_init to catch tasks that missed their cron execution
+	 * Iterates over all boards to find overdue tasks
 	 */
 	public function reschedule_overdue_tasks() {
 		// Only run on wpForo AI admin page
@@ -109,25 +112,37 @@ class TaskManager {
 		}
 
 		global $wpdb;
-		$table = $this->get_tasks_table();
-		$now = current_time( 'mysql' );
-
-		// Find active tasks that are overdue (more than 5 minutes past next_run_time)
 		$five_mins_ago = date( 'Y-m-d H:i:s', strtotime( '-5 minutes' ) );
-		$overdue_tasks = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT task_id FROM {$table} WHERE status = 'active' AND next_run_time IS NOT NULL AND next_run_time <= %s",
-				$five_mins_ago
-			),
-			ARRAY_A
-		);
 
-		foreach ( $overdue_tasks as $task ) {
-			$task_id = (int) $task['task_id'];
-			// Only reschedule if not already scheduled
-			if ( ! wp_next_scheduled( 'wpforo_ai_execute_task', [ $task_id ] ) ) {
-				// Schedule for immediate execution
-				wp_schedule_single_event( time() + 10, 'wpforo_ai_execute_task', [ $task_id ] );
+		// Get all active board IDs
+		$boardids = WPF()->board->get_active_boardids();
+		if ( empty( $boardids ) ) {
+			$boardids = [ 0 ]; // Default board
+		}
+
+		foreach ( $boardids as $boardid ) {
+			// Switch to this board's context
+			WPF()->change_board( $boardid );
+
+			$table = $this->get_tasks_table();
+
+			// Find active tasks that are overdue (more than 5 minutes past next_run_time)
+			$overdue_tasks = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT task_id, board_id FROM {$table} WHERE status = 'active' AND next_run_time IS NOT NULL AND next_run_time <= %s",
+					$five_mins_ago
+				),
+				ARRAY_A
+			);
+
+			foreach ( $overdue_tasks as $task ) {
+				$task_id = (int) $task['task_id'];
+				$task_board_id = (int) $task['board_id'];
+				// Only reschedule if not already scheduled (include board_id in args)
+				if ( ! wp_next_scheduled( 'wpforo_ai_execute_task', [ $task_id, $task_board_id ] ) ) {
+					// Schedule for immediate execution
+					wp_schedule_single_event( time() + 10, 'wpforo_ai_execute_task', [ $task_id, $task_board_id ] );
+				}
 			}
 		}
 	}
@@ -154,8 +169,7 @@ class TaskManager {
 	 * @return string Table name with prefix
 	 */
 	private function get_tasks_table() {
-		global $wpdb;
-		return $wpdb->prefix . 'wpforo_ai_tasks';
+		return WPF()->tables->ai_tasks;
 	}
 
 	/**
@@ -164,8 +178,7 @@ class TaskManager {
 	 * @return string Table name with prefix
 	 */
 	private function get_logs_table() {
-		global $wpdb;
-		return $wpdb->prefix . 'wpforo_ai_task_logs';
+		return WPF()->tables->ai_task_logs;
 	}
 
 	/**
@@ -447,6 +460,7 @@ class TaskManager {
 		}
 
 		$config = $task['config'];
+		$board_id = (int) ( $task['board_id'] ?? 0 );
 
 		// run_on_approval tasks don't use cron scheduling - they trigger on topic/post approval
 		if ( ! empty( $config['run_on_approval'] ) ) {
@@ -466,8 +480,8 @@ class TaskManager {
 				[ '%d' ]
 			);
 
-			// Schedule WordPress cron event
-			wp_schedule_single_event( $next_run, 'wpforo_ai_execute_task', [ $task_id ] );
+			// Schedule WordPress cron event (include board_id for multi-board support)
+			wp_schedule_single_event( $next_run, 'wpforo_ai_execute_task', [ $task_id, $board_id ] );
 
 			return true;
 		}
@@ -481,6 +495,13 @@ class TaskManager {
 	 * @param int $task_id Task ID
 	 */
 	public function unschedule_task( $task_id ) {
+		// Get the task to find its board_id
+		$task = $this->get_task( $task_id );
+		$board_id = $task ? (int) ( $task['board_id'] ?? 0 ) : 0;
+
+		// Clear with new format (task_id, board_id)
+		wp_clear_scheduled_hook( 'wpforo_ai_execute_task', [ $task_id, $board_id ] );
+		// Also clear old format for backwards compatibility
 		wp_clear_scheduled_hook( 'wpforo_ai_execute_task', [ $task_id ] );
 	}
 
@@ -621,26 +642,41 @@ class TaskManager {
 
 	/**
 	 * Cron handler to check and execute scheduled tasks
+	 * Iterates over all boards to find due tasks
 	 */
 	public function cron_check_scheduled_tasks() {
 		global $wpdb;
 
-		$table = $this->get_tasks_table();
 		$now = current_time( 'mysql' );
 
-		// Find active tasks with next_run_time in the past
-		$tasks = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT task_id FROM {$table} WHERE status = 'active' AND next_run_time <= %s",
-				$now
-			),
-			ARRAY_A
-		);
+		// Get all active board IDs
+		$boardids = WPF()->board->get_active_boardids();
+		if ( empty( $boardids ) ) {
+			$boardids = [ 0 ]; // Default board
+		}
 
-		foreach ( $tasks as $task ) {
-			// Schedule immediate execution if not already scheduled
-			if ( ! wp_next_scheduled( 'wpforo_ai_execute_task', [ $task['task_id'] ] ) ) {
-				wp_schedule_single_event( time(), 'wpforo_ai_execute_task', [ $task['task_id'] ] );
+		foreach ( $boardids as $boardid ) {
+			// Switch to this board's context
+			WPF()->change_board( $boardid );
+
+			$table = $this->get_tasks_table();
+
+			// Find active tasks with next_run_time in the past for this board
+			$tasks = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT task_id, board_id FROM {$table} WHERE status = 'active' AND next_run_time <= %s",
+					$now
+				),
+				ARRAY_A
+			);
+
+			foreach ( $tasks as $task ) {
+				$task_id = (int) $task['task_id'];
+				$task_board_id = (int) $task['board_id'];
+				// Schedule immediate execution if not already scheduled (include board_id in args)
+				if ( ! wp_next_scheduled( 'wpforo_ai_execute_task', [ $task_id, $task_board_id ] ) ) {
+					wp_schedule_single_event( time(), 'wpforo_ai_execute_task', [ $task_id, $task_board_id ] );
+				}
 			}
 		}
 	}
@@ -648,9 +684,15 @@ class TaskManager {
 	/**
 	 * Cron handler to execute a task
 	 *
-	 * @param int $task_id Task ID
+	 * @param int $task_id  Task ID
+	 * @param int $board_id Board ID (optional for backwards compatibility)
 	 */
-	public function cron_execute_task( $task_id ) {
+	public function cron_execute_task( $task_id, $board_id = 0 ) {
+		// Switch to the correct board context before querying
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
+
 		$task = $this->get_task( $task_id );
 		if ( ! $task || $task['status'] !== 'active' ) {
 			return;
@@ -661,6 +703,31 @@ class TaskManager {
 
 		// Schedule next run
 		$this->schedule_next_run( $task_id );
+	}
+
+	/**
+	 * Cron handler for run_on_approval task execution (async)
+	 *
+	 * Called via wp_schedule_single_event when a topic is created/approved
+	 * and a matching run_on_approval task exists.
+	 *
+	 * @param int $task_id  Task ID
+	 * @param int $topic_id Topic ID to process
+	 * @param int $board_id Board ID
+	 */
+	public function cron_execute_task_for_topic( $task_id, $topic_id, $board_id = 0 ) {
+		// Switch to the correct board context
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
+
+		$task = $this->get_task( $task_id );
+		if ( ! $task || $task['status'] !== 'active' ) {
+			return;
+		}
+
+		// Execute for this specific topic
+		$this->execute_task_for_topic( $task, $topic_id );
 	}
 
 	// =========================================================================
@@ -677,6 +744,12 @@ class TaskManager {
 		$task = $this->get_task( $task_id );
 		if ( ! $task ) {
 			return [ 'success' => false, 'error' => 'Task not found' ];
+		}
+
+		// Switch to the task's board context for multi-board support
+		$task_board_id = intval( $task['board_id'] ?? 0 );
+		if ( $task_board_id > 0 ) {
+			WPF()->change_board( $task_board_id );
 		}
 
 		$start_time = microtime( true );
@@ -1039,7 +1112,12 @@ class TaskManager {
 		// Find topics to process
 		$topics = $this->find_topics_for_tagging( $task );
 		if ( empty( $topics ) ) {
-			return [ 'success' => true, 'items_created' => 0, 'credits_used' => 0, 'data' => [ 'message' => 'No eligible topics found' ] ];
+			return [
+				'success'       => true,
+				'items_created' => 0,
+				'credits_used'  => 0,
+				'data'          => [ 'message' => 'No eligible topics found' ],
+			];
 		}
 
 		// Get existing forum vocabulary for consistency
@@ -1127,8 +1205,7 @@ class TaskManager {
 			if ( ! empty( $specific_ids ) ) {
 				$ids_str = implode( ',', $specific_ids );
 				$unprocessed_ids = $wpdb->get_col(
-					"SELECT topicid FROM " . WPF()->tables->topics . "
-					 WHERE topicid IN ($ids_str) AND task_tag = 0"
+					"SELECT topicid FROM " . WPF()->tables->topics . " WHERE topicid IN ($ids_str) AND task_tag = 0"
 				);
 				$all_topic_ids = array_merge( $all_topic_ids, $unprocessed_ids );
 			}
@@ -1184,11 +1261,12 @@ class TaskManager {
 		// Build topics data with title, content, and existing tags
 		$topics = [];
 		foreach ( $all_topic_ids as $topic_id ) {
-			$topic = WPF()->topic->get_topic( $topic_id );
+			// Use protect=false to bypass permission checks (cron has no user context)
+			$topic = WPF()->topic->get_topic( $topic_id, false );
 			if ( ! $topic ) continue;
 
-			// Get first post content
-			$first_post = WPF()->post->get_post( $topic['first_postid'] );
+			// Get first post content (protect=false for cron context)
+			$first_post = WPF()->post->get_post( $topic['first_postid'], false );
 			$content = $first_post ? wp_strip_all_tags( $first_post['body'] ) : '';
 			$content = mb_substr( $content, 0, 2000 ); // Limit content length
 
@@ -1242,7 +1320,8 @@ class TaskManager {
 	 * @return bool Success
 	 */
 	private function update_topic_tags( $topic_id, $new_tags ) {
-		$topic = WPF()->topic->get_topic( $topic_id );
+		// Use protect=false for cron context (no user session)
+		$topic = WPF()->topic->get_topic( $topic_id, false );
 		if ( ! $topic ) {
 			return false;
 		}
@@ -1328,7 +1407,8 @@ class TaskManager {
 		// Fetch each topic and build context
 		$filtered = [];
 		foreach ( $all_topic_ids as $topic_id ) {
-			$topic = WPF()->topic->get_topic( $topic_id );
+			// Use protect=false for cron context
+			$topic = WPF()->topic->get_topic( $topic_id, false );
 			if ( ! $topic ) {
 				continue;
 			}
@@ -1423,8 +1503,8 @@ class TaskManager {
 		$topic_id = intval( $topic['topicid'] );
 		$first_postid = intval( $topic['first_postid'] ?? 0 );
 
-		// Get first post (always needed)
-		$first_post = WPF()->post->get_post( $first_postid );
+		// Get first post (always needed, protect=false for cron)
+		$first_post = WPF()->post->get_post( $first_postid, false );
 		if ( ! $first_post ) {
 			return null;
 		}
@@ -1523,8 +1603,8 @@ class TaskManager {
 
 				// Get posts in this sub-thread (from subthread root to last post)
 				if ( $subthread_root_postid !== $first_postid ) {
-					// Get the sub-thread root post
-					$subthread_root_post = WPF()->post->get_post( $subthread_root_postid );
+					// Get the sub-thread root post (false = bypass permission check for cron context)
+					$subthread_root_post = WPF()->post->get_post( $subthread_root_postid, false );
 					if ( $subthread_root_post ) {
 						$post_contents[] = [
 							'postid'   => $subthread_root_postid,
@@ -2040,8 +2120,8 @@ class TaskManager {
 			return false;
 		}
 
-		// Get topic details
-		$topic = WPF()->topic->get_topic( $topic_id );
+		// Get topic details (false = bypass permission check for cron context)
+		$topic = WPF()->topic->get_topic( $topic_id, false );
 		if ( ! $topic ) {
 			return false;
 		}
@@ -2443,12 +2523,18 @@ class TaskManager {
 		}
 
 		$task_id = isset( $_POST['task_id'] ) ? intval( $_POST['task_id'] ) : 0;
+		$board_id = intval( $_POST['board_id'] ?? 0 );
+
+		// Switch to the correct board context for table operations
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
 
 		$data = [
 			'task_name' => sanitize_text_field( $_POST['task_name'] ?? '' ),
 			'task_type' => sanitize_key( $_POST['task_type'] ?? '' ),
 			'status'    => sanitize_key( $_POST['status'] ?? 'draft' ),
-			'board_id'  => intval( $_POST['board_id'] ?? 0 ),
+			'board_id'  => $board_id,
 			'config'    => $_POST['config'] ?? '{}',
 		];
 
@@ -2487,6 +2573,13 @@ class TaskManager {
 		}
 
 		$task_id = intval( $_POST['task_id'] ?? 0 );
+		$board_id = intval( $_POST['board_id'] ?? 0 );
+
+		// Switch to the correct board context for table operations
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
+
 		$task = $this->get_task( $task_id );
 
 		if ( $task ) {
@@ -2507,6 +2600,13 @@ class TaskManager {
 		}
 
 		$task_id = intval( $_POST['task_id'] ?? 0 );
+		$board_id = intval( $_POST['board_id'] ?? 0 );
+
+		// Switch to the correct board context for table operations
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
+
 		$result = $this->delete_task( $task_id );
 
 		if ( $result ) {
@@ -2528,6 +2628,12 @@ class TaskManager {
 
 		$task_id = intval( $_POST['task_id'] ?? 0 );
 		$status = sanitize_key( $_POST['status'] ?? '' );
+		$board_id = intval( $_POST['board_id'] ?? 0 );
+
+		// Switch to the correct board context for table operations
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
 
 		if ( ! $task_id ) {
 			wp_send_json_error( [ 'message' => 'Invalid task ID' ] );
@@ -2564,6 +2670,13 @@ class TaskManager {
 		}
 
 		$task_id = intval( $_POST['task_id'] ?? 0 );
+		$board_id = intval( $_POST['board_id'] ?? 0 );
+
+		// Switch to the correct board context for table operations
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
+
 		$result = $this->execute_task( $task_id );
 
 		if ( $result['success'] ) {
@@ -2589,6 +2702,12 @@ class TaskManager {
 
 		$action = sanitize_key( $_POST['bulk_action'] ?? '' );
 		$task_ids = array_map( 'intval', $_POST['task_ids'] ?? [] );
+		$board_id = intval( $_POST['board_id'] ?? 0 );
+
+		// Switch to the correct board context for table operations
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
 
 		if ( empty( $task_ids ) ) {
 			wp_send_json_error( [ 'message' => 'No tasks selected' ] );
@@ -2631,6 +2750,12 @@ class TaskManager {
 		$task_id = intval( $_POST['task_id'] ?? 0 );
 		$limit = intval( $_POST['limit'] ?? 50 );
 		$offset = intval( $_POST['offset'] ?? 0 );
+		$board_id = intval( $_POST['board_id'] ?? 0 );
+
+		// Switch to the correct board context for table operations
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
 
 		$logs = $this->get_task_logs( $task_id, [
 			'limit'  => $limit,
@@ -2744,6 +2869,12 @@ class TaskManager {
 		}
 
 		$task_id = intval( $_POST['task_id'] ?? 0 );
+		$board_id = intval( $_POST['board_id'] ?? 0 );
+
+		// Switch to the correct board context for table operations
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
 
 		// Get the original task
 		$original = $this->get_task( $task_id );
@@ -2783,6 +2914,12 @@ class TaskManager {
 		}
 
 		$task_id = intval( $_POST['task_id'] ?? 0 );
+		$board_id = intval( $_POST['board_id'] ?? 0 );
+
+		// Switch to the correct board context for table operations
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
 
 		// Get the task
 		$task = $this->get_task( $task_id );
@@ -2824,8 +2961,13 @@ class TaskManager {
 
 		// Get next scheduled run
 		$next_run = 'Not scheduled';
+		$task_board_id = (int) ( $task['board_id'] ?? 0 );
 		if ( $task['status'] === 'active' ) {
-			$next_scheduled = wp_next_scheduled( 'wpforo_ai_execute_task', [ $task_id ] );
+			// Check both new format (with board_id) and old format for backwards compatibility
+			$next_scheduled = wp_next_scheduled( 'wpforo_ai_execute_task', [ $task_id, $task_board_id ] );
+			if ( ! $next_scheduled ) {
+				$next_scheduled = wp_next_scheduled( 'wpforo_ai_execute_task', [ $task_id ] );
+			}
 			if ( $next_scheduled ) {
 				$next_run = human_time_diff( current_time( 'timestamp' ), $next_scheduled ) . ' from now';
 			}
@@ -2899,8 +3041,8 @@ class TaskManager {
 				// Get topic title from result
 				$result_title = '';
 				if ( ! empty( $result['topic_id'] ) ) {
-					// Local format - fetch topic title
-					$result_topic = WPF()->topic->get_topic( intval( $result['topic_id'] ) );
+					// Local format - fetch topic title (false = bypass permission check for cron context)
+					$result_topic = WPF()->topic->get_topic( intval( $result['topic_id'] ), false );
 					$result_title = $result_topic['title'] ?? '';
 				} elseif ( ! empty( $result['metadata']['topic_title'] ) ) {
 					// Cloud format
@@ -2977,8 +3119,10 @@ class TaskManager {
 		$tasks = $this->get_run_on_approval_tasks( 'tag_maintenance', $forumid );
 
 		foreach ( $tasks as $task ) {
-			// Schedule task execution for this specific topic
-			$this->execute_task_for_topic( $task, $topicid );
+			// Schedule async execution 5 seconds from now to ensure topic is committed
+			$task_id = intval( $task['task_id'] );
+			$board_id = intval( $task['board_id'] ?? 0 );
+			wp_schedule_single_event( time() + 5, 'wpforo_ai_execute_task_for_topic', [ $task_id, $topicid, $board_id ] );
 		}
 	}
 
@@ -3041,8 +3185,10 @@ class TaskManager {
 		$tasks = $this->get_run_on_approval_tasks( 'reply_generator', $forumid );
 
 		foreach ( $tasks as $task ) {
-			// Execute task to generate a reply to this topic
-			$this->execute_task_for_topic( $task, $topicid );
+			// Schedule async execution 5 seconds from now to ensure post is committed
+			$task_id = intval( $task['task_id'] );
+			$board_id = intval( $task['board_id'] ?? 0 );
+			wp_schedule_single_event( time() + 5, 'wpforo_ai_execute_task_for_topic', [ $task_id, $topicid, $board_id ] );
 		}
 	}
 

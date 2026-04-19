@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 6.9
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -234,6 +234,21 @@ IMPORTANT NOTES for UPDATE
 
 [wpForo Forum v3.0 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-0-is-released/)
 
+
+
+= wpForo Forum 3.0.6 | 19.04.2026 =
+
+* Security: Added authorization check to profile file deletion
+* Security: Prevent AI search cache from leaking private content
+* New: AI Indexing - Clear Selected Forum Index button to delete specific forum embeddings
+* Fixed: AI Tasks board_id not saved correctly for non-default boards
+* Fixed: AI Indexing - Forum permission checks blocking WP Cron background indexing
+* Fixed: AI Indexing - Forum indexed counts not updating during indexing
+* Fixed: AI Indexing - Nonce verification fails on Clear Forum Index action
+* Fixed: AI Search - Browser auto-translate corrupting typewriter text effect
+* Fixed: Forum checklist hierarchy sorting and recursive checkbox cascading
+* Fixed: Forum topic counts cache not clearing when topics change
+* Fixed: Form submit button value lost when disabling during submission
 
 
 = wpForo Forum 3.0.5 | 13.04.2026 =

@@ -2578,9 +2578,39 @@ button .dashicons {
 	flex: 1;
 }
 
-/* Form Actions */
+/* Form Actions - Two Column Layout (Clear | Index) */
 .wpforo-ai-ingest-column .form-actions {
 	margin-top: 20px;
+	display: flex !important;
+	flex-wrap: wrap;
+	gap: 10px;
+	justify-content: space-between !important;
+}
+
+/* Clear Forum Button - Red Destructive Styling */
+.wpforo-ai-ingest-column .form-actions button.button.wpforo-ai-clear-forum-btn,
+.wpforo-ai-ingest-column .form-actions .button.wpforo-ai-clear-forum-btn,
+button.button.wpforo-ai-clear-forum-btn {
+	background: #fff !important;
+	background-color: #fff !important;
+	border-color: #d63638 !important;
+	color: #d63638 !important;
+}
+
+.wpforo-ai-ingest-column .form-actions button.button.wpforo-ai-clear-forum-btn:hover,
+.wpforo-ai-ingest-column .form-actions button.button.wpforo-ai-clear-forum-btn:focus,
+.wpforo-ai-ingest-column .form-actions .button.wpforo-ai-clear-forum-btn:hover,
+.wpforo-ai-ingest-column .form-actions .button.wpforo-ai-clear-forum-btn:focus,
+button.button.wpforo-ai-clear-forum-btn:hover,
+button.button.wpforo-ai-clear-forum-btn:focus {
+	background: #fcf0f1 !important;
+	background-color: #fcf0f1 !important;
+	border-color: #d63638 !important;
+	color: #d63638 !important;
+}
+
+.wpforo-ai-clear-forum-btn .dashicons {
+	color: inherit !important;
 }
 
 .wpforo-ai-ingest-column .form-row {
@@ -2617,6 +2647,10 @@ button .dashicons {
 	height: auto;
 	padding: 10px 20px;
 	font-size: 14px;
+}
+
+.wpforo-ai-forum-ingest-form .form-actions .button-large{
+	width: 49%;
 }
 
 /* Responsive */

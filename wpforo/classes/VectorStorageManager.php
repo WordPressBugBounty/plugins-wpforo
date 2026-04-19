@@ -80,6 +80,22 @@ class VectorStorageManager {
 	public function __construct() {
 		$this->board_id = WPF()->board->get_current( 'boardid' );
 		$this->register_cron_hooks();
+
+		// Update board_id when WPF()->change_board() is called
+		add_action( 'wpforo_after_change_board', [ $this, 'on_board_change' ] );
+	}
+
+	/**
+	 * Handle board change event
+	 *
+	 * Updates internal board_id to match the new board context.
+	 * Called by wpforo_after_change_board hook.
+	 *
+	 * @return void
+	 */
+	public function on_board_change() {
+		$this->board_id = WPF()->board->get_current( 'boardid' );
+		$this->storage_mode = null; // Reset cached storage mode
 	}
 
 	/**
@@ -226,10 +242,6 @@ class VectorStorageManager {
 
 		// Clear cloud indexed count cache
 		delete_transient( 'wpforo_ai_cloud_indexed_count_' . $board_id );
-
-		// Clear indexed-by-forum caches (both modes)
-		delete_transient( 'wpforo_ai_indexed_by_forum_local_' . $board_id );
-		delete_transient( 'wpforo_ai_indexed_by_forum_cloud_' . $board_id );
 
 		// Clear storage recommendation cache
 		delete_transient( 'wpforo_ai_srec_' . $board_id . '_local' );
@@ -419,22 +431,11 @@ class VectorStorageManager {
 	 * @return array Forum ID => count mapping
 	 */
 	public function get_indexed_counts_by_forum() {
-		$mode = $this->is_local_mode() ? 'local' : 'cloud';
-		$cache_key = 'wpforo_ai_indexed_by_forum_' . $mode . '_' . $this->board_id;
-
-		$cached = get_transient( $cache_key );
-		if ( false !== $cached && is_array( $cached ) ) {
-			return $cached;
-		}
-
 		if ( $this->is_local_mode() ) {
-			$counts = $this->get_local_indexed_counts_by_forum();
+			return $this->get_local_indexed_counts_by_forum();
 		} else {
-			$counts = $this->get_cloud_indexed_counts_by_forum();
+			return $this->get_cloud_indexed_counts_by_forum();
 		}
-
-		set_transient( $cache_key, $counts, 5 * MINUTE_IN_SECONDS );
-		return $counts;
 	}
 
 	/**
@@ -753,7 +754,7 @@ class VectorStorageManager {
 
 		// Batch-fetch all topics in one query to avoid N+1
 		$_items_count = 0;
-		$all_topics = WPF()->topic->get_topics( [ 'include' => $topic_ids, 'row_count' => count( $topic_ids ) ], $_items_count, false );
+		$all_topics = WPF()->topic->get_topics( [ 'include' => $topic_ids, 'row_count' => count( $topic_ids ), 'access_filter' => false ], $_items_count, false );
 		$topics_map = [];
 		foreach ( $all_topics as $t ) {
 			$topics_map[ (int) $t['topicid'] ] = $t;
@@ -790,10 +791,13 @@ class VectorStorageManager {
 				continue;
 			}
 
+			// Bypass user permission check - this is admin-initiated backend indexing.
+			// Private/unapproved topics are already filtered above.
 			$posts = WPF()->post->get_posts( [
-				'topicid' => $topicid,
-				'orderby' => 'created',
-				'order'   => 'ASC',
+				'topicid'       => $topicid,
+				'orderby'       => 'created',
+				'order'         => 'ASC',
+				'check_private' => false,
 			] );
 
 			if ( empty( $posts ) ) {
@@ -1693,6 +1697,92 @@ class VectorStorageManager {
 	}
 
 	/**
+	 * Clear embeddings for specific forums in current storage mode.
+	 *
+	 * @param array $forum_ids Array of forum IDs to clear
+	 * @return array|WP_Error Result with counts
+	 */
+	public function clear_forum_embeddings( $forum_ids ) {
+		$forum_ids = array_values( array_filter( array_map( 'intval', (array) $forum_ids ), function( $id ) { return $id > 0; } ) );
+
+		if ( empty( $forum_ids ) ) {
+			return new \WP_Error( 'invalid_forums', __( 'No valid forum IDs provided.', 'wpforo' ) );
+		}
+
+		if ( $this->is_local_mode() ) {
+			return $this->clear_forum_embeddings_local( $forum_ids );
+		} else {
+			return $this->clear_forum_embeddings_cloud( $forum_ids );
+		}
+	}
+
+	/**
+	 * Clear forum embeddings in local storage mode.
+	 *
+	 * @param array $forum_ids Forum IDs to clear
+	 * @return array Result with counts
+	 */
+	private function clear_forum_embeddings_local( $forum_ids ) {
+		global $wpdb;
+
+		$placeholders = implode( ',', array_fill( 0, count( $forum_ids ), '%d' ) );
+
+		$deleted = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM `" . WPF()->tables->ai_embeddings . "` WHERE `forumid` IN ({$placeholders})",
+				...$forum_ids
+			)
+		);
+
+		$topics_cleared = $wpdb->query(
+			$wpdb->prepare(
+				"UPDATE `" . WPF()->tables->topics . "` SET `local` = 0 WHERE `forumid` IN ({$placeholders}) AND `local` = 1",
+				...$forum_ids
+			)
+		);
+
+		wpforo_clean_cache( 'topic' );
+		$this->clear_indexing_stats_cache();
+
+		return [
+			'deleted_embeddings' => (int) $deleted,
+			'topics_cleared'     => (int) $topics_cleared,
+			'forums_cleared'     => count( $forum_ids ),
+		];
+	}
+
+	/**
+	 * Clear forum embeddings in cloud storage mode.
+	 *
+	 * @param array $forum_ids Forum IDs to clear
+	 * @return array|WP_Error Result with counts
+	 */
+	private function clear_forum_embeddings_cloud( $forum_ids ) {
+		global $wpdb;
+
+		$ai_client = $this->get_ai_client();
+		$result = $ai_client->clear_forum_index( $forum_ids, $this->board_id );
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		$placeholders = implode( ',', array_fill( 0, count( $forum_ids ), '%d' ) );
+		$topics_cleared = $wpdb->query(
+			$wpdb->prepare(
+				"UPDATE `" . WPF()->tables->topics . "` SET `cloud` = 0 WHERE `forumid` IN ({$placeholders}) AND `cloud` != 0",
+				...$forum_ids
+			)
+		);
+
+		wpforo_clean_cache( 'topic' );
+		$this->clear_indexing_stats_cache();
+
+		$result['topics_cleared'] = (int) $topics_cleared;
+		return $result;
+	}
+
+	/**
 	 * Ingest multiple topics
 	 *
 	 * For local mode, indexes topics directly.
@@ -2212,6 +2302,9 @@ class VectorStorageManager {
 		// Release lock after processing
 		delete_transient( $lock_key );
 
+		// Clear indexed counts cache so UI shows updated progress after each batch
+		$this->clear_indexing_stats_cache( $board_id );
+
 		if ( $has_credit_error ) {
 			// Clear queue so page reload doesn't auto-resume indexing
 			delete_option( $queue_key );
@@ -2324,6 +2417,9 @@ class VectorStorageManager {
 		// Release lock after processing
 		delete_transient( $lock_key );
 
+		// Clear indexed counts cache so UI shows updated progress after each batch
+		$this->clear_indexing_stats_cache( $board_id );
+
 		if ( $has_credit_error ) {
 			// Clear queue so page reload doesn't auto-resume indexing
 			delete_option( $queue_key );
@@ -2339,9 +2435,6 @@ class VectorStorageManager {
 			if ( ! wp_next_scheduled( $cron_hook, $cron_args ) ) {
 				wp_schedule_single_event( time() + 30, $cron_hook, $cron_args );
 			}
-		} else {
-			// Queue empty - indexing complete, clear stats cache for fresh counts
-			$this->clear_indexing_stats_cache( $board_id );
 		}
 	}
 
@@ -2509,19 +2602,29 @@ class VectorStorageManager {
 	public function semantic_search( $query, $limit = 10, $filters = [] ) {
 		// Add forum access filtering (restrict to forums user can view)
 		// This applies to BOTH local and cloud modes
-		$ai_client = $this->get_ai_client();
-		$accessible_forumids = $ai_client->get_accessible_forumids();
+		// Skip if accessible_forumids already provided in filters (avoids duplicate computation)
+		if ( ! array_key_exists( 'accessible_forumids', $filters ) ) {
+			$ai_client = $this->get_ai_client();
+			$accessible_forumids = $ai_client->get_accessible_forumids();
 
-		if ( $accessible_forumids !== null ) {
-			// User has restricted access - if empty array, they can't access any forums
-			if ( empty( $accessible_forumids ) ) {
-				return [
-					'results' => [],
-					'total'   => 0,
-					'message' => wpforo_phrase( 'No results found', false ),
-				];
+			if ( $accessible_forumids !== null ) {
+				// User has restricted access - if empty array, they can't access any forums
+				if ( empty( $accessible_forumids ) ) {
+					return [
+						'results' => [],
+						'total'   => 0,
+						'message' => wpforo_phrase( 'No results found', false ),
+					];
+				}
+				$filters['accessible_forumids'] = $accessible_forumids;
 			}
-			$filters['accessible_forumids'] = $accessible_forumids;
+		} elseif ( is_array( $filters['accessible_forumids'] ) && empty( $filters['accessible_forumids'] ) ) {
+			// Empty array passed = user can't access any forums
+			return [
+				'results' => [],
+				'total'   => 0,
+				'message' => wpforo_phrase( 'No results found', false ),
+			];
 		}
 
 		if ( $this->is_local_mode() ) {
@@ -2684,8 +2787,9 @@ class VectorStorageManager {
 			$topic_ids  = array_unique( array_filter( $topic_ids ) );
 			$_count     = 0;
 			$all_topics = WPF()->topic->get_topics( [
-				'include'   => $topic_ids,
-				'row_count' => count( $topic_ids ),
+				'include'       => $topic_ids,
+				'row_count'     => count( $topic_ids ),
+				'access_filter' => false,
 			], $_count, false );
 			foreach ( $all_topics as $t ) {
 				$topics_map[ (int) $t['topicid'] ] = $t;
@@ -2696,8 +2800,9 @@ class VectorStorageManager {
 			$post_ids  = array_unique( array_filter( $post_ids ) );
 			$_count    = 0;
 			$all_posts = WPF()->post->get_posts( [
-				'include'   => $post_ids,
-				'row_count' => count( $post_ids ),
+				'include'       => $post_ids,
+				'row_count'     => count( $post_ids ),
+				'check_private' => false,
 			], $_count, false );
 			foreach ( $all_posts as $p ) {
 				$posts_map[ (int) $p['postid'] ] = $p;

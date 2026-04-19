@@ -435,16 +435,16 @@ $wpf(document).ready(function ($) {
 		// AI Search Summary Section
 		// PHP already converts [[#N]] and [[#N:Title]] to HTML links
 		if (enhancement.summary || enhancement.quick_answer) {
-			html += '<div class="wpf-ai-summary-section">';
+			html += '<div class="wpf-ai-summary-section notranslate" translate="no">';
 			html += '<div class="wpf-ai-section-header"><i class="fas fa-brain"></i> ' + wpforo_phrase('AI Search Summary') + '</div>';
 			if (enhancement.quick_answer) {
 				// Output directly - PHP has already processed link markers
-				html += '<div class="wpf-ai-quick-answer">' + enhancement.quick_answer + '</div>';
+				html += '<div class="wpf-ai-quick-answer notranslate" translate="no">' + enhancement.quick_answer + '</div>';
 			}
 			if (enhancement.summary) {
 				// Store summary in data attribute for typewriter effect
 				var encodedSummary = enhancement.summary.replace(/"/g, '&quot;');
-				html += '<div class="wpf-ai-summary-text wpf-ai-typewriter" data-typewriter-content="' + encodedSummary + '" style="visibility:hidden;min-height:50px;"></div>';
+				html += '<div class="wpf-ai-summary-text wpf-ai-typewriter notranslate" translate="no" data-typewriter-content="' + encodedSummary + '" style="visibility:hidden;min-height:50px;"></div>';
 			}
 			html += '</div>';
 		}

@@ -511,8 +511,39 @@ function wpforo_ai_render_rag_indexing_tab( $is_connected, $status ) {
 							</p>
 
 							<?php
-							// Get all forums
+							// Get all forums and sort hierarchically
+							// (get_forums() orders by `order` field only, not by parent hierarchy)
 							$all_forums = WPF()->forum->get_forums();
+
+							// Sort forums hierarchically: parents first, then children under each parent
+							$forums_by_parent = [];
+							foreach ( $all_forums as $forum ) {
+								$parent = (int) ( $forum['parentid'] ?? 0 );
+								if ( ! isset( $forums_by_parent[ $parent ] ) ) {
+									$forums_by_parent[ $parent ] = [];
+								}
+								$forums_by_parent[ $parent ][] = $forum;
+							}
+							// Sort children by order within each parent group
+							foreach ( $forums_by_parent as &$children ) {
+								usort( $children, function( $a, $b ) {
+									return (int) ( $a['order'] ?? 0 ) - (int) ( $b['order'] ?? 0 );
+								} );
+							}
+							unset( $children );
+							// Build flat list by walking the tree
+							$sorted_forums = [];
+							$add_forums_recursive = function( $parentid ) use ( &$add_forums_recursive, &$sorted_forums, &$forums_by_parent ) {
+								if ( ! isset( $forums_by_parent[ $parentid ] ) ) {
+									return;
+								}
+								foreach ( $forums_by_parent[ $parentid ] as $forum ) {
+									$sorted_forums[] = $forum;
+									$add_forums_recursive( (int) $forum['forumid'] );
+								}
+							};
+							$add_forums_recursive( 0 );
+							$all_forums = $sorted_forums;
 							// Get indexed counts from AI backend
 							$indexed_counts = wpforo_ai_get_indexed_counts_by_forum();
 
@@ -588,6 +619,10 @@ function wpforo_ai_render_rag_indexing_tab( $is_connected, $status ) {
 								</div>
 
 								<div class="form-actions">
+									<button type="submit" name="wpforo_ai_action" value="clear_forum_index" class="button button-large wpforo-ai-clear-forum-btn" onclick="return confirm('<?php echo esc_js( __( 'This will permanently delete all indexed content from the selected forums. Topics will need to be re-indexed to appear in AI search results. Continue?', 'wpforo' ) ); ?>');">
+										<span class="dashicons dashicons-trash"></span>
+										<?php _e( 'Clear Selected Forum Index', 'wpforo' ); ?>
+									</button>
 									<button type="submit" class="button button-primary button-large" onclick="return confirm('<?php echo esc_js( __( 'This will queue up to 10,000 not-yet-indexed topics from the selected forums for background indexing. Private and unapproved topics are automatically excluded. Continue?', 'wpforo' ) ); ?>');">
 										<span class="dashicons dashicons-upload"></span>
 										<?php _e( 'Index Selected Forums', 'wpforo' ); ?>

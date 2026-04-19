@@ -350,11 +350,26 @@ class Actions {
 			if( wp_verify_nonce( WPF()->GET['foro_n'], 'wpforo_delete_profile_field' ) ) {
 				$userid = intval( WPF()->GET['foro_u'] );
 				$field  = sanitize_title( WPF()->GET['foro_f'] );
+
+				// Security: Check if current user can edit target user's account
+				if( ! WPF()->perm->user_can_edit_account( $userid ) ) {
+					WPF()->notice->add( 'You do not have permission to edit this profile', 'error' );
+					wp_safe_redirect( wpforo_home_url() );
+					exit();
+				}
+
 				if( $file = WPF()->member->get_custom_field( $userid, $field ) ) {
 					$file   = wpforo_fix_upload_dir( $file );
 					$result = WPF()->member->update_custom_field( $userid, $field, '' );
 					if( $result ) {
-						if( file_exists( $file ) ) @unlink( $file );
+						// Security: Only delete files within wpforo upload directory (realpath validation)
+						if( $file ) {
+							$realpath    = realpath( $file );
+							$upload_base = realpath( WPF()->folders['wp_upload']['dir'] );
+							if( $realpath && $upload_base && strpos( $realpath, $upload_base . DIRECTORY_SEPARATOR . 'wpforo' ) === 0 ) {
+								wp_delete_file( $file );
+							}
+						}
 						WPF()->phrase->clear_cache();
 						WPF()->notice->add( 'Deleted Successfully!', 'success' );
 					} else {
@@ -364,7 +379,7 @@ class Actions {
 				}
 			}
 		}
-		
+
 		wp_safe_redirect( $userid ? WPF()->member->get_profile_url( $userid, 'account' ) : wpforo_home_url() );
 		exit();
 	}
