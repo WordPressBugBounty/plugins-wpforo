@@ -605,18 +605,16 @@ class AIChatbot {
 			return $text;
 		}
 
-		// Replace [[#wp_POST_ID:Title]] format - WordPress content with title
+		// Replace [[#wp_POST_ID:Title]] format - WordPress content with title (title ignored)
 		$text = preg_replace_callback(
 			'/\[\[#wp_(\d+):([^\]]+)\]\]/',
 			function ( $matches ) {
 				$postid = (int) $matches[1];
-				$title  = trim( $matches[2] );
 				$url    = get_permalink( $postid );
 				if ( empty( $url ) ) {
 					return '';  // Remove invalid references
 				}
-				// Use title as link text, with post ID in brackets for reference
-				return '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html( $title ) . '</a> <sup class="wpf-ai-chat-reference">[wp:' . $postid . ']</sup>';
+				return '<sup class="wpf-ai-chat-reference"><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">[<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>' . $postid . ']</a></sup>';
 			},
 			$text
 		);
@@ -627,15 +625,38 @@ class AIChatbot {
 			function ( $matches ) {
 				$postid = (int) $matches[1];
 				$url    = get_permalink( $postid );
-				$title  = get_the_title( $postid );
 				if ( empty( $url ) ) {
 					return '';  // Remove invalid references
 				}
-				// Use post title as link text if available
-				if ( ! empty( $title ) ) {
-					return '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html( $title ) . '</a> <sup class="wpf-ai-chat-reference">[wp:' . $postid . ']</sup>';
+				return '<sup class="wpf-ai-chat-reference"><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">[<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>' . $postid . ']</a></sup>';
+			},
+			$text
+		);
+
+		// Fallback: Replace [[wp_POST_ID:Title]] format - WordPress content missing # (AI often forgets hash)
+		$text = preg_replace_callback(
+			'/\[\[wp_(\d+):([^\]]+)\]\]/',
+			function ( $matches ) {
+				$postid = (int) $matches[1];
+				$url    = get_permalink( $postid );
+				if ( empty( $url ) ) {
+					return '';  // Remove invalid references
 				}
-				return '<sup class="wpf-ai-chat-reference"><a href="' . esc_url( $url ) . '">[wp:' . $postid . ']</a></sup>';
+				return '<sup class="wpf-ai-chat-reference"><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">[<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>' . $postid . ']</a></sup>';
+			},
+			$text
+		);
+
+		// Fallback: Replace [[wp_POST_ID]] format - WordPress content missing # (AI often forgets hash)
+		$text = preg_replace_callback(
+			'/\[\[wp_(\d+)\]\]/',
+			function ( $matches ) {
+				$postid = (int) $matches[1];
+				$url    = get_permalink( $postid );
+				if ( empty( $url ) ) {
+					return '';  // Remove invalid references
+				}
+				return '<sup class="wpf-ai-chat-reference"><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">[<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>' . $postid . ']</a></sup>';
 			},
 			$text
 		);
@@ -715,9 +736,12 @@ class AIChatbot {
 		// Transform results to API's expected rag_context format
 		$rag_context = [];
 		foreach ( $search_results['results'] as $result ) {
-			// Get forum name for context
+			$content_source = $result['content_source'] ?? 'forum';
+			$is_wordpress   = ( $content_source === 'wordpress' );
+
+			// Get forum name for context (only for forum content)
 			$forum_name = '';
-			if ( ! empty( $result['forum_id'] ) ) {
+			if ( ! $is_wordpress && ! empty( $result['forum_id'] ) ) {
 				$forum = WPF()->forum->get_forum( $result['forum_id'] );
 				$forum_name = $forum['title'] ?? '';
 			}
@@ -729,15 +753,23 @@ class AIChatbot {
 				$author = $user['display_name'] ?? '';
 			}
 
+			// Build ID with wp_ prefix for WordPress content so LLM cites correctly
+			// Use wpfval() for safe array access (avoids PHP 8 undefined key warnings)
+			$post_id = wpfval( $result, 'post_id' ) ?: wpfval( $result, 'topic_id' ) ?: '';
+			$id      = $is_wordpress ? 'wp_' . $post_id : (string) $post_id;
+
 			$rag_context[] = [
-				'id'           => (string) ( $result['post_id'] ?? $result['topic_id'] ),
-				'title'        => $result['title'] ?? 'Untitled',
-				'content'      => $result['content'] ?? '',
-				'url'          => $result['post_url'] ?? $result['url'] ?? '',
-				'score'        => (float) ( $result['score'] ?? 0 ),
-				'content_type' => ! empty( $result['post_id'] ) ? 'post' : 'topic',
-				'forum_name'   => $forum_name,
-				'author'       => $author,
+				'id'             => $id,
+				'post_id'        => (string) $post_id,
+				'title'          => $result['title'] ?? 'Untitled',
+				'content'        => $result['content'] ?? '',
+				'url'            => $result['post_url'] ?? $result['url'] ?? '',
+				'score'          => (float) ( $result['score'] ?? 0 ),
+				'content_type'   => ! empty( $result['post_id'] ) ? 'post' : 'topic',
+				'content_source' => $content_source,
+				'permalink'      => $is_wordpress ? ( $result['url'] ?? $result['post_url'] ?? '' ) : '',
+				'forum_name'     => $forum_name,
+				'author'         => $author,
 			];
 		}
 

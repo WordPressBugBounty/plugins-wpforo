@@ -399,11 +399,17 @@ $wpf(document).ready(function ($) {
 		if (msg.sources && msg.sources.length > 0) {
 			var sourcesHtml = '';
 			msg.sources.forEach(function (source) {
-				if (source.url) {
+				// Support both 'url' (forum) and 'permalink' (WordPress)
+				var sourceUrl = source.url || source.permalink || '';
+				if (sourceUrl) {
 					var postId = source.post_id || '';
 					var title = source.title || wpforo_phrase('View topic');
-					sourcesHtml += '<a href="' + escapeHtml(source.url) + '" class="wpf-ai-chat-msg-source" target="_blank">';
-					sourcesHtml += postId ? '[' + escapeHtml(postId) + '] ' : '';
+					var isWordPress = source.content_source === 'wordpress';
+					// Format: [icon 123] for WordPress, [123] for forum
+					var wpIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" style="fill:transparent; margin: 0 1px; width: 13px; height: 13px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>';
+					var idPrefix = isWordPress ? wpIcon : '';
+					sourcesHtml += '<a href="' + escapeHtml(sourceUrl) + '" class="wpf-ai-chat-msg-source" target="_blank">';
+					sourcesHtml += postId ? '[' + idPrefix + escapeHtml(postId) + '] ' : '';
 					sourcesHtml += escapeHtml(title);
 					sourcesHtml += '</a>';
 				}

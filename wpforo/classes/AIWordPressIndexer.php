@@ -164,6 +164,36 @@ class AIWordPressIndexer {
 	}
 
 	/**
+	 * Check if using local storage mode for WordPress content
+	 *
+	 * WordPress content indexing uses a global storage mode setting.
+	 * This is independent of forum boards - it's a site-wide setting
+	 * stored in wpforo_ai_storage_mode_0.
+	 *
+	 * @return bool True if local mode, false if cloud mode
+	 */
+	private function is_local_storage_mode() {
+		$storage_mode = get_option( 'wpforo_ai_storage_mode_0', 'local' );
+		return $storage_mode === 'local';
+	}
+
+	/**
+	 * Get the local storage instance for WordPress content
+	 *
+	 * Uses the VectorStorageManager's local storage instance which has
+	 * proper table references initialized. WordPress content uses the
+	 * same embeddings table as forum content.
+	 *
+	 * @return \wpforo\classes\VectorStorageLocal|null Local storage instance or null
+	 */
+	private function get_local_storage() {
+		if ( ! isset( WPF()->vector_storage ) || ! WPF()->vector_storage ) {
+			return null;
+		}
+		return WPF()->vector_storage->get_local_storage();
+	}
+
+	/**
 	 * Get public post types available for indexing
 	 *
 	 * @return array Array of post type objects with name, label, and count
@@ -348,24 +378,29 @@ class AIWordPressIndexer {
 			$post_types = $tax_obj ? $tax_obj->object_type : [ 'post' ];
 		}
 
+		// Get indexed post IDs for counting
+		$indexed_post_ids = $this->get_indexed_post_ids();
+
 		$result = [];
 		foreach ( $terms as $term ) {
 			// Count only published posts for this term
 			$published_count = $this->count_published_posts_in_term( $term->term_id, $taxonomy, $post_types );
+			// Count indexed posts in this term
+			$indexed_count = $this->count_indexed_posts_in_term( $term->term_id, $taxonomy, $post_types, $indexed_post_ids );
 
 			$term_data = [
 				'term_id' => $term->term_id,
 				'name'    => $term->name,
 				'slug'    => $term->slug,
-				'count'   => $published_count, // Only published posts
-				'indexed' => 0, // Placeholder - actual indexed count from AI backend
+				'count'   => $published_count,
+				'indexed' => $indexed_count,
 			];
 
 			// Get children for hierarchical taxonomies
 			if ( $hierarchical && is_taxonomy_hierarchical( $taxonomy ) ) {
 				$children = get_terms( [
 					'taxonomy'   => $taxonomy,
-					'hide_empty' => false, // Show all terms, not just those with posts
+					'hide_empty' => false,
 					'parent'     => $term->term_id,
 					'orderby'    => 'name',
 					'order'      => 'ASC',
@@ -374,15 +409,15 @@ class AIWordPressIndexer {
 				if ( ! is_wp_error( $children ) && ! empty( $children ) ) {
 					$term_data['children'] = [];
 					foreach ( $children as $child ) {
-						// Count only published posts for child term
 						$child_published_count = $this->count_published_posts_in_term( $child->term_id, $taxonomy, $post_types );
+						$child_indexed_count = $this->count_indexed_posts_in_term( $child->term_id, $taxonomy, $post_types, $indexed_post_ids );
 
 						$term_data['children'][] = [
 							'term_id' => $child->term_id,
 							'name'    => $child->name,
 							'slug'    => $child->slug,
-							'count'   => $child_published_count, // Only published posts
-							'indexed' => 0, // Placeholder - actual indexed count from AI backend
+							'count'   => $child_published_count,
+							'indexed' => $child_indexed_count,
 						];
 					}
 				}
@@ -392,6 +427,65 @@ class AIWordPressIndexer {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Get all indexed WordPress post IDs
+	 *
+	 * @return array Array of indexed post IDs
+	 */
+	private function get_indexed_post_ids() {
+		if ( $this->is_local_storage_mode() ) {
+			$local = $this->get_local_storage();
+			if ( ! $local ) {
+				return [];
+			}
+			return $local->get_wp_indexed_post_ids();
+		}
+
+		// Cloud mode: fetch indexed post IDs from backend API
+		if ( ! WPF()->ai_client || ! WPF()->ai_client->is_service_available() ) {
+			return [];
+		}
+
+		$response = WPF()->ai_client->api_get( '/rag/wordpress/indexed-posts' );
+		if ( is_wp_error( $response ) ) {
+			return [];
+		}
+
+		return isset( $response['post_ids'] ) ? array_map( 'intval', $response['post_ids'] ) : [];
+	}
+
+	/**
+	 * Count indexed posts in a specific term
+	 *
+	 * @param int    $term_id          Term ID
+	 * @param string $taxonomy         Taxonomy name
+	 * @param array  $post_types       Post types to check
+	 * @param array  $indexed_post_ids Pre-fetched array of indexed post IDs
+	 * @return int Number of indexed posts in the term
+	 */
+	private function count_indexed_posts_in_term( $term_id, $taxonomy, $post_types, $indexed_post_ids ) {
+		if ( empty( $indexed_post_ids ) ) {
+			return 0;
+		}
+
+		$query = new \WP_Query( [
+			'post_type'      => $post_types,
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'tax_query'      => [
+				[
+					'taxonomy' => $taxonomy,
+					'field'    => 'term_id',
+					'terms'    => $term_id,
+				],
+			],
+			'post__in'       => $indexed_post_ids,
+		] );
+
+		return $query->found_posts;
 	}
 
 	/**
@@ -884,8 +978,8 @@ class AIWordPressIndexer {
 		}
 
 		// Check storage mode — local mode stores embeddings in WordPress DB
-		$storage_manager = WPF()->vector_storage;
-		if ( $storage_manager && $storage_manager->is_local_mode() ) {
+		// WordPress content uses the global storage mode setting (board 0)
+		if ( $this->is_local_storage_mode() ) {
 			$local_result = $this->process_batch_local( $posts, $queue );
 
 			return $local_result;
@@ -942,11 +1036,20 @@ class AIWordPressIndexer {
 	 * @return array Result with status, indexed, failed, skipped counts
 	 */
 	private function process_batch_local( $posts, $queue ) {
-		$storage_manager = WPF()->vector_storage;
-		$local           = $storage_manager->get_local_storage();
-		$indexed         = 0;
-		$failed          = 0;
-		$skipped         = 0;
+		$local = $this->get_local_storage();
+		if ( ! $local ) {
+			return [
+				'status'  => 'error',
+				'message' => 'Local storage is not available',
+				'indexed' => 0,
+				'failed'  => count( $posts ),
+				'skipped' => 0,
+			];
+		}
+
+		$indexed = 0;
+		$failed  = 0;
+		$skipped = 0;
 
 		foreach ( $posts as $post_data ) {
 			$post_id   = $post_data['post_id'];
@@ -975,7 +1078,15 @@ class AIWordPressIndexer {
 				}
 			}
 
-			$content      = implode( "\n\n", $content_parts );
+			$content = implode( "\n\n", $content_parts );
+
+			// Truncate to fit within embedding model's token limit
+			// Titan Embed v2: 8192 tokens ≈ 28000 chars (safe margin)
+			$max_chars = 28000;
+			if ( mb_strlen( $content, 'UTF-8' ) > $max_chars ) {
+				$content = mb_substr( $content, 0, $max_chars, 'UTF-8' );
+			}
+
 			$content_hash = md5( $content );
 
 			// Check if already indexed with same content (dedup)
@@ -986,13 +1097,15 @@ class AIWordPressIndexer {
 			}
 
 			// Generate embedding via cloud API
-			$embedding = $storage_manager->generate_embedding( $content );
+			$result = WPF()->ai_client->generate_embedding( $content );
+			$embedding = is_wp_error( $result ) ? $result : ( $result['embedding'] ?? null );
 
-			if ( is_wp_error( $embedding ) ) {
+			if ( is_wp_error( $embedding ) || ! is_array( $embedding ) ) {
+				$error_msg = is_wp_error( $embedding ) ? $embedding->get_error_message() : 'Invalid embedding response';
 				\wpforo_ai_log( 'error', sprintf(
 					'Failed to generate embedding for WP post %d: %s',
 					$post_id,
-					$embedding->get_error_message()
+					$error_msg
 				), 'WPIndexer' );
 				$failed++;
 				continue;
@@ -1072,10 +1185,12 @@ class AIWordPressIndexer {
 		}
 
 		// Get indexed counts — source depends on storage mode
-		$storage_manager = WPF()->vector_storage;
-		if ( $storage_manager && $storage_manager->is_local_mode() ) {
+		if ( $this->is_local_storage_mode() ) {
 			// LOCAL mode: count from WordPress ai_embeddings table
-			$local = $storage_manager->get_local_storage();
+			$local = $this->get_local_storage();
+			if ( ! $local ) {
+				return new \WP_Error( 'storage_unavailable', __( 'Local storage is not available', 'wpforo' ) );
+			}
 			$indexed_counts = $local->get_wp_indexed_counts();
 			$response = [
 				'content_source' => 'wordpress',
@@ -1111,7 +1226,10 @@ class AIWordPressIndexer {
 
 		// Check if there's an active queue
 		$queue = get_option( 'wpforo_ai_wp_indexing_queue' );
+		$is_indexing = false;
 		if ( ! empty( $queue ) ) {
+			$queue_status = isset( $queue['status'] ) ? $queue['status'] : 'processing';
+			$is_indexing = ( $queue_status === 'processing' );
 			$response['queue'] = [
 				'job_id'      => $queue['job_id'],
 				'total_posts' => $queue['total_posts'],
@@ -1119,9 +1237,25 @@ class AIWordPressIndexer {
 				'failed'      => $queue['failed'],
 				'current'     => $queue['current'],
 				'total'       => count( $queue['batches'] ),
-				'status'      => isset( $queue['status'] ) ? $queue['status'] : 'processing',
+				'status'      => $queue_status,
 			];
 		}
+
+		// Add is_indexing flag for UI
+		$response['is_indexing'] = $is_indexing;
+
+		// Get last activity timestamp from queue or sync_state
+		$last_indexed_at = null;
+		if ( ! empty( $queue['completed_at'] ) ) {
+			$last_indexed_at = $queue['completed_at'];
+		} elseif ( ! empty( $queue['started_at'] ) ) {
+			$last_indexed_at = $queue['started_at'];
+		}
+		$response['last_indexed_at'] = $last_indexed_at;
+		// Format date using WordPress function (always available in AJAX context)
+		$response['last_indexed_at_formatted'] = $last_indexed_at
+			? wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $last_indexed_at ) )
+			: null;
 
 		// Cache for 5 minutes
 		set_transient( 'wpforo_ai_wp_indexing_status', $response, 5 * MINUTE_IN_SECONDS );
@@ -1136,11 +1270,13 @@ class AIWordPressIndexer {
 	 * @return array|WP_Error Result or error
 	 */
 	public function delete_content( $params ) {
-		$storage_manager = WPF()->vector_storage;
-
-		if ( $storage_manager && $storage_manager->is_local_mode() ) {
+		if ( $this->is_local_storage_mode() ) {
 			// LOCAL mode: delete from WordPress ai_embeddings table
-			$local      = $storage_manager->get_local_storage();
+			$local = $this->get_local_storage();
+			if ( ! $local ) {
+				return new \WP_Error( 'storage_unavailable', __( 'Local storage is not available', 'wpforo' ) );
+			}
+
 			$post_types = isset( $params['post_types'] ) ? $params['post_types'] : null;
 			$post_ids   = isset( $params['post_ids'] ) ? $params['post_ids'] : null;
 

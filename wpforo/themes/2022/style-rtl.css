@@ -2889,3 +2889,6 @@ body.wpf-dark #wpforo-dialog-extra-wrap #wpforo-dialog{background-color: #000; c
 #wpforo #wpforo-wrap.wpf-dark .wpf-timeline-topic_closed .wpf-timeline-icon{border-color: #9ca3af; color: #9ca3af; box-shadow: 0 0 0 4px #1e2327, 0 4px 15px rgba(156,163,175,0.3);}
 #wpforo #wpforo-wrap.wpf-dark .wpf-timeline-post_answer .wpf-timeline-icon{border-color: #34d399; color: #34d399; box-shadow: 0 0 0 4px #1e2327, 0 4px 15px rgba(52,211,153,0.3);}
 #wpforo #wpforo-wrap.wpf-dark .wpf-timeline-wpforo_post .wpf-timeline-icon{border-color: #72aee6; color: #72aee6; box-shadow: 0 0 0 4px #1e2327, 0 4px 15px rgba(114,174,230,0.3);}
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference{vertical-align: super; font-size: 11px; line-height: 0;}
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference a{text-decoration: none;}
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference svg{fill: transparent}

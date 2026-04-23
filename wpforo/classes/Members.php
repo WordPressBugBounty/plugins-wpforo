@@ -813,12 +813,18 @@ class Members {
                         )
                 ) {
                     if( ! empty( $sgids ) ) {
-                        $secondary_groupids = WPF()->usergroup->get_secondary_groupids();
+                        $privileged_roles = [ 'administrator', 'editor', 'author' ];
+                        $safe_groupids = [];
+                        foreach( WPF()->usergroup->get_secondary_groups() as $group ) {
+                            if( ! in_array( $group['role'], $privileged_roles, true ) ) {
+                                $safe_groupids[] = (int) $group['groupid'];
+                            }
+                        }
                         foreach( $sgids as $sgid ) {
                             if( in_array( $sgid, [ 1, 2, 4 ], true ) ) {
                                 $user['secondary_groupids'] = array_diff( $user['secondary_groupids'], [ $sgid ] );
                             }
-                            if( ! in_array( $sgid, $secondary_groupids ) ) {
+                            if( ! in_array( $sgid, $safe_groupids, true ) ) {
                                 $user['secondary_groupids'] = array_diff( $user['secondary_groupids'], [ $sgid ] );
                             }
                         }
@@ -1355,7 +1361,7 @@ class Members {
                 $groupid = WPF()->usergroup->default_groupid;
             }
         }
-        $insert_groupid  = ( isset( $_POST['wpforo_usergroup'] ) && ! wpforo_setting(
+        $insert_groupid  = ( isset( $_POST['wpforo_usergroup'] ) && current_user_can( 'administrator' ) && ! wpforo_setting(
                         'authorization',
                         'role_synch'
                 ) ) ? intval( $_POST['wpforo_usergroup'] ) : $groupid;
@@ -1373,7 +1379,20 @@ class Members {
                                                ] );
 
         if( $return !== false && ( $secondary_groupids = wpfval( $_POST, 'wpforo_secondary_groupids' ) ) ) {
-            $this->set_secondary_groupids( $userid, $secondary_groupids );
+            $secondary_groupids = array_filter( array_map( 'intval', (array) $secondary_groupids ) );
+            $privileged_roles = [ 'administrator', 'editor', 'author' ];
+            $safe_groupids = [];
+            foreach( WPF()->usergroup->get_secondary_groups() as $group ) {
+                if( ! in_array( $group['role'], $privileged_roles, true ) ) {
+                    $safe_groupids[] = (int) $group['groupid'];
+                }
+            }
+            $secondary_groupids = array_filter( $secondary_groupids, function( $gid ) use ( $safe_groupids ) {
+                return ! in_array( $gid, [ 1, 2, 4 ], true ) && in_array( $gid, $safe_groupids, true );
+            } );
+            if( ! empty( $secondary_groupids ) ) {
+                $this->set_secondary_groupids( $userid, $secondary_groupids );
+            }
         }
 
         return $return;

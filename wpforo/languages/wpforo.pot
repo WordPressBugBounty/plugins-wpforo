@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Forum - wpForo\n"
-"POT-Creation-Date: 2026-04-07 01:40+0400\n"
+"POT-Creation-Date: 2026-04-23 19:41+0400\n"
 "PO-Revision-Date: 2016-06-28 21:09+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -144,7 +144,7 @@ msgid "Inactive and banned"
 msgstr ""
 
 #: admin/index.php:46 admin/index.php:47 admin/index.php:138 admin/index.php:139
-#: admin/pages/ai-features.php:140
+#: admin/pages/ai-features.php:153
 msgid "Overview"
 msgstr ""
 
@@ -480,7 +480,7 @@ msgstr ""
 
 #: admin/listtables/Moderations.php:187 classes/Settings.php:224
 #: includes/phrases.php:520 widgets/Forums.php:96 widgets/OnlineMembers.php:88
-#: widgets/RecentPosts.php:288 widgets/RecentTopics.php:207 widgets/Search.php:76
+#: widgets/RecentPosts.php:291 widgets/RecentTopics.php:207 widgets/Search.php:76
 #: widgets/Tags.php:89
 msgid "Title"
 msgstr ""
@@ -533,78 +533,80 @@ msgstr ""
 
 #: admin/listtables/Moderations.php:542
 #: admin/pages/tabs/ai-features-tab-analytics.php:588 classes/AILogs.php:1546
-#: classes/AILogs.php:1573
+#: classes/AILogs.php:1573 includes/phrases.php:1337
 msgid "Spam Detection"
 msgstr ""
 
 #: admin/listtables/Moderations.php:542 admin/listtables/Moderations.php:557
+#: includes/phrases.php:1340
 msgid "Auto Moderation"
 msgstr ""
 
 #: admin/listtables/Moderations.php:547
-#: admin/pages/tabs/ai-features-tab-analytics.php:589
+#: admin/pages/tabs/ai-features-tab-analytics.php:589 includes/phrases.php:1338
 msgid "Toxicity Detection"
 msgstr ""
 
-#: admin/listtables/Moderations.php:552
+#: admin/listtables/Moderations.php:552 includes/phrases.php:1339
 msgid "Policy Compliance"
 msgstr ""
 
-#: admin/listtables/Moderations.php:567
+#: admin/listtables/Moderations.php:567 includes/phrases.php:1329
 msgid "Clean"
 msgstr ""
 
-#: admin/listtables/Moderations.php:570
+#: admin/listtables/Moderations.php:570 includes/phrases.php:1330
 msgid "Detected"
 msgstr ""
 
-#: admin/listtables/Moderations.php:573
+#: admin/listtables/Moderations.php:573 includes/phrases.php:1331
 msgid "Suspected"
 msgstr ""
 
-#: admin/listtables/Moderations.php:576
+#: admin/listtables/Moderations.php:576 includes/phrases.php:1332
 msgid "Uncertain"
 msgstr ""
 
-#: admin/listtables/Moderations.php:581
+#: admin/listtables/Moderations.php:581 includes/phrases.php:1333
 msgid "No action"
 msgstr ""
 
 #: admin/listtables/Moderations.php:582 admin/listtables/Moderations.php:583
+#: includes/phrases.php:1334
 msgid "Auto-approved"
 msgstr ""
 
 #: admin/listtables/Moderations.php:584 admin/pages/moderation.php:41
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:998
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1551
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1026
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1579
 msgid "Unapproved"
 msgstr ""
 
-#: admin/listtables/Moderations.php:585
+#: admin/listtables/Moderations.php:585 includes/phrases.php:1335
 msgid "Unapproved + Banned"
 msgstr ""
 
-#: admin/listtables/Moderations.php:586
+#: admin/listtables/Moderations.php:586 includes/phrases.php:1336
 msgid "Deleted + Banned"
 msgstr ""
 
-#: admin/listtables/Moderations.php:592
+#: admin/listtables/Moderations.php:592 includes/phrases.php:1345
 msgid "Fast"
 msgstr ""
 
-#: admin/listtables/Moderations.php:593
+#: admin/listtables/Moderations.php:593 includes/phrases.php:1346
 msgid "Balanced"
 msgstr ""
 
-#: admin/listtables/Moderations.php:594
+#: admin/listtables/Moderations.php:594 includes/phrases.php:1347
 msgid "Advanced"
 msgstr ""
 
-#: admin/listtables/Moderations.php:595
+#: admin/listtables/Moderations.php:595 includes/phrases.php:1348
 msgid "Premium"
 msgstr ""
 
-#: admin/listtables/Moderations.php:596
+#: admin/listtables/Moderations.php:596 includes/phrases.php:1349
 msgid "Rule-based"
 msgstr ""
 
@@ -627,11 +629,11 @@ msgstr ""
 msgid "Action: %s"
 msgstr ""
 
-#: admin/listtables/Moderations.php:621
+#: admin/listtables/Moderations.php:621 includes/phrases.php:1324
 msgid "Summary:"
 msgstr ""
 
-#: admin/listtables/Moderations.php:627
+#: admin/listtables/Moderations.php:627 includes/phrases.php:1325
 msgid "Indicators:"
 msgstr ""
 
@@ -696,7 +698,7 @@ msgstr ""
 #: admin/pages/usergroup.php:30 admin/pages/usergroup.php:37
 #: admin/pages/usergroup.php:405 admin/settings/board.php:16
 #: admin/settings/general.php:24 admin/settings/styles.php:12
-#: classes/Settings.php:4283
+#: classes/Settings.php:4299
 msgid "Read the documentation"
 msgstr ""
 
@@ -796,46 +798,67 @@ msgstr ""
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: admin/pages/ai-features.php:49
+#: admin/pages/ai-features.php:52
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:156
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:145
+msgid "Indexing..."
+msgstr ""
+
+#: admin/pages/ai-features.php:53
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:158
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:148
+msgid "Idle"
+msgstr ""
+
+#: admin/pages/ai-features.php:54
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:160
+msgid "No activity yet"
+msgstr ""
+
+#: admin/pages/ai-features.php:61
 msgid "Are you sure you want to delete this log?"
 msgstr ""
 
-#: admin/pages/ai-features.php:50
+#: admin/pages/ai-features.php:62
 msgid "Are you sure you want to delete the selected logs?"
 msgstr ""
 
-#: admin/pages/ai-features.php:51
+#: admin/pages/ai-features.php:63
 #: admin/pages/tabs/ai-features-tab-ai-logs.php:380
 msgid "Delete All Logs"
 msgstr ""
 
-#: admin/pages/ai-features.php:52
+#: admin/pages/ai-features.php:64
 msgid "No logs found."
 msgstr ""
 
-#: admin/pages/ai-features.php:126
-#: admin/pages/tabs/ai-features-tab-overview.php:114 classes/AIClient.php:201
+#: admin/pages/ai-features.php:139
+#: admin/pages/tabs/ai-features-tab-overview.php:114 classes/AIClient.php:204
 msgid "wpForo AI Features"
 msgstr ""
 
-#: admin/pages/ai-features.php:146
-msgid "AI Content Indexing"
+#: admin/pages/ai-features.php:159
+msgid "Forum Indexing"
 msgstr ""
 
-#: admin/pages/ai-features.php:147
+#: admin/pages/ai-features.php:163
+msgid "WordPress Indexing"
+msgstr ""
+
+#: admin/pages/ai-features.php:166
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:142
 msgid "AI Tasks"
 msgstr ""
 
-#: admin/pages/ai-features.php:148
+#: admin/pages/ai-features.php:167
 msgid "AI Analytics"
 msgstr ""
 
-#: admin/pages/ai-features.php:149
+#: admin/pages/ai-features.php:168
 msgid "AI Logs"
 msgstr ""
 
-#: admin/pages/ai-features.php:183 admin/pages/ai-features.php:207
+#: admin/pages/ai-features.php:202 admin/pages/ai-features.php:226
 msgid "AI Settings"
 msgstr ""
 
@@ -1303,8 +1326,8 @@ msgid "Topic and Post Moderation"
 msgstr ""
 
 #: admin/pages/moderation.php:47
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:994
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1547
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1022
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1575
 msgid "Published"
 msgstr ""
 
@@ -1455,412 +1478,455 @@ msgstr ""
 msgid "Do you really want to reset options?"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:242
+#: admin/pages/tabs/ai-features-helpers.php:246
 msgid "Security check failed. Please try again."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:250
+#: admin/pages/tabs/ai-features-helpers.php:254
 msgid "Insufficient permissions."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:268
+#: admin/pages/tabs/ai-features-helpers.php:272
 msgid "Status refreshed successfully."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:329
+#: admin/pages/tabs/ai-features-helpers.php:336
 #, php-format
 msgid "Connection failed: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:342
+#: admin/pages/tabs/ai-features-helpers.php:349
 msgid "Invalid response from server. Please try again."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:388
+#: admin/pages/tabs/ai-features-helpers.php:395
 #, php-format
 msgid "Successfully connected! You have %s credits to get started."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:410
+#: admin/pages/tabs/ai-features-helpers.php:417
 msgid "You must confirm disconnection."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:423
+#: admin/pages/tabs/ai-features-helpers.php:430
 #, php-format
 msgid "Disconnection failed: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:466
+#: admin/pages/tabs/ai-features-helpers.php:473
 msgid ""
 "Service disconnected and all data has been permanently removed from gVectors "
 "AI servers."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:472
+#: admin/pages/tabs/ai-features-helpers.php:479
 msgid ""
 "Service disconnected successfully. Your credits are preserved and will be "
 "restored when you reconnect. Your indexed content will be deleted after 30 "
 "days. You can reconnect anytime with the same site URL."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:738
+#: admin/pages/tabs/ai-features-helpers.php:756
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:466
 msgid "overdue"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:740
+#: admin/pages/tabs/ai-features-helpers.php:758
 msgid "now"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:749
+#: admin/pages/tabs/ai-features-helpers.php:767
 #, php-format
 msgid "in %d day"
 msgid_plural "in %d days"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/pages/tabs/ai-features-helpers.php:752
+#: admin/pages/tabs/ai-features-helpers.php:770
 #, php-format
 msgid "in %d hour"
 msgid_plural "in %d hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/pages/tabs/ai-features-helpers.php:755
+#: admin/pages/tabs/ai-features-helpers.php:773
 #, php-format
 msgid "in %d min"
 msgid_plural "in %d mins"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/pages/tabs/ai-features-helpers.php:770
+#: admin/pages/tabs/ai-features-helpers.php:788
 msgid "Please provide a Topic ID or URL."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:780
+#: admin/pages/tabs/ai-features-helpers.php:798
 msgid "Invalid Topic ID or URL."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:795
-#: admin/pages/tabs/ai-features-helpers.php:919
-#: admin/pages/tabs/ai-features-helpers.php:1072
+#: admin/pages/tabs/ai-features-helpers.php:813
+#: admin/pages/tabs/ai-features-helpers.php:937
+#: admin/pages/tabs/ai-features-helpers.php:1090
 #, php-format
 msgid "Content indexing failed: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:813
+#: admin/pages/tabs/ai-features-helpers.php:831
 #, php-format
 msgid ""
 "Topic #%d is already up to date. All %d posts are unchanged, no reindexing "
 "needed. (0 credits used)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:828
+#: admin/pages/tabs/ai-features-helpers.php:846
 msgid "Credits will be consumed during processing."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:829
+#: admin/pages/tabs/ai-features-helpers.php:847
 #, php-format
 msgid "%d credit(s) used."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:836
+#: admin/pages/tabs/ai-features-helpers.php:854
 #, php-format
 msgid "Topic #%d update queued. %d posts to re-index (%d changed, %d new). %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:849
+#: admin/pages/tabs/ai-features-helpers.php:867
 #, php-format
 msgid ""
 "Topic #%d has been queued for indexing. Check the status box for progress. %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:892
+#: admin/pages/tabs/ai-features-helpers.php:910
 #, php-format
 msgid "Could not find topics for: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:901
+#: admin/pages/tabs/ai-features-helpers.php:919
 msgid "No valid topic IDs or URLs provided."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:935
+#: admin/pages/tabs/ai-features-helpers.php:953
 #, php-format
 msgid ""
 "%d topic(s) queued for indexing. Credits will be consumed during processing."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:940
+#: admin/pages/tabs/ai-features-helpers.php:958
 #, php-format
 msgid "%d topic(s) queued for indexing. %d credit(s) used."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:948
+#: admin/pages/tabs/ai-features-helpers.php:966
 #, php-format
 msgid "Note: Could not find topics for: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:963
+#: admin/pages/tabs/ai-features-helpers.php:981
 msgid "Cannot combine Topic Tags with User IDs filter. Please use only one."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:971
+#: admin/pages/tabs/ai-features-helpers.php:989
 msgid ""
 "Please provide at least one filter (date range, tags, user IDs, or specific "
 "topics)."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1040
+#: admin/pages/tabs/ai-features-helpers.php:1058
 msgid "date range"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1043
+#: admin/pages/tabs/ai-features-helpers.php:1061
 msgid "tags"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1046
+#: admin/pages/tabs/ai-features-helpers.php:1064
 msgid "user IDs"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1052
+#: admin/pages/tabs/ai-features-helpers.php:1070
 #, php-format
 msgid "No topics found matching the selected filters (%s)."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1089
+#: admin/pages/tabs/ai-features-helpers.php:1107
 #, php-format
 msgid ""
 "%d topic(s) matching your filters have been queued for indexing. Credits will "
 "be consumed during processing."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1098
+#: admin/pages/tabs/ai-features-helpers.php:1116
 #, php-format
 msgid ""
 "%d topic(s) matching your filters have been queued for indexing. %d credit(s) "
 "used."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1131
+#: admin/pages/tabs/ai-features-helpers.php:1149
 msgid "Please select at least one forum to index."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1186
+#: admin/pages/tabs/ai-features-helpers.php:1204
 msgid ""
 "No topics found in the selected forums within the specified date range "
 "(already-indexed, private and unapproved topics are excluded)."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1187
+#: admin/pages/tabs/ai-features-helpers.php:1205
 msgid ""
 "No topics found in the selected forums to index. All eligible topics may "
 "already be indexed (private and unapproved topics are always skipped)."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1210
+#: admin/pages/tabs/ai-features-helpers.php:1228
 #, php-format
 msgid "Forum indexing failed: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1224
+#: admin/pages/tabs/ai-features-helpers.php:1242
 #, php-format
 msgid "%1$d topic(s) from %2$d forum queued for indexing."
 msgid_plural "%1$d topic(s) from %2$d forums queued for indexing."
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1235
+#: admin/pages/tabs/ai-features-helpers.php:1253
 #, php-format
 msgid "(from %1$s to %2$s)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1237
+#: admin/pages/tabs/ai-features-helpers.php:1255
 #, php-format
 msgid "(from %s)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1239
+#: admin/pages/tabs/ai-features-helpers.php:1257
 #, php-format
 msgid "(until %s)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1245
+#: admin/pages/tabs/ai-features-helpers.php:1263
 #, php-format
 msgid ""
 "Note: capped at %d topics per run. Click the button again after this run "
 "completes to continue with the remaining topics."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1250
+#: admin/pages/tabs/ai-features-helpers.php:1268
 msgid "Check the status box for progress."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1287
-#: admin/pages/tabs/ai-features-helpers.php:1387
+#: admin/pages/tabs/ai-features-helpers.php:1291
+msgid "Please select at least one forum to clear."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-helpers.php:1298
+msgid "Vector storage is not available."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-helpers.php:1307
+#, php-format
+msgid "Failed to clear forum index: %s"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-helpers.php:1312
+msgid "local"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-helpers.php:1312
+msgid "cloud"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-helpers.php:1321
+#, php-format
+msgid ""
+"Forum index clear queued for %1$d forum (%2$s storage mode). Clearing in "
+"background - this may take a few minutes."
+msgid_plural ""
+"Forum index clear queued for %1$d forums (%2$s storage mode). Clearing in "
+"background - this may take a few minutes."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/pages/tabs/ai-features-helpers.php:1340
+#, php-format
+msgid ""
+"Cleared %1$d embedding(s) from %2$d forum (%3$s storage mode). Topics can now "
+"be re-indexed."
+msgid_plural ""
+"Cleared %1$d embedding(s) from %2$d forums (%3$s storage mode). Topics can now "
+"be re-indexed."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/pages/tabs/ai-features-helpers.php:1382
+#: admin/pages/tabs/ai-features-helpers.php:1482
 #, php-format
 msgid "Re-indexing failed: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1305
+#: admin/pages/tabs/ai-features-helpers.php:1400
 #, php-format
 msgid ""
 "Re-indexing started! %d topics have been queued for processing with chunk size "
 "%d and %d%% overlap. This will run in the background."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1349
+#: admin/pages/tabs/ai-features-helpers.php:1444
 msgid "No topics found."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1359
+#: admin/pages/tabs/ai-features-helpers.php:1454
 msgid "No topics with images found to re-index."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1394
+#: admin/pages/tabs/ai-features-helpers.php:1489
 #, php-format
 msgid ""
 "Re-indexing started! %d topics with images have been queued for processing. "
 "This will run in the background."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1415
+#: admin/pages/tabs/ai-features-helpers.php:1510
 msgid "You must type DELETE to confirm clearing the database."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1426
-#: admin/pages/tabs/ai-features-helpers.php:1479
+#: admin/pages/tabs/ai-features-helpers.php:1521
+#: admin/pages/tabs/ai-features-helpers.php:1574
 #, php-format
 msgid "Clear failed: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1437
+#: admin/pages/tabs/ai-features-helpers.php:1532
 msgid ""
 "RAG database has been cleared successfully. All indexed data has been removed."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1452
+#: admin/pages/tabs/ai-features-helpers.php:1547
 msgid "You must type CLEAR to confirm this action."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1492
+#: admin/pages/tabs/ai-features-helpers.php:1587
 #, php-format
 msgid "Database cleared but re-indexing failed: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1506
+#: admin/pages/tabs/ai-features-helpers.php:1601
 #, php-format
 msgid ""
 "Database cleared successfully! %d topics are now being indexed fresh with "
 "chunk size %d and %d%% overlap. This will run in the background."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1525
+#: admin/pages/tabs/ai-features-helpers.php:1620
 msgid "Chunk size must be between 100 and 1024 tokens."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1534
+#: admin/pages/tabs/ai-features-helpers.php:1629
 msgid "Overlap percentage must be between 5 and 50."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1543
+#: admin/pages/tabs/ai-features-helpers.php:1638
 msgid "Topics per batch must be between 1 and 50."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1555
+#: admin/pages/tabs/ai-features-helpers.php:1650
 #, php-format
 msgid ""
 "Indexing configuration saved: Chunk size %d tokens, Overlap %d%%, Topics per "
 "batch %d."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1574
+#: admin/pages/tabs/ai-features-helpers.php:1669
 msgid "Failed to stop indexing. Please try again."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1584
+#: admin/pages/tabs/ai-features-helpers.php:1679
 msgid "No pending indexing jobs found."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1591
+#: admin/pages/tabs/ai-features-helpers.php:1686
 #, php-format
 msgid ""
 "Indexing stopped. %d scheduled jobs removed (%d topics will not be processed)."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1714
-#: admin/pages/tabs/ai-features-helpers.php:1916
-#: admin/pages/tabs/ai-features-helpers.php:2203
+#: admin/pages/tabs/ai-features-helpers.php:1809
+#: admin/pages/tabs/ai-features-helpers.php:2011
+#: admin/pages/tabs/ai-features-helpers.php:2298
 msgid "This action is only for local storage mode."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1746
+#: admin/pages/tabs/ai-features-helpers.php:1841
 msgid "No topics found to index."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1756
+#: admin/pages/tabs/ai-features-helpers.php:1851
 msgid "No topics with images found to index."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1781
+#: admin/pages/tabs/ai-features-helpers.php:1876
 msgid ""
 "No credits available. Please wait for your monthly reset or purchase "
 "additional credits."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1812
+#: admin/pages/tabs/ai-features-helpers.php:1907
 msgid "topics with images"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1813
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:226
+#: admin/pages/tabs/ai-features-helpers.php:1908
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:225
 msgid "topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1818
+#: admin/pages/tabs/ai-features-helpers.php:1913
 #, php-format
 msgid ""
 "Indexing started! %1$d %2$s will be processed in batches of %3$d. You have "
 "%4$d credits available."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1827
+#: admin/pages/tabs/ai-features-helpers.php:1922
 #, php-format
 msgid ""
 "Indexing started! %1$d %2$s will be processed in batches of %3$d. Note: You "
 "have %4$d credits but need %5$d. Indexing will stop when credits run out."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1890
+#: admin/pages/tabs/ai-features-helpers.php:1985
 #, php-format
 msgid "Local indexing stopped. %d topics removed from queue."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1932
+#: admin/pages/tabs/ai-features-helpers.php:2027
 msgid "Another batch is being processed. Retrying..."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1966
+#: admin/pages/tabs/ai-features-helpers.php:2061
 msgid "Indexing complete!"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:1998
-#: admin/pages/tabs/ai-features-helpers.php:2056
+#: admin/pages/tabs/ai-features-helpers.php:2093
+#: admin/pages/tabs/ai-features-helpers.php:2151
 msgid ""
 "Indexing stopped: Insufficient credits. Please wait for your monthly reset or "
 "purchase additional credits."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:2102
+#: admin/pages/tabs/ai-features-helpers.php:2197
 #, php-format
 msgid "Processed %d of %d topics..."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:2182
+#: admin/pages/tabs/ai-features-helpers.php:2277
 #, php-format
 msgid "Indexing in progress: %d of %d topics processed"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-helpers.php:2229
+#: admin/pages/tabs/ai-features-helpers.php:2324
 msgid "Local embeddings cleared successfully."
 msgstr ""
 
@@ -1909,7 +1975,7 @@ msgid "All Actions"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-logs.php:137
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:589
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:650
 msgid "Date Range"
 msgstr ""
 
@@ -1919,7 +1985,7 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-analytics.php:648
 #: admin/pages/tabs/ai-features-tab-analytics.php:1158
 #: admin/pages/tabs/ai-features-tab-analytics.php:1673 classes/Settings.php:2239
-#: includes/phrases.php:902
+#: includes/phrases.php:902 includes/phrases.php:1307
 msgid "All Time"
 msgstr ""
 
@@ -1928,7 +1994,7 @@ msgid "Last Hour"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-logs.php:141 classes/Settings.php:2236
-#: includes/phrases.php:899
+#: includes/phrases.php:899 includes/phrases.php:1306
 msgid "Last 24 Hours"
 msgstr ""
 
@@ -1984,11 +2050,11 @@ msgstr ""
 msgid "Guest"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-logs.php:165
+#: admin/pages/tabs/ai-features-tab-ai-logs.php:165 includes/phrases.php:1316
 msgid "Cron Job"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-logs.php:166
+#: admin/pages/tabs/ai-features-tab-ai-logs.php:166 includes/phrases.php:1317
 msgid "System"
 msgstr ""
 
@@ -2107,7 +2173,7 @@ msgid "Auto-delete logs older than"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-logs.php:332
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:983
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1011
 msgid "days"
 msgstr ""
 
@@ -2154,6 +2220,7 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-analytics.php:33
 #: admin/pages/tabs/ai-features-tab-overview.php:39
 #: admin/pages/tabs/ai-features-tab-rag-indexing.php:26
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:30
 msgid "Not Connected"
 msgstr ""
 
@@ -2165,6 +2232,7 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:34
 #: admin/pages/tabs/ai-features-tab-analytics.php:37
 #: admin/pages/tabs/ai-features-tab-rag-indexing.php:30
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:34
 msgid "Go to Overview"
 msgstr ""
 
@@ -2311,21 +2379,21 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:275
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:414
 #: admin/pages/tabs/ai-features-tab-analytics.php:584
-#: classes/TaskManager.php:2396
+#: classes/TaskManager.php:2476
 msgid "Topic Generator"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:276
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:415
 #: admin/pages/tabs/ai-features-tab-analytics.php:585
-#: classes/TaskManager.php:2397
+#: classes/TaskManager.php:2477
 msgid "Reply Generator"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:277
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:416
 #: admin/pages/tabs/ai-features-tab-analytics.php:586
-#: classes/TaskManager.php:2398
+#: classes/TaskManager.php:2478
 msgid "Tag Maintenance"
 msgstr ""
 
@@ -2362,40 +2430,40 @@ msgid "Create your first AI task to automate forum content generation."
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:442
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:848
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1404
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1792
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:876
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1432
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1820
 msgid "Every Hour"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:443
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:849
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1405
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1793
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:877
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1433
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1821
 msgid "Every 3 Hours"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:444
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:850
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1406
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1794
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:878
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1434
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1822
 msgid "Every 6 Hours"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:445
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:851
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1407
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1795
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:879
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1435
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1823
 msgid "Daily"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:446
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:852
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:880
 msgid "Every 3 Days"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:447
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:853
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:881
 msgid "Weekly"
 msgstr ""
 
@@ -2408,7 +2476,7 @@ msgstr ""
 msgid "Custom"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:461 classes/Settings.php:5386
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:461 classes/Settings.php:5402
 #: includes/options-migration.php:105
 msgid "New Topic"
 msgstr ""
@@ -2432,7 +2500,7 @@ msgid "Total Runs"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:529 includes/phrases.php:396
-#: widgets/OnlineMembers.php:98 widgets/RecentPosts.php:358
+#: widgets/OnlineMembers.php:98 widgets/RecentPosts.php:361
 #: widgets/RecentTopics.php:267 widgets/Tags.php:108
 msgid "Number of Items"
 msgstr ""
@@ -2454,1057 +2522,1057 @@ msgstr ""
 msgid "View Stats"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:625
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:653
 msgid "Content Settings"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:632
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1075
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1609
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:660
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1103
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1637
 msgid "Target Forums"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:666
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1109
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1643
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:557
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:839 includes/phrases.php:470
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:694
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1137
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1671
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:614
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:308 includes/phrases.php:470
 msgid "Select All"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:669
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1112
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1646
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:560
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:842
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:697
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1140
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1674
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:617
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:311
 msgid "Deselect All"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:672
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:700
 msgid "Select forums where new topics will be created"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:679
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:707
 msgid "Topic Theme/Focus"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:681
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:709
 msgid "e.g., Web development tutorials, JavaScript tips..."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:684
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:712
 msgid "Brief theme to guide topic creation (max 120 characters)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:688
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:716
 msgid "Topic Style"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:690
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:719
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1178
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1207
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:718
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:747
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1206
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1235
 msgid "Neutral - Let custom instructions decide"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:691
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:719
 msgid "Tutorial - Step-by-step guide"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:692
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:720
 msgid "Question - Asking for help/opinions"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:693
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:721
 msgid "Discussion - Open conversation starter"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:694
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:722
 msgid "News - Updates and announcements"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:695
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:723
 msgid "Tips & Tricks - Quick helpful hints"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:696
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:724
 msgid "How-To Guide - Practical instructions"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:697
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:725
 msgid "Review - Product/service evaluation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:698
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:726
 msgid "Comparison - Comparing options"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:699
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:727
 msgid "Case Study - Real-world example"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:700
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:728
 msgid "Opinion Piece - Personal perspective"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:701
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:729
 msgid "Problem/Solution - Issues and fixes"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:702
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:730
 msgid "List/Roundup - Curated collection"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:703
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:731
 msgid "Interview Style - Q&A format"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:704
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:732
 msgid "Beginner's Guide - Introductory content"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:705
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:733
 msgid "Deep Dive - In-depth analysis"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:706
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:734
 msgid "Best Practices - Recommended approaches"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:707
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:735
 msgid "Troubleshooting - Fixing common issues"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:708
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:736
 msgid "Resource Collection - Useful links/tools"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:709
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:737
 msgid "Myth Busting - Correcting misconceptions"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:710
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:738
 msgid "Success Story - Sharing achievements"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:711
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:739
 msgid "Challenge/Exercise - Interactive content"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:712
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:740
 msgid "FAQ - Frequently asked questions"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:717
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:745
 msgid "Topic Tone"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:720
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1208 classes/Settings.php:4071
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:748
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1236 classes/Settings.php:4087
 msgid "Professional - Business-like and formal"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:721
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1209 classes/Settings.php:4072
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:749
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1237 classes/Settings.php:4088
 msgid "Friendly - Warm and approachable"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:722
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1210 classes/Settings.php:4073
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:750
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1238 classes/Settings.php:4089
 msgid "Casual - Relaxed and informal"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:723
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1211 classes/Settings.php:4074
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:751
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1239 classes/Settings.php:4090
 msgid "Technical - Detailed and precise"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:724
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1212 classes/Settings.php:4075
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:752
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1240 classes/Settings.php:4091
 msgid "Enthusiastic - Excited and energetic"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:725
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1213 classes/Settings.php:4076
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:753
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1241 classes/Settings.php:4092
 msgid "Helpful - Supportive and guiding"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:726
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1214 classes/Settings.php:4077
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:754
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1242 classes/Settings.php:4093
 msgid "Authoritative - Expert and confident"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:727
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1215 classes/Settings.php:4078
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:755
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1243 classes/Settings.php:4094
 msgid "Conversational - Like chatting with a friend"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:728
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1216 classes/Settings.php:4079
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:756
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1244 classes/Settings.php:4095
 msgid "Educational - Teaching and informative"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:729
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1217 classes/Settings.php:4080
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:757
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1245 classes/Settings.php:4096
 msgid "Inspirational - Motivating and uplifting"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:730
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1218 classes/Settings.php:4081
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:758
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1246 classes/Settings.php:4097
 msgid "Humorous - Light-hearted and witty"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:731
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1219 classes/Settings.php:4082
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:759
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1247 classes/Settings.php:4098
 msgid "Serious - Focused and earnest"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:732
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1220 classes/Settings.php:4083
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:760
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1248 classes/Settings.php:4099
 msgid "Encouraging - Positive and supportive"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:733
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1221 classes/Settings.php:4084
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:761
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1249 classes/Settings.php:4100
 msgid "Warm - Caring and compassionate"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:734
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1222 classes/Settings.php:4085
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:762
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1250 classes/Settings.php:4101
 msgid "Direct - Straightforward and to the point"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:735
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1223 classes/Settings.php:4086
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:763
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1251 classes/Settings.php:4102
 msgid "Thoughtful - Considerate and reflective"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:736
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1224 classes/Settings.php:4087
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:764
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1252 classes/Settings.php:4103
 msgid "Empathetic - Understanding and relatable"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:737
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1225 classes/Settings.php:4088
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:765
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1253 classes/Settings.php:4104
 msgid "Confident - Self-assured and decisive"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:738
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1226 classes/Settings.php:4089
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:766
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1254 classes/Settings.php:4105
 msgid "Curious - Inquisitive and engaging"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:739
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1227 classes/Settings.php:4090
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:767
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1255 classes/Settings.php:4106
 msgid "Playful - Fun and lighthearted"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:740
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1228 classes/Settings.php:4091
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:768
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1256 classes/Settings.php:4107
 msgid "Sincere - Genuine and honest"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:745
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:773
 msgid "Content Length"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:747
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1248 classes/Settings.php:4105
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:775
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1276 classes/Settings.php:4121
 msgid "Brief (100-200 words)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:748
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1249 classes/Settings.php:4106
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:776
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1277 classes/Settings.php:4122
 msgid "Medium (200-400 words)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:749
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1250 classes/Settings.php:4107
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:777
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1278 classes/Settings.php:4123
 msgid "Detailed (400-800 words)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:750
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:778
 msgid "Comprehensive (800-1200 words)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:755
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:783
 msgid "Include in Topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:759
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1265 classes/Settings.php:4823
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:787
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1293 classes/Settings.php:4839
 msgid "Code examples"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:763
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:791
 msgid "External links"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:767
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:795
 msgid "Step-by-step instructions"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:771
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1281 classes/Settings.php:4827
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:799
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1309 classes/Settings.php:4843
 msgid "YouTube video URLs"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:786
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1329
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:814
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1357
 msgid "Author Settings"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:791 includes/phrases.php:70
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:819 includes/phrases.php:70
 msgid "Topic Author"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:794
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1337 admin/settings/ai.php:372
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:822
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1365 admin/settings/ai.php:373
 msgid "Type to search users..."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:797
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1340
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:825
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1368
 msgid ""
 "Search by username, display name, or email. Only activated users are shown."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:802
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1345
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:830
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1373
 msgid "-- OR --"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:807
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1350
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:835
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1378
 msgid "Author Usergroup"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:809
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1352
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:837
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1380
 msgid "-- Select Usergroup --"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:822
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:850
 msgid "Randomly selects a user from this group for each generated topic."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:830
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1373
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:858
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1401
 msgid "Add AI disclosure notice to generated content"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:832
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:860
 msgid ""
 "Adds a small disclaimer line at the end of AI-generated topics indicating the "
 "content was created by AI."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:841
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1384
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1772
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:869
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1412
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1800
 msgid "Scheduling"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:846
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1402
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1790
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:874
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1430
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1818
 msgid "Frequency"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:858
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1800
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:886
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1828
 msgid "Topics Per Run"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:871
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1425
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1808
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:899
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1453
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1836
 msgid "Active Days"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:875
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1429
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1812
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:903
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1457
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1840
 #: admin/pages/tabs/ai-features-tab-analytics.php:1092
 msgid "Mon"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:876
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1430
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1813
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:904
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1458
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1841
 #: admin/pages/tabs/ai-features-tab-analytics.php:1093
 msgid "Tue"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:877
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1431
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1814
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:905
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1459
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1842
 #: admin/pages/tabs/ai-features-tab-analytics.php:1094
 msgid "Wed"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:878
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1432
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1815
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:906
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1460
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1843
 #: admin/pages/tabs/ai-features-tab-analytics.php:1095
 msgid "Thu"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:879
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1433
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1816
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:907
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1461
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1844
 #: admin/pages/tabs/ai-features-tab-analytics.php:1096
 msgid "Fri"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:880
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1434
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1817
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:908
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1462
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1845
 #: admin/pages/tabs/ai-features-tab-analytics.php:1097
 msgid "Sat"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:881
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1435
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1818
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:909
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1463
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1846
 #: admin/pages/tabs/ai-features-tab-analytics.php:1091
 msgid "Sun"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:891
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1445
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1828
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:919
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1473
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1856
 msgid "Task will only run on selected days"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:905
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1459
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1837
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:933
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1487
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1865
 msgid "AI Quality & Credits"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:910
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1464
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1842
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:938
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1492
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1870
 msgid "AI Quality Level"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:912
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:940
 msgid "Fast - 1 credit per topic"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:913
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:941
 msgid "Balanced - 2 credits per topic"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:914
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:942
 msgid "Advanced - 3 credits per topic"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:915
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:943
 msgid "Premium - 4 credits per topic"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:922
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1476
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1853
-msgid "Credit Stop Threshold"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:924
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1478
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1855
-msgid "Stop when credits fall below this"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:932
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1486
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1863
-msgid "Auto-pause when limit reached"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:940
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1494
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1871
-msgid "Estimated monthly usage:"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:948
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1502
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1879
-msgid "Credit Saving Tip:"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:949
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1503
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1880
-msgid ""
-"Manual Run is available. Create this task as paused, then manually run it "
-"whenever you want."
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:950
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:1504
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:1881
+msgid "Credit Stop Threshold"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:952
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1506
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1883
+msgid "Stop when credits fall below this"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:960
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1514
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1891
+msgid "Auto-pause when limit reached"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:968
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1522
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1899
+msgid "Estimated monthly usage:"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:976
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1530
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1907
+msgid "Credit Saving Tip:"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:977
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1531
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1908
+msgid ""
+"Manual Run is available. Create this task as paused, then manually run it "
+"whenever you want."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:978
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1532
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1909
 msgid "One manual run costs:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:959
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1513
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:987
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1541
 msgid "Content Safety"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:966
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1520
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:994
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1548
 msgid "Enable duplicate prevention"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:973
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1527
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1001
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1555
 msgid "Similarity Threshold"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:981
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1535
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1009
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1563
 msgid "Check Period"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:984
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1012
 msgid "0 = check all topics, or limit to last N days"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:990
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1018
 msgid "Topic Status"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1012
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1581
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1040
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1609
 msgid "Advanced Options"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1019
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1047
 msgid "Topic Prefix"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1029
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1057
 msgid "Select a topic prefix from wpForo Topic Prefix addon"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1031
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1059
 msgid "e.g., [Tutorial]"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1033
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1061
 msgid "Optional prefix added to topic titles"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1038
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1066
 msgid "Auto-Tags"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1039
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1067
 msgid "tag1, tag2, tag3"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1040
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1068
 msgid "Comma-separated tags to add to topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1046
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1074
 msgid "Search Keywords for Ideas"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1047
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1075
 msgid "e.g., javascript, react, nodejs"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1048
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1076
 msgid "Keywords to help AI find topic inspiration from your forum content"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1067
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1601
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1095
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1629
 msgid "Target Settings"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1069
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1097
 msgid ""
 "Select forums to reply to random topics, or specify exact topic IDs. Both can "
 "be combined for random selection between them."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1115
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1143
 msgid "Random topic from selected forums (excludes private, closed, unapproved)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1122
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1656
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1150
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1684
 msgid "Target Topic IDs"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1123
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1657
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1151
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1685
 msgid "e.g.: 123, 456, 789"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1124
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1658
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1152
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1686
 msgid "Specific topic IDs (any status). Separate with commas or new lines."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1128
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1662
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1156
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1690
 msgid "Topic Date Range Filter"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1131
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1665
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:494
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:591
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1159
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1693
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:501
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:652
 msgid "From"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1135
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1669
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:496
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:593
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1163
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1697
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:503
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:654
 msgid "To"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1139
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1673
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1167
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1701
 msgid ""
 "Filter topics by creation date. Works alone (any forum) or with forum "
 "selection."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1145
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1173
 msgid "Only Not Replied Topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1147
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1175
 msgid "Only select topics that have no replies yet. Works with all filters."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1153
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1687
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1181
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1715
 msgid "How targeting works:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1155
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1183
 msgid "Forums only = random topic from selected forums"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1156
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1184
 msgid "Date range only = random topic from any forum in date range"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1157
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1691
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1185
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1719
 msgid "Forums + Date range = topics matching both criteria"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1158
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1692
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1186
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1720
 msgid "Topic IDs = always included (any status)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1160
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1188
 msgid "Random selection excludes private, closed, and unapproved topics."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1171
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1199
 msgid "Reply Content Settings"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1176 classes/Settings.php:4026
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1204 classes/Settings.php:4042
 msgid "Reply Style"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1179 classes/Settings.php:4035
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1207 classes/Settings.php:4051
 msgid "Helpful Answer - Direct solution"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1180 classes/Settings.php:4036
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1208 classes/Settings.php:4052
 msgid "Clarifying Questions - Ask for details"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1181 classes/Settings.php:4037
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1209 classes/Settings.php:4053
 msgid "Provide Context - Background info"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1182 classes/Settings.php:4038
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1210 classes/Settings.php:4054
 msgid "Encourage Discussion - Promote conversation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1183 classes/Settings.php:4039
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1211 classes/Settings.php:4055
 msgid "Step-by-Step Solution - Detailed guide"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1184 classes/Settings.php:4040
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1212 classes/Settings.php:4056
 msgid "Quick Answer - Brief response"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1185 classes/Settings.php:4041
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1213 classes/Settings.php:4057
 msgid "Expert Opinion - Authoritative view"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1186 classes/Settings.php:4042
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1214 classes/Settings.php:4058
 msgid "Supportive Response - Empathetic help"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1187 classes/Settings.php:4043
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1215 classes/Settings.php:4059
 msgid "Resource Sharing - Links/references"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1188 classes/Settings.php:4044
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1216 classes/Settings.php:4060
 msgid "Alternative Solutions - Multiple options"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1189 classes/Settings.php:4045
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1217 classes/Settings.php:4061
 msgid "Troubleshooting Guide - Diagnostic approach"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1190 classes/Settings.php:4046
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1218 classes/Settings.php:4062
 msgid "Best Practice Advice - Recommended way"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1191 classes/Settings.php:4047
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1219 classes/Settings.php:4063
 msgid "Experience Sharing - Personal story"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1192 classes/Settings.php:4048
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1220 classes/Settings.php:4064
 msgid "Detailed Explanation - Comprehensive answer"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1193 classes/Settings.php:4049
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1221 classes/Settings.php:4065
 msgid "Summary Response - Condensed info"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1194 classes/Settings.php:4050
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1222 classes/Settings.php:4066
 msgid "Follow-up Questions - Dig deeper"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1195 classes/Settings.php:4051
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1223 classes/Settings.php:4067
 msgid "Confirmation - Validate understanding"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1196 classes/Settings.php:4052
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1224 classes/Settings.php:4068
 msgid "Constructive Feedback - Helpful critique"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1197 classes/Settings.php:4053
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1225 classes/Settings.php:4069
 msgid "Collaborative - Work together approach"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1198 classes/Settings.php:4054
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1226 classes/Settings.php:4070
 msgid "Educational - Teaching moment"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1199 classes/Settings.php:4055
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1227 classes/Settings.php:4071
 msgid "Acknowledgment - Recognize the issue"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1200 classes/Settings.php:4056
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1228 classes/Settings.php:4072
 msgid "Recommendation - Suggest specific action"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1205 classes/Settings.php:4062
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1233 classes/Settings.php:4078
 msgid "Reply Tone"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1235
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1263
 msgid "Response Guidelines"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1237
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1265
 msgid "e.g., Be helpful, include links when useful, ask follow-up questions..."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1240
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1268
 msgid "Brief guidelines for AI responses (max 120 characters)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1246 classes/Settings.php:4097
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1274 classes/Settings.php:4113
 msgid "Reply Length"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1254
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1282
 msgid "Max Replies Per Topic"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1256
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1284
 msgid "Maximum AI replies allowed per topic"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1261 classes/Settings.php:4131
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1289 classes/Settings.php:4147
 msgid "Include in Replies"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1269 classes/Settings.php:4824
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1297 classes/Settings.php:4840
 msgid "Links to documentation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1273 classes/Settings.php:4825
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1301 classes/Settings.php:4841
 msgid "Step-by-step solutions"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1277 classes/Settings.php:4826
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1305 classes/Settings.php:4842
 msgid "Follow-up questions"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1285 classes/Settings.php:4828
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1313 classes/Settings.php:4844
 msgid "Personalized greeting (e.g., \"Hi John\")"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1296
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1301 classes/Settings.php:4113
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1324
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1329 classes/Settings.php:4129
 msgid "Knowledge Source"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1303
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1331
 msgid "Forum content only (RAG)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1304
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1332
 msgid "Forum + AI general knowledge"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1305 classes/Settings.php:4123
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1333 classes/Settings.php:4139
 msgid "Forum + Web Search"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1306
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1334
 msgid "Forum + Web Search + AI knowledge"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1307
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1335
 msgid "AI general knowledge only"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1312
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1340
 msgid "If No Relevant Content in Forum Found"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1314
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1342
 msgid "Use other knowledge sources"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1315
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1343
 msgid "Skip this topic"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1316
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1344
 msgid "Ask for more details"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1334
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1362
 msgid "Reply Author"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1365
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1393
 msgid ""
 "Randomly selects a user from this group for each reply (avoids replying as the "
 "topic author)."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1375
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1403
 msgid ""
 "Adds a small disclaimer line at the end of AI-generated replies indicating the "
 "content was created by AI."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1390
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1418
 msgid "Run on each approved post"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1396
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1424
 msgid ""
 "When enabled, task runs automatically when a new post is approved (instead of "
 "scheduled cron)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1412
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1440
 msgid "Replies Per Run"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1466
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1494
 msgid "Fast - 1 credit per reply"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1467
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1495
 msgid "Balanced - 2 credits per reply"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1468
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1496
 msgid "Advanced - 3 credits per reply"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1469
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1497
 msgid "Premium - 4 credits per reply"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1537
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1565
 msgid "days."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1537
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1565
 msgid "Set 0 to check all replies, or limit to last N days."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1543
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1571
 msgid "Reply Status"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1559
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1587
 msgid "Reply Strategy"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1561
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1589
 msgid "Reply to first post"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1562
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1590
 msgid "Reply to whole topic"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1563
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1591
 msgid "Reply to last post"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1565
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1593
 msgid "Choose how AI generates replies:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1567
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1595
 msgid ""
 "<strong>Reply to first post</strong> - Generates a reply based only on the "
 "first post content"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1568
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1596
 msgid ""
 "<strong>Reply to whole topic</strong> - Considers the topic first post and all "
 "replies for context"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1569
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1597
 msgid ""
 "<strong>Reply to last post</strong> - Responds to the last post while "
 "understanding the sub-thread context"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1603
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1631
 msgid ""
 "Select forums to process topic tags, or specify exact topic IDs. Both can be "
 "combined."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1649
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1677
 msgid "Topics from selected forums (excludes private, closed, unapproved)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1679
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1707
 msgid "Only Topics Without Tags"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1681
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1709
 msgid "Only select topics that have no tags yet. Works with all filters."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1689
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1717
 msgid "Forums only = topics from selected forums"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1690
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1718
 msgid "Date range only = topics from any forum in date range"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1704
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1732
 msgid "Tag Options"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1711
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1739
 msgid "Maximum Tags Per Topic"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1719
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1747
 msgid "Maximum number of tags to generate for each topic"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1725
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1753
 msgid "Preserve Existing Tags"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1727
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1755
 msgid ""
 "Keep existing tags and add new ones. If unchecked, existing tags will be "
 "replaced."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1733
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1761
 msgid "Maintain Tag Vocabulary"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1735
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1763
 msgid "Prefer existing forum tags to maintain consistent vocabulary"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1744
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1772
 msgid "Remove Duplicate Tags"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1746
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1774
 msgid "Identify and remove duplicate or near-duplicate tags"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1752
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1780
 msgid "Remove Irrelevant Tags"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1754
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1782
 msgid "Remove tags that are not relevant to the topic content"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1760
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1788
 msgid "Lowercase All Tags"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1762
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1790
 msgid "Convert all tags to lowercase for consistency"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1778
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1806
 msgid "Run on each approved topic"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1784
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1812
 msgid ""
 "When enabled, task runs automatically when a new topic is approved (instead of "
 "scheduled cron)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1802
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1830
 msgid "1-50 topics processed per run"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1844
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1872
 msgid "Fast - 1 credit per run"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1845
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1873
 msgid "Balanced - 2 credits per run"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1846
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1874
 msgid "Advanced - 3 credits per run (recommended for 20+ topics)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1847
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1875
 msgid "Premium - 4 credits per run (recommended for 20+ topics)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1849
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1877
 msgid "All topics in one run are processed in a single AI call"
 msgstr ""
 
@@ -3660,6 +3728,7 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-analytics.php:380
 #: admin/pages/tabs/ai-features-tab-analytics.php:399
 #: admin/pages/tabs/ai-features-tab-analytics.php:448 includes/phrases.php:933
+#: includes/phrases.php:1309
 msgid "Loading..."
 msgstr ""
 
@@ -3672,7 +3741,7 @@ msgid "Feature Usage Details"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-analytics.php:417
-#: admin/pages/tabs/ai-features-tab-overview.php:1484 admin/settings/ai.php:478
+#: admin/pages/tabs/ai-features-tab-overview.php:1484 admin/settings/ai.php:480
 msgid "Feature"
 msgstr ""
 
@@ -3718,7 +3787,7 @@ msgstr ""
 msgid "Year %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-analytics.php:577
+#: admin/pages/tabs/ai-features-tab-analytics.php:577 includes/phrases.php:1286
 msgid "AI Search"
 msgstr ""
 
@@ -3820,8 +3889,8 @@ msgstr ""
 msgid "Forum Activity Breakdown"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-analytics.php:832 classes/Settings.php:5345
-#: includes/installation.php:637 includes/installation.php:1614
+#: admin/pages/tabs/ai-features-tab-analytics.php:832 classes/Settings.php:5361
+#: includes/installation.php:641 includes/installation.php:1618
 #: includes/options-migration.php:19 includes/options-migration.php:98
 #: includes/phrases.php:287
 msgid "Forum"
@@ -3845,7 +3914,7 @@ msgstr ""
 msgid "Less"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-analytics.php:1137 classes/Settings.php:4728
+#: admin/pages/tabs/ai-features-tab-analytics.php:1137 classes/Settings.php:4744
 #: includes/phrases.php:373
 msgid "More"
 msgstr ""
@@ -4013,7 +4082,7 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-overview.php:1611
 #: admin/pages/tabs/ai-features-tab-overview.php:1628
 #: admin/pages/tabs/ai-features-tab-overview.php:1643
-#: admin/pages/tabs/ai-features-tab-overview.php:1658
+#: admin/pages/tabs/ai-features-tab-overview.php:1658 includes/phrases.php:1328
 msgid "credits"
 msgstr ""
 
@@ -4116,8 +4185,8 @@ msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-analytics.php:2515
 #: admin/pages/tabs/ai-features-tab-analytics.php:2769
-#: admin/pages/tabs/ai-features-tab-analytics.php:3030 classes/Settings.php:4034
-#: classes/Settings.php:4070
+#: admin/pages/tabs/ai-features-tab-analytics.php:3030 classes/Settings.php:4050
+#: classes/Settings.php:4086
 msgid "Neutral"
 msgstr ""
 
@@ -4290,8 +4359,8 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-overview.php:146
 #: admin/pages/tabs/ai-features-tab-overview.php:228
 #: admin/pages/tabs/ai-features-tab-overview.php:380
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:131
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:710
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:132
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:116
 msgid "Refresh Status"
 msgstr ""
 
@@ -4325,11 +4394,11 @@ msgid ""
 "will be processed by %3$s service as described in these documents."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:72 classes/Actions.php:3444
+#: admin/pages/tabs/ai-features-tab-overview.php:72 classes/Actions.php:3459
 msgid "Terms of Service"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:73 classes/Actions.php:3444
+#: admin/pages/tabs/ai-features-tab-overview.php:73 classes/Actions.php:3459
 #: includes/phrases.php:144
 msgid "Privacy Policy"
 msgstr ""
@@ -4776,12 +4845,12 @@ msgid "Free / Starter"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:1156
-#: admin/pages/tabs/ai-features-tab-overview.php:1622 admin/settings/ai.php:322
+#: admin/pages/tabs/ai-features-tab-overview.php:1622 admin/settings/ai.php:323
 msgid "Professional"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:1157
-#: admin/pages/tabs/ai-features-tab-overview.php:1637 admin/settings/ai.php:419
+#: admin/pages/tabs/ai-features-tab-overview.php:1637 admin/settings/ai.php:420
 msgid "Business"
 msgstr ""
 
@@ -4861,8 +4930,8 @@ msgid ""
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:1239
-#: admin/pages/tabs/ai-features-tab-overview.php:1775 admin/settings/ai.php:90
-#: admin/settings/ai.php:469
+#: admin/pages/tabs/ai-features-tab-overview.php:1775 admin/settings/ai.php:91
+#: admin/settings/ai.php:471
 msgid "AI Topic Summarization"
 msgstr ""
 
@@ -4875,8 +4944,8 @@ msgid ""
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:1245
-#: admin/pages/tabs/ai-features-tab-overview.php:1782 admin/settings/ai.php:107
-#: admin/settings/ai.php:470
+#: admin/pages/tabs/ai-features-tab-overview.php:1782 admin/settings/ai.php:108
+#: admin/settings/ai.php:472 includes/phrases.php:1411
 msgid "AI Topic Suggestions"
 msgstr ""
 
@@ -5034,8 +5103,8 @@ msgid ""
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:1317
-#: admin/pages/tabs/ai-features-tab-overview.php:1933 admin/settings/ai.php:417
-#: admin/settings/ai.php:471
+#: admin/pages/tabs/ai-features-tab-overview.php:1933 admin/settings/ai.php:418
+#: admin/settings/ai.php:473
 msgid "AI Chat Assistant"
 msgstr ""
 
@@ -5074,7 +5143,7 @@ msgid ""
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:1335
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:682
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:181
 msgid "WordPress Content Indexing"
 msgstr ""
 
@@ -5279,7 +5348,7 @@ msgid "AI Vector Database - Local Storage"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:1761 admin/settings/ai.php:58
-#: admin/settings/ai.php:467
+#: admin/settings/ai.php:469
 msgid "AI Semantic Search"
 msgstr ""
 
@@ -5307,7 +5376,7 @@ msgstr ""
 msgid "AI Knowledge - Document Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1843 admin/settings/ai.php:320
+#: admin/pages/tabs/ai-features-tab-overview.php:1843 admin/settings/ai.php:321
 msgid "AI Bot Reply"
 msgstr ""
 
@@ -5430,485 +5499,672 @@ msgid ""
 "Content Indexing."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:127
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:128
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:111
 msgid "Indexing Status"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:129
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:708
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:130
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:114
 msgid "Refreshing..."
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-rag-indexing.php:143
+msgid "queued..."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:144
 msgid "Total Threads Indexed"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:155
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:962
-msgid "Indexing..."
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:157
-msgid "Processing..."
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:159
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:768
-msgid "Idle"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:163
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:769
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:162
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:141
 msgid "Current Status"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:174
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:173
 msgid "Last Indexed"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:190
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:189
 msgid "Storage Settings"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:196
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:195
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:123
 msgid "Storage Mode"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:201
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:200
 msgid "Local (WordPress)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:206
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:205
 msgid "Cloud (gVectors on AWS)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:222
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:221
 msgid "vectors"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:230
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:229
 msgid "storage"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:237
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:236
 msgid ""
 "Vectors are stored in gVectors AI Services on AWS for optimal performance with "
 "large datasets."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:243
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:242
 msgid ""
 "Local storage keeps all data within your WordPress database. Recommended for "
 "forums with up to 100,000 posts."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:245
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:244
 msgid ""
 "Cloud storage (gVectors AI Services on AWS Cloud) provides faster search "
 "performance for large forums but requires sharing data with our API."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:255
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:254
 msgid "Forum Content Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:272
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:271
 msgid ""
 "Include images in indexing (Professional/Business/Enterprise only). Posts with "
 "images will consume +1 credit."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:274
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:694
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:273
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:187
 msgid "Index Images"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:276
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:288
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:275
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:287
 msgid "Requires Professional, Business or Enterprise plan"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:284
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:283
 msgid ""
 "Include document attachments (PDF, DOCX, etc.) in indexing (Professional+ "
 "only). Credit cost: 1 per document page."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:286
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:285
 msgid "Index Documents"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:296
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:295
 msgid "Automatically index new and approved topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:297
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:296
 msgid "Automatically index all new approved topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:331
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:338
 msgid "Full Content Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:334
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:341
 msgid ""
 "Index all forum topics in one click. This will queue all topics for AI "
 "features. Only new or modified topics will consume credits - unchanged topics "
 "are skipped automatically."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:337
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:344
 msgid ""
 "All new topics and replies are automatically indexed. If a topic or post is "
 "unapproved, the indexing process will only start when a moderator has approved "
 "them."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:343
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:350
 msgid "Total Topics:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:347
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:354
 msgid "Total Indexed:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:351
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:358
 msgid "Remaining to Index:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:357
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:364
 msgid "Credits Available:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:378
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:385
 #, php-format
 msgid "Background processing in progress: %s topics are queued for indexing."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:394
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:401
 msgid "This will index all forum topics. Continue?"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:399
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:406
 #, php-format
 msgid "Re-Index All %s Topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:404
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:411
 #, php-format
 msgid "Index Remaining %s Topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:409
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:416
 #, php-format
 msgid "Index %s Topics (Using All Credits)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:416
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:423
 msgid "This will stop all pending indexing jobs. Continue?"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:418
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:425
 msgid "Stop Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:423
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:430
 msgid "Index All Topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:442
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:449
 #, php-format
 msgid "%s topics are excluded from indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:450
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:457
 msgid "The following topics are automatically excluded from AI indexing:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:457
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:464
 msgid "private topics - these are only visible to their authors"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:464
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:471
 msgid "unapproved topics - these will be indexed once approved by moderators"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:469
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:476
 msgid ""
 "Private topics are never indexed to protect user privacy. Unapproved topics "
 "will be automatically indexed when approved."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:478
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:485
 msgid "Or select specific content to index:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:484
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:491
 msgid "Index Topics by Forums"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:492
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:794
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:868
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:499
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:263
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:337
 msgid "Date Range (optional)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:495
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:592
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:797
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:871
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:502
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:653
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:266
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:340
 msgid "to"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:501
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:508
 msgid ""
 "Select one or more forums to index their topics. Use date range to filter by "
 "topic creation date."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:503
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:510
 msgid ""
 "Up to 10,000 not-yet-indexed topics are queued per click (newest first). "
 "Private and unapproved topics are always skipped. Click again after processing "
 "completes to continue with the remaining topics."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:565
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:622
+msgid ""
+"This will permanently delete all indexed content from the selected forums. "
+"Topics will need to be re-indexed to appear in AI search results. Continue?"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:624
+msgid "Clear Selected Forum Index"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:626
 msgid ""
 "This will queue up to 10,000 not-yet-indexed topics from the selected forums "
 "for background indexing. Private and unapproved topics are automatically "
 "excluded. Continue?"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:567
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:628
 msgid "Index Selected Forums"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:571
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:632
 msgid "No forums found."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:578
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:639
 msgid "Custom Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:580
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:641
 msgid "Index topics using custom filters. Combine date range with other filters."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:596
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:657
 msgid "Filter by topic creation date. Can be combined with any other filter."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:603
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:664
 #: blocks/tags/render.php:11 classes/Settings.php:788 includes/phrases.php:1030
 #: widgets/Tags.php:22
 msgid "Topic Tags"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:605
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:666
 msgid "Start typing to search tags..."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:607
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:668
 msgid ""
 "Type to search and select tags (comma-separated). Cannot be combined with User "
 "IDs filter."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:614
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:675
 msgid "Topic Author User IDs"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:616
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:677
 msgid "e.g., 1, 5, 12"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:618
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:679
 msgid "Comma-separated user IDs. Cannot be combined with Tags filter."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:627
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:688
 msgid "Specific Topic IDs or URLs"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:629
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:690
 msgid ""
 "e.g., 123, 456\n"
 "https://yourforum.com/topic/sample-topic/"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:631
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:692
 msgid ""
 "Comma or newline separated. This filter works independently - ignores other "
 "filters above."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:638
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:699
 msgid "Index Filtered Topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:647
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:708
 msgid "This will re-index all topics. Continue?"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:649
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:710
 msgid "Re-Index All Topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:656
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:717
 msgid ""
 "This will re-index all topics that contain images. Topics without images will "
 "not be affected. Continue?"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:658
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:719
 msgid "Re-Index Topic Images"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:661
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:722
 msgid ""
 "Reset stuck forum indexing session? This clears pending queues, cron jobs and "
 "cached state for BOTH local and cloud modes. Already-indexed topics are NOT "
 "affected."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:661
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:722
 msgid ""
 "Clears pending indexing queues, WP-Cron jobs, session locks and status caches. "
 "Use this if indexing is stuck on \"Indexing...\" but nothing is progressing. "
 "Works for both local and cloud storage modes. Does not delete any indexed data."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:663
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:948
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:724
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:417
 msgid "Cleanup Indexing Session"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:665
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:726
 msgid "Are you sure? This will delete ALL indexed data and cannot be undone!"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:667
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:728
 msgid "Clear Forum Index"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:692
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:737
+msgid "Chunking Configuration"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:741
+msgid ""
+"Configure how forum content is split into chunks for vector indexing. These "
+"settings affect search quality and cost."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:759
+msgid "Chunk Size (tokens)"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:762
+msgid ""
+"Number of tokens per chunk. 1 token ≈ 4 characters. Smaller chunks give more "
+"precise search results. Larger chunks provide more context but may include "
+"less relevant content. Default: 512 (~2000 characters)"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:767
+msgid "Range: 100-1024 tokens"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:774
+msgid "Overlap Percentage (%)"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:777
+msgid ""
+"Percentage of overlap between consecutive chunks. Helps maintain context "
+"across chunk boundaries. Default: 20%"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:782
+msgid "Range: 5-50%"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:789
+msgid "Topics Per Batch"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:792
+msgid ""
+"Number of topics to process per batch during indexing. Lower values are more "
+"reliable but slower. Higher values are faster but may timeout on slower "
+"servers. Default: 10"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:797
+msgid "Range: 1-50"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:804
+msgid "How this affects indexing:"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:806
+msgid "Larger chunk size = better context preservation, fewer vectors."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:807
+msgid "Higher overlap = better search quality at chunk boundaries."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:808
+msgid ""
+"More topics per step = faster re-indexing but uses more memory. Reduce if you "
+"experience memory issues."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:809
+msgid "These settings will be used for all future indexing operations."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:817
+msgid "Save Configuration"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:829
+msgid "Test Semantic Search"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:833
+msgid ""
+"Test the AI semantic search with your indexed topics. Results include metadata "
+"for generating topic and post URLs."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:840
+msgid "Search Query"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:842
+msgid "e.g., how to reset password"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:844
+msgid "Enter a natural language search query to test semantic search."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:850
+msgid "Number of Results"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:854
+msgid "Maximum number of search results to return (1-20)."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:861
+msgid "Test Search"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:869
+msgid "Search Results"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:881
+msgid "Indexing Queue"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:887
+msgid "pending"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:891
+msgid "completed"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:895
+msgid "failed"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:899
+msgid ""
+"The queue updates automatically every 30 seconds while indexing is in progress."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:32
+msgid ""
+"Please connect to wpForo AI API first in the Overview tab to enable WordPress "
+"Content Indexing."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:50
+msgid "Business Plan Required"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:52
+msgid ""
+"WordPress Content Indexing is available on Business and Enterprise plans. "
+"Upgrade to index WordPress posts, pages, and custom post types for AI-powered "
+"search."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:54 admin/settings/ai.php:400
+#: admin/settings/ai.php:446
+msgid "View Plans"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:127
+msgid "Cloud (AWS S3 Vectors)"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:130
+msgid "Local (WordPress Database)"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:135
+msgid "Change in AI Content Indexing"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:154
+msgid "Last Activity"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:167
+msgid "Remaining Credits"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:185
 msgid ""
 "Include images in indexing (Business/Enterprise). Posts with images will "
 "consume +1 credit."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:701
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:195
 msgid "Automatically index new and updated WordPress content"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:702
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:196
 msgid "Automatically index new content"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:716
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:206
 msgid ""
 "Index WordPress posts, pages, and custom post types to enable AI-powered "
 "search across all your site content. This works alongside forum content "
 "indexing."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:751
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:217
 msgid "Total WordPress Content"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:760
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:226
 msgid "Total Indexed"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:777
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:238
+msgid "Coverage"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:246
 msgid "No public post types with content found."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:784
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:253
 msgid "Index by Categories/Taxonomies"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:786
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:255
 msgid "Select a taxonomy and term to index all content in that category."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:801
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:270
 msgid "Filter by content publication date within the selected category."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:807
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:276
 msgid "Taxonomy"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:810
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:279
 msgid "Select a taxonomy..."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:830
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:299
 msgid "Terms/Categories"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:834
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:303
 msgid "Select a taxonomy first to load terms..."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:850
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:319
 msgid "Index Selected Terms"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:858
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:327
 msgid "Index by Content Type"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:860
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:329
 msgid "Select content types and optionally filter by date range."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:875
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:344
 msgid "Leave empty to index all content of selected types."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:881
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:350
 msgid "Content Types"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:901
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:370
 msgid "indexed"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:911
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:380
 msgid "Index Selected Content"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:917
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:386
 msgid "Or index by specific IDs:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:926
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:395
 msgid "Post/Page IDs"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:928
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:397
 msgid "e.g., 123, 456, 789"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:930
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:399
 msgid "Comma-separated post IDs. Indexes regardless of content type or date."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:937
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:406
 msgid "Index by IDs"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:946
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:415
 msgid ""
 "Reset stuck WordPress indexing session? This clears the pending post queue, "
 "cron jobs and cached status. Already-indexed posts are NOT affected."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:946
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:415
 msgid ""
 "Clears pending WordPress post/page indexing queue, WP-Cron jobs and status "
 "cache. Use this if WordPress indexing is stuck on \"Indexing...\" but nothing "
@@ -5916,151 +6172,12 @@ msgid ""
 "any indexed data."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:950
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:419
 msgid "This will remove all WordPress content from the AI index. Continue?"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:952
+#: admin/pages/tabs/ai-features-tab-wp-indexing.php:421
 msgid "Clear WordPress Index"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:975
-msgid "Chunking Configuration"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:979
-msgid ""
-"Configure how forum content is split into chunks for vector indexing. These "
-"settings affect search quality and cost."
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:997
-msgid "Chunk Size (tokens)"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1000
-msgid ""
-"Number of tokens per chunk. 1 token ≈ 4 characters. Smaller chunks give more "
-"precise search results. Larger chunks provide more context but may include "
-"less relevant content. Default: 512 (~2000 characters)"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1005
-msgid "Range: 100-1024 tokens"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1012
-msgid "Overlap Percentage (%)"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1015
-msgid ""
-"Percentage of overlap between consecutive chunks. Helps maintain context "
-"across chunk boundaries. Default: 20%"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1020
-msgid "Range: 5-50%"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1027
-msgid "Topics Per Batch"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1030
-msgid ""
-"Number of topics to process per batch during indexing. Lower values are more "
-"reliable but slower. Higher values are faster but may timeout on slower "
-"servers. Default: 10"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1035
-msgid "Range: 1-50"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1042
-msgid "How this affects indexing:"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1044
-msgid "Larger chunk size = better context preservation, fewer vectors."
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1045
-msgid "Higher overlap = better search quality at chunk boundaries."
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1046
-msgid ""
-"More topics per step = faster re-indexing but uses more memory. Reduce if you "
-"experience memory issues."
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1047
-msgid "These settings will be used for all future indexing operations."
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1055
-msgid "Save Configuration"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1067
-msgid "Test Semantic Search"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1071
-msgid ""
-"Test the AI semantic search with your indexed topics. Results include metadata "
-"for generating topic and post URLs."
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1078
-msgid "Search Query"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1080
-msgid "e.g., how to reset password"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1082
-msgid "Enter a natural language search query to test semantic search."
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1088
-msgid "Number of Results"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1092
-msgid "Maximum number of search results to return (1-20)."
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1099
-msgid "Test Search"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1107
-msgid "Search Results"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1119
-msgid "Indexing Queue"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1125
-msgid "pending"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1129
-msgid "completed"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1133
-msgid "failed"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:1137
-msgid ""
-"The queue updates automatically every 30 seconds while indexing is in progress."
 msgstr ""
 
 #: admin/pages/themes.php:9 includes/phrases.php:306
@@ -6121,7 +6238,7 @@ msgstr ""
 #: admin/settings/styles.php:64 admin/settings/styles.php:72
 #: admin/settings/styles.php:77 admin/settings/styles.php:83
 #: admin/settings/styles.php:93 admin/settings/styles.php:98
-#: admin/settings/styles.php:104 classes/Settings.php:4757
+#: admin/settings/styles.php:104 classes/Settings.php:4773
 #: includes/phrases.php:242
 msgid "Color"
 msgstr ""
@@ -6182,7 +6299,7 @@ msgstr ""
 msgid "Synchronize"
 msgstr ""
 
-#: admin/pages/usergroup.php:176 admin/settings/ai.php:523
+#: admin/pages/usergroup.php:176 admin/settings/ai.php:525
 msgid "Note:"
 msgstr ""
 
@@ -6297,23 +6414,23 @@ msgstr ""
 msgid "Expand All"
 msgstr ""
 
-#: admin/settings/ai.php:40
+#: admin/settings/ai.php:40 includes/phrases.php:1300
 msgid "AI Assistant"
 msgstr ""
 
-#: admin/settings/ai.php:76 admin/settings/ai.php:468
+#: admin/settings/ai.php:77 admin/settings/ai.php:470
 msgid "AI Translation"
 msgstr ""
 
-#: admin/settings/ai.php:129
+#: admin/settings/ai.php:130
 msgid "AI Content Moderation - Spam Detection"
 msgstr ""
 
-#: admin/settings/ai.php:158 classes/Settings.php:3768
+#: admin/settings/ai.php:159 classes/Settings.php:3770
 msgid "Usergroups Not Scanned by AI Antispam"
 msgstr ""
 
-#: admin/settings/ai.php:159
+#: admin/settings/ai.php:160
 msgid ""
 "Usergroups with the \"Dashboard - Moderate Topics & Posts\" permission enabled "
 "will skip AI spam detection. Edit usergroup permissions to enable or disable "
@@ -6322,68 +6439,64 @@ msgid ""
 "filters."
 msgstr ""
 
-#: admin/settings/ai.php:171
+#: admin/settings/ai.php:172
 msgid "No usergroups have \"Dashboard - Moderate Topics & Posts\" enabled."
 msgstr ""
 
-#: admin/settings/ai.php:187
+#: admin/settings/ai.php:188
 msgid "AI Content Moderation - Content Safety & Toxicity Detection"
 msgstr ""
 
-#: admin/settings/ai.php:340
+#: admin/settings/ai.php:341
 msgid "Bot Settings"
 msgstr ""
 
-#: admin/settings/ai.php:349 classes/Settings.php:4166
+#: admin/settings/ai.php:350 classes/Settings.php:4182
 msgid "Bot Reply User"
 msgstr ""
 
-#: admin/settings/ai.php:382 classes/Settings.php:4169
+#: admin/settings/ai.php:383 classes/Settings.php:4185
 msgid ""
 "Select the WordPress user account that will be used for bot-generated replies. "
 "Create a dedicated user account for the bot."
 msgstr ""
 
-#: admin/settings/ai.php:394 admin/settings/ai.php:439
+#: admin/settings/ai.php:395 admin/settings/ai.php:441
 msgid "Upgrade Required"
 msgstr ""
 
-#: admin/settings/ai.php:398
+#: admin/settings/ai.php:399
 msgid ""
 "AI Bot Reply and Reply Suggestion is available on Professional plan and higher."
 msgstr ""
 
-#: admin/settings/ai.php:399 admin/settings/ai.php:444
-msgid "View Plans"
-msgstr ""
-
-#: admin/settings/ai.php:443
+#: admin/settings/ai.php:445
 msgid "AI Chat Assistant is available on Professional plan and higher."
 msgstr ""
 
-#: admin/settings/ai.php:457
+#: admin/settings/ai.php:459
 msgid "Rate Limiting"
 msgstr ""
 
-#: admin/settings/ai.php:461
+#: admin/settings/ai.php:463
 msgid ""
 "Limit how many AI requests guests and logged-in users can make per day. "
 "Moderators are exempt from these limits."
 msgstr ""
 
-#: admin/settings/ai.php:479
+#: admin/settings/ai.php:481
 msgid "Guest Limit/Day"
 msgstr ""
 
-#: admin/settings/ai.php:480
+#: admin/settings/ai.php:482
 msgid "User Limit/Day"
 msgstr ""
 
-#: admin/settings/ai.php:497
+#: admin/settings/ai.php:499
 msgid "(login required)"
 msgstr ""
 
-#: admin/settings/ai.php:524
+#: admin/settings/ai.php:526
 msgid ""
 "Set to 0 to disable access for that user type. Moderators (users with \"ms\" "
 "permission) are always unlimited. Limits reset daily at midnight."
@@ -6848,22 +6961,22 @@ msgid "General"
 msgstr ""
 
 #: admin/settings/topics.php:69 admin/tools-tabs/cleanup.php:40
-#: classes/Settings.php:3385 classes/Settings.php:4237 includes/phrases.php:552
+#: classes/Settings.php:3385 classes/Settings.php:4253 includes/phrases.php:552
 #: widgets/Forums.php:110 widgets/OnlineMembers.php:104
-#: widgets/RecentPosts.php:302 widgets/RecentPosts.php:320
-#: widgets/RecentPosts.php:372 widgets/RecentPosts.php:382
-#: widgets/RecentPosts.php:392 widgets/RecentPosts.php:403
+#: widgets/RecentPosts.php:305 widgets/RecentPosts.php:323
+#: widgets/RecentPosts.php:375 widgets/RecentPosts.php:385
+#: widgets/RecentPosts.php:395 widgets/RecentPosts.php:406
 #: widgets/RecentTopics.php:221 widgets/RecentTopics.php:239
 #: widgets/RecentTopics.php:274 widgets/RecentTopics.php:285 widgets/Tags.php:101
 msgid "Yes"
 msgstr ""
 
 #: admin/settings/topics.php:70 admin/tools-tabs/cleanup.php:41
-#: classes/Settings.php:3386 classes/Settings.php:4238 includes/phrases.php:382
+#: classes/Settings.php:3386 classes/Settings.php:4254 includes/phrases.php:382
 #: widgets/Forums.php:113 widgets/OnlineMembers.php:107
-#: widgets/RecentPosts.php:306 widgets/RecentPosts.php:325
-#: widgets/RecentPosts.php:376 widgets/RecentPosts.php:386
-#: widgets/RecentPosts.php:396 widgets/RecentPosts.php:407
+#: widgets/RecentPosts.php:309 widgets/RecentPosts.php:328
+#: widgets/RecentPosts.php:379 widgets/RecentPosts.php:389
+#: widgets/RecentPosts.php:399 widgets/RecentPosts.php:410
 #: widgets/RecentTopics.php:225 widgets/RecentTopics.php:244
 #: widgets/RecentTopics.php:278 widgets/RecentTopics.php:289 widgets/Tags.php:104
 msgid "No"
@@ -7222,10 +7335,10 @@ msgid "Forum Search"
 msgstr ""
 
 #: classes/AIAjaxTrait.php:45 classes/AIAjaxTrait.php:79
-#: classes/AIWordPressIndexer.php:1157 classes/AIWordPressIndexer.php:1171
-#: classes/AIWordPressIndexer.php:1187 classes/AIWordPressIndexer.php:1210
-#: classes/AIWordPressIndexer.php:1229 classes/AIWordPressIndexer.php:1265
-#: classes/AIWordPressIndexer.php:1306 includes/phrases.php:654
+#: classes/AIWordPressIndexer.php:1326 classes/AIWordPressIndexer.php:1340
+#: classes/AIWordPressIndexer.php:1356 classes/AIWordPressIndexer.php:1379
+#: classes/AIWordPressIndexer.php:1398 classes/AIWordPressIndexer.php:1434
+#: classes/AIWordPressIndexer.php:1475 includes/phrases.php:654
 msgid "Permission denied"
 msgstr ""
 
@@ -7254,45 +7367,45 @@ msgstr ""
 msgid "Conversation not found"
 msgstr ""
 
-#: classes/AIChatbot.php:555 classes/Settings.php:3920
+#: classes/AIChatbot.php:562 classes/Settings.php:3923
 msgid ""
 "I couldn't find information about that topic in the forum. Please try "
 "searching directly or create a new topic to start a discussion."
 msgstr ""
 
-#: classes/AIChatbot.php:746 classes/AIChatbot.php:782 classes/AIChatbot.php:798
-#: classes/AIChatbot.php:822 classes/AIChatbot.php:868 classes/AIChatbot.php:895
+#: classes/AIChatbot.php:793 classes/AIChatbot.php:829 classes/AIChatbot.php:845
+#: classes/AIChatbot.php:869 classes/AIChatbot.php:915 classes/AIChatbot.php:942
 msgid "You do not have permission to use the chatbot"
 msgstr ""
 
-#: classes/AIChatbot.php:753
+#: classes/AIChatbot.php:800
 msgid "Missing required parameters"
 msgstr ""
 
-#: classes/AIChatbot.php:803 classes/AIChatbot.php:873
+#: classes/AIChatbot.php:850 classes/AIChatbot.php:920
 msgid "Missing conversation ID"
 msgstr ""
 
-#: classes/AIChatbot.php:829
+#: classes/AIChatbot.php:876
 msgid "Failed to create conversation"
 msgstr ""
 
-#: classes/AIChatbot.php:837
+#: classes/AIChatbot.php:884
 msgid ""
 "Hello! I'm your forum assistant. I can help you find information, answer "
 "questions about discussions, and navigate the forum. What would you like to "
 "know?"
 msgstr ""
 
-#: classes/AIChatbot.php:879
+#: classes/AIChatbot.php:926
 msgid "Failed to delete conversation"
 msgstr ""
 
-#: classes/AIChatbot.php:914
+#: classes/AIChatbot.php:961 includes/phrases.php:1291
 msgid "New Conversation"
 msgstr ""
 
-#: classes/AIClient.php:202
+#: classes/AIClient.php:205
 msgid ""
 "When AI features are enabled by the forum administrator, this site sends forum "
 "content (topics, posts, and metadata) to the gVectors AI API (api.gvectors."
@@ -7300,7 +7413,7 @@ msgid ""
 "summarization, content moderation, AI chat, and topic suggestions."
 msgstr ""
 
-#: classes/AIClient.php:203
+#: classes/AIClient.php:206
 msgid ""
 "No forum data is sent to external servers unless the site administrator has "
 "explicitly enabled AI features and configured the service. The data is "
@@ -7308,7 +7421,7 @@ msgid ""
 "requested AI functionality."
 msgstr ""
 
-#: classes/AIClient.php:205
+#: classes/AIClient.php:208
 #, php-format
 msgid ""
 "For more information, see the gVectors %1$sTerms of Service%2$s and "
@@ -7482,11 +7595,11 @@ msgstr ""
 msgid "Topic Suggestions"
 msgstr ""
 
-#: classes/AILogs.php:1540 classes/AILogs.php:1569
+#: classes/AILogs.php:1540 classes/AILogs.php:1569 includes/phrases.php:1416
 msgid "Bot Reply"
 msgstr ""
 
-#: classes/AILogs.php:1541 classes/AILogs.php:1570
+#: classes/AILogs.php:1541 classes/AILogs.php:1570 includes/phrases.php:1418
 msgid "Suggest Reply"
 msgstr ""
 
@@ -7506,46 +7619,50 @@ msgstr ""
 msgid "Task Execution"
 msgstr ""
 
-#: classes/AIMarkdown.php:527
+#: classes/AIMarkdown.php:555
 msgid ""
 "I couldn't find specific forum content related to your question. Would you "
 "like to start a new topic to discuss this?"
 msgstr ""
 
-#: classes/AIWordPressIndexer.php:654 classes/AIWordPressIndexer.php:715
-#: classes/AIWordPressIndexer.php:1027 classes/AIWordPressIndexer.php:1133
+#: classes/AIWordPressIndexer.php:781 classes/AIWordPressIndexer.php:842
+#: classes/AIWordPressIndexer.php:1173 classes/AIWordPressIndexer.php:1302
 msgid "AI service is not connected"
 msgstr ""
 
-#: classes/AIWordPressIndexer.php:663
+#: classes/AIWordPressIndexer.php:790
 msgid "No valid terms specified"
 msgstr ""
 
-#: classes/AIWordPressIndexer.php:700
+#: classes/AIWordPressIndexer.php:827
 msgid "No posts found in this term"
 msgstr ""
 
-#: classes/AIWordPressIndexer.php:754
+#: classes/AIWordPressIndexer.php:881
 msgid "No posts found matching criteria"
 msgstr ""
 
-#: classes/AIWordPressIndexer.php:1246
+#: classes/AIWordPressIndexer.php:1192 classes/AIWordPressIndexer.php:1277
+msgid "Local storage is not available"
+msgstr ""
+
+#: classes/AIWordPressIndexer.php:1415
 msgid "Invalid taxonomy or term"
 msgstr ""
 
-#: classes/Actions.php:2359 classes/Template.php:2622 includes/phrases.php:513
+#: classes/Actions.php:2374 classes/Template.php:2613 includes/phrases.php:513
 msgid "Theme file not readable"
 msgstr ""
 
-#: classes/Actions.php:2367
+#: classes/Actions.php:2382
 msgid "Theme Successfully Activated"
 msgstr ""
 
-#: classes/Actions.php:2388
+#: classes/Actions.php:2403
 msgid "Theme delete error"
 msgstr ""
 
-#: classes/Actions.php:2395
+#: classes/Actions.php:2410
 msgid "Theme delete success"
 msgstr ""
 
@@ -7855,23 +7972,23 @@ msgid ""
 "another one."
 msgstr ""
 
-#: classes/Members.php:2277
+#: classes/Members.php:2296
 msgid "What should be done with wpForo content owned by this user?"
 msgstr ""
 
-#: classes/Members.php:2281
+#: classes/Members.php:2300
 msgid "What should be done with wpForo content owned by these users?"
 msgstr ""
 
-#: classes/Members.php:2288
+#: classes/Members.php:2307
 msgid "Delete all wpForo content."
 msgstr ""
 
-#: classes/Members.php:2290
+#: classes/Members.php:2309
 msgid "Attribute all content to:"
 msgstr ""
 
-#: classes/Moderation.php:207
+#: classes/Moderation.php:206
 msgid ""
 "Probably spam file attachments have been detected by wpForo Spam Control. "
 "Please moderate suspected files in wpForo &gt; Settings &gt; Spam Protection."
@@ -7889,151 +8006,151 @@ msgstr ""
 msgid "View all Addons"
 msgstr ""
 
-#: classes/Permissions.php:34 includes/phrases.php:746
+#: classes/Permissions.php:37 includes/phrases.php:746
 msgid "Can view forum"
 msgstr ""
 
-#: classes/Permissions.php:35 includes/phrases.php:747
+#: classes/Permissions.php:38 includes/phrases.php:747
 msgid "Can enter forum"
 msgstr ""
 
-#: classes/Permissions.php:36 includes/phrases.php:748
+#: classes/Permissions.php:39 includes/phrases.php:748
 msgid "Can create topic"
 msgstr ""
 
-#: classes/Permissions.php:37 includes/phrases.php:749
+#: classes/Permissions.php:40 includes/phrases.php:749
 msgid "Can view topic"
 msgstr ""
 
-#: classes/Permissions.php:38 includes/phrases.php:750
+#: classes/Permissions.php:41 includes/phrases.php:750
 msgid "Can enter topic"
 msgstr ""
 
-#: classes/Permissions.php:39 includes/phrases.php:751
+#: classes/Permissions.php:42 includes/phrases.php:751
 msgid "Can edit topic"
 msgstr ""
 
-#: classes/Permissions.php:40 includes/phrases.php:752
+#: classes/Permissions.php:43 includes/phrases.php:752
 msgid "Can delete topic"
 msgstr ""
 
-#: classes/Permissions.php:41 includes/phrases.php:753
+#: classes/Permissions.php:44 includes/phrases.php:753
 msgid "Can post reply"
 msgstr ""
 
-#: classes/Permissions.php:42
+#: classes/Permissions.php:45
 msgid "Can reply to own topic"
 msgstr ""
 
-#: classes/Permissions.php:43 includes/phrases.php:754
+#: classes/Permissions.php:46 includes/phrases.php:754
 msgid "Can view replies"
 msgstr ""
 
-#: classes/Permissions.php:44 includes/phrases.php:755
+#: classes/Permissions.php:47 includes/phrases.php:755
 msgid "Can edit replies"
 msgstr ""
 
-#: classes/Permissions.php:45 includes/phrases.php:756
+#: classes/Permissions.php:48 includes/phrases.php:756
 msgid "Can delete replies"
 msgstr ""
 
-#: classes/Permissions.php:46 includes/phrases.php:757
+#: classes/Permissions.php:49 includes/phrases.php:757
 msgid "Can edit own topic"
 msgstr ""
 
-#: classes/Permissions.php:47
+#: classes/Permissions.php:50
 msgid "Can edit own reply"
 msgstr ""
 
-#: classes/Permissions.php:48 includes/phrases.php:759
+#: classes/Permissions.php:51 includes/phrases.php:759
 msgid "Can delete own topic"
 msgstr ""
 
-#: classes/Permissions.php:49 includes/phrases.php:760
+#: classes/Permissions.php:52 includes/phrases.php:760
 msgid "Can delete own reply"
 msgstr ""
 
-#: classes/Permissions.php:50
+#: classes/Permissions.php:53
 msgid "Can add tags"
 msgstr ""
 
-#: classes/Permissions.php:51
+#: classes/Permissions.php:54
 msgid "Can subscribe"
 msgstr ""
 
-#: classes/Permissions.php:52 includes/phrases.php:761
+#: classes/Permissions.php:55 includes/phrases.php:761
 msgid "Can like"
 msgstr ""
 
-#: classes/Permissions.php:53 includes/phrases.php:762
+#: classes/Permissions.php:56 includes/phrases.php:762
 msgid "Can report"
 msgstr ""
 
-#: classes/Permissions.php:54 includes/phrases.php:763
+#: classes/Permissions.php:57 includes/phrases.php:763
 msgid "Can set topic sticky"
 msgstr ""
 
-#: classes/Permissions.php:55 includes/phrases.php:764
+#: classes/Permissions.php:58 includes/phrases.php:764
 msgid "Can set topic private"
 msgstr ""
 
-#: classes/Permissions.php:56 includes/phrases.php:844
+#: classes/Permissions.php:59 includes/phrases.php:844
 msgid "Can set own topic private"
 msgstr ""
 
-#: classes/Permissions.php:57 includes/phrases.php:845
+#: classes/Permissions.php:60 includes/phrases.php:845
 msgid "Can view private topic"
 msgstr ""
 
-#: classes/Permissions.php:58 includes/phrases.php:774
+#: classes/Permissions.php:61 includes/phrases.php:774
 msgid "Can approve/unapprove content"
 msgstr ""
 
-#: classes/Permissions.php:59 includes/phrases.php:798
+#: classes/Permissions.php:62 includes/phrases.php:798
 msgid "Can set topic solved"
 msgstr ""
 
-#: classes/Permissions.php:60 includes/phrases.php:799
+#: classes/Permissions.php:63 includes/phrases.php:799
 msgid "Can set own topic solved"
 msgstr ""
 
-#: classes/Permissions.php:61 includes/phrases.php:765
+#: classes/Permissions.php:64 includes/phrases.php:765
 msgid "Can vote"
 msgstr ""
 
-#: classes/Permissions.php:62 includes/phrases.php:766
+#: classes/Permissions.php:65 includes/phrases.php:766
 msgid "Can leave voice posts"
 msgstr ""
 
-#: classes/Permissions.php:63 includes/phrases.php:767
+#: classes/Permissions.php:66 includes/phrases.php:767
 msgid "Can listen voice posts"
 msgstr ""
 
-#: classes/Permissions.php:64 includes/phrases.php:768
+#: classes/Permissions.php:67 includes/phrases.php:768
 msgid "Can attach file"
 msgstr ""
 
-#: classes/Permissions.php:65 includes/phrases.php:773
+#: classes/Permissions.php:68 includes/phrases.php:773
 msgid "Can view attached files"
 msgstr ""
 
-#: classes/Permissions.php:66 includes/phrases.php:769
+#: classes/Permissions.php:69 includes/phrases.php:769
 msgid "Can set topic answered"
 msgstr ""
 
-#: classes/Permissions.php:67 includes/phrases.php:770
+#: classes/Permissions.php:70 includes/phrases.php:770
 msgid "Can set own topic answered"
 msgstr ""
 
-#: classes/Permissions.php:68
+#: classes/Permissions.php:71
 msgid "Can answer own question"
 msgstr ""
 
-#: classes/Permissions.php:69 includes/phrases.php:771
+#: classes/Permissions.php:72 includes/phrases.php:771
 msgid "Can close topic"
 msgstr ""
 
-#: classes/Permissions.php:70 includes/phrases.php:772
+#: classes/Permissions.php:73 includes/phrases.php:772
 msgid "Can move topic"
 msgstr ""
 
@@ -8443,7 +8560,7 @@ msgstr ""
 msgid "Number of Posts per Page"
 msgstr ""
 
-#: classes/Settings.php:740
+#: classes/Settings.php:740 includes/phrases.php:1297
 msgid "Maximum Number of Search Results"
 msgstr ""
 
@@ -9557,11 +9674,11 @@ msgstr ""
 msgid "Down Votes"
 msgstr ""
 
-#: classes/Settings.php:2212
+#: classes/Settings.php:2212 includes/phrases.php:1303
 msgid "Reactions"
 msgstr ""
 
-#: classes/Settings.php:2213
+#: classes/Settings.php:2213 includes/phrases.php:1304
 msgid "Favorites"
 msgstr ""
 
@@ -9573,7 +9690,7 @@ msgstr ""
 msgid "Closed Topics"
 msgstr ""
 
-#: classes/Settings.php:2216 includes/phrases.php:929
+#: classes/Settings.php:2216 includes/phrases.php:929 includes/phrases.php:1305
 msgid "Marked as Answer"
 msgstr ""
 
@@ -9617,7 +9734,7 @@ msgstr ""
 msgid "Display content excerpt for topics and replies."
 msgstr ""
 
-#: classes/Settings.php:2261 widgets/RecentPosts.php:364
+#: classes/Settings.php:2261 widgets/RecentPosts.php:367
 msgid "Excerpt Length"
 msgstr ""
 
@@ -10485,37 +10602,38 @@ msgid ""
 msgstr ""
 
 #: classes/Settings.php:3355 classes/Settings.php:3400 classes/Settings.php:3453
-#: classes/Settings.php:3481 classes/Settings.php:3551 classes/Settings.php:3671
-#: classes/Settings.php:4017
+#: classes/Settings.php:3481 classes/Settings.php:3551 classes/Settings.php:3673
+#: classes/Settings.php:4033
 msgid "Fast (1 credit)"
 msgstr ""
 
 #: classes/Settings.php:3356 classes/Settings.php:3401 classes/Settings.php:3454
-#: classes/Settings.php:3482 classes/Settings.php:3552 classes/Settings.php:3672
-#: classes/Settings.php:4018
+#: classes/Settings.php:3482 classes/Settings.php:3552 classes/Settings.php:3674
+#: classes/Settings.php:4034
 msgid "Balanced (2 credits)"
 msgstr ""
 
 #: classes/Settings.php:3357 classes/Settings.php:3402 classes/Settings.php:3455
-#: classes/Settings.php:3483 classes/Settings.php:3553 classes/Settings.php:3673
-#: classes/Settings.php:4019
+#: classes/Settings.php:3483 classes/Settings.php:3553 classes/Settings.php:3675
+#: classes/Settings.php:4035
 msgid "Advanced (3 credits)"
 msgstr ""
 
 #: classes/Settings.php:3358 classes/Settings.php:3403 classes/Settings.php:3456
-#: classes/Settings.php:3484 classes/Settings.php:3554 classes/Settings.php:3674
-#: classes/Settings.php:4020
+#: classes/Settings.php:3484 classes/Settings.php:3554 classes/Settings.php:3676
+#: classes/Settings.php:4036
 msgid "Premium (4 credits)"
 msgstr ""
 
-#: classes/Settings.php:3364
+#: classes/Settings.php:3364 classes/Settings.php:4000
 msgid "Minimum Relevance Score (%)"
 msgstr ""
 
 #: classes/Settings.php:3367
 msgid ""
-"Results with relevance score below this threshold will be filtered out. Set to "
-"0 to show all results. Recommended: 30%."
+"Results below this threshold are filtered out. For local storage, the "
+"threshold is automatically scaled (divided by 3) with a minimum of 15% to "
+"prevent irrelevant results. Recommended: 30%."
 msgstr ""
 
 #: classes/Settings.php:3377
@@ -10610,23 +10728,23 @@ msgid ""
 "different types of discussions."
 msgstr ""
 
-#: classes/Settings.php:3498
+#: classes/Settings.php:3498 includes/phrases.php:1404
 msgid "Compact with Key Points"
 msgstr ""
 
-#: classes/Settings.php:3499
+#: classes/Settings.php:3499 includes/phrases.php:1405
 msgid "Structured with Sections"
 msgstr ""
 
-#: classes/Settings.php:3500
+#: classes/Settings.php:3500 includes/phrases.php:1406
 msgid "Conversational Flow"
 msgstr ""
 
-#: classes/Settings.php:3501
+#: classes/Settings.php:3501 includes/phrases.php:1407
 msgid "Short Summary + Details"
 msgstr ""
 
-#: classes/Settings.php:3502
+#: classes/Settings.php:3502 includes/phrases.php:1408
 msgid "Minimal and Clean"
 msgstr ""
 
@@ -10733,251 +10851,254 @@ msgstr ""
 #: classes/Settings.php:3631
 msgid ""
 "Minimum similarity percentage for topics to be shown as similar. Lower values "
-"show more results."
+"show more results. For local storage, the threshold is automatically scaled "
+"(divided by 3) with a minimum of 15%. Recommended: 55%."
 msgstr ""
 
-#: classes/Settings.php:3639
+#: classes/Settings.php:3641
 msgid "Suggestions Response Language"
 msgstr ""
 
-#: classes/Settings.php:3642
+#: classes/Settings.php:3644
 msgid "Select the language for AI-generated topic suggestions and insights."
 msgstr ""
 
-#: classes/Settings.php:3652
+#: classes/Settings.php:3654
 msgid "Enable AI Spam Detection"
 msgstr ""
 
-#: classes/Settings.php:3655
+#: classes/Settings.php:3657
 msgid ""
 "When enabled, AI will analyze new content for spam patterns including "
 "promotional content, link spam, and automated bot submissions."
 msgstr ""
 
-#: classes/Settings.php:3663
+#: classes/Settings.php:3665
 msgid "Spam Detection AI Quality"
 msgstr ""
 
-#: classes/Settings.php:3666
+#: classes/Settings.php:3668
 msgid ""
 "Select the AI model quality for spam detection. Higher quality provides more "
 "accurate detection but uses more credits."
 msgstr ""
 
-#: classes/Settings.php:3680
+#: classes/Settings.php:3682
 msgid "Use Forum Context for Analysis"
 msgstr ""
 
-#: classes/Settings.php:3683
+#: classes/Settings.php:3685
 msgid ""
 "When enabled, AI will use indexed forum content as context to better "
 "understand what is normal content vs spam for your specific forum."
 msgstr ""
 
-#: classes/Settings.php:3691
+#: classes/Settings.php:3693
 msgid "Minimum Indexed Topics for Context"
 msgstr ""
 
-#: classes/Settings.php:3694
+#: classes/Settings.php:3696
 msgid ""
 "Minimum number of indexed topics required before using forum context. If fewer "
 "topics are indexed, context will not be used."
 msgstr ""
 
-#: classes/Settings.php:3702
+#: classes/Settings.php:3704
 msgid "Action on Spam Detection"
 msgstr ""
 
-#: classes/Settings.php:3705
+#: classes/Settings.php:3707
 msgid ""
 "Action to take when spam is detected (score 90-100%). This is high-confidence "
 "spam detection."
 msgstr ""
 
-#: classes/Settings.php:3710 classes/Settings.php:3727 classes/Settings.php:3744
-#: classes/Settings.php:3761 classes/Settings.php:3837
+#: classes/Settings.php:3712 classes/Settings.php:3729 classes/Settings.php:3746
+#: classes/Settings.php:3763 classes/Settings.php:3839
 msgid "Do nothing"
 msgstr ""
 
-#: classes/Settings.php:3711 classes/Settings.php:3728 classes/Settings.php:3745
-#: classes/Settings.php:3838 classes/Settings.php:3866
+#: classes/Settings.php:3713 classes/Settings.php:3730 classes/Settings.php:3747
+#: classes/Settings.php:3840 classes/Settings.php:3868
 msgid "Set it unapproved"
 msgstr ""
 
-#: classes/Settings.php:3712 classes/Settings.php:3729 classes/Settings.php:3746
-#: classes/Settings.php:3839 classes/Settings.php:3867
+#: classes/Settings.php:3714 classes/Settings.php:3731 classes/Settings.php:3748
+#: classes/Settings.php:3841 classes/Settings.php:3869
 msgid "Set it unapproved and ban the author"
 msgstr ""
 
-#: classes/Settings.php:3713 classes/Settings.php:3730 classes/Settings.php:3747
+#: classes/Settings.php:3715 classes/Settings.php:3732 classes/Settings.php:3749
 msgid "Delete author with all forum posts"
 msgstr ""
 
-#: classes/Settings.php:3719
+#: classes/Settings.php:3721
 msgid "Action on Spam Suspection"
 msgstr ""
 
-#: classes/Settings.php:3722
+#: classes/Settings.php:3724
 msgid ""
 "Action to take when spam is suspected (score 70-89%). Content shows spam "
 "indicators but isn't definitive."
 msgstr ""
 
-#: classes/Settings.php:3736
+#: classes/Settings.php:3738
 msgid "Action on Uncertain Detection"
 msgstr ""
 
-#: classes/Settings.php:3739
+#: classes/Settings.php:3741
 msgid ""
 "Action to take when spam detection is uncertain (score 41-69%). Content has "
 "some suspicious elements but not enough to classify as spam."
 msgstr ""
 
-#: classes/Settings.php:3753
+#: classes/Settings.php:3755
 msgid "Action on No Spam Detection"
 msgstr ""
 
-#: classes/Settings.php:3756
+#: classes/Settings.php:3758
 msgid ""
 "Action to take when content appears clean (score 0-40%). Low spam indicators "
 "suggest legitimate content."
 msgstr ""
 
-#: classes/Settings.php:3762
+#: classes/Settings.php:3764
 msgid "Auto-approve the content"
 msgstr ""
 
-#: classes/Settings.php:3771
+#: classes/Settings.php:3773
 msgid ""
 "Usergroups with the \"Front - Can pass moderation\" permission enabled will "
 "skip AI spam detection. Edit usergroup permissions to enable or disable this "
 "for each group."
 msgstr ""
 
-#: classes/Settings.php:3779
+#: classes/Settings.php:3781
 msgid "Skip Users with Minimum Approved Posts"
 msgstr ""
 
-#: classes/Settings.php:3782
+#: classes/Settings.php:3784
 msgid ""
 "Users with this many or more posts will be skipped from AI spam detection. Set "
 "to 0 to disable this rule."
 msgstr ""
 
-#: classes/Settings.php:3790
+#: classes/Settings.php:3792
 msgid "Auto-Ban After Unapproved Posts Count"
 msgstr ""
 
-#: classes/Settings.php:3793
+#: classes/Settings.php:3795
 msgid ""
 "Automatically ban users when they reach this number of unapproved posts. Set "
 "to 0 to disable auto-ban."
 msgstr ""
 
-#: classes/Settings.php:3802
+#: classes/Settings.php:3804
 msgid "Enable Content Safety & Toxicity Detection"
 msgstr ""
 
-#: classes/Settings.php:3805
+#: classes/Settings.php:3807
 msgid ""
 "When enabled, AI will detect toxic content including hate speech, harassment, "
 "threats, profanity, and other harmful content that violates community "
 "guidelines."
 msgstr ""
 
-#: classes/Settings.php:3813
+#: classes/Settings.php:3815
 msgid "Detection Sensitivity"
 msgstr ""
 
-#: classes/Settings.php:3816
+#: classes/Settings.php:3818
 msgid ""
 "Low: Only severe violations (hate speech, direct threats, severe harassment). "
 "Medium: Standard detection including harassment, profanity, sexual content. "
 "High: Comprehensive including trolling, negativity, suggestive content."
 msgstr ""
 
-#: classes/Settings.php:3821
+#: classes/Settings.php:3823
 msgid "Low (severe violations only)"
 msgstr ""
 
-#: classes/Settings.php:3822
+#: classes/Settings.php:3824
 msgid "Medium (standard detection)"
 msgstr ""
 
-#: classes/Settings.php:3823
+#: classes/Settings.php:3825
 msgid "High (comprehensive)"
 msgstr ""
 
-#: classes/Settings.php:3829
+#: classes/Settings.php:3831
 msgid "Action on Toxic Content"
 msgstr ""
 
-#: classes/Settings.php:3832
+#: classes/Settings.php:3834
 msgid "Action to take when toxic content is detected."
 msgstr ""
 
-#: classes/Settings.php:3846
+#: classes/Settings.php:3848
 msgid "Enable Rule Compliance & Policy Enforcement"
 msgstr ""
 
-#: classes/Settings.php:3849
+#: classes/Settings.php:3851
 msgid ""
 "When enabled, AI will check content against forum rules and policies, "
 "detecting off-topic posts, prohibited content types, and policy violations."
 msgstr ""
 
-#: classes/Settings.php:3857
+#: classes/Settings.php:3859
 msgid "Action on Policy Violation"
 msgstr ""
 
-#: classes/Settings.php:3860
+#: classes/Settings.php:3862
 msgid "Action to take when content violates forum policies or rules."
 msgstr ""
 
-#: classes/Settings.php:3865
+#: classes/Settings.php:3867
 msgid "Do nothing (log only)"
 msgstr ""
 
-#: classes/Settings.php:3874
+#: classes/Settings.php:3876
 msgid "Enable AI Chatbot"
 msgstr ""
 
-#: classes/Settings.php:3877
+#: classes/Settings.php:3879
 msgid ""
 "Enable or disable the AI Chatbot feature in the AI Assistant widget. When "
 "enabled, users can have conversations with an AI assistant that has knowledge "
 "of your forum content."
 msgstr ""
 
-#: classes/Settings.php:3885
+#: classes/Settings.php:3887
 msgid "Chatbot AI Quality"
 msgstr ""
 
-#: classes/Settings.php:3888
+#: classes/Settings.php:3890
 msgid ""
 "Select the default AI model quality for chatbot responses. Higher quality "
-"provides better responses but uses more credits per message. Note: Fast "
-"quality is not available for AI Chat as it does not provide adequate response "
-"quality for conversational interactions."
-msgstr ""
-
-#: classes/Settings.php:3893
-msgid "Balanced (1 credit per message)"
-msgstr ""
-
-#: classes/Settings.php:3894
-msgid "Advanced (2 credits per message)"
+"provides better responses but uses more credits per message."
 msgstr ""
 
 #: classes/Settings.php:3895
-msgid "Premium (3 credits per message)"
+msgid "Fast (1 credit per message)"
 msgstr ""
 
-#: classes/Settings.php:3901 includes/phrases.php:547
+#: classes/Settings.php:3896
+msgid "Balanced (2 credits per message)"
+msgstr ""
+
+#: classes/Settings.php:3897
+msgid "Advanced (3 credits per message)"
+msgstr ""
+
+#: classes/Settings.php:3898
+msgid "Premium (4 credits per message)"
+msgstr ""
+
+#: classes/Settings.php:3904 includes/phrases.php:547
 msgid "Welcome Message"
 msgstr ""
 
-#: classes/Settings.php:3904
+#: classes/Settings.php:3907
 msgid ""
 "Custom welcome message shown when users start a new conversation. Use "
 "{user_display_name} to insert the user's name. Supports basic HTML: line "
@@ -10985,278 +11106,285 @@ msgid ""
 "(<a>). Leave empty to use the default message."
 msgstr ""
 
-#: classes/Settings.php:3908
+#: classes/Settings.php:3911
 msgid ""
 "Hello {user_display_name}!\n"
 "I am your AI assistant. How can I help you today?"
 msgstr ""
 
-#: classes/Settings.php:3913
+#: classes/Settings.php:3916
 msgid "No Content Found Message"
 msgstr ""
 
-#: classes/Settings.php:3916
+#: classes/Settings.php:3919
 msgid ""
 "Custom message shown when the chatbot cannot find relevant forum content to "
 "answer a question. Supports basic HTML: links (<a>), line breaks (<br>), "
 "paragraphs (<p>), and images (<img>). Leave empty to use the default message."
 msgstr ""
 
-#: classes/Settings.php:3925
+#: classes/Settings.php:3928
 msgid "Max Conversations per User"
 msgstr ""
 
-#: classes/Settings.php:3928
+#: classes/Settings.php:3931
 msgid ""
 "Maximum number of conversations a user can have. Older conversations are "
 "automatically deleted when this limit is reached."
 msgstr ""
 
-#: classes/Settings.php:3938
+#: classes/Settings.php:3941
 msgid "Context Update Frequency"
 msgstr ""
 
-#: classes/Settings.php:3941
+#: classes/Settings.php:3944
 msgid ""
 "Number of messages between context summary updates. Lower values maintain "
 "better context but use more AI resources."
 msgstr ""
 
-#: classes/Settings.php:3951
+#: classes/Settings.php:3954
 msgid "Enable Forum Knowledge (RAG)"
 msgstr ""
 
-#: classes/Settings.php:3954
+#: classes/Settings.php:3957
 msgid ""
 "When enabled, the chatbot will search indexed forum content to provide "
 "accurate answers based on your forum's knowledge base."
 msgstr ""
 
-#: classes/Settings.php:3962
+#: classes/Settings.php:3965
 msgid "Enable Page Context"
 msgstr ""
 
-#: classes/Settings.php:3965
+#: classes/Settings.php:3968
 msgid ""
 "When enabled, the chatbot will consider the content of the current page "
 "(topic, forum) when answering questions."
 msgstr ""
 
-#: classes/Settings.php:3973
+#: classes/Settings.php:3976
 msgid "Allowed Usergroups"
 msgstr ""
 
-#: classes/Settings.php:3976
+#: classes/Settings.php:3979
 msgid ""
 "Select which usergroups can use the AI Chatbot. New usergroups must be "
 "manually added here after creation."
 msgstr ""
 
-#: classes/Settings.php:3985
+#: classes/Settings.php:3988
 msgid "Chatbot Response Language"
 msgstr ""
 
-#: classes/Settings.php:3988
+#: classes/Settings.php:3991
 msgid "Select the language for AI chatbot responses."
 msgstr ""
 
-#: classes/Settings.php:3998
+#: classes/Settings.php:4003
+msgid ""
+"Forum content below this relevance threshold is excluded from chatbot context. "
+"For local storage, the threshold is automatically scaled (divided by 3) with a "
+"minimum of 15%. Recommended: 30%."
+msgstr ""
+
+#: classes/Settings.php:4014
 msgid "Enable AI Bot Reply and Reply Suggestion"
 msgstr ""
 
-#: classes/Settings.php:4001
+#: classes/Settings.php:4017
 msgid ""
 "Enable or disable the AI Bot Reply feature. This adds a Bot Reply button to "
 "posts and a Suggest Reply button in the reply form for moderators."
 msgstr ""
 
-#: classes/Settings.php:4009
+#: classes/Settings.php:4025
 msgid "AI Bot Reply Quality"
 msgstr ""
 
-#: classes/Settings.php:4012
+#: classes/Settings.php:4028
 msgid ""
 "Select the AI model quality for bot replies. Higher quality provides better "
 "responses but uses more credits."
 msgstr ""
 
-#: classes/Settings.php:4029
+#: classes/Settings.php:4045
 msgid ""
 "Choose the style of AI-generated replies. This affects how the AI approaches "
 "answering questions."
 msgstr ""
 
-#: classes/Settings.php:4065
+#: classes/Settings.php:4081
 msgid ""
 "Choose the tone for AI-generated replies. This affects the personality and "
 "voice of the response."
 msgstr ""
 
-#: classes/Settings.php:4100
+#: classes/Settings.php:4116
 msgid "Choose the target length for AI-generated replies."
 msgstr ""
 
-#: classes/Settings.php:4116
+#: classes/Settings.php:4132
 msgid "Choose where the AI should look for information when generating replies."
 msgstr ""
 
-#: classes/Settings.php:4121
+#: classes/Settings.php:4137
 msgid "Forum Content Only"
 msgstr ""
 
-#: classes/Settings.php:4122
+#: classes/Settings.php:4138
 msgid "Forum + AI Knowledge"
 msgstr ""
 
-#: classes/Settings.php:4124
+#: classes/Settings.php:4140
 msgid "Forum + Web + AI Knowledge"
 msgstr ""
 
-#: classes/Settings.php:4125
+#: classes/Settings.php:4141
 msgid "AI Knowledge Only"
 msgstr ""
 
-#: classes/Settings.php:4134
+#: classes/Settings.php:4150
 msgid "Select what elements the AI may include in bot replies."
 msgstr ""
 
-#: classes/Settings.php:4143
+#: classes/Settings.php:4159
 msgid "Bot Reply Response Language"
 msgstr ""
 
-#: classes/Settings.php:4146
+#: classes/Settings.php:4162
 msgid "Select the language for AI-generated bot replies and reply suggestions."
 msgstr ""
 
-#: classes/Settings.php:4155
+#: classes/Settings.php:4171
 msgid "Set Bot Replies as Unapproved"
 msgstr ""
 
-#: classes/Settings.php:4158
+#: classes/Settings.php:4174
 msgid ""
 "When enabled, bot-generated replies will be set as unapproved and require "
 "manual approval before being visible."
 msgstr ""
 
-#: classes/Settings.php:4178
+#: classes/Settings.php:4194
 msgid "Max Bot Replies per Topic"
 msgstr ""
 
-#: classes/Settings.php:4181
+#: classes/Settings.php:4197
 msgid "Maximum number of bot replies allowed per topic. Set to 0 for unlimited."
 msgstr ""
 
-#: classes/Settings.php:4191
+#: classes/Settings.php:4207
 msgid "Max Bot Replies per Day"
 msgstr ""
 
-#: classes/Settings.php:4194
+#: classes/Settings.php:4210
 msgid ""
 "Maximum number of bot replies allowed per day across all topics. Set to 0 for "
 "unlimited."
 msgstr ""
 
-#: classes/Settings.php:4458
+#: classes/Settings.php:4474
 msgid "TB"
 msgstr ""
 
-#: classes/Settings.php:4463
+#: classes/Settings.php:4479
 msgid "GB"
 msgstr ""
 
-#: classes/Settings.php:4468 includes/phrases.php:352
+#: classes/Settings.php:4484 includes/phrases.php:352
 msgid "MB"
 msgstr ""
 
-#: classes/Settings.php:4473
+#: classes/Settings.php:4489
 msgid "KB"
 msgstr ""
 
-#: classes/Settings.php:4478
+#: classes/Settings.php:4494
 msgid "B"
 msgstr ""
 
-#: classes/Settings.php:4497
+#: classes/Settings.php:4513
 msgid "Min Allowed Size is "
 msgstr ""
 
-#: classes/Settings.php:4497
+#: classes/Settings.php:4513
 msgid "Max Allowed Size is "
 msgstr ""
 
-#: classes/Settings.php:4498 includes/phrases.php:474
+#: classes/Settings.php:4514 includes/phrases.php:474
 msgid "Server \"upload_max_filesize\" is "
 msgstr ""
 
-#: classes/Settings.php:4499 includes/phrases.php:473
+#: classes/Settings.php:4515 includes/phrases.php:473
 msgid "Server \"post_max_size\" is "
 msgstr ""
 
-#: classes/Settings.php:4505
+#: classes/Settings.php:4521
 msgid "Minute"
 msgstr ""
 
-#: classes/Settings.php:4720 includes/hooks.php:2138 includes/phrases.php:433
+#: classes/Settings.php:4736 includes/hooks.php:2138 includes/phrases.php:433
 msgid "Rating Level"
 msgstr ""
 
-#: classes/Settings.php:4721
+#: classes/Settings.php:4737
 msgid "Min Number of Points"
 msgstr ""
 
-#: classes/Settings.php:4722 includes/phrases.php:362
+#: classes/Settings.php:4738 includes/phrases.php:362
 msgid "Member Title"
 msgstr ""
 
-#: classes/Settings.php:4723 includes/phrases.php:479
+#: classes/Settings.php:4739 includes/phrases.php:479
 msgid "Short Badge"
 msgstr ""
 
-#: classes/Settings.php:4724 includes/phrases.php:314
+#: classes/Settings.php:4740 includes/phrases.php:314
 msgid "Full Badge"
 msgstr ""
 
-#: classes/Settings.php:4725 includes/phrases.php:431
+#: classes/Settings.php:4741 includes/phrases.php:431
 msgid "Rating Color"
 msgstr ""
 
-#: classes/Settings.php:4726 includes/phrases.php:432
+#: classes/Settings.php:4742 includes/phrases.php:432
 msgid "Rating Icon"
 msgstr ""
 
-#: classes/Settings.php:4733 includes/hooks.php:2158 includes/phrases.php:344
+#: classes/Settings.php:4749 includes/hooks.php:2158 includes/phrases.php:344
 msgid "Level"
 msgstr ""
 
-#: classes/Settings.php:4737 includes/phrases.php:397
+#: classes/Settings.php:4753 includes/phrases.php:397
 msgid "Number of Posts"
 msgstr ""
 
-#: classes/Settings.php:4743 includes/phrases.php:249
+#: classes/Settings.php:4759 includes/phrases.php:249
 msgid "Custom Title"
 msgstr ""
 
-#: classes/Settings.php:4764 includes/phrases.php:234
+#: classes/Settings.php:4780 includes/phrases.php:234
 msgid "Badge Icon"
 msgstr ""
 
-#: classes/Settings.php:4808
+#: classes/Settings.php:4824
 msgid "login required"
 msgstr ""
 
-#: classes/Settings.php:4834
+#: classes/Settings.php:4850
 msgid "Auto (Board Language)"
 msgstr ""
 
-#: classes/Settings.php:4853
+#: classes/Settings.php:4869
 msgid "-- Select User --"
 msgstr ""
 
-#: classes/Settings.php:5351 includes/options-migration.php:111
+#: classes/Settings.php:5367 includes/options-migration.php:111
 msgid "Forum Post Report"
 msgstr ""
 
-#: classes/Settings.php:5352 includes/options-migration.php:112
+#: classes/Settings.php:5368 includes/options-migration.php:112
 msgid ""
 "<strong>Report details:</strong>\n"
 " Reporter: [reporter], <br>\n"
@@ -11265,11 +11393,11 @@ msgid ""
 " [post_url]"
 msgstr ""
 
-#: classes/Settings.php:5354 includes/options-migration.php:114
+#: classes/Settings.php:5370 includes/options-migration.php:114
 msgid "[blogname] New User Registration"
 msgstr ""
 
-#: classes/Settings.php:5355 includes/options-migration.php:115
+#: classes/Settings.php:5371 includes/options-migration.php:115
 msgid ""
 "New user registration on your site [blogname]:\n"
 "\n"
@@ -11278,11 +11406,11 @@ msgid ""
 "Email: [user_email]\n"
 msgstr ""
 
-#: classes/Settings.php:5356
+#: classes/Settings.php:5372
 msgid "User Self-Deleted Their Account"
 msgstr ""
 
-#: classes/Settings.php:5358
+#: classes/Settings.php:5374
 msgid ""
 "This is to notify you that a user has successfully deleted their account from "
 "the website. Below are the details: \n"
@@ -11296,11 +11424,11 @@ msgid ""
 "Deletion Date and Time: [datetime] \n"
 msgstr ""
 
-#: classes/Settings.php:5362 includes/options-migration.php:117
+#: classes/Settings.php:5378 includes/options-migration.php:117
 msgid "[blogname] Your username and password info"
 msgstr ""
 
-#: classes/Settings.php:5363 includes/options-migration.php:118
+#: classes/Settings.php:5379 includes/options-migration.php:118
 msgid ""
 "Username: [user_login]\n"
 "\n"
@@ -11310,7 +11438,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: classes/Settings.php:5366 includes/options-migration.php:120
+#: classes/Settings.php:5382 includes/options-migration.php:120
 msgid ""
 "Hello! \n"
 "\n"
@@ -11327,21 +11455,21 @@ msgid ""
 " Thanks!"
 msgstr ""
 
-#: classes/Settings.php:5369
+#: classes/Settings.php:5385
 msgid "[blogname] - Your Account Has been Approved"
 msgstr ""
 
-#: classes/Settings.php:5371
+#: classes/Settings.php:5387
 msgid ""
 "Hi [user_login] , Thank you for your registration. Your account has been "
 "approved. You can login here: [login_link]"
 msgstr ""
 
-#: classes/Settings.php:5381 includes/options-migration.php:103
+#: classes/Settings.php:5397 includes/options-migration.php:103
 msgid "Please confirm subscription to [entry_title]"
 msgstr ""
 
-#: classes/Settings.php:5383
+#: classes/Settings.php:5399
 msgid ""
 "Hello [user_display_name]!<br>\n"
 " Thank you for subscribing.<br>\n"
@@ -11352,7 +11480,7 @@ msgid ""
 " [confirm_link]"
 msgstr ""
 
-#: classes/Settings.php:5388
+#: classes/Settings.php:5404
 msgid ""
 "Hello [user_display_name]!<br>\n"
 " New topic has been created on your subscribed forum - [forum_link].\n"
@@ -11366,12 +11494,12 @@ msgid ""
 " [unsubscribe_link]"
 msgstr ""
 
-#: classes/Settings.php:5391 includes/options-migration.php:107
+#: classes/Settings.php:5407 includes/options-migration.php:107
 #: includes/phrases.php:1113
 msgid "New Reply"
 msgstr ""
 
-#: classes/Settings.php:5393
+#: classes/Settings.php:5409
 msgid ""
 "Hello [user_display_name]!<br>\n"
 " New reply has been posted on your subscribed topic - [topic_link].\n"
@@ -11385,11 +11513,11 @@ msgid ""
 " [unsubscribe_link]"
 msgstr ""
 
-#: classes/Settings.php:5396 includes/options-migration.php:122
+#: classes/Settings.php:5412 includes/options-migration.php:122
 msgid "You have been mentioned in forum post"
 msgstr ""
 
-#: classes/Settings.php:5398
+#: classes/Settings.php:5414
 msgid ""
 "Hi [user_display_name]! <br>\n"
 "\n"
@@ -11399,11 +11527,11 @@ msgid ""
 " [post_link]"
 msgstr ""
 
-#: classes/Settings.php:5401
+#: classes/Settings.php:5417
 msgid "New Post from [owner_display_name]"
 msgstr ""
 
-#: classes/Settings.php:5403
+#: classes/Settings.php:5419
 msgid ""
 "Hello [user_display_name]!<br>\n"
 " New content has been posted by [owner_display_name] you are following.\n"
@@ -11417,7 +11545,7 @@ msgid ""
 " [unsubscribe_link]"
 msgstr ""
 
-#: classes/TaskManager.php:1892
+#: classes/TaskManager.php:1972
 msgid "ℹ️ This content was generated by AI and may contain inaccuracies."
 msgstr ""
 
@@ -11565,6 +11693,10 @@ msgstr ""
 msgid "Front - Can see AI topic suggestion"
 msgstr ""
 
+#: classes/VectorStorageManager.php:1709
+msgid "No valid forum IDs provided."
+msgstr ""
+
 #: includes/functions-template.php:11
 msgid "wpForo Menu"
 msgstr ""
@@ -11630,7 +11762,7 @@ msgstr ""
 msgid "Could not write file %s"
 msgstr ""
 
-#: includes/functions.php:3994
+#: includes/functions.php:4002
 msgid ""
 "Sorry, this file couldn't be sanitized so for security reasons wasn't uploaded"
 msgstr ""
@@ -11803,84 +11935,84 @@ msgstr ""
 msgid "dismiss"
 msgstr ""
 
-#: includes/installation.php:516
+#: includes/installation.php:520
 msgid "Start Profile Synchronization"
 msgstr ""
 
-#: includes/installation.php:516
+#: includes/installation.php:520
 msgid "Continue Synchronization"
 msgstr ""
 
-#: includes/installation.php:519
+#: includes/installation.php:523
 msgid ""
 "This process may take a few seconds or dozens of minutes, please be patient "
 "and don't close this page."
 msgstr ""
 
-#: includes/installation.php:520
+#: includes/installation.php:524
 msgid "You can permanently disable this message using this documentation"
 msgstr ""
 
-#: includes/installation.php:522
+#: includes/installation.php:526
 msgid "wpForo Forum Installation | "
 msgstr ""
 
-#: includes/installation.php:523
+#: includes/installation.php:527
 msgid ""
 "Forum users' profile data are not synchronized yet, this step is required! "
 "Please click the button below to complete installation."
 msgstr ""
 
-#: includes/installation.php:533
+#: includes/installation.php:537
 msgid "wpForo Database Update Problem - Action Required!"
 msgstr ""
 
-#: includes/installation.php:534
+#: includes/installation.php:538
 msgid ""
 "Forum database is not updated properly. Please click the button below for "
 "further instruction."
 msgstr ""
 
-#: includes/installation.php:547
+#: includes/installation.php:551
 msgid "Exclude forum page(s) from"
 msgstr ""
 
-#: includes/installation.php:548
+#: includes/installation.php:552
 msgid "plugin"
 msgstr ""
 
-#: includes/installation.php:555
+#: includes/installation.php:559
 #, php-format
 msgid ""
 "If you have already excluded the forum page from your cache plugin please "
 "ignore and close this message using the top %s (x) button."
 msgstr ""
 
-#: includes/installation.php:556
+#: includes/installation.php:560
 msgid "left"
 msgstr ""
 
-#: includes/installation.php:556
+#: includes/installation.php:560
 msgid "right"
 msgstr ""
 
-#: includes/installation.php:558
+#: includes/installation.php:562
 msgid "Please find more information here: "
 msgstr ""
 
-#: includes/installation.php:559
+#: includes/installation.php:563
 msgid " and "
 msgstr ""
 
-#: includes/installation.php:559
+#: includes/installation.php:563
 msgid "conflict"
 msgstr ""
 
-#: includes/installation.php:559
+#: includes/installation.php:563
 msgid "Action Required!"
 msgstr ""
 
-#: includes/installation.php:561
+#: includes/installation.php:565
 msgid ""
 "Please exclude the forum page from your cache plugin! wpForo has a built-in "
 "cache system. It does dynamic cache of all forum pages, which will be affected "
@@ -11888,24 +12020,24 @@ msgid ""
 "The user login and logout actions will also be corrupted."
 msgstr ""
 
-#: includes/installation.php:638 includes/installation.php:1615
+#: includes/installation.php:642 includes/installation.php:1619
 #: includes/options-migration.php:20
 msgid "Discussion Board"
 msgstr ""
 
-#: includes/installation.php:1308
+#: includes/installation.php:1312
 msgid "Main Category"
 msgstr ""
 
-#: includes/installation.php:1308
+#: includes/installation.php:1312
 msgid "This is a simple category / section"
 msgstr ""
 
-#: includes/installation.php:1312
+#: includes/installation.php:1316
 msgid "Main Forum"
 msgstr ""
 
-#: includes/installation.php:1312
+#: includes/installation.php:1316
 msgid "This is a simple parent forum"
 msgstr ""
 
@@ -14527,11 +14659,11 @@ msgstr ""
 msgid "Recent Activity"
 msgstr ""
 
-#: includes/phrases.php:898
+#: includes/phrases.php:898 includes/phrases.php:1302
 msgid "All Activities"
 msgstr ""
 
-#: includes/phrases.php:903
+#: includes/phrases.php:903 includes/phrases.php:1311
 msgid "No activities found"
 msgstr ""
 
@@ -14646,7 +14778,7 @@ msgstr ""
 msgid "edited a post in %s"
 msgstr ""
 
-#: includes/phrases.php:932
+#: includes/phrases.php:932 includes/phrases.php:1310
 msgid "Load More Activities"
 msgstr ""
 
@@ -15910,6 +16042,329 @@ msgstr ""
 msgid "YouTube"
 msgstr ""
 
+#: includes/phrases.php:1284
+msgid "Chat"
+msgstr ""
+
+#: includes/phrases.php:1285
+msgid "Preferences"
+msgstr ""
+
+#: includes/phrases.php:1287
+msgid "Classic Search"
+msgstr ""
+
+#: includes/phrases.php:1288
+msgid "Describe what you're looking for..."
+msgstr ""
+
+#: includes/phrases.php:1289
+msgid "More Results"
+msgstr ""
+
+#: includes/phrases.php:1290
+msgid "Conversations"
+msgstr ""
+
+#: includes/phrases.php:1292
+msgid "Start a new conversation or select an existing one"
+msgstr ""
+
+#: includes/phrases.php:1293
+msgid "Type your message..."
+msgstr ""
+
+#: includes/phrases.php:1294
+msgid "AI Features Preferences"
+msgstr ""
+
+#: includes/phrases.php:1295
+msgid "AI Features Response Language"
+msgstr ""
+
+#: includes/phrases.php:1296
+msgid "AI will generate responses in this language"
+msgstr ""
+
+#: includes/phrases.php:1298
+msgid "Number of search results to display (1-10)"
+msgstr ""
+
+#: includes/phrases.php:1299
+msgid "Save Preferences"
+msgstr ""
+
+#: includes/phrases.php:1301
+msgid "Recent Activity Timeline"
+msgstr ""
+
+#: includes/phrases.php:1308
+msgid "Delete Activity"
+msgstr ""
+
+#: includes/phrases.php:1312
+msgid "Are you sure you want to delete this activity?"
+msgstr ""
+
+#: includes/phrases.php:1313
+msgid "Failed to delete activity"
+msgstr ""
+
+#: includes/phrases.php:1318
+msgid "AI Moderation Report"
+msgstr ""
+
+#: includes/phrases.php:1319
+msgid "Moderation Report"
+msgstr ""
+
+#: includes/phrases.php:1320
+msgid "Type:"
+msgstr ""
+
+#: includes/phrases.php:1321
+msgid "Score:"
+msgstr ""
+
+#: includes/phrases.php:1322
+#, php-format
+msgid "%d%% confidence"
+msgstr ""
+
+#: includes/phrases.php:1323
+msgid "Action:"
+msgstr ""
+
+#: includes/phrases.php:1326
+msgid "AI Quality:"
+msgstr ""
+
+#: includes/phrases.php:1327
+msgid "credit"
+msgstr ""
+
+#: includes/phrases.php:1341
+msgid "AI Spam Detection"
+msgstr ""
+
+#: includes/phrases.php:1342
+msgid "AI Content Safety & Toxicity Detection"
+msgstr ""
+
+#: includes/phrases.php:1343
+msgid "AI Policy Compliance"
+msgstr ""
+
+#: includes/phrases.php:1344
+msgid "AI Content Moderation"
+msgstr ""
+
+#: includes/phrases.php:1352
+msgid "Excellent match"
+msgstr ""
+
+#: includes/phrases.php:1353
+msgid "Good match"
+msgstr ""
+
+#: includes/phrases.php:1354
+msgid "Relevant"
+msgstr ""
+
+#: includes/phrases.php:1355
+msgid "Possibly relevant"
+msgstr ""
+
+#: includes/phrases.php:1356
+msgid "AI Recommendations"
+msgstr ""
+
+#: includes/phrases.php:1359
+msgid "Translate this post"
+msgstr ""
+
+#: includes/phrases.php:1360
+msgid "Translate"
+msgstr ""
+
+#: includes/phrases.php:1361
+msgid "Show original"
+msgstr ""
+
+#: includes/phrases.php:1362
+msgid "Translating..."
+msgstr ""
+
+#: includes/phrases.php:1363
+msgid "English"
+msgstr ""
+
+#: includes/phrases.php:1364
+msgid "Spanish"
+msgstr ""
+
+#: includes/phrases.php:1365
+msgid "French"
+msgstr ""
+
+#: includes/phrases.php:1366
+msgid "German"
+msgstr ""
+
+#: includes/phrases.php:1367
+msgid "Italian"
+msgstr ""
+
+#: includes/phrases.php:1368
+msgid "Portuguese"
+msgstr ""
+
+#: includes/phrases.php:1369
+msgid "Russian"
+msgstr ""
+
+#: includes/phrases.php:1370
+msgid "Chinese"
+msgstr ""
+
+#: includes/phrases.php:1371
+msgid "Japanese"
+msgstr ""
+
+#: includes/phrases.php:1372
+msgid "Korean"
+msgstr ""
+
+#: includes/phrases.php:1373
+msgid "Arabic"
+msgstr ""
+
+#: includes/phrases.php:1374
+msgid "Hindi"
+msgstr ""
+
+#: includes/phrases.php:1375
+msgid "Dutch"
+msgstr ""
+
+#: includes/phrases.php:1376
+msgid "Polish"
+msgstr ""
+
+#: includes/phrases.php:1377
+msgid "Turkish"
+msgstr ""
+
+#: includes/phrases.php:1378
+msgid "Vietnamese"
+msgstr ""
+
+#: includes/phrases.php:1379
+msgid "Thai"
+msgstr ""
+
+#: includes/phrases.php:1380
+msgid "Swedish"
+msgstr ""
+
+#: includes/phrases.php:1381
+msgid "Danish"
+msgstr ""
+
+#: includes/phrases.php:1382
+msgid "Finnish"
+msgstr ""
+
+#: includes/phrases.php:1383
+msgid "Norwegian"
+msgstr ""
+
+#: includes/phrases.php:1384
+msgid "Czech"
+msgstr ""
+
+#: includes/phrases.php:1385
+msgid "Hungarian"
+msgstr ""
+
+#: includes/phrases.php:1386
+msgid "Romanian"
+msgstr ""
+
+#: includes/phrases.php:1387
+msgid "Greek"
+msgstr ""
+
+#: includes/phrases.php:1388
+msgid "Hebrew"
+msgstr ""
+
+#: includes/phrases.php:1389
+msgid "Indonesian"
+msgstr ""
+
+#: includes/phrases.php:1390
+msgid "Malay"
+msgstr ""
+
+#: includes/phrases.php:1391
+msgid "Ukrainian"
+msgstr ""
+
+#: includes/phrases.php:1392
+msgid "Bulgarian"
+msgstr ""
+
+#: includes/phrases.php:1393
+msgid "Croatian"
+msgstr ""
+
+#: includes/phrases.php:1394
+msgid "Slovak"
+msgstr ""
+
+#: includes/phrases.php:1395
+msgid "Slovenian"
+msgstr ""
+
+#: includes/phrases.php:1396
+msgid "Serbian"
+msgstr ""
+
+#: includes/phrases.php:1397
+msgid "Lithuanian"
+msgstr ""
+
+#: includes/phrases.php:1398
+msgid "Latvian"
+msgstr ""
+
+#: includes/phrases.php:1399
+msgid "Estonian"
+msgstr ""
+
+#: includes/phrases.php:1402
+msgid "Summarize Topic"
+msgstr ""
+
+#: includes/phrases.php:1403
+msgid "AI is analyzing the discussion..."
+msgstr ""
+
+#: includes/phrases.php:1412
+msgid ""
+"This is an AI-generated suggestion based on existing forum content. Please "
+"verify the information."
+msgstr ""
+
+#: includes/phrases.php:1415
+msgid "Ask AI Bot to reply"
+msgstr ""
+
+#: includes/phrases.php:1417
+msgid "Generate AI reply suggestion"
+msgstr ""
+
 #: integrations/BuddyPress.php:34
 msgid "Search Forums..."
 msgstr ""
@@ -15972,18 +16427,18 @@ msgstr ""
 msgid "User Groups"
 msgstr ""
 
-#: widgets/OnlineMembers.php:102 widgets/RecentPosts.php:370
+#: widgets/OnlineMembers.php:102 widgets/RecentPosts.php:373
 #: widgets/RecentTopics.php:272
 msgid "Display with avatars"
 msgstr ""
 
-#: widgets/OnlineMembers.php:111 widgets/RecentPosts.php:412
+#: widgets/OnlineMembers.php:111 widgets/RecentPosts.php:415
 #: widgets/RecentTopics.php:294
 msgid "Auto Refresh Interval Seconds"
 msgstr ""
 
-#: widgets/OnlineMembers.php:113 widgets/RecentPosts.php:367
-#: widgets/RecentPosts.php:415 widgets/RecentTopics.php:297
+#: widgets/OnlineMembers.php:113 widgets/RecentPosts.php:370
+#: widgets/RecentPosts.php:418 widgets/RecentTopics.php:297
 msgid "Set 0 to disable autorefresh"
 msgstr ""
 
@@ -16039,35 +16494,35 @@ msgstr ""
 msgid "Random"
 msgstr ""
 
-#: widgets/RecentPosts.php:300 widgets/RecentTopics.php:219
+#: widgets/RecentPosts.php:303 widgets/RecentTopics.php:219
 msgid "Filter by forums"
 msgstr ""
 
-#: widgets/RecentPosts.php:318 widgets/RecentTopics.php:237
+#: widgets/RecentPosts.php:321 widgets/RecentTopics.php:237
 msgid "Autofilter by current forum"
 msgstr ""
 
-#: widgets/RecentPosts.php:332 widgets/RecentTopics.php:251
+#: widgets/RecentPosts.php:335 widgets/RecentTopics.php:251
 msgid "Order by"
 msgstr ""
 
-#: widgets/RecentPosts.php:350
+#: widgets/RecentPosts.php:353
 msgid "Limit Per Topic"
 msgstr ""
 
-#: widgets/RecentPosts.php:355
+#: widgets/RecentPosts.php:358
 msgid "set 0 to remove this limit"
 msgstr ""
 
-#: widgets/RecentPosts.php:381
+#: widgets/RecentPosts.php:384
 msgid "Exclude First Posts"
 msgstr ""
 
-#: widgets/RecentPosts.php:391
+#: widgets/RecentPosts.php:394
 msgid "Display Only Unread Posts"
 msgstr ""
 
-#: widgets/RecentPosts.php:401
+#: widgets/RecentPosts.php:404
 msgid "Display [new] indicator"
 msgstr ""
 

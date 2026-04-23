@@ -2762,11 +2762,10 @@ body.wpf-dark #wpforo-dialog-extra-wrap #wpforo-dialog{background-color: #000; c
    Layout 5 / DARK MODE SUPPORT
 ======================================== */
 
-@media (prefers-color-scheme: dark) {
-    body.wpforo-dark-mode #wpforo #wpforo-wrap .wpfl-5 .wpforo-forum-card {background: #1a1a1a; border-color: #2d2d2d; }
-    body.wpforo-dark-mode #wpforo #wpforo-wrap .wpfl-5 .forum-card-title a {color: #e1e8ed;}
-    body.wpforo-dark-mode #wpforo #wpforo-wrap .wpfl-5 .forum-card-icon-box { background: #0d0d0d;}
-}
+#wpforo #wpforo-wrap.wpf-dark .wpfl-5 .wpforo-forum-card {background: #1a1a1a; border-color: #2d2d2d; }
+#wpforo #wpforo-wrap.wpf-dark .wpfl-5 .forum-card-title a {color: #e1e8ed;}
+#wpforo #wpforo-wrap.wpf-dark .wpfl-5 .forum-card-icon-box { background: #0d0d0d;}
+
 
 /* AI Content Moderation Report */
 #wpforo #wpforo-wrap .wpf-ai-moderation-report {margin: 15px 0; padding: 12px 15px; border-radius: 6px; border: 1px solid #e0e0e0; background: #f8f9fa; font-size: 13px; line-height: 1.5;}
@@ -2830,6 +2829,7 @@ body.wpf-dark #wpforo-dialog-extra-wrap #wpforo-dialog{background-color: #000; c
 #wpforo #wpforo-wrap .wpf-ai-chat-conv .wpf-ai-chat-conv-delete:hover{opacity: 1; color: #d63638;}
 #wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference{vertical-align: super; font-size: 11px; line-height: 0;}
 #wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference a{text-decoration: none;}
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference svg{fill: transparent}
 #wpforo #wpforo-wrap .wpf-ai-chat-conversations .wpf-ai-chat-empty,
 #wpforo #wpforo-wrap .wpf-ai-chat-conversations .wpf-ai-chat-error{display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; opacity: 0.6;}
 #wpforo #wpforo-wrap .wpf-ai-chat-conversations .wpf-ai-chat-loading{display: flex; align-items: center; justify-content: center; padding: 20px;}

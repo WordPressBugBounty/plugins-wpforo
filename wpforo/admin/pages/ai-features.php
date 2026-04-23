@@ -17,6 +17,7 @@ if ( ! wpforo_current_user_is( 'admin' ) && ! WPF()->usergroup->can( 'mai' ) ) {
 require_once __DIR__ . '/tabs/ai-features-helpers.php';
 require_once __DIR__ . '/tabs/ai-features-tab-overview.php';
 require_once __DIR__ . '/tabs/ai-features-tab-rag-indexing.php';
+require_once __DIR__ . '/tabs/ai-features-tab-wp-indexing.php';
 require_once __DIR__ . '/tabs/ai-features-tab-ai-tasks.php';
 require_once __DIR__ . '/tabs/ai-features-tab-analytics.php';
 require_once __DIR__ . '/tabs/ai-features-tab-ai-logs.php';
@@ -35,12 +36,23 @@ if ( $current_tab === 'analytics' ) {
 }
 wp_enqueue_script( 'wpforo-ai-features', WPFORO_URL . '/admin/assets/js/ai-features.js', $ai_features_deps, WPFORO_VERSION, false );
 
+// WordPress Indexing tab - load isolated scripts/styles
+if ( $current_tab === 'wp_indexing' ) {
+	wp_enqueue_style( 'wpforo-ai-wp-indexing', WPFORO_URL . '/admin/assets/css/ai-features-wp-indexing.css', [ 'wpforo-ai-features' ], WPFORO_VERSION );
+	wp_enqueue_script( 'wpforo-ai-wp-indexing', WPFORO_URL . '/admin/assets/js/ai-features-wp-indexing.js', [ 'jquery' ], WPFORO_VERSION, true );
+}
+
 // Localize script with AJAX URL and nonce
 wp_localize_script( 'wpforo-ai-features', 'wpforoAIAdmin', [
 	'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
 	'nonce'      => wp_create_nonce( 'wpforo_ai_features_nonce' ),
 	'adminNonce' => wp_create_nonce( 'wpforo_admin_ajax' ), // For WordPress content indexing AJAX calls
 	'debugMode'  => (bool) wpforo_setting( 'general', 'debug_mode' ),
+	'strings'    => [
+		'indexing'   => __( 'Indexing...', 'wpforo' ),
+		'idle'       => __( 'Idle', 'wpforo' ),
+		'noActivity' => __( 'No activity yet', 'wpforo' ),
+	],
 ] );
 
 // Localize i18n strings for AI logs (wpforoAI is used by WpForoAILogs module)
@@ -82,9 +94,10 @@ $is_post_purchase = (isset( $_GET['upgraded'] ) && $_GET['upgraded'] == '1') || 
 $purchased_plan = isset( $_GET['plan'] ) ? sanitize_key( $_GET['plan'] ) : '';
 
 // Get tenant status if connected
+// Force fresh fetch when returning from purchase to get updated credits
 $status = null;
 if ( $is_connected ) {
-	$status = WPF()->ai_client->get_tenant_status();
+	$status = WPF()->ai_client->get_tenant_status( $is_post_purchase );
 	if ( is_wp_error( $status ) ) {
 		// Connection exists but status fetch failed - show error state
 		$connection_error = $status;
@@ -143,7 +156,13 @@ if ( $current_state === 'pending_approval' && ( ! $status || is_wp_error( $statu
 	// Only show AI feature tabs when subscription is active or trial
 	// For expired, inactive, pending_approval, not_connected, or error states - only show Overview
 	if ( in_array( $current_state, [ 'free_trial', 'paid_plan' ], true ) ) {
-		$tabs['rag_indexing'] = __( 'AI Content Indexing', 'wpforo' );
+		$tabs['rag_indexing'] = __( 'Forum Indexing', 'wpforo' );
+
+		// WordPress Indexing tab - only show if feature is available (Business+ plan)
+		if ( isset( WPF()->ai_client ) && WPF()->ai_client->is_feature_available( 'wordpress_content_indexing' ) ) {
+			$tabs['wp_indexing'] = __( 'WordPress Indexing', 'wpforo' );
+		}
+
 		$tabs['ai_tasks']     = __( 'AI Tasks', 'wpforo' );
 		$tabs['analytics']    = __( 'AI Analytics', 'wpforo' );
 		$tabs['ai_logs']      = __( 'AI Logs', 'wpforo' );
@@ -215,6 +234,10 @@ if ( $current_state === 'pending_approval' && ( ! $status || is_wp_error( $statu
 		switch ( $current_tab ) {
 			case 'rag_indexing':
 				wpforo_ai_render_rag_indexing_tab( $is_connected, $status );
+				break;
+
+			case 'wp_indexing':
+				wpforo_ai_render_wp_indexing_tab( $is_connected, $status );
 				break;
 
 			case 'ai_tasks':

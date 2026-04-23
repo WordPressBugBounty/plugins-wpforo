@@ -209,6 +209,11 @@ class VectorStorageLocal {
 	public function delete_wp_embeddings( $post_types = null, $post_ids = null ) {
 		global $wpdb;
 
+		// Guard: ensure tables object and ai_embeddings property exist
+		if ( ! WPF()->tables || ! isset( WPF()->tables->ai_embeddings ) ) {
+			return 0;
+		}
+
 		$table = WPF()->tables->ai_embeddings;
 
 		if ( ! empty( $post_ids ) ) {
@@ -630,6 +635,11 @@ class VectorStorageLocal {
 	public function get_wp_indexed_counts() {
 		global $wpdb;
 
+		// Guard: ensure tables object and ai_embeddings property exist
+		if ( ! WPF()->tables || ! isset( WPF()->tables->ai_embeddings ) ) {
+			return [];
+		}
+
 		$results = $wpdb->get_results(
 			"SELECT content_type, COUNT(*) as cnt
 			 FROM " . WPF()->tables->ai_embeddings . "
@@ -646,6 +656,25 @@ class VectorStorageLocal {
 		}
 
 		return $counts;
+	}
+
+	/**
+	 * Get all indexed WordPress post IDs (non-forum content)
+	 *
+	 * @return array Array of post IDs that have been indexed
+	 */
+	public function get_wp_indexed_post_ids() {
+		global $wpdb;
+
+		if ( ! WPF()->tables || ! isset( WPF()->tables->ai_embeddings ) ) {
+			return [];
+		}
+
+		$results = $wpdb->get_col(
+			"SELECT DISTINCT postid FROM " . WPF()->tables->ai_embeddings . " WHERE content_type != 'forum'"
+		);
+
+		return array_map( 'intval', $results );
 	}
 
 	/**

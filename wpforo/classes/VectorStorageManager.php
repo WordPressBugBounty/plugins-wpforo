@@ -2831,6 +2831,7 @@ class VectorStorageManager {
 					'post_url'        => get_permalink( $wp_post ),
 					'created'         => $wp_post->post_date,
 					'user_id'         => (int) $wp_post->post_author,
+					'post_id'         => $wp_post->ID,
 					'content_type'    => $content_type,
 					'content_source'  => 'wordpress',
 					'post_type_label' => $post_type_label,
@@ -2866,18 +2867,19 @@ class VectorStorageManager {
 			}
 
 			$formatted['results'][] = [
-				'topic_id'      => (int) $result['topicid'],
-				'post_id'       => (int) $result['postid'],
-				'forum_id'      => (int) $result['forumid'],
-				'title'         => $topic['title'] ?? '',
-				'content'       => preg_replace( '/\[(?:FORUM|SOLVED|BEST ANSWER)[^\]]*\]/', '', $result['content_preview'] ?? preg_replace( '/\[(?:\/)?[a-zA-Z0-9_-]+(?:\s[^\]]*?)?\]/', '', strip_tags( $post['body'] ) ) ),
-				'score'         => $base_score, // Original similarity for display
-				'_boost_score'  => $base_score * $boost, // Internal: for sorting only
-				'url'           => WPF()->topic->get_url( $topic ),  // Pass array to avoid extra query
-				'post_url'      => WPF()->post->get_url( $post ),    // Pass array to avoid extra query
-				'created'       => $post['created'] ?? null,
-				'user_id'       => (int) ( $result['userid'] ?? 0 ),
-				'content_type'  => 'forum',
+				'topic_id'       => (int) $result['topicid'],
+				'post_id'        => (int) $result['postid'],
+				'forum_id'       => (int) $result['forumid'],
+				'title'          => $topic['title'] ?? '',
+				'content'        => preg_replace( '/\[(?:FORUM|SOLVED|BEST ANSWER)[^\]]*\]/', '', $result['content_preview'] ?? preg_replace( '/\[(?:\/)?[a-zA-Z0-9_-]+(?:\s[^\]]*?)?\]/', '', strip_tags( $post['body'] ) ) ),
+				'score'          => $base_score, // Original similarity for display
+				'_boost_score'   => $base_score * $boost, // Internal: for sorting only
+				'url'            => WPF()->topic->get_url( $topic ),  // Pass array to avoid extra query
+				'post_url'       => WPF()->post->get_url( $post ),    // Pass array to avoid extra query
+				'created'        => $post['created'] ?? null,
+				'user_id'        => (int) ( $result['userid'] ?? 0 ),
+				'content_type'   => 'forum',
+				'content_source' => 'forum',
 			];
 		}
 

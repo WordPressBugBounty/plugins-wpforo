@@ -497,7 +497,35 @@ class AIMarkdown {
 				}
 
 				if ( $options['format'] === 'superscript' ) {
-					return '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html( $title ) . '</a> <sup class="' . esc_attr( $options['class'] ) . '">[wp:' . $postid . ']</sup>';
+					return '<sup class="' . esc_attr( $options['class'] ) . '"><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">[<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>' . $postid . ']</a></sup>';
+				}
+
+				return '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener" class="' . esc_attr( $options['class'] ) . '">' . esc_html( $title ) . '</a>';
+			},
+			$text
+		);
+
+		// Step 5: Fallback for WordPress citations missing # - [[wp_postid]] or [[wp_postid:title]]
+		// AI sometimes forgets the hash, so handle this common mistake
+		$text = preg_replace_callback(
+			'/\[\[wp_(\d+)(?::([^\]]+))?\]\]/',
+			function ( $matches ) use ( $options ) {
+				$postid = intval( $matches[1] );
+				$title  = ! empty( $matches[2] ) ? $matches[2] : '';
+				$url    = get_permalink( $postid );
+
+				if ( ! $url ) {
+					return $matches[0]; // Return original if URL not found
+				}
+
+				// Get title from post if not provided
+				if ( empty( $title ) ) {
+					$post  = get_post( $postid );
+					$title = $post ? $post->post_title : "Post #{$postid}";
+				}
+
+				if ( $options['format'] === 'superscript' ) {
+					return '<sup class="' . esc_attr( $options['class'] ) . '"><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">[<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>' . $postid . ']</a></sup>';
 				}
 
 				return '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener" class="' . esc_attr( $options['class'] ) . '">' . esc_html( $title ) . '</a>';

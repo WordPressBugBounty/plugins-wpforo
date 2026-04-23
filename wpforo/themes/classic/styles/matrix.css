@@ -83,6 +83,7 @@
 /* AI Chat Bot */
 #wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference{color: __WPFCOLOR_15__;}
 #wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference:hover{color: __WPFCOLOR_12__;}
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference svg{fill: transparent}
 #wpforo #wpforo-wrap .wpf-ai-chat-msg-user .wpf-ai-chat-msg-content{background-color: __WPFCOLOR_12__; color: __WPFCOLOR_1__;}
 #wpforo #wpforo-wrap .wpf-ai-chat-msg-assistant .wpf-ai-chat-msg-content{background-color: __WPFCOLOR_9__; color: __WPFCOLOR_2__;}
 /* AI Topic Suggestions */

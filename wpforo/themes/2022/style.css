@@ -2668,6 +2668,7 @@ body.wpf-dark #wpforo-dialog-extra-wrap #wpforo-dialog{background-color: #000; c
 #wpforo #wpforo-wrap .wpf-ai-chat-conv .wpf-ai-chat-conv-delete:hover{opacity: 1; color: #d63638;}
 #wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference{vertical-align: super; font-size: 11px; line-height: 0;}
 #wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference a{text-decoration: none;}
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference svg{fill: transparent}
 #wpforo #wpforo-wrap .wpf-ai-chat-conversations .wpf-ai-chat-empty,
 #wpforo #wpforo-wrap .wpf-ai-chat-conversations .wpf-ai-chat-error{display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; opacity: 0.6;}
 #wpforo #wpforo-wrap .wpf-ai-chat-conversations .wpf-ai-chat-loading{display: flex; align-items: center; justify-content: center; padding: 20px;}

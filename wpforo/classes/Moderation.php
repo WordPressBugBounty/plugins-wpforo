@@ -467,9 +467,13 @@ class Moderation {
 		if ( ! empty( $item['is_ai_generated'] ) ) {
 			return $item;
 		}
+		// Skip for bot replies when ai[bot_reply_unapproved] setting is enabled
+		if ( ! empty( $item['is_bot_reply'] ) && wpforo_setting( 'ai', 'bot_reply_unapproved' ) ) {
+			return $item;
+		}
 		if( WPF()->usergroup->can( 'aum' ) ) {
 			$item['status'] = 0;
-			
+
 			return $item;
 		}
 		if( ! WPF()->usergroup->can( 'aup' ) ) {

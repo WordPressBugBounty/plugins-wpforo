@@ -83,7 +83,7 @@ $has_more      = ( $paged * $items_per_page ) < $items_count;
 								<div class="wpf-timeline-avatar"><?php echo wpforo_user_avatar( $member, 40 ) ?></div>
 							<?php endif; ?>
 							<div class="wpf-timeline-user"><?php wpforo_member_link( $member ) ?></div>
-                            <div class="wpf-timeline-date" style="margin-right: -51px; color: #8a969a;"><?php wpforo_date( $activity['date'], 'ago' ) ?> <span class="wpf-timeline-date-stick">&nbsp</span></div>
+                            <div class="wpf-timeline-date" style="margin-right: -51px; color: #8a969a;"><?php wpforo_date( $activity['date'], 'ago' ) ?> <span class="wpf-timeline-date-stick">&nbsp;</span></div>
 						</div>
 
 						<!-- Center: Icon Node -->

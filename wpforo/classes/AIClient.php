@@ -1105,6 +1105,19 @@ class AIClient {
 				$summary['crons_cleared']++;
 			}
 			wp_clear_scheduled_hook( 'wpforo_ai_process_wp_batch' );
+
+			// For cloud mode: cancel in-flight backend jobs and cleanup stuck
+			// rag_jobs. These APIs are tenant-wide (not scope-specific), so
+			// calling them for WP scope ensures stuck cloud jobs are handled
+			// even if user only uses WordPress indexing. Safe in local mode:
+			// backend simply ignores the request with no side effects.
+			if ( $scope === 'wp' ) {
+				$cancel = $this->cancel_indexing();
+				$summary['backend_cancelled'] = ! is_wp_error( $cancel );
+
+				$cleanup = $this->cleanup_jobs();
+				$summary['backend_cleanup'] = is_wp_error( $cleanup ) ? false : $cleanup;
+			}
 		}
 
 		return $summary;
@@ -8826,13 +8839,14 @@ class AIClient {
 
 		// Build post data
 		$post_data = [
-			'forumid'  => (int) $topic['forumid'],
-			'topicid'  => (int) $topic['topicid'],
-			'parentid' => (int) $parent_post['postid'],
-			'userid'   => $bot_user_id,
-			'title'    => wpforo_phrase( 'RE', false ) . ': ' . $topic['title'],
-			'body'     => $content,
-			'status'   => $status,
+			'forumid'      => (int) $topic['forumid'],
+			'topicid'      => (int) $topic['topicid'],
+			'parentid'     => (int) $parent_post['postid'],
+			'userid'       => $bot_user_id,
+			'title'        => wpforo_phrase( 'RE', false ) . ': ' . $topic['title'],
+			'body'         => $content,
+			'status'       => $status,
+			'is_bot_reply' => true,
 		];
 
 		// Store current user to restore later
