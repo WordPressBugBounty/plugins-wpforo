@@ -109,7 +109,7 @@ class AIMarkdown {
 		$text = preg_replace_callback(
 			'/```(\w*)\n([\s\S]*?)```/',
 			function ( $matches ) use ( &$placeholders, &$index ) {
-				$placeholder                   = "\x00CODEBLOCK{$index}\x00";
+				$placeholder                   = "%%WPF_CODEBLOCK_{$index}%%";
 				$language                      = ! empty( $matches[1] ) ? ' class="language-' . esc_attr( $matches[1] ) . '"' : '';
 				$code                          = esc_html( trim( $matches[2] ) );
 				$placeholders[ $placeholder ]  = '<pre><code' . $language . '>' . $code . '</code></pre>';
@@ -123,7 +123,7 @@ class AIMarkdown {
 		$text = preg_replace_callback(
 			'/`([^`\n]+)`/',
 			function ( $matches ) use ( &$placeholders, &$index ) {
-				$placeholder                  = "\x00INLINECODE{$index}\x00";
+				$placeholder                  = "%%WPF_INLINECODE_{$index}%%";
 				$placeholders[ $placeholder ] = '<code>' . esc_html( $matches[1] ) . '</code>';
 				$index++;
 				return $placeholder;
@@ -135,7 +135,7 @@ class AIMarkdown {
 		$text = preg_replace_callback(
 			'/\[([^\]]+)\]\(([^)]+)\)/',
 			function ( $matches ) use ( &$placeholders, &$index ) {
-				$placeholder                  = "\x00LINK{$index}\x00";
+				$placeholder                  = "%%WPF_LINK_{$index}%%";
 				$placeholders[ $placeholder ] = '<a href="' . esc_url( $matches[2] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $matches[1] ) . '</a>';
 				$index++;
 				return $placeholder;
@@ -149,7 +149,7 @@ class AIMarkdown {
 				'/(?<!["\'])(https?:\/\/[^\s<>\[\]"\']+)/',
 				function ( $matches ) use ( &$placeholders, &$index ) {
 					$url                          = rtrim( $matches[1], '.,;:!?' );
-					$placeholder                  = "\x00PLAINURL{$index}\x00";
+					$placeholder                  = "%%WPF_PLAINURL_{$index}%%";
 					$placeholders[ $placeholder ] = '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $url ) . '</a><br class="wpf-ai-br">';
 					$index++;
 					return $placeholder;
@@ -162,7 +162,7 @@ class AIMarkdown {
 		$text = preg_replace_callback(
 			'/(\*\*|__)(.+?)\1/',
 			function ( $matches ) use ( &$placeholders, &$index ) {
-				$placeholder                  = "\x00BOLD{$index}\x00";
+				$placeholder                  = "%%WPF_BOLD_{$index}%%";
 				$placeholders[ $placeholder ] = '<strong>' . esc_html( $matches[2] ) . '</strong>';
 				$index++;
 				return $placeholder;
@@ -175,7 +175,7 @@ class AIMarkdown {
 		$text = preg_replace_callback(
 			'/(?<![a-zA-Z0-9\*_])(\*|_)([^\*_\n]+?)\1(?![a-zA-Z0-9\*_])/',
 			function ( $matches ) use ( &$placeholders, &$index ) {
-				$placeholder                  = "\x00ITALIC{$index}\x00";
+				$placeholder                  = "%%WPF_ITALIC_{$index}%%";
 				$placeholders[ $placeholder ] = '<em>' . esc_html( $matches[2] ) . '</em>';
 				$index++;
 				return $placeholder;
@@ -223,7 +223,7 @@ class AIMarkdown {
 			$trimmed = trim( $line );
 
 			// Skip if line is a placeholder (code block)
-			if ( preg_match( '/^\x00CODEBLOCK\d+\x00$/', $trimmed ) ) {
+			if ( preg_match( '/^%%WPF_CODEBLOCK_\d+%%$/', $trimmed ) ) {
 				if ( $in_list ) {
 					$result[] = $list_type === 'ul' ? '</ul>' : '</ol>';
 					$in_list  = false;

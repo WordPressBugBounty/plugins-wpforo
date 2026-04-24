@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 6.9
-Stable tag: 3.0.7
+Stable tag: 3.0.8
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -234,6 +234,13 @@ IMPORTANT NOTES for UPDATE
 
 [wpForo Forum v3.0 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-0-is-released/)
 
+
+
+= wpForo Forum 3.0.8 | 24.04.2026 =
+
+* Fixed: AI Chat WordPress content citations not displaying as clickable links
+* Updated: New phrases to wpForo Phrase System
+* Updated: Translation template (wpforo.pot) with AI feature phrases
 
 
 = wpForo Forum 3.0.7 | 23.04.2026 =

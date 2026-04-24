@@ -601,7 +601,8 @@ class AIChatbot {
 		$text = preg_replace( '/(?<!\[)\[#?(\d{2,})\](?!\])(?!\()/', '[[#$1]]', $text );
 
 		// Early exit if no citations to process
-		if ( strpos( $text, '[[#' ) === false ) {
+		// Check for both [[# (standard) and [[wp_ (WordPress without hash - LLM sometimes forgets #)
+		if ( strpos( $text, '[[#' ) === false && strpos( $text, '[[wp_' ) === false ) {
 			return $text;
 		}
 
