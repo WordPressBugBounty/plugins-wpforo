@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 6.9
-Stable tag: 3.0.8
+Stable tag: 3.0.9
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -234,6 +234,20 @@ IMPORTANT NOTES for UPDATE
 
 [wpForo Forum v3.0 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-0-is-released/)
 
+
+
+= wpForo Forum 3.0.9 | 28.04.2026 =
+
+* Fixed: AI Task "Topic Tag Manager" now runs asynchronously to avoid blocking topic creation
+* Fixed: AI Content Moderation now correctly exempts admins and moderators from spam detection
+* Fixed: AI Logs timezone display - timestamps now stored in UTC for correct timezone conversion
+* Fixed: Built-in moderation logs now correctly identify replies vs topics
+* Fixed: Forum Content Indexing "Stop" button now works correctly
+* Fixed: Forum Content Indexing status auto-refresh now survives page reloads
+* Fixed: Forum Content Indexing "Total Threads Indexed" count updates immediately after indexing
+* Fixed: Local indexing progress detection for both manual and auto-indexing queues
+* Added: WordPress Indexing post type filters for customization
+* Added: Description explaining indexed count vs total count differences
 
 
 = wpForo Forum 3.0.8 | 24.04.2026 =

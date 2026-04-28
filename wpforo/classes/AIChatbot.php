@@ -382,7 +382,7 @@ class AIChatbot {
 			'message_count'   => $conversation['message_count'] + 1,
 			'total_tokens'    => $conversation['total_tokens'] + $tokens,
 			'total_credits'   => $conversation['total_credits'] + $credits,
-			'last_message_at' => current_time( 'mysql' ),
+			'last_message_at' => current_time( 'mysql', true ), // UTC for timezone conversion
 		];
 		$formats = [ '%d', '%d', '%d', '%s' ];
 

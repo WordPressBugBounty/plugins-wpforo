@@ -348,6 +348,9 @@ function wpforo_ai_render_wp_indexing_tab( $is_connected, $status ) {
 								<!-- Content Types Selection -->
 								<div class="form-row">
 									<label><?php _e( 'Content Types', 'wpforo' ); ?></label>
+									<p class="description">
+										<?php _e( 'Not all posts may be indexed. Content generated dynamically by shortcodes or page builders may not contain indexable text. Posts with very short content (less than 10 characters after stripping HTML and shortcodes) are also skipped. The indexed count may differ from the total if such content exists.', 'wpforo' ); ?>
+									</p>
 									<div class="wpforo-ai-wp-types-grid wpforo-ai-wp-types-compact">
 										<?php foreach ( $wp_post_types as $type ) : ?>
 											<label class="wpforo-ai-wp-type-item">
@@ -355,8 +358,7 @@ function wpforo_ai_render_wp_indexing_tab( $is_connected, $status ) {
 													   name="wp_post_types[]"
 													   value="<?php echo esc_attr( $type['name'] ); ?>"
 													   data-count="<?php echo esc_attr( $type['count'] ); ?>"
-													   class="wpforo-ai-wp-type-checkbox"
-													   checked>
+													   class="wpforo-ai-wp-type-checkbox">
 												<span class="type-label"><?php echo esc_html( $type['label'] ); ?></span>
 												<span class="type-count">(<?php echo number_format( $type['count'] ); ?>)</span>
 												<?php

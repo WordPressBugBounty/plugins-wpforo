@@ -315,6 +315,10 @@ class VectorStorageManager {
 	 * Reads the queue and settings options to calculate how many topics
 	 * have been processed out of the total queued for indexing.
 	 *
+	 * Checks both queue key patterns:
+	 * - wpforo_ai_indexing_queue_{board_id} (manual reindex via UI)
+	 * - wpforo_ai_indexing_queue_local_{board_id} (auto-indexing new topics)
+	 *
 	 * @param int $board_id Board ID
 	 * @return int Progress percentage (0-100), or 0 if no indexing in progress
 	 */
@@ -328,10 +332,18 @@ class VectorStorageManager {
 			return 0;
 		}
 
-		// Count remaining topics in queue
-		$queue_key = 'wpforo_ai_indexing_queue_' . $board_id;
-		$pending = get_option( $queue_key, [] );
-		$remaining = is_array( $pending ) ? count( $pending ) : 0;
+		// Count remaining topics in both queue patterns:
+		// - Manual reindex queue (legacy pattern without mode prefix)
+		// - Auto-indexing queue (new pattern with mode prefix)
+		$manual_queue_key = 'wpforo_ai_indexing_queue_' . $board_id;
+		$auto_queue_key = 'wpforo_ai_indexing_queue_local_' . $board_id;
+
+		$manual_pending = get_option( $manual_queue_key, [] );
+		$auto_pending = get_option( $auto_queue_key, [] );
+
+		$manual_remaining = is_array( $manual_pending ) ? count( $manual_pending ) : 0;
+		$auto_remaining = is_array( $auto_pending ) ? count( $auto_pending ) : 0;
+		$remaining = $manual_remaining + $auto_remaining;
 
 		// Calculate progress
 		$processed = $total - $remaining;
@@ -357,9 +369,14 @@ class VectorStorageManager {
 			$rag_status = [];
 		}
 
-		// Only report is_indexing when the backend is actively processing.
-		// Queued WP Cron topics are reported separately via pending_cron_jobs.
-		$is_indexing = (bool) ( $rag_status['is_indexing'] ?? false );
+		// Report is_indexing when:
+		// 1. Backend is actively processing (from API response), OR
+		// 2. WP-Cron is actively processing cloud queue locally (lock transient held)
+		// This ensures UI shows indexing state even when API response is stale.
+		$board_id = $this->board_id;
+		$backend_indexing = (bool) ( $rag_status['is_indexing'] ?? false );
+		$local_cron_indexing = (bool) get_transient( 'wpforo_ai_indexing_lock_cloud_' . $board_id );
+		$is_indexing = $backend_indexing || $local_cron_indexing;
 
 		// Use local cloud column for accurate count (reflects manual changes)
 		// Cache for 5 minutes to avoid heavy COUNT on large forums

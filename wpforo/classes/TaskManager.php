@@ -3119,10 +3119,12 @@ class TaskManager {
 		$tasks = $this->get_run_on_approval_tasks( 'tag_maintenance', $forumid );
 
 		foreach ( $tasks as $task ) {
-			// Schedule async execution 5 seconds from now to ensure topic is committed
+			// Schedule async execution 1.5 hours from now to batch multiple topics
+			// and avoid WP-Cron being triggered immediately on page redirect
 			$task_id = intval( $task['task_id'] );
 			$board_id = intval( $task['board_id'] ?? 0 );
-			wp_schedule_single_event( time() + 5, 'wpforo_ai_execute_task_for_topic', [ $task_id, $topicid, $board_id ] );
+			$delay = (int) apply_filters( 'wpforo_ai_task_on_approval_delay', 5400, 'tag_maintenance', $task_id );
+			wp_schedule_single_event( time() + $delay, 'wpforo_ai_execute_task_for_topic', [ $task_id, $topicid, $board_id ] );
 		}
 	}
 
@@ -3185,10 +3187,12 @@ class TaskManager {
 		$tasks = $this->get_run_on_approval_tasks( 'reply_generator', $forumid );
 
 		foreach ( $tasks as $task ) {
-			// Schedule async execution 5 seconds from now to ensure post is committed
+			// Schedule async execution 1.5 hours from now to batch multiple posts
+			// and avoid WP-Cron being triggered immediately on page redirect
 			$task_id = intval( $task['task_id'] );
 			$board_id = intval( $task['board_id'] ?? 0 );
-			wp_schedule_single_event( time() + 5, 'wpforo_ai_execute_task_for_topic', [ $task_id, $topicid, $board_id ] );
+			$delay = (int) apply_filters( 'wpforo_ai_task_on_approval_delay', 5400, 'reply_generator', $task_id );
+			wp_schedule_single_event( time() + $delay, 'wpforo_ai_execute_task_for_topic', [ $task_id, $topicid, $board_id ] );
 		}
 	}
 

@@ -481,7 +481,7 @@ class Moderation {
 
 			// Log to AI moderation table for visibility in admin moderation page
 			$this->save_builtin_moderation_log( [
-				'content_type'     => isset( $item['title'] ) ? 'topic' : 'post',
+				'content_type'     => isset( $item['parentid'] ) ? 'post' : 'topic',
 				'topicid'          => $item['topicid'] ?? 0,
 				'forumid'          => $item['forumid'] ?? 0,
 				'userid'           => $item['userid'] ?? WPF()->current_userid,
@@ -501,7 +501,7 @@ class Moderation {
 
 				// Log to AI moderation table for visibility in admin moderation page
 				$this->save_builtin_moderation_log( [
-					'content_type'     => isset( $item['title'] ) ? 'topic' : 'post',
+					'content_type'     => isset( $item['parentid'] ) ? 'post' : 'topic',
 					'topicid'          => $item['topicid'] ?? 0,
 					'forumid'          => $item['forumid'] ?? 0,
 					'userid'           => WPF()->current_userid,
@@ -518,7 +518,7 @@ class Moderation {
 
 					// Log to AI moderation table for visibility in admin moderation page
 					$this->save_builtin_moderation_log( [
-						'content_type'     => isset( $item['title'] ) ? 'topic' : 'post',
+						'content_type'     => isset( $item['parentid'] ) ? 'post' : 'topic',
 						'topicid'          => $item['topicid'] ?? 0,
 						'forumid'          => $item['forumid'] ?? 0,
 						'userid'           => WPF()->current_userid,

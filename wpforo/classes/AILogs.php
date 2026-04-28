@@ -98,7 +98,7 @@ class AILogs {
 			'duration_ms'      => 0,
 			'ip_address'       => $this->get_client_ip(),
 			'extra_data'       => null,
-			'created'          => current_time( 'mysql' ),
+			'created'          => current_time( 'mysql', true ), // UTC for timezone conversion
 		];
 
 		$data = wp_parse_args( $data, $defaults );

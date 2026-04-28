@@ -1672,7 +1672,7 @@ class AIContentModeration {
 			'forum'        => $context['forum'] ?? null,
 			'board_id'     => $this->board_id,
 			'settings'     => $this->settings,
-			'timestamp'    => current_time( 'mysql' ),
+			'timestamp'    => current_time( 'mysql', true ), // UTC for timezone conversion
 		];
 	}
 
@@ -1723,12 +1723,21 @@ class AIContentModeration {
 		$user         = get_userdata( $userid );
 		$display_name = $user ? $user->display_name : 'User';
 
+		// Get user's group IDs for permission checks (primary + secondary)
+		$user_groupids = [];
+		if ( ! empty( $member['groupid'] ) ) {
+			$user_groupids[] = (int) $member['groupid'];
+		}
+		if ( ! empty( $member['secondary_groupids'] ) ) {
+			$user_groupids = array_merge( $user_groupids, array_map( 'intval', (array) $member['secondary_groupids'] ) );
+		}
+
 		return [
 			'is_guest'      => false,
 			'is_new'        => $post_count < $new_user_threshold,
 			'is_trusted'    => $trust_level >= 3, // Trusted Member level
-			'is_moderator'  => WPF()->usergroup->can( 'em' ), // Edit members permission
-			'is_admin'      => WPF()->usergroup->can( 'ms' ), // Manage settings permission
+			'is_moderator'  => ! empty( $user_groupids ) && WPF()->usergroup->can( 'em', $user_groupids ), // Edit members permission
+			'is_admin'      => ! empty( $user_groupids ) && WPF()->usergroup->can( 'ms', $user_groupids ), // Manage settings permission
 			'post_count'    => $post_count,
 			'trust_level'   => $trust_level,
 			'points'        => $points,
@@ -2850,14 +2859,22 @@ class AIContentModeration {
 			return false;
 		}
 
-		// Admins are always exempt
-		if ( WPF()->usergroup->can( 'ms' ) ) { // Manage settings = admin
-			return true;
+		// Get user's group IDs (primary + secondary)
+		$member = WPF()->member->get_member( $userid );
+		$user_groupids = [];
+		if ( ! empty( $member['groupid'] ) ) {
+			$user_groupids[] = (int) $member['groupid'];
+		}
+		if ( ! empty( $member['secondary_groupids'] ) ) {
+			$user_groupids = array_merge( $user_groupids, array_map( 'intval', (array) $member['secondary_groupids'] ) );
 		}
 
-		// Check if moderators are exempt (configurable)
-		$moderators_exempt = apply_filters( 'wpforo_ai_moderation_moderators_exempt', true );
-		if ( $moderators_exempt && WPF()->usergroup->can( 'em' ) ) { // Edit members = moderator
+		if ( empty( $user_groupids ) ) {
+			return false;
+		}
+
+		// Admins and moderators are exempt (em permission covers both)
+		if ( WPF()->usergroup->can( 'em', $user_groupids ) ) {
 			return true;
 		}
 
@@ -2939,7 +2956,7 @@ class AIContentModeration {
 			'indexed_topics_count' => 0,
 			'detection_time_ms'   => 0,
 			'content_preview'     => null,
-			'created'             => current_time( 'mysql' ),
+			'created'             => current_time( 'mysql', true ), // UTC for timezone conversion
 		];
 
 		$data = wp_parse_args( $data, $defaults );
@@ -3234,7 +3251,7 @@ class AIContentModeration {
 			WPF()->tables->ai_moderation,
 			[
 				'reviewed_by'   => $reviewer_id,
-				'reviewed_at'   => current_time( 'mysql' ),
+				'reviewed_at'   => current_time( 'mysql', true ), // UTC for timezone conversion
 				'review_action' => $action,
 				'review_notes'  => $notes,
 			],

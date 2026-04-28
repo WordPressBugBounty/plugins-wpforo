@@ -1373,6 +1373,9 @@
 			// Check for in-progress local indexing and auto-resume
 			this.checkLocalIndexingProgress();
 
+			// Check for in-progress cloud indexing auto-refresh (survives page reloads)
+			this.checkForumIndexingAutoRefresh();
+
 			// Note: Polling is started from PHP inline script based on server-side $is_indexing status
 			// No need to start it here to avoid duplicate polling
 		},
@@ -1994,6 +1997,9 @@
 			this.indexingStopping = true;
 			localStorage.setItem('wpforo_indexing_stopping', 'true');
 
+			// Clear auto-refresh flag so page doesn't keep reloading after stop
+			this.stopForumIndexingAutoRefresh();
+
 			// Immediately update status to show "Stopping..."
 			const $statusElement = $('#rag-indexing-status');
 			if ($statusElement.length) {
@@ -2067,14 +2073,16 @@
 			$button.prop('disabled', true).html('<span class="dashicons dashicons-update"></span> Cleaning up...');
 
 			// Clear any browser-side stuck state first — regardless of AJAX
-			// outcome. This is the only client-side flag the plugin sets for
+			// outcome. These are the client-side flags the plugin sets for
 			// indexing (see handleStopIndexing / checkLocalIndexingProgress).
 			try {
 				localStorage.removeItem('wpforo_indexing_stopping');
 				localStorage.removeItem('wpforo_wp_indexing_auto_refresh');
+				localStorage.removeItem('wpforo_forum_indexing_auto_refresh');
 			} catch (err) { /* localStorage may be blocked in some contexts */ }
 			this.indexingStopping = false;
 			this.stopWPIndexingAutoRefresh();
+			this.stopForumIndexingAutoRefresh();
 
 			const self = this;
 			$.ajax({
@@ -2183,6 +2191,13 @@
 
 			// Add loading state to button
 			$button.addClass('loading').prop('disabled', true);
+
+			// Set localStorage flag for reindex actions so auto-refresh survives page reloads
+			if (action === 'reindex_all' || action === 'clear_and_reindex' || action === 'reindex_images') {
+				try {
+					localStorage.setItem('wpforo_forum_indexing_auto_refresh', '1');
+				} catch (e) { /* localStorage may be blocked */ }
+			}
 
 			// Append form to body and submit
 			$('body').append($form);
@@ -2434,6 +2449,93 @@
 				clearTimeout(this.ragSafetyTimeout);
 				this.ragSafetyTimeout = null;
 			}
+		},
+
+		/**
+		 * Start auto page refresh for forum content indexing (cloud mode).
+		 * Sets localStorage flag so polling survives page reloads.
+		 */
+		startForumIndexingAutoRefresh: function() {
+			try {
+				localStorage.setItem('wpforo_forum_indexing_auto_refresh', '1');
+			} catch (e) { /* localStorage may be blocked */ }
+
+			console.log('Forum indexing: reloading page to start auto-refresh...');
+			window.location.hash = 'rag-status-section';
+			window.location.reload();
+		},
+
+		/**
+		 * Check on page load if forum indexing auto-refresh should continue.
+		 * Polls API and schedules next reload if still indexing.
+		 */
+		checkForumIndexingAutoRefresh: function() {
+			const self = this;
+
+			let inAutoRefresh = false;
+			try {
+				inAutoRefresh = localStorage.getItem('wpforo_forum_indexing_auto_refresh') === '1';
+			} catch (e) { /* localStorage may be blocked */ }
+
+			if (!inAutoRefresh) {
+				return;
+			}
+
+			$.ajax({
+				url: ajaxurl,
+				type: 'POST',
+				data: {
+					action: 'wpforo_ai_get_rag_status',
+					_wpnonce: wpforoAIAdmin.nonce
+				},
+				success: function(response) {
+					if (response.success && response.data) {
+						const cronActive = response.data.pending_cron_jobs && response.data.pending_cron_jobs.is_actively_processing;
+						const hasPendingJobs = response.data.pending_cron_jobs && response.data.pending_cron_jobs.has_pending_jobs;
+						const isActivelyProcessing = response.data.is_indexing || cronActive || hasPendingJobs;
+
+						if (isActivelyProcessing) {
+							console.log('Forum indexing in progress, will refresh in 20 seconds...');
+							self._forumAutoRefreshTimeout = setTimeout(function() {
+								window.location.hash = 'rag-status-section';
+								window.location.reload();
+							}, 20000);
+						} else {
+							console.log('Forum indexing complete, final reload');
+							self.stopForumIndexingAutoRefresh();
+							window.location.hash = 'rag-status-section';
+							window.location.reload();
+						}
+					}
+				},
+				error: function() {
+					self.stopForumIndexingAutoRefresh();
+				}
+			});
+		},
+
+		/**
+		 * Stop forum indexing auto page refresh and clear the flag.
+		 */
+		stopForumIndexingAutoRefresh: function() {
+			try {
+				localStorage.removeItem('wpforo_forum_indexing_auto_refresh');
+			} catch (e) { /* localStorage may be blocked */ }
+
+			if (this._forumAutoRefreshTimeout) {
+				clearTimeout(this._forumAutoRefreshTimeout);
+				this._forumAutoRefreshTimeout = null;
+			}
+		},
+
+		/**
+		 * Stop WP indexing auto refresh (stub for cleanup handler).
+		 * The actual implementation lives in ai-features-wp-indexing.js.
+		 */
+		stopWPIndexingAutoRefresh: function() {
+			try {
+				localStorage.removeItem('wpforo_wp_indexing_auto_refresh');
+			} catch (e) { /* localStorage may be blocked */ }
 		},
 
 		/**
@@ -2691,9 +2793,10 @@
 					if (response.success) {
 						console.log('Local indexing started:', response.data);
 
-						// Reload page — checkLocalIndexingProgress() will detect
-						// the queue on load and start the AJAX batch loop
-						window.location.reload();
+						// Use auto-refresh mechanism for consistent UX with cloud mode.
+						// Sets localStorage flag and reloads; checkForumIndexingAutoRefresh()
+						// will continue refreshing every 20s while indexing is in progress.
+						WpForoAI.startForumIndexingAutoRefresh();
 					} else {
 						const errorMsg = response.data && response.data.message
 							? response.data.message

@@ -199,13 +199,9 @@ class AIWordPressIndexer {
 	 * @return array Array of post type objects with name, label, and count
 	 */
 	public function get_public_post_types() {
-		$post_types = get_post_types(
-			[
-				'public'             => true,
-				'publicly_queryable' => true,
-			],
-			'objects'
-		);
+        // 'publicly_queryable' => true, 'public' => true
+        $post_type_arguments = apply_filters('wpforo_ai_wp_indexing_post_types', [ 'public' => true ]);
+		$post_types = get_post_types($post_type_arguments, 'objects');
 
 		// Also include 'page' which has publicly_queryable = false by default
 		$page_type = get_post_type_object( 'page' );
@@ -281,22 +277,31 @@ class AIWordPressIndexer {
 		// For large sets, sample to estimate (check first 500)
 		$post_ids        = $query->posts;
 		$total_posts     = count( $post_ids );
-		$sample_size     = min( 500, $total_posts );
-		$indexable_count = 0;
+        
+        if( apply_filters('wpforo_ai_filter_indexable_post_types', false, $post_ids, $post_type, $total_posts) ){
+            $sample_size     = min( 100, $total_posts );
+            $indexable_count = 0;
 
-		// Check sample of posts
-		for ( $i = 0; $i < $sample_size; $i++ ) {
-			$post = get_post( $post_ids[ $i ] );
-			if ( $post && $this->is_content_indexable( $post ) ) {
-				$indexable_count++;
-			}
-		}
+            // Check sample of posts
+            for ( $i = 0; $i < $sample_size; $i++ ) {
+                $post = get_post( $post_ids[ $i ] );
+                if ( $post && $this->is_content_indexable( $post ) ) {
+                    $indexable_count++;
+                }
+            }
 
-		// If we sampled, extrapolate the count
-		if ( $sample_size < $total_posts ) {
-			$ratio           = $indexable_count / $sample_size;
-			$indexable_count = (int) round( $total_posts * $ratio );
-		}
+            // If we sampled, extrapolate the count
+            if ( $sample_size < $total_posts ) {
+                $ratio           = $indexable_count / $sample_size;
+                $indexable_count = (int) round( $total_posts * $ratio );
+            }
+        } else {
+
+            // Keep the original number of post type items
+            $indexable_count = $total_posts;
+        }
+
+
 
 		set_transient( $cache_key, $indexable_count, 5 * MINUTE_IN_SECONDS );
 

@@ -485,7 +485,7 @@ class AIClient {
 		}
 
 		// Store last sync time for debugging
-		$this->update_global_option( 'ai_subscription_synced_at', current_time( 'mysql' ) );
+		$this->update_global_option( 'ai_subscription_synced_at', current_time( 'mysql', true ) );
 	}
 
 	/**
@@ -784,7 +784,7 @@ class AIClient {
 		if ( ! empty( $response['success'] ) && isset( $response['credits_added'] ) ) {
 			update_option( 'wpforo_ai_bonus_credits_claimed', true );
 			update_option( 'wpforo_ai_bonus_credits_amount', (int) $response['credits_added'] );
-			update_option( 'wpforo_ai_bonus_credits_claimed_at', current_time( 'mysql' ) );
+			update_option( 'wpforo_ai_bonus_credits_claimed_at', current_time( 'mysql', true ) );
 
 			$this->log_info( 'bonus_credits_granted', [
 				'credits_added' => $response['credits_added'],
@@ -938,7 +938,9 @@ class AIClient {
 	 * @return array|WP_Error Backend response or error object
 	 */
 	public function cancel_indexing() {
-		return $this->post( '/rag/cancel', [], 30 );
+		// Note: /rag/cancel was replaced by /rag/cleanup-jobs in backend
+		// Both set indexing_cancel_until flag, cleanup-jobs also finalizes stuck jobs
+		return $this->post( '/rag/cleanup-jobs', [], 30 );
 	}
 
 	/**
@@ -4381,6 +4383,8 @@ class AIClient {
 			$this->log_info( 'topics_indexed_hash_updated', [ 'count' => $updated ] );
 			// Clear topic cache to reflect indexed status
 			wpforo_clean_cache( 'topic' );
+			// Clear indexing stats cache for fresh counts in UI
+			WPF()->vector_storage->clear_indexing_stats_cache();
 		}
 
 		return (int) $updated;
