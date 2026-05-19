@@ -1376,6 +1376,9 @@
 			// Check for in-progress cloud indexing auto-refresh (survives page reloads)
 			this.checkForumIndexingAutoRefresh();
 
+			// Load indexing breakdown asynchronously (cached 1 day)
+			this.loadIndexingBreakdown();
+
 			// Note: Polling is started from PHP inline script based on server-side $is_indexing status
 			// No need to start it here to avoid duplicate polling
 		},
@@ -1635,6 +1638,89 @@
 					$button.prop('disabled', false);
 				}
 			});
+		},
+
+		/**
+		 * Load indexing breakdown via AJAX (private/unapproved topic counts)
+		 * Data is cached server-side for 1 day to avoid slow GROUP BY queries
+		 */
+		loadIndexingBreakdown: function() {
+			const $container = $('#wpforo-ai-indexing-breakdown-container');
+			if (!$container.length) {
+				return;
+			}
+
+			const self = this;
+			const loadingText = $container.data('loading-text') || 'Loading...';
+
+			// Show small loading spinner
+			$container.html('<span class="wpforo-ai-breakdown-loading"><span class="dashicons dashicons-update wpforo-spin"></span> ' + loadingText + '</span>');
+
+			$.ajax({
+				url: wpforoAIAdmin.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'wpforo_ai_get_indexing_breakdown',
+					nonce: wpforoAIAdmin.nonce
+				},
+				success: function(response) {
+					if (response.success && response.data) {
+						self.renderIndexingBreakdown($container, response.data);
+					} else {
+						$container.empty();
+					}
+				},
+				error: function() {
+					$container.empty();
+				}
+			});
+		},
+
+		/**
+		 * Render the indexing breakdown HTML
+		 */
+		renderIndexingBreakdown: function($container, data) {
+			const privateCount = parseInt(data.private, 10) || 0;
+			const unapprovedCount = parseInt(data.unapproved, 10) || 0;
+
+			if (privateCount === 0 && unapprovedCount === 0) {
+				$container.empty();
+				return;
+			}
+
+			const excludedCount = privateCount + unapprovedCount;
+			const excludedText = $container.data('excluded-text') || '%s topics are excluded from indexing';
+			const introText = $container.data('intro-text') || 'The following topics are automatically excluded from AI indexing:';
+			const privateText = $container.data('private-text') || 'private topics - these are only visible to their authors';
+			const unapprovedText = $container.data('unapproved-text') || 'unapproved topics - these will be indexed once approved by moderators';
+			const noteText = $container.data('note-text') || 'Private topics are never indexed to protect user privacy. Unapproved topics will be automatically indexed when approved.';
+
+			let html = '<div class="wpforo-ai-indexing-breakdown">';
+			html += '<details class="wpforo-ai-breakdown-details">';
+			html += '<summary class="wpforo-ai-breakdown-summary">';
+			html += '<span class="dashicons dashicons-info-outline"></span>';
+			html += excludedText.replace('%s', '<strong>' + this.formatNumber(excludedCount) + '</strong>');
+			html += '<span class="dashicons dashicons-arrow-down-alt2 wpforo-ai-breakdown-arrow"></span>';
+			html += '</summary>';
+			html += '<div class="wpforo-ai-breakdown-content">';
+			html += '<p class="wpforo-ai-breakdown-intro">' + introText + '</p>';
+			html += '<ul class="wpforo-ai-breakdown-list">';
+
+			if (privateCount > 0) {
+				html += '<li><span class="dashicons dashicons-lock"></span>';
+				html += '<strong>' + this.formatNumber(privateCount) + '</strong> ' + privateText + '</li>';
+			}
+
+			if (unapprovedCount > 0) {
+				html += '<li><span class="dashicons dashicons-clock"></span>';
+				html += '<strong>' + this.formatNumber(unapprovedCount) + '</strong> ' + unapprovedText + '</li>';
+			}
+
+			html += '</ul>';
+			html += '<p class="wpforo-ai-breakdown-note"><em>' + noteText + '</em></p>';
+			html += '</div></details></div>';
+
+			$container.html(html);
 		},
 
 		// WordPress Content Indexing Methods have been moved to

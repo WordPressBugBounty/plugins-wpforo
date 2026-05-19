@@ -76,14 +76,15 @@ function wpforo_activation() {
 	}
 
 	#################################################################
-	// Schedule AI Cache Cleanup Cron ///////////////////////////////
-	WPF()->ai_client->schedule_cache_cleanup();
+	// Reconcile AI crons against current connection state.
+	// Connected tenants get the recurring AI maintenance crons; everyone
+	// else (free installs that never enabled AI, disconnected accounts) gets
+	// stale AI events cleared out of wp_options.cron.
+	WPF()->ai_client->sync_cron_state();
 
-	// Schedule daily subscription sync (updates cached subscription status)
-	WPF()->ai_client->schedule_daily_subscription_sync();
-
-	// Schedule AI Moderation Log Cleanup Cron
-	\wpforo\classes\AIContentModeration::get_instance()->schedule_moderation_cleanup();
+	// Schedule Email Queue Cleanup Cron (non-AI, always on)
+	WPF()->email_queue->schedule_cleanup_cron();
+	WPF()->email_queue->reset_stuck_processing();
 
 	// Note: AI Pending Topics Indexing Cron is scheduled when user
 	// enables auto-indexing in the admin settings (disabled by default)

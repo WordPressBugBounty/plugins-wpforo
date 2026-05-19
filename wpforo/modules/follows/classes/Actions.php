@@ -67,7 +67,7 @@ class Actions {
 				if( ! WPF()->topic->view_access( $topic, $user ) ) continue;
 				
 				$sbj_msg = WPF()->sbscrb->get_sbj_msg( 'user_follow', $forum, $topic, $owner, $user, $follow['unfollow_link'] );
-				wpforo_send_email( $user['user_email'], $sbj_msg['sbj'], $sbj_msg['msg'] );
+				wpforo_send_email( $user['user_email'], $sbj_msg['sbj'], $sbj_msg['msg'], '', 'follow', (int) $topic['topicid'] );
 				
 				WPF()->ram_cache->set( $key, true );
 			}
@@ -97,7 +97,7 @@ class Actions {
 				if( ! WPF()->post->view_access( $post, $user ) ) continue;
 				
 				$sbj_msg = WPF()->sbscrb->get_sbj_msg( 'user_follow', $topic, $post, $owner, $user, $follow['unfollow_link'] );
-				wpforo_send_email( $user['user_email'], $sbj_msg['sbj'], $sbj_msg['msg'] );
+				wpforo_send_email( $user['user_email'], $sbj_msg['sbj'], $sbj_msg['msg'], '', 'follow', (int) $post['postid'] );
 				
 				WPF()->ram_cache->set( $key, true );
 			}

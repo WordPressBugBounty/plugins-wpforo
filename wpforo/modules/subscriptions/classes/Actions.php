@@ -3,6 +3,8 @@
 namespace wpforo\modules\subscriptions\classes;
 
 class Actions {
+	private $is_approval_context = false;
+
 	public function __construct() {
 		$this->init_hooks();
 	}
@@ -170,6 +172,7 @@ class Actions {
 	}
 
 	public function after_post_approve( $post ) {
+		$this->is_approval_context = true;
 		if( (int) wpfval($post, 'is_first_post') ){
 			if( ($topicid = wpforo_bigintval(wpfval($post, 'topicid')))
 				&& ($topic = WPF()->topic->get_topic( $topicid ))
@@ -188,6 +191,7 @@ class Actions {
 				$this->after_add_post( $post, $topic );
 			}
 		}
+		$this->is_approval_context = false;
 	}
 
 	public function after_delete_topic( $topic ) {
@@ -201,10 +205,10 @@ class Actions {
 	public function after_add_topic( $topic, $forum ) {
 		if( ! wpfval( $topic, 'url' ) )       $topic['url'] = wpforo_topic( $topic['topicid'], 'url' );
 		if( ! wpfkey( $topic, 'body' ) ) $topic['body'] = wpforo_post( $topic['first_postid'], 'body' );
-		
+
 		$topic = apply_filters( 'wpforo_sbscrb_after_add_topic__topic_filter', $topic );
 		$forum = apply_filters( 'wpforo_sbscrb_after_add_topic__forum_filter', $forum );
-		
+
 		$owner = wpforo_member( $topic );
 
 		$forums_sbs  = WPF()->sbscrb->get_subscribes( [ 'itemid' => 0,                 'type' => [ 'forums', 'forums-topics' ] ] );
@@ -227,8 +231,11 @@ class Actions {
 
 				if( ! WPF()->topic->view_access( $topic, $user ) ) continue;
 
+				if( $this->is_approval_context && WPF()->perm->forum_can( 'au', $topic['forumid'], wpfval( $user, 'groupids' ) ?: [] ) ) continue;
+
 				$unsubscribe_link = WPF()->sbscrb->get_unsubscribe_link( $subscriber['confirmkey'] );
 			} else {
+				if( $this->is_approval_context ) continue;
 				$user           = [ 'display_name' => $subscriber, 'user_email' => $subscriber ];
 				$unsubscribe_link = '';
 			}
@@ -246,7 +253,7 @@ class Actions {
                     if( wpforo_is_users_same( $user ) ) continue;
 
                     $sbj_msg = WPF()->sbscrb->get_sbj_msg( 'new_topic', $forum, $topic, $owner, $user, $unsubscribe_link );
-                    wpforo_send_email( $user['user_email'], $sbj_msg['sbj'], $sbj_msg['msg'] );
+                    wpforo_send_email( $user['user_email'], $sbj_msg['sbj'], $sbj_msg['msg'], '', 'subscription', (int) $topic['topicid'] );
 
                     WPF()->ram_cache->set( $key, true );
                 }
@@ -257,7 +264,7 @@ class Actions {
 	public function after_add_post( $post, $topic ) {
 		$post  = apply_filters( 'wpforo_sbscrb_after_add_post__post_filter',  $post  );
 		$topic = apply_filters( 'wpforo_sbscrb_after_add_post__topic_filter', $topic );
-		
+
 		$owner       = wpforo_member( $post );
 		$forums_sbs  = WPF()->sbscrb->get_subscribes( [ 'itemid' => 0, 'type' => 'forums-topics' ] );
 		$forum_sbs   = WPF()->sbscrb->get_subscribes( [ 'itemid' => $post['forumid'], 'type' => 'forum-topic' ] );
@@ -280,8 +287,11 @@ class Actions {
 
 				if( ! WPF()->post->view_access( $post, $user ) ) continue;
 
+				if( $this->is_approval_context && WPF()->perm->forum_can( 'au', $post['forumid'], wpfval( $user, 'groupids' ) ?: [] ) ) continue;
+
 				$unsubscribe_link = WPF()->sbscrb->get_unsubscribe_link( $subscriber['confirmkey'] );
 			} else {
+				if( $this->is_approval_context ) continue;
 				$user           = [ 'display_name' => $subscriber, 'user_email' => $subscriber ];
 				$unsubscribe_link = '';
 			}
@@ -298,7 +308,7 @@ class Actions {
 				if( wpforo_is_users_same( $user ) ) continue;
 
 				$sbj_msg = WPF()->sbscrb->get_sbj_msg( 'new_post', $topic, $post, $owner, $user, $unsubscribe_link );
-				wpforo_send_email( $user['user_email'], $sbj_msg['sbj'], $sbj_msg['msg'] );
+				wpforo_send_email( $user['user_email'], $sbj_msg['sbj'], $sbj_msg['msg'], '', 'subscription', (int) $post['postid'] );
 
 				WPF()->ram_cache->set( $key, true );
 			}

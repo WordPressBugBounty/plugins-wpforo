@@ -165,7 +165,7 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
                 <tr>
                     <td style="padding-bottom: 10px;">
                         <label for="langid" style="font-weight: bold;"><?php _e( 'Manage Phrases using XML File', 'wpforo' ); ?> <a
-                                    href="https://wpforo.com/docs/wpforo-v2/wpforo-settings/general-settings/#xml-language" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"><i
+                                    href="https://wpforo.com/docs/wpforo-v3/wpforo-settings/general-settings/#xml-language" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"><i
                                         class="far fa-question-circle"></i></a></label>
                         <p class="wpf-info"><?php _e(
                                     'This option is only related to XML language files. You should upload a translation XML file to have a new language option in this drop-down. If you are using PO/MO translation files you should change WordPress Language in Dashboard > Settings admin page to load according translation for wpForo.',

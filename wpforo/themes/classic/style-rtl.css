@@ -2150,6 +2150,8 @@ body.wpf-dark #wpforo-dialog-extra-wrap #wpforo-dialog{background-color: #000; c
 #wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-card{padding: 16px;  transition: box-shadow 0.2s ease;}
 #wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-title{font-size: 15px; font-weight: 600; line-height: 1.4; margin-bottom: 8px;}
 #wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-title a{text-decoration: none;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-title-text{color: inherit;}
+#wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-knowledge-badge{background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: 500;}
 #wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-postid{font-size: 12px; font-weight: 400; opacity: 0.55; margin-right: 4px; display: inline-block !important; vertical-align: text-bottom;}
 #wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-meta{display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; margin-bottom: 10px;}
 #wpforo #wpforo-wrap .wpf-ai-tab-content .wpf-ai-search-form .wpf-ai-results .wpf-ai-result-meta span{display: inline-flex; align-items: center; gap: 6px;}
@@ -2429,6 +2431,8 @@ body.wpf-dark #wpforo-dialog-extra-wrap #wpforo-dialog{background-color: #000; c
 #wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference{vertical-align: super; font-size: 11px; line-height: 0;}
 #wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference a{text-decoration: none;}
 #wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-reference svg{fill: transparent}
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-kb-ref span{background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 1px 4px; border-radius: 3px; font-size: 10px; cursor: help;}
+#wpforo #wpforo-wrap .wpf-ai-chat-msg-content .wpf-ai-chat-kb-ref svg{stroke: #fff;}
 #wpforo #wpforo-wrap .wpf-ai-chat-conversations .wpf-ai-chat-empty,
 #wpforo #wpforo-wrap .wpf-ai-chat-conversations .wpf-ai-chat-error{display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; opacity: 0.6;}
 #wpforo #wpforo-wrap .wpf-ai-chat-conversations .wpf-ai-chat-loading{display: flex; align-items: center; justify-content: center; padding: 20px;}

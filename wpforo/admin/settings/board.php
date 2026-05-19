@@ -13,7 +13,7 @@ WPF()->settings->form_field('board', 'url_structure');
 <div class="wpf-subtitle">
     <span class="dashicons dashicons-admin-links"></span> <?php _e( 'Permalinks', 'wpforo' ) ?>
     <div class="wpf-opt-doc" style="float: right; font-size: 16px; margin-right: -8px;">
-        <a href="https://wpforo.com/docs/wpforo-v2/settings/board-settings/#permalinks" title="<?php _e('Read the documentation', 'wpforo') ?>" target="_blank"><i class="far fa-question-circle"></i></a>
+        <a href="https://wpforo.com/docs/wpforo-v3/settings/board-settings/#permalinks" title="<?php _e('Read the documentation', 'wpforo') ?>" target="_blank"><i class="far fa-question-circle"></i></a>
     </div>
 </div>
 

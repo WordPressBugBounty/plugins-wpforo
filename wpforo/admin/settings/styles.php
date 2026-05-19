@@ -9,7 +9,7 @@ WPF()->settings->form_field( 'styles', 'custom_css' );
 $colorids = apply_filters( 'wpforo_manageable_colorids', [ 1, 3, 9, 11, 12, 14, 15, 18 ] );
 ?>
 
-<h3 style="margin:20px 0 0; padding:10px 0; border-bottom:3px solid #F5F5F5; font-size: 15px;" data-wpf-opt="style"><?php _e( 'Forum Styles', 'wpforo' ); ?> &nbsp;<a href="https://wpforo.com/docs/wpforo-v2/wpforo-settings/style-settings/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank" style="font-size: 14px;"><i class="far fa-question-circle"></i></a> &nbsp;|&nbsp; <a href="https://wpforo.com/docs/wpforo-v2/forum-themes/theme-styles/" target="_blank"
+<h3 style="margin:20px 0 0; padding:10px 0; border-bottom:3px solid #F5F5F5; font-size: 15px;" data-wpf-opt="style"><?php _e( 'Forum Styles', 'wpforo' ); ?> &nbsp;<a href="https://wpforo.com/docs/wpforo-v3/wpforo-settings/style-settings/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank" style="font-size: 14px;"><i class="far fa-question-circle"></i></a> &nbsp;|&nbsp; <a href="https://wpforo.com/docs/wpforo-v3/forum-themes/theme-styles/" target="_blank"
                                                                                                                                                                                                                                                                                                                                                                                                          style="font-size:13px; text-decoration:none;"><?php _e( 'Colors Documentation', 'wpforo' ); ?> &raquo;</a>
 </h3>
 <table style="width:95%; border:none; padding:5px; margin-left:10px; margin-top:15px;">

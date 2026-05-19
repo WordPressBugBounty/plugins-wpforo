@@ -743,7 +743,7 @@ class Actions {
 				) . ' )';
 			
 			add_filter( 'wp_mail_content_type', 'wpforo_set_html_content_type', 999 );
-			if( @wpforo_send_email( $admin_email, $sbj, $msg, wpforo_admin_mail_headers() ) ) {
+			if( @wpforo_send_email( $admin_email, $sbj, $msg, wpforo_admin_mail_headers(), 'approval_request' ) ) {
 				WPF()->notice->add( 'Message has been sent', 'success' );
 			} else {
 				WPF()->notice->add( 'Can\'t send report email', 'error' );

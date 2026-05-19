@@ -153,7 +153,7 @@ $boardid = (int) wpfval( $_GET, 'boardid' );
                 <div class="wpf-board-box">
                     <div class="wpf-board-is_standalone">
                         <label>
-                            <?php _e( 'Turn WordPress to this forum board', 'wpforo' ) ?> <a href="https://wpforo.com/docs/wpforo-v2/getting-started/forum-page/turn-wordpress-to-wpforo/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"><i class="far fa-question-circle"></i></a>
+                            <?php _e( 'Turn WordPress to this forum board', 'wpforo' ) ?> <a href="https://wpforo.com/docs/wpforo-v3/getting-started/forum-page/turn-wordpress-to-wpforo/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"><i class="far fa-question-circle"></i></a>
                             <p class="wpf-info"><?php _e( 'This option will disable WordPress on front-end. Only forum pages and excluded post/pages will be available. wpForo will look like as a stand-alone forum.', 'wpforo' ) ?></p>
                         </label>
                         <div class="wpf-switch-field">

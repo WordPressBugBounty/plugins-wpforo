@@ -64,7 +64,7 @@ class Logs {
 			if( wpforo_setting( 'legal', 'cookies' ) ) $read_ids = wpforo_getcookie( $key, false );
 			if( wpfval( WPF()->current_usermeta, $key ) ) $read_db_ids = wpforo_current_usermeta( $key );
 			if( ! $read_ids || ! is_array( $read_ids ) ) $read_ids = [];
-			if( ! $read_db_ids || ! is_array( $read_ids ) ) $read_db_ids = [];
+			if( ! $read_db_ids || ! is_array( $read_db_ids ) ) $read_db_ids = [];
 
 			if( empty( $read_ids ) || ( $login && empty( $read_db_ids ) ) ) {
 				if( empty( $read_ids ) ) $log = true;

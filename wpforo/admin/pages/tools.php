@@ -7,9 +7,11 @@
     <div id="icon-users" class="icon32"><br></div>
 	<?php
 	$tabs = [
-		'debug'     => __( 'Debug', 'wpforo' ),
-		'tables'    => __( 'Database Tables', 'wpforo' ),
-		'misc'      => __( 'Admin Note', 'wpforo' )
+		'debug'       => __( 'Debug', 'wpforo' ),
+		'tables'      => __( 'Database Tables', 'wpforo' ),
+		'misc'        => __( 'Admin Note', 'wpforo' ),
+        'email_queue' => __( 'Email Queue', 'wpforo' ),
+		'cron_jobs'   => __( 'Cron Jobs', 'wpforo' ),
 	];
 	wpforo_admin_tools_tabs( $tabs, ( isset( $_GET['tab'] ) ? $_GET['tab'] : 'debug' ) );
 	?>
@@ -23,6 +25,12 @@
 				break;
 				case 'tables':
 					$includefile = WPFORO_DIR . '/admin/tools-tabs/tables.php';
+				break;
+				case 'email_queue':
+					$includefile = WPFORO_DIR . '/admin/tools-tabs/email-queue.php';
+				break;
+				case 'cron_jobs':
+					$includefile = WPFORO_DIR . '/admin/tools-tabs/cron-jobs.php';
 				break;
 			}
 		}

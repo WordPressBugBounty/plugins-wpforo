@@ -132,30 +132,52 @@ class Revisions {
 		return $args;
 	}
 	
+	/**
+	 * Build prepared IN() clause for string values using $wpdb->prepare()
+	 *
+	 * @param string $column Column name (already escaped with backticks)
+	 * @param array  $values Array of string values
+	 * @param bool   $not    Whether to use NOT IN instead of IN
+	 *
+	 * @return string|null Prepared SQL fragment or null if no valid values
+	 */
+	private function build_string_in_clause( $column, $values, $not = false ) {
+		if( ! is_array( $values ) || empty( $values ) ) {
+			return null;
+		}
+		// Filter out empty strings and reindex
+		$values = array_values( array_filter( $values, function( $v ) {
+			return is_string( $v ) && strlen( $v ) > 0;
+		} ) );
+		if( empty( $values ) ) {
+			return null;
+		}
+		$count        = count( $values );
+		$placeholders = implode( ', ', array_fill( 0, $count, '%s' ) );
+		$operator     = $not ? 'NOT IN' : 'IN';
+
+		return WPF()->db->prepare( "{$column} {$operator}({$placeholders})", ...$values );
+	}
+
 	public function build_sql_where( $args ) {
 		$where = '';
 		$args  = $this->parse_args( $args );
-		
+
 		$wheres = [];
+
+		// Integer fields - safe with wpforo_bigintval (casts to int)
 		if( ! empty( $args['include'] ) ) {
 			$wheres[] = "`revisionid` IN(" . implode( ',', array_map( 'wpforo_bigintval', $args['include'] ) ) . ")";
 		}
 		if( ! empty( $args['exclude'] ) ) {
 			$wheres[] = "`revisionid` NOT IN(" . implode( ',', array_map( 'wpforo_bigintval', $args['exclude'] ) ) . ")";
 		}
-		
+
 		if( ! empty( $args['userids_include'] ) ) {
 			$wheres[] = "`userid` IN(" . implode( ',', array_map( 'wpforo_bigintval', $args['userids_include'] ) ) . ")";
 		}
 		if( ! empty( $args['userids_exclude'] ) ) {
 			$wheres[] = "`userid` NOT IN(" . implode( ',', array_map( 'wpforo_bigintval', $args['userids_exclude'] ) ) . ")";
-		}
-		
-		if( ! empty( $args['textareaids_include'] ) ) {
-			$wheres[] = "`textareaid` IN('" . implode( "','", array_map( 'esc_sql', $args['textareaids_include'] ) ) . "')";
-		}
-		if( ! empty( $args['textareaids_exclude'] ) ) {
-			$wheres[] = "`textareaid` IN('" . implode( "','", array_map( 'esc_sql', $args['textareaids_exclude'] ) ) . "')";
 		}
 
 		if( ! empty( $args['postids_include'] ) ) {
@@ -165,24 +187,32 @@ class Revisions {
 			$wheres[] = "`postid` NOT IN(" . implode( ',', array_map( 'wpforo_bigintval', $args['postids_exclude'] ) ) . ")";
 		}
 
-		if( ! empty( $args['urls_include'] ) ) {
-			$wheres[] = "`url` IN('" . implode( "','", array_map( 'esc_sql', $args['urls_include'] ) ) . "')";
+		// String fields - use $wpdb->prepare() with placeholders for SQL injection protection
+		if( $clause = $this->build_string_in_clause( '`textareaid`', $args['textareaids_include'], false ) ) {
+			$wheres[] = $clause;
 		}
-		if( ! empty( $args['urls_exclude'] ) ) {
-			$wheres[] = "`url` IN('" . implode( "','", array_map( 'esc_sql', $args['urls_exclude'] ) ) . "')";
+		if( $clause = $this->build_string_in_clause( '`textareaid`', $args['textareaids_exclude'], true ) ) {
+			$wheres[] = $clause;
 		}
 
-		if( ! empty( $args['emails_include'] ) ) {
-			$wheres[] = "`email` IN('" . implode( "','", array_map( 'esc_sql', $args['emails_include'] ) ) . "')";
+		if( $clause = $this->build_string_in_clause( '`url`', $args['urls_include'], false ) ) {
+			$wheres[] = $clause;
 		}
-		if( ! empty( $args['emails_exclude'] ) ) {
-			$wheres[] = "`email` IN('" . implode( "','", array_map( 'esc_sql', $args['emails_exclude'] ) ) . "')";
+		if( $clause = $this->build_string_in_clause( '`url`', $args['urls_exclude'], true ) ) {
+			$wheres[] = $clause;
 		}
-		
+
+		if( $clause = $this->build_string_in_clause( '`email`', $args['emails_include'], false ) ) {
+			$wheres[] = $clause;
+		}
+		if( $clause = $this->build_string_in_clause( '`email`', $args['emails_exclude'], true ) ) {
+			$wheres[] = $clause;
+		}
+
 		if( $wheres ) {
 			$where = " WHERE " . implode( " AND ", $wheres );
 		}
-		
+
 		return $where;
 	}
 	

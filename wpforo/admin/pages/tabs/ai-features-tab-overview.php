@@ -1349,6 +1349,18 @@ function wpforo_ai_get_all_features() {
 			'plan'        => 'business',
 			'preview'     => false,
 		],
+		'custom_knowledge_indexing' => [
+			'name'        => __( 'Custom Knowledge Indexing', 'wpforo' ),
+			'description' => __( 'Upload and index custom knowledge files (JSON, Markdown, Text) to enhance AI responses with your expert documentation, FAQs, and specialized content. Perfect for product manuals, internal guides, and domain-specific knowledge bases.', 'wpforo' ),
+			'plan'        => 'business',
+			'preview'     => false,
+		],
+		'file_indexing' => [
+			'name'        => __( 'File Indexing (TXT, MD, JSON, PDF)', 'wpforo' ),
+			'description' => __( 'Index plain text, Markdown, JSON, and PDF files into the AI knowledge base for richer answers from custom documentation and reference material. Scanned PDFs are auto-OCR\'d when the text layer is too sparse.', 'wpforo' ),
+			'plan'        => 'business',
+			'preview'     => false,
+		],
 		'developer_features'   => [
 			'name'        => __( 'Developer Features', 'wpforo' ),
 			'description' => __( 'Advanced developer tools and API access for custom integrations.', 'wpforo' ),
@@ -1433,6 +1445,8 @@ function wpforo_ai_get_feature_icon( $feature_id ) {
 		'wordpress_content_indexing' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
 		'custom_post_types_indexing' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>',
 		'woocommerce_products_indexing' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>',
+		'custom_knowledge_indexing' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><path d="M8 11h8"/><path d="M8 7h6"/><circle cx="12" cy="15" r="1"/></svg>',
+		'file_indexing' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>',
 		// Enterprise Features
 		'developer_features' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
 		'rest_api_access' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/><circle cx="18" cy="7" r="3"/><circle cx="6" cy="11" r="3"/></svg>',
@@ -1966,6 +1980,20 @@ function wpforo_ai_render_pricing_table( $tenant_id, $subscription = [] ) {
 				</tr>
 				<tr class="feature-item">
 					<td><?php _e( 'WooCommerce indexing', 'wpforo' ); echo '<span class="coming-soon-badge">' . esc_html__( 'Coming Soon', 'wpforo' ) . '</span>';  ?></td>
+					<td><span class="crossmark">✗</span></td>
+					<td><span class="crossmark">✗</span></td>
+					<td><span class="checkmark">✓</span></td>
+					<td><span class="checkmark">✓</span></td>
+				</tr>
+				<tr>
+					<td><strong><?php _e( 'Custom Knowledge Indexing', 'wpforo' ); ?></strong></td>
+					<td><span class="crossmark">✗</span></td>
+					<td><span class="crossmark">✗</span></td>
+					<td><span class="checkmark">✓</span></td>
+					<td><span class="checkmark">✓</span></td>
+				</tr>
+				<tr class="feature-item">
+					<td><?php _e( 'File Indexing (TXT, MD, JSON, PDF)', 'wpforo' ); ?></td>
 					<td><span class="crossmark">✗</span></td>
 					<td><span class="crossmark">✗</span></td>
 					<td><span class="checkmark">✓</span></td>

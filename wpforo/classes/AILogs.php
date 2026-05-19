@@ -26,6 +26,7 @@ class AILogs {
 	const ACTION_SUGGEST_REPLY      = 'suggest_reply';
 	const ACTION_ANALYTICS_INSIGHTS = 'analytics_insights';
 	const ACTION_CONTENT_INDEXING   = 'content_indexing';
+	const ACTION_KNOWLEDGE_INDEXING = 'knowledge_indexing';
 	const ACTION_BATCH_EMBEDDING    = 'batch_embedding';
 	const ACTION_QUEUE_PROCESSING   = 'queue_processing';
 	const ACTION_SPAM_DETECTION     = 'spam_detection';
@@ -1541,6 +1542,7 @@ class AILogs {
 			self::ACTION_SUGGEST_REPLY      => __( 'Suggest Reply', 'wpforo' ),
 			self::ACTION_ANALYTICS_INSIGHTS => __( 'Analytics Insights', 'wpforo' ),
 			self::ACTION_CONTENT_INDEXING   => __( 'Content Indexing', 'wpforo' ),
+			self::ACTION_KNOWLEDGE_INDEXING => __( 'Knowledge Indexing', 'wpforo' ),
 			self::ACTION_BATCH_EMBEDDING    => __( 'Batch Embedding', 'wpforo' ),
 			self::ACTION_QUEUE_PROCESSING   => __( 'Queue Processing', 'wpforo' ),
 			self::ACTION_SPAM_DETECTION     => __( 'Spam Detection', 'wpforo' ),
@@ -1570,6 +1572,7 @@ class AILogs {
 			self::ACTION_SUGGEST_REPLY      => __( 'Suggest Reply', 'wpforo' ),
 			self::ACTION_ANALYTICS_INSIGHTS => __( 'Analytics Insights', 'wpforo' ),
 			self::ACTION_CONTENT_INDEXING   => __( 'Content Indexing', 'wpforo' ),
+			self::ACTION_KNOWLEDGE_INDEXING => __( 'Knowledge Indexing', 'wpforo' ),
 			self::ACTION_SPAM_DETECTION     => __( 'Spam Detection', 'wpforo' ),
 			self::ACTION_MODERATION         => __( 'Moderation', 'wpforo' ),
 			self::ACTION_TASK_EXECUTION     => __( 'Task Execution', 'wpforo' ),

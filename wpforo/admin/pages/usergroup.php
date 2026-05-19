@@ -34,7 +34,7 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
                         </th>
 					<?php endif; ?>
                     <th scope="col" id="title" class="manage-column column-title" style="padding:10px; font-size:14px; padding-left:15px; font-weight:bold;"><span><?php _e( 'Usergroup', 'wpforo' ) ?> &nbsp;<a
-                                    href="https://wpforo.com/docs/wpforo-v2/members/usergroups-and-permissions/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"
+                                    href="https://wpforo.com/docs/wpforo-v3/members/usergroups-and-permissions/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"
                                     style="font-size: 14px;"><i class="far fa-question-circle"></i></a></span></th>
                     <th scope="col" id="count" class="manage-column column-title" style="padding:10px; font-size:14px; padding-left:15px; font-weight:bold;"><span><?php _e(
 								'Members',
@@ -402,7 +402,7 @@ $wpfaction = wpfval( $_GET, 'wpfaction' );
                             <div class="wpf-label-big">
 								<?php _e( 'Usergroup Name', 'wpforo' );
 								if( $group['groupid'] === 4 ) echo '<span>: ' . __( 'Guest', 'wpforo' ) . '</span>'; ?>
-                                &nbsp;<a href="https://wpforo.com/docs/wpforo-v2/members/usergroups-and-permissions/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"
+                                &nbsp;<a href="https://wpforo.com/docs/wpforo-v3/members/usergroups-and-permissions/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"
                                          style="font-size: 14px;"><i class="far fa-question-circle"></i></a><br>
                             </div>
                             <input name="usergroup[name]" <?php echo $group['groupid'] === 4 ? 'type="hidden"' : 'type="text"'; ?> value="<?php echo esc_attr( $group['name'] ) ?>" required

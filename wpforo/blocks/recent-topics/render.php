@@ -7,7 +7,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
  * @var WP_Block $block The block instance.
  */
 
-$instance = wp_parse_args( $attributes, [
+$default_instance = [
         'boardid'                => 0,
         'title'                  => __( 'Recent Topics', 'wpforo' ),
         'forumids'               => [],
@@ -19,7 +19,19 @@ $instance = wp_parse_args( $attributes, [
         'current_forumid_filter' => false,
         'goto_unread'            => false,
         'refresh_interval'       => 0,
-] );
+];
+
+$allowed_orderby = [ 'created', 'modified', 'posts', 'views' ];
+$allowed_order   = [ 'DESC', 'ASC', 'RAND' ];
+
+$instance = wp_parse_args( $attributes, $default_instance );
+
+if( ! is_string( $instance['orderby'] ) || ! in_array( $instance['orderby'], $allowed_orderby, true ) ) {
+    $instance['orderby'] = $default_instance['orderby'];
+}
+if( ! is_string( $instance['order'] ) || ! in_array( $instance['order'], $allowed_order, true ) ) {
+    $instance['order'] = $default_instance['order'];
+}
 
 // wpForo Recent Topics widget logic
 wp_enqueue_script( 'wpforo-widgets-js' );

@@ -67,7 +67,7 @@ $action = wpfval( $_GET, 'action' );
 
             <div class="wpf-info-bar"
                  style="line-height: 1em; clear:both; padding: 5px 50px; box-sizing: border-box; font-size:15px; display:block; box-shadow:none; margin: 20px 0 10px 0; font-style: italic; background: #FFFFFF; width:100%; position: relative;">
-                <a href="https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-manager/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"
+                <a href="https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-manager/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank"
                    style="font-size: 16px; position: absolute; right: 15px; top: 15px;"><i class="far fa-question-circle"></i></a>
                 <ul style="list-style-type: disc; line-height:18px;">
                     <li style="list-style:none; margin-left:-17px; font-style:normal; font-weight:bold; padding-bottom: 5px;"><i class="fas fa-info-circle" aria-hidden="true"></i>&nbsp; <?php _e(
@@ -308,7 +308,7 @@ $action = wpfval( $_GET, 'action' );
                         <div id="side-sortables" class="meta-box-sortables ui-sortable">
                             <div id="forum_cat" class="postbox">
                                 <h3 class="wpf-box-header"><span><?php _e( 'Forum Options', 'wpforo' ); ?> &nbsp;<a
-                                                href="https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-manager/add-new-forum/#forum-options"
+                                                href="https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-manager/add-new-forum/#forum-options"
                                                 title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank" style="font-size: 14px;"><i class="far fa-question-circle"></i></a></span>
                                 </h3>
                                 <div class="inside">
@@ -369,7 +369,7 @@ $action = wpfval( $_GET, 'action' );
 
                             <div id="forum_permissions" class="postbox">
                                 <h3 class="wpf-box-header"><span><?php _e( 'Forum Permissions', 'wpforo' ); ?> &nbsp;<a
-                                                href="https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-manager/add-new-forum/#forum-permissions"
+                                                href="https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-manager/add-new-forum/#forum-permissions"
                                                 title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank" style="font-size: 14px;"><i class="far fa-question-circle"></i></a></span>
                                 </h3>
                                 <div class="inside">
@@ -423,7 +423,7 @@ $action = wpfval( $_GET, 'action' );
                                             <?php else: ?>
                                                 <?php _e( 'Category layout and cover image', 'wpforo' ); ?>
                                             <?php endif; ?>
-                                            &nbsp;<a href="https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-layouts/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>"
+                                            &nbsp;<a href="https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-layouts/" title="<?php _e( 'Read the documentation', 'wpforo' ) ?>"
                                                      target="_blank" style="font-size: 14px;"><i class="far fa-question-circle"></i></a>
                                         </span>
                                 </h3>
@@ -519,7 +519,7 @@ $action = wpfval( $_GET, 'action' );
 
                             <div id="forum_slug" class="postbox">
                                 <h3 class="wpf-box-header"><span><?php _e( 'Forum Slug', 'wpforo' ); ?> &nbsp;<a
-                                                href="https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-manager/add-new-forum/#forum-slug"
+                                                href="https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-manager/add-new-forum/#forum-slug"
                                                 title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank" style="font-size: 14px;"><i class="far fa-question-circle"></i></a></span>
                                 </h3>
                                 <div class="inside">
@@ -531,7 +531,7 @@ $action = wpfval( $_GET, 'action' );
 
                             <div id="forum_icon" class="postbox">
                                 <h3 class="wpf-box-header"><span><?php _e( 'Forum Icon', 'wpforo' ); ?> &nbsp;<a
-                                                href="https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-manager/add-new-forum/#forum-icon"
+                                                href="https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-manager/add-new-forum/#forum-icon"
                                                 title="<?php _e( 'Read the documentation', 'wpforo' ) ?>" target="_blank" style="font-size: 14px;"><i class="far fa-question-circle"></i></a></span>
                                 </h3>
                                 <div class="inside" style="padding-top:10px;">

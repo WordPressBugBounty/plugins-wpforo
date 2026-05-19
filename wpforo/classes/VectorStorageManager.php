@@ -79,10 +79,40 @@ class VectorStorageManager {
 	 */
 	public function __construct() {
 		$this->board_id = WPF()->board->get_current( 'boardid' );
-		$this->register_cron_hooks();
+
+		// Register the callback for the cron hook so any already-scheduled
+		// cron event from a prior connected state can still execute (and so
+		// schedule_cron_jobs() can rely on the action being wired). Scheduling
+		// of the event itself is gated by AI connection — see schedule_cron_jobs().
+		add_action( 'wpforo_ai_cleanup_expired_cache', [ $this, 'cleanup_expired_cache' ] );
 
 		// Update board_id when WPF()->change_board() is called
 		add_action( 'wpforo_after_change_board', [ $this, 'on_board_change' ] );
+	}
+
+	/**
+	 * Schedule recurring local-storage maintenance crons.
+	 *
+	 * Called from AIClient::register_ai_crons() on tenant connect.
+	 * Safe to call repeatedly — it skips if already scheduled.
+	 */
+	public function schedule_cron_jobs() {
+		if ( ! wp_next_scheduled( 'wpforo_ai_cleanup_expired_cache' ) ) {
+			wp_schedule_event( time(), 'hourly', 'wpforo_ai_cleanup_expired_cache' );
+		}
+	}
+
+	/**
+	 * Unschedule recurring local-storage maintenance crons.
+	 *
+	 * Called from AIClient::unregister_ai_crons() on tenant disconnect.
+	 */
+	public function unschedule_cron_jobs() {
+		$ts = wp_next_scheduled( 'wpforo_ai_cleanup_expired_cache' );
+		if ( $ts ) {
+			wp_unschedule_event( $ts, 'wpforo_ai_cleanup_expired_cache' );
+		}
+		wp_clear_scheduled_hook( 'wpforo_ai_cleanup_expired_cache' );
 	}
 
 	/**
@@ -96,19 +126,6 @@ class VectorStorageManager {
 	public function on_board_change() {
 		$this->board_id = WPF()->board->get_current( 'boardid' );
 		$this->storage_mode = null; // Reset cached storage mode
-	}
-
-	/**
-	 * Register cron hooks for local storage maintenance
-	 */
-	private function register_cron_hooks() {
-		// Register cleanup action - must be done here so callback exists when cron fires
-		add_action( 'wpforo_ai_cleanup_expired_cache', [ $this, 'cleanup_expired_cache' ] );
-
-		// Schedule if not already scheduled
-		if ( ! wp_next_scheduled( 'wpforo_ai_cleanup_expired_cache' ) ) {
-			wp_schedule_event( time(), 'hourly', 'wpforo_ai_cleanup_expired_cache' );
-		}
 	}
 
 	/**
@@ -3234,6 +3251,13 @@ class VectorStorageManager {
 		$column = $this->is_local_mode() ? 'local' : 'cloud';
 		$topics_table = WPF()->tables->topics;
 
+		// Cache for 1 day - these counts don't change frequently
+		$cache_key = 'wpforo_ai_status_breakdown_' . $this->board_id . '_' . $this->get_storage_mode();
+		$cached = get_transient( $cache_key );
+		if ( false !== $cached && is_array( $cached ) ) {
+			return $cached;
+		}
+
 		// Get counts for each category in a single query
 		$results = $wpdb->get_row(
 			"SELECT
@@ -3257,7 +3281,7 @@ class VectorStorageManager {
 			];
 		}
 
-		return [
+		$breakdown = [
 			'total'           => (int) $results['total'],
 			'indexed'         => (int) $results['indexed'],
 			'pending'         => (int) $results['pending'],
@@ -3265,6 +3289,22 @@ class VectorStorageManager {
 			'unapproved'      => (int) $results['unapproved'],
 			'storage_mode'    => $this->get_storage_mode(),
 		];
+
+		set_transient( $cache_key, $breakdown, DAY_IN_SECONDS );
+
+		return $breakdown;
+	}
+
+	/**
+	 * Clear the indexing status breakdown cache
+	 *
+	 * Should be called when topics are approved/unapproved or privacy changes.
+	 */
+	public function clear_indexing_status_breakdown_cache() {
+		$cache_key_local = 'wpforo_ai_status_breakdown_' . $this->board_id . '_local';
+		$cache_key_cloud = 'wpforo_ai_status_breakdown_' . $this->board_id . '_cloud';
+		delete_transient( $cache_key_local );
+		delete_transient( $cache_key_cloud );
 	}
 
 	/**

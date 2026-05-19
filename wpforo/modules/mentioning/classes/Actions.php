@@ -88,7 +88,7 @@ class Actions {
 						if( ! WPF()->ram_cache->exists( $key ) ){
 
 							$sbj_msg = WPF()->sbscrb->get_sbj_msg( 'user_mention', $pitem, $item, $owner, $user, '' );
-							wpforo_send_email( $user['user_email'], $sbj_msg['sbj'], $sbj_msg['msg'] );
+							wpforo_send_email( $user['user_email'], $sbj_msg['sbj'], $sbj_msg['msg'], '', 'mention', (int) $item['postid'] );
 
 							WPF()->ram_cache->set( $key, true );
 						}

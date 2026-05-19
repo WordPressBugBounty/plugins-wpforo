@@ -67,6 +67,7 @@ class AIClient {
 		// Register admin-only AJAX handlers
 		if ( is_admin() ) {
 			add_action( 'wp_ajax_wpforo_ai_get_rag_status', [ $this, 'ajax_get_rag_status' ] );
+			add_action( 'wp_ajax_wpforo_ai_get_indexing_breakdown', [ $this, 'ajax_get_indexing_breakdown' ] );
 			add_action( 'wp_ajax_wpforo_ai_cancel_cloud_indexing', [ $this, 'ajax_cancel_cloud_indexing' ] );
 			add_action( 'wp_ajax_wpforo_ai_cleanup_indexing_session', [ $this, 'ajax_cleanup_indexing_session' ] );
 			add_action( 'wp_ajax_wpforo_ai_action', [ $this, 'ajax_generic_action' ] );
@@ -84,6 +85,14 @@ class AIClient {
 			add_action( 'wp_ajax_wpforo_ai_activate_paddle_transaction', [ $this, 'ajax_activate_paddle_transaction' ] );
 			add_action( 'wp_ajax_wpforo_ai_search_bot_users', [ $this, 'ajax_search_bot_users' ] );
 			add_action( 'wp_ajax_wpforo_ai_request_bonus_credits', [ $this, 'ajax_request_bonus_credits' ] );
+
+			// Custom Knowledge AJAX handlers
+			add_action( 'wp_ajax_wpforo_ai_add_knowledge', [ $this, 'ajax_add_knowledge' ] );
+			add_action( 'wp_ajax_wpforo_ai_delete_knowledge', [ $this, 'ajax_delete_knowledge' ] );
+			add_action( 'wp_ajax_wpforo_ai_save_knowledge_settings', [ $this, 'ajax_save_knowledge_priorities' ] );
+			add_action( 'wp_ajax_wpforo_ai_get_knowledge_settings', [ $this, 'ajax_get_knowledge_settings' ] );
+			add_action( 'wp_ajax_wpforo_ai_get_knowledge_files', [ $this, 'ajax_get_knowledge_files' ] );
+			add_action( 'wp_ajax_wpforo_ai_get_job_status', [ $this, 'ajax_get_job_status' ] );
 
 			// Register privacy policy content for AI features
 			add_action( 'admin_init', [ $this, 'register_privacy_policy_content' ] );
@@ -183,6 +192,83 @@ class AIClient {
 
 		// Disable built-in wpForo topic suggestions when AI Topic Suggestions is enabled
 		add_filter( 'wpforo_topic_suggestion', [ $this, 'filter_built_in_suggestions' ] );
+
+		// Cron lifecycle: schedule/unschedule the recurring AI maintenance crons
+		// based on AI service connection state. Prevents stale events from
+		// piling up in `wp_options.cron` on installs that never enabled AI.
+		add_action( 'wpforo_ai_tenant_registered', [ $this, 'register_ai_crons' ] );
+		add_action( 'wpforo_ai_tenant_disconnected', [ $this, 'unregister_ai_crons' ] );
+	}
+
+	/**
+	 * Schedule all recurring AI-related crons.
+	 *
+	 * Called on tenant connect (wpforo_ai_tenant_registered). Idempotent —
+	 * each helper skips if already scheduled. Safe to call from plugin
+	 * upgrade migrations via sync_cron_state().
+	 */
+	public function register_ai_crons() {
+		$this->schedule_cache_cleanup();
+		$this->schedule_daily_subscription_sync();
+
+		if ( isset( WPF()->ai_content_moderation ) && WPF()->ai_content_moderation ) {
+			WPF()->ai_content_moderation->schedule_moderation_cleanup();
+		}
+		if ( isset( WPF()->vector_storage ) && WPF()->vector_storage ) {
+			WPF()->vector_storage->schedule_cron_jobs();
+		}
+		if ( isset( WPF()->task_manager ) && WPF()->task_manager ) {
+			WPF()->task_manager->schedule_cron_jobs();
+		}
+
+		$this->log_info( 'ai_crons_registered' );
+	}
+
+	/**
+	 * Unschedule every recurring AI-related cron.
+	 *
+	 * Called on tenant disconnect (wpforo_ai_tenant_disconnected) and on
+	 * plugin upgrade when not connected, so users who never enabled AI (or
+	 * who disconnected) do not see stale events accumulating in wp_cron.
+	 *
+	 * Single-event crons (wpforo_ai_execute_task[_for_topic], _process_batch,
+	 * _process_queue*, _process_wp_batch) are not blanket-cleared here — they
+	 * are managed per-task on the AI side and never get scheduled for users
+	 * who do not use AI features.
+	 */
+	public function unregister_ai_crons() {
+		$this->unschedule_cache_cleanup();
+		$this->unschedule_daily_subscription_sync();
+		$this->unschedule_pending_topics_indexing();
+
+		if ( isset( WPF()->ai_content_moderation ) && WPF()->ai_content_moderation ) {
+			WPF()->ai_content_moderation->unschedule_moderation_cleanup();
+		}
+		if ( isset( WPF()->vector_storage ) && WPF()->vector_storage ) {
+			WPF()->vector_storage->unschedule_cron_jobs();
+		}
+		if ( isset( WPF()->task_manager ) && WPF()->task_manager ) {
+			WPF()->task_manager->unschedule_cron_jobs();
+		}
+
+		// AILogs cleanup is scheduled lazily on first log insert; clear it
+		// too so the wp_cron option stays clean for users who never reconnect.
+		wp_clear_scheduled_hook( 'wpforo_ai_logs_cleanup' );
+
+		$this->log_info( 'ai_crons_unregistered' );
+	}
+
+	/**
+	 * Idempotent reconciler: ensures the AI cron set matches the current
+	 * connection state. Called from plugin upgrade so existing installs that
+	 * accumulated AI crons without ever connecting get cleaned up.
+	 */
+	public function sync_cron_state() {
+		if ( $this->is_connected() ) {
+			$this->register_ai_crons();
+		} else {
+			$this->unregister_ai_crons();
+		}
 	}
 
 	/**
@@ -617,6 +703,7 @@ class AIClient {
 			'custom_post_types_indexing'    => [ 'plan' => 'business' ],
 			'woocommerce_products_indexing' => [ 'plan' => 'business' ],
 			'vector_db_cloud_storage'       => [ 'plan' => 'business' ],
+			'custom_knowledge'              => [ 'plan' => 'business' ],
 
 			// Enterprise Plan Features
 			'developer_features'         => [ 'plan' => 'enterprise' ],
@@ -927,6 +1014,23 @@ class AIClient {
 	}
 
 	/**
+	 * AJAX handler for getting indexing status breakdown (private/unapproved counts)
+	 *
+	 * Returns cached breakdown data (1-day TTL) for displaying excluded topics info.
+	 * Loaded asynchronously after page load to avoid slow initial page renders.
+	 *
+	 * @return void
+	 */
+	public function ajax_get_indexing_breakdown() {
+		$this->verify_ajax_admin_request( 'wpforo_ai_features_nonce', 'nonce' );
+
+		$storage_manager = WPF()->vector_storage;
+		$breakdown = $storage_manager->get_indexing_status_breakdown();
+
+		$this->send_success( $breakdown );
+	}
+
+	/**
 	 * Ask the backend to stop any in-flight cloud indexing for this tenant.
 	 *
 	 * Sends POST /v1/rag/cancel, which sets a cancellation flag on the
@@ -1064,6 +1168,9 @@ class AIClient {
 			if ( delete_transient( 'wpforo_ai_rag_status_' . $board_id ) ) {
 				$summary['transients_deleted']++;
 			}
+
+			// Clear indexing breakdown cache so UI shows fresh counts
+			WPF()->vector_storage->clear_indexing_status_breakdown_cache();
 
 			// Tell the backend to drop any in-flight cloud image_worker items.
 			// Safe in local mode: backend simply sets indexing_cancel_until on
@@ -2789,6 +2896,14 @@ class AIClient {
 			$data['min_score'] = $min_score_setting / 100; // Convert percentage to 0-1
 		}
 
+		// Add custom knowledge parameters (Business+ plans)
+		if ( $this->is_custom_knowledge_enabled() ) {
+			$data['include_custom_knowledge'] = true;
+			$data['knowledge_priority'] = [
+				'search_priority' => $this->get_knowledge_priorities( 'search' ),
+			];
+		}
+
 		$response = $this->post( '/search/semantic', $data );
 
 		if ( is_wp_error( $response ) ) {
@@ -3524,6 +3639,45 @@ class AIClient {
 					'author_url'      => '',
 					'created'         => $wp_post->post_date ? date( 'Y-m-d H:i', strtotime( $wp_post->post_date ) ) : '',
 					'created_ago'     => $wp_post->post_date ? human_time_diff( strtotime( $wp_post->post_date ) ) . ' ago' : '',
+				];
+			} elseif ( $content_source === 'custom_knowledge' ) {
+				// ── Custom Knowledge result (Business+ cloud mode only) ──
+				$title   = wpfval( $result, 'title' ) ?: wpfval( $result, 'metadata', 'title' ) ?: wpforo_phrase( 'Knowledge Base', false );
+				$content = wpfval( $result, 'excerpt' ) ?: wpfval( $result, 'metadata', 'content_preview' ) ?: '';
+				$content = $this->clean_content_for_search_display( $content );
+
+				$score         = wpfval( $result, 'score' ) ?: 0;
+				$score_percent = round( $score * 100 );
+
+				if ( $min_score_percent > 0 && $score_percent < $min_score_percent ) {
+					continue;
+				}
+
+				if ( $score_percent >= $threshold_excellent ) {
+					$relevance_label = wpforo_phrase( 'Excellent match', false );
+				} elseif ( $score_percent >= $threshold_good ) {
+					$relevance_label = wpforo_phrase( 'Good match', false );
+				} elseif ( $score_percent >= $threshold_relevant ) {
+					$relevance_label = wpforo_phrase( 'Relevant', false );
+				} else {
+					$relevance_label = wpforo_phrase( 'Possibly relevant', false );
+				}
+
+				$enriched_results[] = [
+					'title'           => $title,
+					'url'             => '', // Custom knowledge has no URL
+					'content'         => $content,
+					'score'           => $score_percent,
+					'relevance_label' => $relevance_label,
+					'content_source'  => 'custom_knowledge',
+					'post_type_label' => wpforo_phrase( 'Knowledge Base', false ),
+					'post_id'         => 0,
+					'forum_title'     => '',
+					'forum_url'       => '',
+					'author_name'     => '',
+					'author_url'      => '',
+					'created'         => '',
+					'created_ago'     => '',
 				];
 			} else {
 				// ── Forum result ──
@@ -7625,6 +7779,15 @@ class AIClient {
 			$payload['accessible_forumids'] = $accessible_forumids;
 		}
 
+		// Add custom knowledge parameters (Business+ plans)
+		if ( $this->is_custom_knowledge_enabled() ) {
+			$payload['include_custom_knowledge'] = true;
+			$payload['knowledge_priority'] = [
+				'search_priority'    => $this->get_knowledge_priorities( 'search' ),
+				'bot_reply_priority' => $this->get_knowledge_priorities( 'bot_reply' ),
+			];
+		}
+
 		// Make API request to suggestions endpoint
 		$response = $this->post( '/suggestions/suggest', $payload );
 
@@ -8771,6 +8934,14 @@ class AIClient {
 			'response_language' => $response_language,
 		];
 
+		// Add custom knowledge params if enabled (Business+ only, cloud storage only)
+		if ( $this->is_custom_knowledge_enabled() ) {
+			$request_body['include_custom_knowledge'] = true;
+			$request_body['knowledge_priority'] = [
+				'bot_reply_priority' => $this->get_knowledge_priorities( 'bot_reply' ),
+			];
+		}
+
 		// Make API request to /tasks/generate endpoint
 		$response = wp_remote_post( $this->api_base_url . '/tasks/generate', [
 			'timeout' => 60,
@@ -9473,5 +9644,457 @@ class AIClient {
 		}
 
 		return array_values( $url_map );
+	}
+
+	// =========================================================================
+	// CUSTOM KNOWLEDGE AJAX HANDLERS
+	// =========================================================================
+
+	/**
+	 * AJAX handler for adding custom knowledge
+	 *
+	 * Sends file URL to backend for processing and indexing.
+	 * Endpoint: POST /v1/knowledge/ingest
+	 */
+	public function ajax_add_knowledge() {
+		check_ajax_referer( 'wpforo_ai_features_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'Insufficient permissions', false )
+			], 403 );
+		}
+
+		if ( ! $this->is_feature_available( 'custom_knowledge' ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'Custom knowledge requires Business plan or higher', false )
+			], 403 );
+		}
+
+		$file_url = isset( $_POST['file_url'] ) ? esc_url_raw( trim( $_POST['file_url'] ) ) : '';
+		$file_type = isset( $_POST['file_type'] ) ? sanitize_key( $_POST['file_type'] ) : 'text';
+		$file_name = isset( $_POST['file_name'] ) ? sanitize_text_field( trim( $_POST['file_name'] ) ) : '';
+
+		if ( empty( $file_url ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'File URL is required', false )
+			], 400 );
+		}
+
+		$valid_types = [ 'json', 'markdown', 'text', 'pdf' ];
+		if ( ! in_array( $file_type, $valid_types, true ) ) {
+			$file_type = 'text';
+		}
+
+		// Build request body - backend expects 'name' not 'file_name'
+		$request_body = [
+			'file_url'  => $file_url,
+			'file_type' => $file_type,
+		];
+		if ( ! empty( $file_name ) ) {
+			$request_body['name'] = $file_name;
+		}
+
+		$response = $this->post( '/knowledge/ingest', $request_body );
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( [
+				'message' => $response->get_error_message()
+			], 400 );
+		}
+
+		$this->log_info( 'knowledge_added', [
+			'file_url'  => $file_url,
+			'file_type' => $file_type,
+			'name'      => $file_name
+		] );
+
+		// Merge backend response fields into success response
+		// JS polling expects: async, file_id, name at top level
+		$success_data = [
+			'message' => wpforo_phrase( 'Knowledge file added. Processing will begin shortly.', false ),
+		];
+
+		// Pass through key fields from backend response
+		if ( is_array( $response ) ) {
+			if ( ! empty( $response['file_id'] ) ) {
+				$success_data['file_id'] = $response['file_id'];
+			}
+			if ( ! empty( $response['async'] ) ) {
+				$success_data['async'] = true;
+			}
+			if ( ! empty( $response['name'] ) ) {
+				$success_data['name'] = $response['name'];
+			}
+			if ( isset( $response['credits_remaining'] ) ) {
+				$success_data['credits_remaining'] = $response['credits_remaining'];
+			}
+		}
+
+		wp_send_json_success( $success_data );
+	}
+
+	/**
+	 * AJAX handler for deleting custom knowledge
+	 *
+	 * Endpoint: DELETE /v1/knowledge/files/{file_id}
+	 */
+	public function ajax_delete_knowledge() {
+		check_ajax_referer( 'wpforo_ai_features_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'Insufficient permissions', false )
+			], 403 );
+		}
+
+		$file_id = isset( $_POST['file_id'] ) ? sanitize_text_field( $_POST['file_id'] ) : '';
+
+		if ( empty( $file_id ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'File ID is required', false )
+			], 400 );
+		}
+
+		$response = $this->delete( '/knowledge/files/' . urlencode( $file_id ), [], 60 );
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( [
+				'message' => $response->get_error_message()
+			], 400 );
+		}
+
+		$this->log_info( 'knowledge_deleted', [
+			'file_id' => $file_id
+		] );
+
+		wp_send_json_success( [
+			'message' => wpforo_phrase( 'Knowledge file deleted successfully.', false )
+		] );
+	}
+
+	/**
+	 * AJAX handler for checking async job status
+	 *
+	 * Endpoint: GET /v1/knowledge/jobs/{file_id}
+	 * Used by polling to check if async indexing is complete
+	 */
+	public function ajax_get_job_status() {
+		check_ajax_referer( 'wpforo_ai_features_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'Insufficient permissions', false )
+			], 403 );
+		}
+
+		$file_id = isset( $_POST['file_id'] ) ? sanitize_text_field( $_POST['file_id'] ) : '';
+
+		if ( empty( $file_id ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'File ID is required', false )
+			], 400 );
+		}
+
+		$response = $this->get( '/knowledge/jobs/' . urlencode( $file_id ) );
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( [
+				'message' => $response->get_error_message()
+			], 400 );
+		}
+
+		// Log completion or failure (only once per file)
+		$status = isset( $response['status'] ) ? $response['status'] : '';
+		$logged_key = 'wpforo_knowledge_logged_' . $file_id;
+
+		if ( in_array( $status, [ 'enabled', 'failed' ], true ) && ! get_transient( $logged_key ) ) {
+			$file_name    = isset( $response['name'] ) ? $response['name'] : $file_id;
+			$credits_used = isset( $response['credits_used'] ) ? (int) $response['credits_used'] : 0;
+			$chunk_count  = isset( $response['chunk_count'] ) ? (int) $response['chunk_count'] : 0;
+			$error_msg    = isset( $response['error_message'] ) ? $response['error_message'] : '';
+
+			if ( $status === 'enabled' ) {
+				WPF()->ai_logs->log( [
+					'action_type'      => AILogs::ACTION_KNOWLEDGE_INDEXING,
+					'credits_used'     => $credits_used,
+					'status'           => AILogs::STATUS_SUCCESS,
+					'request_summary'  => 'File: ' . $file_name,
+					'response_summary' => sprintf( 'Indexed %d chunks, used %d credits', $chunk_count, $credits_used ),
+					'user_type'        => 'admin',
+				] );
+			} else {
+				WPF()->ai_logs->log( [
+					'action_type'      => AILogs::ACTION_KNOWLEDGE_INDEXING,
+					'credits_used'     => 0,
+					'status'           => AILogs::STATUS_ERROR,
+					'request_summary'  => 'File: ' . $file_name,
+					'error_message'    => $error_msg ?: 'Indexing failed',
+					'user_type'        => 'admin',
+				] );
+			}
+
+			// Mark as logged (expires in 1 hour - enough to prevent duplicate logs)
+			set_transient( $logged_key, true, HOUR_IN_SECONDS );
+		}
+
+		wp_send_json_success( $response );
+	}
+
+	/**
+	 * AJAX handler for saving knowledge settings (priorities + enabled state)
+	 *
+	 * Settings are stored per-board in WordPress options:
+	 * - ai_knowledge_enabled (0/1)
+	 * - ai_knowledge_priorities (array of priorities per feature)
+	 *
+	 * Priorities are arrays of content sources in order:
+	 * - Position 0 = First priority (1.3x boost)
+	 * - Position 1 = Second priority (1.15x boost)
+	 * - Position 2 = Third priority (1.0x - no boost)
+	 */
+	public function ajax_save_knowledge_priorities() {
+		check_ajax_referer( 'wpforo_ai_features_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'Insufficient permissions', false )
+			], 403 );
+		}
+
+		// Get board ID
+		$board_id = isset( $_POST['board_id'] ) ? intval( $_POST['board_id'] ) : 0;
+
+		// Switch to correct board context
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
+
+		// Get enabled state
+		$enabled = isset( $_POST['enabled'] ) ? (int) (bool) $_POST['enabled'] : 0;
+
+		// Valid content sources
+		$valid_sources = [ 'custom_knowledge', 'forum', 'wordpress' ];
+
+		// Sanitize priority arrays from POST data
+		$priorities = [
+			'search'    => $this->sanitize_priority_array(
+				isset( $_POST['search_priority'] ) ? $_POST['search_priority'] : [],
+				$valid_sources,
+				[ 'forum', 'wordpress', 'custom_knowledge' ]
+			),
+			'chat'      => $this->sanitize_priority_array(
+				isset( $_POST['chat_priority'] ) ? $_POST['chat_priority'] : [],
+				$valid_sources,
+				[ 'custom_knowledge', 'forum', 'wordpress' ]
+			),
+			'bot_reply' => $this->sanitize_priority_array(
+				isset( $_POST['bot_reply_priority'] ) ? $_POST['bot_reply_priority'] : [],
+				$valid_sources,
+				[ 'forum', 'custom_knowledge', 'wordpress' ]
+			),
+		];
+
+		// Save to WordPress options (board-specific via wpforo_update_option)
+		wpforo_update_option( 'ai_knowledge_enabled', $enabled );
+		wpforo_update_option( 'ai_knowledge_priorities', $priorities );
+
+		$this->log_info( 'knowledge_settings_saved', [
+			'board_id'   => $board_id,
+			'enabled'    => $enabled,
+			'priorities' => $priorities
+		] );
+
+		wp_send_json_success( [
+			'message' => wpforo_phrase( 'Settings saved successfully.', false )
+		] );
+	}
+
+	/**
+	 * Sanitize and validate priority array
+	 *
+	 * @param mixed $input Raw input (may be array or string)
+	 * @param array $valid_sources Valid content source values
+	 * @param array $default Default priority order
+	 * @return array Sanitized array with exactly 3 valid sources
+	 */
+	private function sanitize_priority_array( $input, $valid_sources, $default = null ) {
+		if ( $default === null ) {
+			$default = [ 'forum', 'wordpress', 'custom_knowledge' ];
+		}
+
+		if ( ! is_array( $input ) ) {
+			return $default;
+		}
+
+		$sanitized = [];
+		foreach ( $input as $source ) {
+			$source = sanitize_key( $source );
+			if ( in_array( $source, $valid_sources, true ) && ! in_array( $source, $sanitized, true ) ) {
+				$sanitized[] = $source;
+			}
+		}
+
+		// Ensure we have exactly 3 unique sources
+		if ( count( $sanitized ) !== 3 ) {
+			return $default;
+		}
+
+		return $sanitized;
+	}
+
+	/**
+	 * AJAX handler for getting knowledge settings for a board
+	 */
+	public function ajax_get_knowledge_settings() {
+		check_ajax_referer( 'wpforo_ai_features_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'Insufficient permissions', false )
+			], 403 );
+		}
+
+		// Get board ID
+		$board_id = isset( $_POST['board_id'] ) ? intval( $_POST['board_id'] ) : 0;
+
+		// Switch to correct board context
+		if ( $board_id > 0 ) {
+			WPF()->change_board( $board_id );
+		}
+
+		// Get settings from WordPress options (board-specific)
+		$enabled = (int) wpforo_get_option( 'ai_knowledge_enabled', 0 );
+		$priorities = wpforo_get_option( 'ai_knowledge_priorities', [] );
+
+		// Apply defaults if not set
+		$default_priorities = [
+			'search'    => [ 'forum', 'wordpress', 'custom_knowledge' ],
+			'chat'      => [ 'custom_knowledge', 'forum', 'wordpress' ],
+			'bot_reply' => [ 'forum', 'custom_knowledge', 'wordpress' ],
+		];
+
+		if ( empty( $priorities ) || ! is_array( $priorities ) ) {
+			$priorities = $default_priorities;
+		} else {
+			foreach ( $default_priorities as $feature => $default ) {
+				if ( ! isset( $priorities[ $feature ] ) || ! is_array( $priorities[ $feature ] ) ) {
+					$priorities[ $feature ] = $default;
+				}
+			}
+		}
+
+		wp_send_json_success( [
+			'board_id'   => $board_id,
+			'enabled'    => $enabled,
+			'priorities' => $priorities
+		] );
+	}
+
+	/**
+	 * AJAX handler for getting knowledge files list
+	 *
+	 * Makes one API call to backend:
+	 * - GET /v1/knowledge/files - List of indexed files
+	 *
+	 * Settings (enabled, priorities) are stored in WordPress per-board
+	 * and retrieved separately via ajax_get_knowledge_settings.
+	 *
+	 * Returns empty data gracefully if backend is not available yet.
+	 */
+	public function ajax_get_knowledge_files() {
+		check_ajax_referer( 'wpforo_ai_features_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'Insufficient permissions', false )
+			], 403 );
+		}
+
+		// Get files list from backend - return empty if not ready
+		$files_response = $this->get( '/knowledge/files' );
+		if ( is_wp_error( $files_response ) ) {
+			// Backend not available - return empty state
+			wp_send_json_success( [
+				'files'  => [],
+				'totals' => [
+					'total_files'   => 0,
+					'total_chunks'  => 0,
+					'total_credits' => 0,
+				]
+			] );
+			return;
+		}
+
+		// Normalize files data - map backend field names to UI field names
+		$files = [];
+		if ( isset( $files_response['files'] ) && is_array( $files_response['files'] ) ) {
+			foreach ( $files_response['files'] as $file ) {
+				$files[] = [
+					'file_id'      => isset( $file['file_id'] ) ? $file['file_id'] : '',
+					'name'         => isset( $file['name'] ) ? $file['name'] : '',
+					'url'          => isset( $file['source_url'] ) ? $file['source_url'] : '',
+					'type'         => isset( $file['file_type'] ) ? $file['file_type'] : 'text',
+					'size_bytes'   => isset( $file['file_size_bytes'] ) ? (int) $file['file_size_bytes'] : 0,
+					'chunks'       => isset( $file['chunk_count'] ) ? (int) $file['chunk_count'] : 0,
+					'credits_used' => isset( $file['credits_used'] ) ? (int) $file['credits_used'] : 0,
+					'status'       => isset( $file['status'] ) ? $file['status'] : 'unknown',
+					'enabled'      => isset( $file['status'] ) && $file['status'] === 'enabled',
+					'created_at'   => isset( $file['created_at'] ) ? $file['created_at'] : '',
+				];
+			}
+		}
+
+		wp_send_json_success( [
+			'files'  => $files,
+			'totals' => [
+				'total_files'   => isset( $files_response['total'] ) ? (int) $files_response['total'] : count( $files ),
+				'total_chunks'  => isset( $files_response['total_chunks'] ) ? (int) $files_response['total_chunks'] : 0,
+				'total_credits' => isset( $files_response['total_credits_used'] ) ? (int) $files_response['total_credits_used'] : 0,
+			]
+		] );
+	}
+
+	/**
+	 * Check if custom knowledge is enabled for the current board
+	 *
+	 * @return bool True if enabled
+	 */
+	public function is_custom_knowledge_enabled() {
+		// Must have Business+ plan
+		if ( ! $this->is_feature_available( 'custom_knowledge' ) ) {
+			return false;
+		}
+
+		// Custom knowledge only works in cloud storage mode
+		// (vectors are stored in S3 Vectors, not local WordPress DB)
+		if ( WPF()->vector_storage->is_local_mode() ) {
+			return false;
+		}
+
+		// Check board-specific setting
+		return (bool) wpforo_get_option( 'ai_knowledge_enabled', 0 );
+	}
+
+	/**
+	 * Get custom knowledge priorities for the current board
+	 *
+	 * @param string $feature Feature name: 'search', 'chat', or 'bot_reply'
+	 * @return array Priority order array
+	 */
+	public function get_knowledge_priorities( $feature = 'search' ) {
+		$defaults = [
+			'search'    => [ 'forum', 'wordpress', 'custom_knowledge' ],
+			'chat'      => [ 'custom_knowledge', 'forum', 'wordpress' ],
+			'bot_reply' => [ 'forum', 'custom_knowledge', 'wordpress' ],
+		];
+
+		$priorities = wpforo_get_option( 'ai_knowledge_priorities', [] );
+
+		if ( isset( $priorities[ $feature ] ) && is_array( $priorities[ $feature ] ) ) {
+			return $priorities[ $feature ];
+		}
+
+		return isset( $defaults[ $feature ] ) ? $defaults[ $feature ] : $defaults['search'];
 	}
 }

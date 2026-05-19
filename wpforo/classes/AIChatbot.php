@@ -456,6 +456,14 @@ class AIChatbot {
 			$request_data['settings']['min_score'] = $min_score_setting / 100;
 		}
 
+		// Add custom knowledge parameters (Business+ cloud mode only)
+		if ( WPF()->ai_client->is_custom_knowledge_enabled() ) {
+			$request_data['settings']['include_custom_knowledge'] = true;
+			$request_data['settings']['knowledge_priority'] = [
+				'chat_priority' => WPF()->ai_client->get_knowledge_priorities( 'chat' ),
+			];
+		}
+
 		// Add local context if enabled
 		if ( $use_local && ! empty( $local_context ) ) {
 			$request_data['local_context'] = $local_context;
@@ -514,8 +522,13 @@ class AIChatbot {
 		// Convert post_id to url in sources (API sends post_id, PHP generates URL)
 		$sources = $has_no_content ? [] : ( $response['sources'] ?? [] );
 		foreach ( $sources as &$source ) {
-			if ( ! empty( $source['post_id'] ) && empty( $source['url'] ) ) {
-				$content_source = $source['content_source'] ?? 'wpforo';
+			$content_source = $source['content_source'] ?? 'wpforo';
+
+			if ( $content_source === 'custom_knowledge' ) {
+				// Custom knowledge - no URL, just ensure proper labeling
+				$source['url'] = '';
+				$source['content_type_label'] = __( 'Knowledge Base', 'wpforo' );
+			} elseif ( ! empty( $source['post_id'] ) && empty( $source['url'] ) ) {
 				if ( $content_source === 'wordpress' ) {
 					// WordPress content - use get_permalink() or stored permalink
 					if ( ! empty( $source['permalink'] ) ) {
@@ -601,10 +614,21 @@ class AIChatbot {
 		$text = preg_replace( '/(?<!\[)\[#?(\d{2,})\](?!\])(?!\()/', '[[#$1]]', $text );
 
 		// Early exit if no citations to process
-		// Check for both [[# (standard) and [[wp_ (WordPress without hash - LLM sometimes forgets #)
-		if ( strpos( $text, '[[#' ) === false && strpos( $text, '[[wp_' ) === false ) {
+		// Check for [[# (standard), [[wp_ (WordPress), [[kb_ (knowledge base)
+		if ( strpos( $text, '[[#' ) === false && strpos( $text, '[[wp_' ) === false && strpos( $text, '[[kb_' ) === false ) {
 			return $text;
 		}
+
+		// Replace [[#kb_FILE_ID_CHUNK]] format - Knowledge Base content (no URL, show badge)
+		// Matches patterns like [[#kb_59a02953-e6ca-40b6-9d0f-5f482f340b10_383]]
+		$text = preg_replace_callback(
+			'/\[\[#?kb_[a-f0-9\-]+_\d+(?::[^\]]+)?\]\]/',
+			function ( $matches ) {
+				// Show a simple knowledge base indicator (no link since KB has no URL)
+				return '<sup class="wpf-ai-chat-reference wpf-ai-chat-kb-ref" title="' . esc_attr__( 'Source: Knowledge Base', 'wpforo' ) . '"><span>[<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>KB]</span></sup>';
+			},
+			$text
+		);
 
 		// Replace [[#wp_POST_ID:Title]] format - WordPress content with title (title ignored)
 		$text = preg_replace_callback(

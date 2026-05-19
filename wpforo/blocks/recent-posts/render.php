@@ -25,7 +25,17 @@ $default_instance = [
         'excerpt_length'         => 55,
 ];
 
+$allowed_orderby = [ 'created', 'modified' ];
+$allowed_order   = [ 'DESC', 'ASC', 'RAND' ];
+
 $instance = wp_parse_args( $attributes, $default_instance );
+
+if( ! is_string( $instance['orderby'] ) || ! in_array( $instance['orderby'], $allowed_orderby, true ) ) {
+    $instance['orderby'] = $default_instance['orderby'];
+}
+if( ! is_string( $instance['order'] ) || ! in_array( $instance['order'], $allowed_order, true ) ) {
+    $instance['order'] = $default_instance['order'];
+}
 
 // wpForo Recent Posts widget logic
 wp_enqueue_script( 'wpforo-widgets-js' );

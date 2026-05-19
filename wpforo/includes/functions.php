@@ -1137,7 +1137,12 @@ function wpforo_user_logging() {
 			//to-do: don't increase views before all read point.
 			if( wpforo_setting( 'legal', 'cookies' ) ) {
 				$viwed_ids = wpforo_getcookie( wpforo_prefix( 'read_topics' ), false );
-				if( empty( $viwed_ids ) || ! wpfval( $viwed_ids, $data['topicid'] ) ) {
+				$has_viewed = ! empty( $viwed_ids ) && wpfval( $viwed_ids, $data['topicid'] );
+				if( ! $has_viewed && is_user_logged_in() ) {
+					$viwed_db_ids = wpforo_current_usermeta( wpforo_prefix( 'read_topics' ) );
+					$has_viewed = ! empty( $viwed_db_ids ) && wpfval( $viwed_db_ids, $data['topicid'] );
+				}
+				if( ! $has_viewed ) {
 					WPF()->db->query( "UPDATE `" . WPF()->tables->topics . "` SET `views` = `views` + 1 WHERE `topicid` = " . intval( $data['topicid'] ) );
 				}
 			} elseif( is_user_logged_in() ) {
@@ -3876,18 +3881,24 @@ function wpforo_apply_email_shortcodes( $txt, $pitem, $item, $owner, $user, $uns
 	return _wpforo_apply_email_shortcodes( $txt, compact( 'forumid', 'topicid', 'postid', 'owner', 'user', 'unsubscribe_link' ) );
 }
 
-function wpforo_send_email( $email, $sbj, $msg, $headers = '' ) {
+function wpforo_send_email( $email, $sbj, $msg, $headers = '', $context = 'general', $related_id = 0 ) {
 	if( defined( 'IS_GO2WPFORO' ) && IS_GO2WPFORO ) return false;
 	if( apply_filters( 'break_wpforo_send_email', false, $email, $sbj, $msg, $headers ) ) return false;
-	$key = func_get_args();
+	$key = [ $email, $sbj, substr( $msg, 0, 100 ) ];
 	if( WPF()->ram_cache->exists( $key ) ) return false;
-	add_filter( 'wp_mail_content_type', 'wpforo_set_html_content_type', 999 );
-	if( wp_mail( $email, $sbj, $msg, ( $headers ?: wpforo_mail_headers() ) ) ) {
-		WPF()->ram_cache->set( $key, true );
 
+	if( isset( WPF()->email_queue ) ) {
+		$result = WPF()->email_queue->queue_or_send( $email, $sbj, $msg, $headers, $context, $related_id );
+	} else {
+		add_filter( 'wp_mail_content_type', 'wpforo_set_html_content_type', 999 );
+		$result = wp_mail( $email, $sbj, $msg, ( $headers ?: wpforo_mail_headers() ) );
+		remove_filter( 'wp_mail_content_type', 'wpforo_set_html_content_type' );
+	}
+
+	if( $result ) {
+		WPF()->ram_cache->set( $key, true );
 		return true;
 	}
-	remove_filter( 'wp_mail_content_type', 'wpforo_set_html_content_type' );
 
 	return false;
 }

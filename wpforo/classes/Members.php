@@ -4163,7 +4163,7 @@ class Members {
             $msg = str_replace( [ '[blogname]', '[user_login]', '[login_link]', '[login_url]' ],
                                 [ $blogname, $user->user_login, $login_link, $login_url ],
                                 $msg );
-            wpforo_send_email( $user->user_email, $sbj, $msg );
+            wpforo_send_email( $user->user_email, $sbj, $msg, '', 'user_approved', (int) $user->ID );
         }
     }
 
@@ -4309,7 +4309,7 @@ class Members {
                 if( is_array( $this->front_delete_email_buffer ) ) {
                     $sbj = (string) wpfval( $this->front_delete_email_buffer, 'subject' );
                     $msg = (string) wpfval( $this->front_delete_email_buffer, 'message' );
-                    wpforo_send_email( wpforo_setting( 'email', 'admin_emails' ), $sbj, $msg );
+                    wpforo_send_email( wpforo_setting( 'email', 'admin_emails' ), $sbj, $msg, '', 'admin_notification' );
                     $this->front_delete_email_buffer = null; // clear buffer
                 }
             }

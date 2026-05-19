@@ -563,6 +563,31 @@ if( ! function_exists( 'wpforo_get_install_sqls' ) ) {
 			  KEY `idx_content` (`content_type`, `content_id`),
 			  KEY `idx_composite` (`action_type`, `created`, `status`)
 			) ENGINE=InnoDB $charset_collate",
+			WPF()->tables->email_queue => "CREATE TABLE IF NOT EXISTS `" . WPF()->tables->email_queue . "` (
+			  `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			  `email`         VARCHAR(255) NOT NULL,
+			  `subject`       VARCHAR(255) NOT NULL,
+			  `message`       LONGTEXT NOT NULL,
+			  `headers`       TEXT,
+			  `priority`      TINYINT UNSIGNED NOT NULL DEFAULT 10,
+			  `status`        ENUM('pending','processing','sent','failed') NOT NULL DEFAULT 'pending',
+			  `attempts`      TINYINT UNSIGNED NOT NULL DEFAULT 0,
+			  `max_attempts`  TINYINT UNSIGNED NOT NULL DEFAULT 3,
+			  `created_at`    DATETIME NOT NULL,
+			  `scheduled_at`  DATETIME NOT NULL,
+			  `processed_at`  DATETIME DEFAULT NULL,
+			  `next_retry_at` DATETIME DEFAULT NULL,
+			  `error_message` TEXT,
+			  `context`       VARCHAR(50) NOT NULL DEFAULT 'general',
+			  `related_id`    BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			  `boardid`       INT UNSIGNED NOT NULL DEFAULT 0,
+			  PRIMARY KEY (`id`),
+			  KEY `idx_status_scheduled` (`status`, `scheduled_at`),
+			  KEY `idx_status_next_retry` (`status`, `next_retry_at`),
+			  KEY `idx_context_status` (`context`, `status`),
+			  KEY `idx_boardid` (`boardid`),
+			  KEY `idx_created_at` (`created_at`)
+			) ENGINE=InnoDB $charset_collate",
 		];
 	}
 }

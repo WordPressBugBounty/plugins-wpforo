@@ -467,16 +467,30 @@ $wpf(document).ready(function ($) {
 			var r = results[i];
 			html += '<div class="wpf-ai-result-card">';
 			var postIdBadge = r.post_id ? ' <span class="wpf-ai-result-postid">[ <i class="fa-regular fa-message"></i> ' + r.post_id + ' ]</span>' : '';
-			html += '<div class="wpf-ai-result-title"><a href="' + r.url + '" target="_blank" rel="noopener">' + wpforoEscapeHtml(r.title) + postIdBadge + '</a></div>';
+			// Render title as link only if URL exists, otherwise plain text
+			if (r.url) {
+				html += '<div class="wpf-ai-result-title"><a href="' + r.url + '" target="_blank" rel="noopener">' + wpforoEscapeHtml(r.title) + postIdBadge + '</a></div>';
+			} else {
+				html += '<div class="wpf-ai-result-title"><span class="wpf-ai-result-title-text">' + wpforoEscapeHtml(r.title) + '</span></div>';
+			}
 			html += '<div class="wpf-ai-result-meta">';
-			if (r.content_source === 'wordpress') {
+			if (r.content_source === 'custom_knowledge') {
+				var kbLabel = r.post_type_label || 'Knowledge Base';
+				html += '<span class="wpf-ai-result-post-type wpf-ai-knowledge-badge"><i class="fas fa-book"></i> ' + wpforoEscapeHtml(kbLabel) + '</span>';
+			} else if (r.content_source === 'wordpress') {
 				var typeLabel = r.post_type_label || 'Post';
 				html += '<span class="wpf-ai-result-post-type"><i class="fas fa-file-alt"></i> ' + wpforoEscapeHtml(typeLabel) + '</span>';
 			} else if (r.forum_title) {
 				html += '<span class="wpf-ai-result-forum"><i class="fas fa-folder-open"></i> ' + wpforoEscapeHtml(r.forum_title) + '</span>';
 			}
-			html += '<span class="wpf-ai-result-author"><i class="fas fa-user"></i> ' + wpforoEscapeHtml(r.author_name) + '</span>';
-			html += '<span class="wpf-ai-result-date"><i class="far fa-clock"></i> ' + r.created_ago + '</span>';
+			// Only show author if exists (custom_knowledge has no author)
+			if (r.author_name) {
+				html += '<span class="wpf-ai-result-author"><i class="fas fa-user"></i> ' + wpforoEscapeHtml(r.author_name) + '</span>';
+			}
+			// Only show date if exists (custom_knowledge has no date)
+			if (r.created_ago) {
+				html += '<span class="wpf-ai-result-date"><i class="far fa-clock"></i> ' + r.created_ago + '</span>';
+			}
 			html += '<span class="wpf-ai-result-score"><i class="fas fa-bullseye"></i> ' + r.score + '%</span>';
 			html += '</div>';
 			if (r.content) {

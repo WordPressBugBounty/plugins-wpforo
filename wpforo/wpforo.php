@@ -5,7 +5,7 @@
 * Description: WordPress Forum plugin. wpForo is the only AI powered forum solution for your community. Modern design and 5 forum layouts.
 * Author: gVectors Team
 * Author URI: https://gvectors.com/
-* Version: 3.0.9
+* Version: 3.1.0
 * Requires at least: 5.2
 * Requires PHP: 7.1
 * Text Domain: wpforo
@@ -14,7 +14,7 @@
 
 namespace wpforo;
 
-define( 'WPFORO_VERSION', '3.0.9' );
+define( 'WPFORO_VERSION', '3.1.0' );
 
 //Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;
@@ -53,6 +53,7 @@ use wpforo\classes\RamCache;
 use wpforo\classes\SEO;
 use wpforo\classes\Settings;
 use wpforo\classes\TaskManager;
+use wpforo\classes\EmailQueue;
 use wpforo\classes\Template;
 use wpforo\classes\Topics;
 use wpforo\classes\VectorStorageManager;
@@ -80,6 +81,7 @@ final class wpforo {
 		'follows',
 		'bookmarks',
 		'accesses',
+		'email_queue',
 	];
 	public  $_tables      = [
 		'activity',
@@ -203,6 +205,8 @@ final class wpforo {
 	public $seo;
 	/** @var Subscriptions */
 	public $sbscrb;
+	/** @var EmailQueue */
+	public $email_queue;
 	/** @var Template */
 	public $tpl;
 	/** @var Topics */
@@ -325,7 +329,8 @@ final class wpforo {
 		$this->topic    = new Topics();
 		$this->reaction = new Reactions();
 		$this->bookmark = new Bookmarks();
-		$this->sbscrb   = new Subscriptions();
+		$this->sbscrb      = new Subscriptions();
+		$this->email_queue = new EmailQueue();
 		if( wpforo_is_module_enabled( 'revisions' ) ) $this->revision = new Revisions();
 		
 		do_action( 'wpforo_after_init_classes' );

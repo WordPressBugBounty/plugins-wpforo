@@ -116,6 +116,111 @@
 	border: 1px solid #ddd;
 }
 
+.wpforo-ai-status-badge.status-enabled {
+	background: #d4edda;
+	color: #155724;
+	border: 1px solid #c3e6cb;
+}
+
+.wpforo-ai-status-badge.status-disabled {
+	background: #f5f5f5;
+	color: #666666;
+	border: 1px solid #ddd;
+}
+
+.wpforo-ai-status-badge.status-processing,
+.wpforo-ai-status-badge.status-queued {
+	background: #fff3cd;
+	color: #856404;
+	border: 1px solid #ffeeba;
+}
+
+.wpforo-ai-status-badge.status-processing .wpforo-ai-mini-spinner,
+.wpforo-ai-status-badge.status-queued .wpforo-ai-mini-spinner {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border: 2px solid #ffeeba;
+	border-top-color: #856404;
+	border-radius: 50%;
+	animation: wpforo-mini-spin 0.8s linear infinite;
+	margin: 0 10px 0 2px;
+	vertical-align: text-bottom;
+}
+
+.wpforo-ai-status-badge.status-deleting .wpforo-ai-mini-spinner {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border: 2px solid #f5c6cb;
+	border-top-color: #721c24;
+	border-radius: 50%;
+	animation: wpforo-mini-spin 0.8s linear infinite;
+	margin: 0 10px 0 2px;
+	vertical-align: text-bottom;
+}
+
+@keyframes wpforo-mini-spin {
+	to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Knowledge Files Table
+   ========================================================================== */
+
+#knowledge-files-table {
+	table-layout: fixed;
+}
+
+#knowledge-files-table .column-name {
+	width: 30%;
+}
+
+#knowledge-files-table .column-type {
+	width: 10%;
+}
+
+#knowledge-files-table .column-size {
+	width: 10%;
+}
+
+#knowledge-files-table .column-chunks {
+	width: 10%;
+}
+
+#knowledge-files-table .column-credits {
+	width: 10%;
+}
+
+#knowledge-files-table .column-status {
+	width: 12%;
+}
+
+#knowledge-files-table .column-actions {
+	width: 18%;
+}
+
+#knowledge-files-table .column-actions .wpforo-ai-delete-file {
+	background: none;
+	border: none;
+	padding: 4px;
+	cursor: pointer;
+	color: #b32d2e;
+	line-height: 1.2;
+}
+
+#knowledge-files-table .column-actions .wpforo-ai-delete-file:hover {
+	color: #a00;
+}
+
+#knowledge-files-table tfoot td {
+	font-weight: 500;
+}
+
+#knowledge-files-table tfoot .column-name {
+	font-weight: 600;
+}
+
 /* ==========================================================================
    Pending Approval State
    ========================================================================== */
@@ -1487,7 +1592,7 @@ button .dashicons {
 	border-bottom: none;
 	color: #555;
 	font-size: 15px;
-	padding: 15px 30px;
+	padding: 12px 15px;
 	margin-left: 0;
 	margin-right: 5px;
 	transition: all 0.2s ease;
@@ -2937,6 +3042,24 @@ button.button.wpforo-ai-clear-forum-btn:focus {
 
 .wpforo-ai-breakdown-note em {
 	font-style: normal;
+}
+
+.wpforo-ai-breakdown-loading {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 12px;
+	background: #f8f9fa;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	color: #64748b;
+	font-size: 13px;
+}
+
+.wpforo-ai-breakdown-loading .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
 }
 
 .wpforo-ai-index-all-stats {

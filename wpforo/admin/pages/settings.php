@@ -17,7 +17,7 @@ WPF()->settings->init_info();
 				<?php //esc_html_e("wpForo", "wpforo") ?>
             </div>
             <div class="wpf-head-info">
-                <span><a href="https://wpforo.com/docs/wpforo-v2/" target="_blank"><?php esc_html_e( "Documentation", "wpforo" ); ?></a></span>
+                <span><a href="https://wpforo.com/docs/wpforo-v3/" target="_blank"><?php esc_html_e( "Documentation", "wpforo" ); ?></a></span>
                 <span><a href="https://wpforo.com/community/" target="_blank"><?php esc_html_e( "Support", "wpforo" ); ?></a></span>
                 <span><a href="https://gvectors.com/product-category/wpforo/" target="_blank"><?php esc_html_e( "Addons", "wpforo" ); ?></a></span>
             </div>

@@ -2320,11 +2320,11 @@ function wpforo_admin_cpanel() {
                                 'Add New Category or Forum'
                         ) ?></a>
                     <p class="wpf-acp-forum-info">
-                        <?php $layouts = '(<a href="https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-layouts/extended-layout/" target="_blank">Extended</a>,
-                                                <a href="https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-layouts/simplified-layout/" target="_blank">Simplified</a>,
-                                                  <a href="https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-layouts/qa-layout/" target="_blank">Q&A</a>,
-                                                    <a href="https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-layouts/threaded-layout/" target="_blank">Threaded</a>)';
-                        $layout        = '<a href="https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-layouts/" target="_blank">' . wpforo_phrase(
+                        <?php $layouts = '(<a href="https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-layouts/extended-layout/" target="_blank">Extended</a>,
+                                                <a href="https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-layouts/simplified-layout/" target="_blank">Simplified</a>,
+                                                  <a href="https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-layouts/qa-layout/" target="_blank">Q&A</a>,
+                                                    <a href="https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-layouts/threaded-layout/" target="_blank">Threaded</a>)';
+                        $layout        = '<a href="https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-layouts/" target="_blank">' . wpforo_phrase(
                                         'the layout you want',
                                         false,
                                         'lower'

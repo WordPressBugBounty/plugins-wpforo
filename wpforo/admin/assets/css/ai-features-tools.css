@@ -1,0 +1,799 @@
+/**
+ * wpForo AI Features - AI Tools (Custom Knowledge) Styles
+ *
+ * Isolated CSS for AI Tools tab.
+ * Completely independent from other tab styles.
+ *
+ * @package wpForo
+ * @subpackage Admin
+ * @since 3.0.0
+ */
+
+/* ==========================================================================
+   AI Tools Tab Container
+   ========================================================================== */
+
+.wpforo-ai-tools-tab {
+	margin: 0;
+}
+
+/* ==========================================================================
+   Knowledge Upload Box
+   ========================================================================== */
+
+.wpforo-ai-knowledge-upload-box {
+	margin-bottom: 20px;
+}
+
+.wpforo-ai-knowledge-upload-box .wpforo-ai-box-header h2 .dashicons {
+	color: #0073aa;
+}
+
+.wpforo-ai-section-desc {
+	margin: 0 0 5px;
+	margin-left: -4px;
+	color: #646970;
+	font-size: 13px;
+}
+
+/* Per-kind icon accents on the section description */
+.wpforo-ai-section-desc .desc-icon {
+	margin-right: 6px;
+	vertical-align: -3px;
+}
+.wpforo-ai-section-desc.kind-text .desc-icon { color: #0073aa; }
+.wpforo-ai-section-desc.kind-pdf  .desc-icon { color: #c0392b; }
+
+/* Subtle left-border accent on each uploader form so the two kinds are
+   visually distinct without adding noise */
+.wpforo-ai-knowledge-form.kind-text {
+	border-left: 3px solid #0073aa;
+	padding-left: 10px;
+}
+.wpforo-ai-knowledge-form.kind-pdf {
+	border-left: 3px solid #c0392b;
+	padding-left: 10px;
+}
+
+/* URL Input Group - single row with input + buttons */
+.wpforo-ai-url-input-group {
+	display: flex;
+	gap: 8px;
+	align-items: stretch;
+}
+
+.wpforo-ai-url-input-group input[type="url"] {
+	flex: 1;
+	min-width: 0;
+	padding: 8px 12px;
+	font-size: 14px;
+}
+
+.wpforo-ai-url-input-group .button {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	white-space: nowrap;
+	height: auto;
+	padding: 8px 14px;
+}
+
+.wpforo-ai-url-input-group .button .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	line-height: 1;
+}
+
+/* Upload Info Row */
+.wpforo-ai-upload-info {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 5px;
+	padding: 0px 0;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+/* File Detection Display */
+.wpforo-ai-file-detected {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #f0f6fc;
+	border-radius: 4px;
+	font-size: 13px;
+}
+
+.wpforo-ai-file-detected .file-icon {
+	font-size: 16px;
+}
+
+.wpforo-ai-file-detected .file-name {
+	font-weight: 500;
+	color: #1d2327;
+}
+
+.wpforo-ai-file-detected .file-type-badge {
+	padding: 2px 8px;
+	background: #0073aa;
+	color: #fff;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 500;
+	text-transform: uppercase;
+}
+
+/* Credits Info */
+.wpforo-ai-credits-info {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	color: #646970;
+	font-size: 13px;
+}
+
+.wpforo-ai-credits-info .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	color: #646970;
+}
+
+.wpforo-ai-credit-rate {
+	color: #888;
+	font-size: 12px;
+}
+
+/* Upload Progress */
+.wpforo-ai-upload-progress {
+	margin-top: 15px;
+	padding: 12px 15px;
+	background: #f8f9fa;
+	border-radius: 4px;
+}
+
+.wpforo-ai-progress-bar {
+	height: 6px;
+	background: #dcdcde;
+	border-radius: 3px;
+	overflow: hidden;
+	margin-bottom: 8px;
+}
+
+.wpforo-ai-progress-fill {
+	height: 100%;
+	background: #0073aa;
+	width: 0;
+	transition: width 0.3s ease;
+}
+
+.wpforo-ai-progress-text {
+	font-size: 12px;
+	color: #646970;
+	text-align: center;
+}
+
+/* File Format Help - Compact */
+.wpforo-ai-file-format-help {
+	margin-top: 20px;
+	border-top: 1px solid #e5e5e5;
+	padding-top: 15px;
+}
+
+.wpforo-ai-file-format-help summary {
+	cursor: pointer;
+	font-size: 13px;
+	color: #646970;
+	padding: 5px 0;
+}
+
+.wpforo-ai-file-format-help summary:hover {
+	color: #0073aa;
+}
+
+.wpforo-ai-format-list {
+	margin-top: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.wpforo-ai-format-list .format-item {
+	font-size: 13px;
+	color: #646970;
+	padding: 6px 0;
+}
+
+.wpforo-ai-format-list .format-item strong {
+	color: #1d2327;
+	font-family: monospace;
+	background: #f0f0f1;
+	padding: 2px 6px;
+	border-radius: 3px;
+}
+
+/* ==========================================================================
+   Knowledge Files Box
+   ========================================================================== */
+
+.wpforo-ai-knowledge-files-box {
+	margin-bottom: 20px;
+}
+
+.wpforo-ai-knowledge-files-box .wpforo-ai-box-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.wpforo-ai-knowledge-files-box .wpforo-ai-box-header h2 {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.wpforo-ai-knowledge-files-box .wpforo-ai-box-header h2 .dashicons {
+	color: #0073aa;
+}
+
+.wpforo-ai-file-count {
+	font-size: 13px;
+	font-weight: normal;
+	color: #646970;
+}
+
+.wpforo-ai-header-actions {
+	display: flex;
+	gap: 8px;
+}
+
+/* Loading State */
+.wpforo-ai-loading {
+	text-align: center;
+	padding: 40px 20px;
+	color: #646970;
+}
+
+.wpforo-ai-loading .spinner {
+	float: none;
+	margin: 0 10px 0 0;
+}
+
+/* Empty State */
+.wpforo-ai-empty-state {
+	text-align: center;
+	padding: 40px 20px;
+	color: #646970;
+}
+
+.wpforo-ai-empty-state .dashicons {
+	font-size: 48px;
+	width: 48px;
+	height: 48px;
+	color: #dcdcde;
+	display: block;
+	margin: 0 auto 15px;
+}
+
+.wpforo-ai-empty-state p {
+	margin: 0;
+	font-size: 14px;
+}
+
+/* Files Table */
+#knowledge-files-table {
+	margin-top: 0;
+}
+
+#knowledge-files-table .column-name {
+	width: 30%;
+}
+
+#knowledge-files-table .column-type {
+	width: 10%;
+}
+
+#knowledge-files-table .column-chunks,
+#knowledge-files-table .column-credits {
+	width: 10%;
+	text-align: center;
+}
+
+#knowledge-files-table .column-status {
+	width: 12%;
+}
+
+#knowledge-files-table .column-actions {
+	width: 10%;
+	text-align: right;
+}
+
+#knowledge-files-table .row-actions {
+	font-size: 12px;
+	visibility: hidden;
+}
+
+#knowledge-files-table tr:hover .row-actions {
+	visibility: visible;
+}
+
+#knowledge-files-table .row-actions a {
+	color: #0073aa;
+	text-decoration: none;
+}
+
+#knowledge-files-table .row-actions a:hover {
+	color: #006799;
+	text-decoration: underline;
+}
+
+/* Status Badge */
+.wpforo-ai-status-badge {
+	display: inline-block;
+	padding: 3px 8px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 500;
+	text-transform: uppercase;
+	background: #dcdcde;
+	color: #1d2327;
+}
+
+.wpforo-ai-status-badge.status-enabled {
+	background: #d4edda;
+	color: #155724;
+}
+
+.wpforo-ai-status-badge.status-disabled {
+	background: #e2e3e5;
+	color: #383d41;
+}
+
+.wpforo-ai-status-badge.status-processing,
+.wpforo-ai-status-badge.status-queued {
+	background: #fff3cd;
+	color: #856404;
+}
+
+.wpforo-ai-status-badge.status-deleting {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+.wpforo-ai-status-badge.status-error {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+/* Toggle Switch */
+.wpforo-ai-toggle {
+	position: relative;
+	display: inline-block;
+	width: 36px;
+	height: 20px;
+	vertical-align: middle;
+	margin-right: 8px;
+}
+
+.wpforo-ai-toggle input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.wpforo-ai-toggle-slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	transition: .3s;
+	border-radius: 20px;
+}
+
+.wpforo-ai-toggle-slider:before {
+	position: absolute;
+	content: "";
+	height: 14px;
+	width: 14px;
+	left: 3px;
+	bottom: 3px;
+	background-color: white;
+	transition: .3s;
+	border-radius: 50%;
+}
+
+.wpforo-ai-toggle input:checked + .wpforo-ai-toggle-slider {
+	background-color: #0073aa;
+}
+
+.wpforo-ai-toggle input:checked + .wpforo-ai-toggle-slider:before {
+	transform: translateX(16px);
+}
+
+/* Delete Button */
+.wpforo-ai-delete-file {
+	padding: 2px 4px !important;
+	min-height: auto !important;
+}
+
+.wpforo-ai-delete-file .dashicons {
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+	color: #b32d2e;
+}
+
+.wpforo-ai-delete-file:hover .dashicons {
+	color: #a00;
+}
+
+/* Totals Row */
+.wpforo-ai-files-totals td {
+	background: #f8f9fa;
+	font-weight: 500;
+}
+
+/* ==========================================================================
+   Board Settings Box
+   ========================================================================== */
+
+.wpforo-ai-knowledge-settings-box {
+	margin-bottom: 20px;
+}
+
+.wpforo-ai-knowledge-settings-box .wpforo-ai-box-header h2 .dashicons {
+	color: #0073aa;
+}
+
+/* Board Selector */
+.wpforo-ai-board-selector {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 20px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.wpforo-ai-board-selector label {
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.wpforo-ai-board-selector select {
+	min-width: 200px;
+}
+
+/* Enable Toggle Row */
+.wpforo-ai-enable-row {
+	padding: 15px;
+	background: #f8f9fa;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	margin-bottom: 20px;
+}
+
+.wpforo-ai-toggle-label {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+}
+
+.wpforo-ai-toggle-label .toggle-text {
+	font-weight: 500;
+	color: #1d2327;
+}
+
+.wpforo-ai-enable-row .description {
+	margin: 8px 0 0 44px;
+	font-size: 12px;
+	color: #646970;
+}
+
+/* Priority Section */
+#knowledge-priority-section {
+	margin-top: 20px;
+}
+
+#knowledge-priority-section h4 {
+	margin: 0 0 5px;
+	font-size: 14px;
+	color: #1d2327;
+}
+
+#knowledge-priority-section > .description {
+	margin: 0 0 15px;
+	font-size: 12px;
+	color: #646970;
+}
+
+/* Priority Arrow */
+.priority-arrow {
+	color: #646970;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+/* Form Actions */
+.wpforo-ai-form-actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 20px;
+	padding-top: 15px;
+	border-top: 1px solid #dcdcde;
+}
+
+/* ==========================================================================
+   Priority Settings Box (Legacy - keeping for compatibility)
+   ========================================================================== */
+
+.wpforo-ai-knowledge-priority-box {
+	margin-bottom: 20px;
+}
+
+.wpforo-ai-knowledge-priority-box .wpforo-ai-box-header h2 .dashicons {
+	color: #0073aa;
+}
+
+.wpforo-ai-settings-description {
+	margin: 0 0 20px;
+	color: #646970;
+}
+
+/* Priority Form */
+.wpforo-ai-priority-form .wpforo-ai-loading {
+	padding: 20px;
+}
+
+.wpforo-ai-priority-row {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	padding: 15px;
+	background: #f8f9fa;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+
+.wpforo-ai-priority-row > label {
+	font-weight: 600;
+	min-width: 100px;
+	color: #1d2327;
+}
+
+.wpforo-ai-priority-selects {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.wpforo-ai-priority-selects .priority-label {
+	font-size: 12px;
+	color: #646970;
+	font-weight: 500;
+}
+
+.wpforo-ai-priority-selects .priority-select {
+	min-width: 150px;
+}
+
+/* Save Status */
+.wpforo-ai-save-status {
+	font-size: 13px;
+	color: #646970;
+}
+
+.wpforo-ai-save-status.success {
+	color: #00a32a;
+}
+
+/* ==========================================================================
+   Board Settings Box
+   ========================================================================== */
+
+.wpforo-ai-knowledge-boards-box {
+	margin-bottom: 20px;
+}
+
+.wpforo-ai-knowledge-boards-box .wpforo-ai-box-header h2 .dashicons {
+	color: #0073aa;
+}
+
+.wpforo-ai-boards-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 10px;
+	margin-bottom: 20px;
+}
+
+.wpforo-ai-board-checkbox {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 15px;
+	background: #f8f9fa;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.wpforo-ai-board-checkbox:hover {
+	background: #f0f0f1;
+}
+
+.wpforo-ai-board-checkbox input[type="checkbox"] {
+	margin: 0;
+}
+
+.wpforo-ai-board-checkbox .board-title {
+	font-weight: 500;
+	color: #1d2327;
+}
+
+.wpforo-ai-board-checkbox .board-id {
+	font-size: 12px;
+	color: #646970;
+}
+
+/* ==========================================================================
+   Delete Modal
+   ========================================================================== */
+
+.wpforo-ai-modal {
+	position: fixed;
+	z-index: 100000;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.wpforo-ai-modal-content {
+	background: #fff;
+	border-radius: 6px;
+	max-width: 450px;
+	width: 90%;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.wpforo-ai-modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 15px 20px;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.wpforo-ai-modal-header h3 {
+	margin: 0;
+	font-size: 16px;
+	color: #1d2327;
+}
+
+.wpforo-ai-modal-close {
+	background: none;
+	border: none;
+	font-size: 24px;
+	color: #646970;
+	cursor: pointer;
+	padding: 0;
+	line-height: 1;
+}
+
+.wpforo-ai-modal-close:hover {
+	color: #1d2327;
+}
+
+.wpforo-ai-modal-body {
+	padding: 20px;
+}
+
+.wpforo-ai-modal-body p {
+	margin: 0 0 10px;
+	color: #646970;
+}
+
+.wpforo-ai-delete-file-name {
+	font-weight: 600;
+	color: #1d2327;
+	padding: 10px;
+	background: #f8f9fa;
+	border-radius: 3px;
+}
+
+.wpforo-ai-modal-footer {
+	padding: 15px 20px;
+	border-top: 1px solid #dcdcde;
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+.button-danger {
+	background: #d63638 !important;
+	border-color: #d63638 !important;
+	color: #fff !important;
+}
+
+.button-danger:hover {
+	background: #b32d2e !important;
+	border-color: #b32d2e !important;
+}
+
+/* ==========================================================================
+   Responsive Styles
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+	.wpforo-ai-priority-row {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.wpforo-ai-priority-row > label {
+		margin-bottom: 10px;
+	}
+}
+
+@media (max-width: 782px) {
+	.wpforo-ai-url-input-group {
+		flex-direction: column;
+	}
+
+	.wpforo-ai-url-input-group input[type="url"] {
+		width: 100%;
+	}
+
+	.wpforo-ai-url-input-group .button {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.wpforo-ai-upload-info {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.wpforo-ai-priority-selects {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.wpforo-ai-priority-selects .priority-select {
+		width: 100%;
+	}
+
+	.wpforo-ai-boards-list {
+		grid-template-columns: 1fr;
+	}
+
+	#knowledge-files-table {
+		display: block;
+		overflow-x: auto;
+	}
+}
+
+/* Spin Animation */
+@keyframes wpforo-spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+.wpforo-spin {
+	animation: wpforo-spin 1s linear infinite;
+}

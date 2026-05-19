@@ -9,6 +9,7 @@ WPF()->settings->form_field( 'email', 'from_email' );
 WPF()->settings->form_field( 'email', 'admin_emails' );
 WPF()->settings->form_field( 'email', 'new_topic_notify' );
 WPF()->settings->form_field( 'email', 'new_reply_notify' );
+WPF()->settings->form_field( 'email', 'async_notifications' );
 ?>
 
 <div class="wpf-subtitle">

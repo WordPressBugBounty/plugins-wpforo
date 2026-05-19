@@ -336,7 +336,7 @@ function wpforo_issues() {
     } else {
         $issues['board']['page']['level'] = 3;
         $issues['board']['page']['message'] = "wpForo Base Page is Not Found";
-        $issues['board']['page']['solution'] = "Please check pageid column in the list of boards in wpForo > Boards admin page and make sure this board is connected to a page with [wpforo] shortcode. The documentation: " . "<a href='https://wpforo.com/docs/wpforo-v2/categories-and-forums/forum-boards/' target='_blank'>boards and forum page</a>";
+        $issues['board']['page']['solution'] = "Please check pageid column in the list of boards in wpForo > Boards admin page and make sure this board is connected to a page with [wpforo] shortcode. The documentation: " . "<a href='https://wpforo.com/docs/wpforo-v3/categories-and-forums/forum-boards/' target='_blank'>boards and forum page</a>";
     }
 
     #########################################################

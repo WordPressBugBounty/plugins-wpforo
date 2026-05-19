@@ -125,7 +125,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "Here you can manage admin bar displaying options, using WordPress date format in forum and permalinks of general pages. If you have hmore then one forum board, this settings are still are general for all forum boards.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/general-settings/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/general-settings/",
 				"status"               => "ok",
 				"base"                 => true,
 				"callback_for_page"    => function() {
@@ -141,7 +141,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "This option displays the top black bar for accessing to the dashboard. Make sure the regular members can only access to their own profile editing page before enabling this option.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/general-settings/#show-admin-bar-for-usergroups",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/general-settings/#show-admin-bar-for-usergroups",
 						"variants"             => $this->get_variants_usergroups( 4 ),
 					],
 					"wp_date_format" => [
@@ -150,7 +150,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable WordPress Date/Time Format",
 						"description"          => esc_html__( "You can manage WordPress date and time format in WordPress Settings > General admin page.", "wpforo" ),
 						"description_original" => "You can manage WordPress date and time format in WordPress Settings > General admin page.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/general-settings/#enable-wordpress-date-time-format",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/general-settings/#enable-wordpress-date-time-format",
 					],
 					"fontawesome"    => [
 						"type"                 => "radio",
@@ -163,7 +163,7 @@ class Settings extends stdClass {
 							[ 'value' => 'forum', 'label' => 'Forum' ],
 							[ 'value' => 'off', 'label' => 'Off' ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/colors-styles/#enable-wpforo-font-awesome-lib",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/colors-styles/#enable-wpforo-font-awesome-lib",
 					],
 					"debug_mode"     => [
 						"type"                 => "radio",
@@ -174,7 +174,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "If you got some issue with wpForo, please enable this option before asking for support, this outputs hidden important information to help us debug your issue.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/general-settings/#enable-debug-mode",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/general-settings/#enable-debug-mode",
 					],
 				],
 			],
@@ -187,7 +187,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "This is a board specific general setting page. Boards are separate forums in separate pages. By default, there is a one forum board and one setting menu. If you create a second forum board, you'll have a separate set of menus per board. You can create a new board if you want to have more than one forum in your website. For example, you can use boards to create separate forums for different languages \"EN Forum\" and \"FR Forum\". Here, you can enable forum cache and manage some board specific permalinks.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/board-settings/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/board-settings/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -200,7 +200,7 @@ class Settings extends stdClass {
 						"label_original"       => "Under Construction",
 						"description"          => esc_html__( "You can enable option Under Construction for each boards separately. (This option has no effect for site admins.)", "wpforo" ),
 						"description_original" => "You can enable option Under Construction for each boards separately. (This option has no effect for site admins.)",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/board-settings/#under-construction",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/board-settings/#under-construction",
 					],
 					"cache"              => [
 						"type"                 => "radio",
@@ -208,7 +208,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable Cache",
 						"description"          => esc_html__( "wpForo has own cache system, enable this to reduce sql requests and make your forum run faster.", "wpforo" ),
 						"description_original" => "wpForo has own cache system, enable this to reduce sql requests and make your forum run faster.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/board-settings/#enable-cache",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/board-settings/#enable-cache",
 					],
 					"url_structure"      => [
 						"type"                 => "radio",
@@ -236,7 +236,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "wpForo is a forum plugin which is loaded in one WordPress page, so the whole forum with its categories, forums, topics, members and profile pages are loaded dynamically in one WordPress page. Almost all components you can see in the page content area (forum area) can be displayed or hidden in wpForo settings, especially here, in the Display Components admin page.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-components/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -252,7 +252,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "This is a section with some important buttons for quick actions and accesses to certain admin pages. it's located in the forum home page under the forum list. This section is only available for website administrators.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/#frontend-admin-control-panel",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-components/#frontend-admin-control-panel",
 					],
 					"page_title"       => [
 						"type"                 => "radio",
@@ -260,7 +260,7 @@ class Settings extends stdClass {
 						"label_original"       => "Show Forum Page Title",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/#show-forum-page-title",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-components/#show-forum-page-title",
 					],
 					"top_bar"          => [
 						"type"                 => "radio",
@@ -268,7 +268,7 @@ class Settings extends stdClass {
 						"label_original"       => "Show Forum Menu Bar",
 						"description"          => esc_html__( "This menu bar contains the forum menu, notification bell and forum search section.", "wpforo" ),
 						"description_original" => "This menu bar contains the forum menu, notification bell and forum search section.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/#forum-menu-search-section-and-breadcrumb",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-components/#forum-menu-search-section-and-breadcrumb",
 					],
 					"top_bar_search"   => [
 						"type"                 => "radio",
@@ -276,7 +276,7 @@ class Settings extends stdClass {
 						"label_original"       => "Show Search Section in the Forum Menu Bar",
 						"description"          => esc_html__( "The search icon in the forum menu will be hidden on the home page if the &quot;Open [AI Assistant] widget by Default on Home Page&quot; option is enabled in AI Features setting page.", "wpforo" ),
 						"description_original" => "The search icon in the forum menu will be hidden on the home page if the &quot;Open [AI Assistant] widget by Default on Home Page&quot; option is enabled in AI Features setting page.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/#forum-menu-search-section-and-breadcrumb",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-components/#forum-menu-search-section-and-breadcrumb",
 					],
 					"sidebar_location" => [
 						"type"                 => "radio",
@@ -301,7 +301,7 @@ class Settings extends stdClass {
 						"label_original"       => "Show Breadcrumb",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/#forum-menu-search-section-and-breadcrumb",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-components/#forum-menu-search-section-and-breadcrumb",
 					],
 					"footer"           => [
 						"type"                 => "radio",
@@ -312,7 +312,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Forum footer is located at the bottom of all forum content. It includes forum statistic, last registered user and post information. As well as it contains the 'Mark all read' button and forums/topics icon description.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/#forum-footer-and-statistics",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-components/#forum-footer-and-statistics",
 					],
 					"footer_stat"      => [
 						"type"                 => "radio",
@@ -320,7 +320,7 @@ class Settings extends stdClass {
 						"label_original"       => "Show Forum Statistic",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-components/#forum-footer-and-statistics",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-components/#forum-footer-and-statistics",
 					],
 					"copyright"        => [
 						"type"                 => "radio",
@@ -345,7 +345,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "Here you can manage forum specific components which are displayed on the frontend. All options are grouped by forum layouts. You can find all necessary options to manage forum layout specific features. Each forum layout has its own specific features.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -362,7 +362,7 @@ class Settings extends stdClass {
 							[ 'value' => false, 'label' => __( 'Collapsed', 'wpforo' ) ],
 							[ 'value' => true, 'label' => __( 'Expanded', 'wpforo' ) ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#extended-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#extended-forum-layout",
 					],
 					"layout_extended_intro_topics_count"  => [
 						"type"                 => "number",
@@ -371,7 +371,7 @@ class Settings extends stdClass {
 						"label_original"       => "Extended Layout - Number of Recent topics",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#extended-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#extended-forum-layout",
 					],
 					"layout_extended_intro_topics_length" => [
 						"type"                 => "number",
@@ -380,7 +380,7 @@ class Settings extends stdClass {
 						"label_original"       => "Extended Layout - Recent topic length",
 						"description"          => esc_html__( "Set this option value 0 if you want to show the whole title in recent topic area.", "wpforo" ),
 						"description_original" => "Set this option value 0 if you want to show the whole title in recent topic area.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#extended-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#extended-forum-layout",
 					],
 					"layout_simplified_add_topic_button"  => [
 						"type"                 => "radio",
@@ -388,7 +388,7 @@ class Settings extends stdClass {
 						"label_original"       => "Simplified Layout - Display Add Topic Button on Forum List",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#simplified-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#simplified-forum-layout",
 					],
 					"layout_qa_intro_topics_toggle"       => [
 						"type"                 => "radio",
@@ -400,7 +400,7 @@ class Settings extends stdClass {
 							[ 'value' => false, 'label' => __( 'Collapsed', 'wpforo' ) ],
 							[ 'value' => true, 'label' => __( 'Expanded', 'wpforo' ) ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#q-a-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#q-a-forum-layout",
 					],
 					"layout_qa_intro_topics_count"        => [
 						"type"                 => "number",
@@ -409,7 +409,7 @@ class Settings extends stdClass {
 						"label_original"       => "Q&A Layout - Number of Recent topics",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#q-a-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#q-a-forum-layout",
 					],
 					"layout_qa_intro_topics_length"       => [
 						"type"                 => "number",
@@ -418,7 +418,7 @@ class Settings extends stdClass {
 						"label_original"       => "Q&A Layout - Recent topic length",
 						"description"          => esc_html__( "Set this option value 0 if you want to show the whole title in recent topic area.", "wpforo" ),
 						"description_original" => "Set this option value 0 if you want to show the whole title in recent topic area.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#q-a-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#q-a-forum-layout",
 					],
 					"layout_qa_add_topic_button"          => [
 						"type"                 => "radio",
@@ -426,7 +426,7 @@ class Settings extends stdClass {
 						"label_original"       => "Q&A Layout - Display Add Topic Button on Forum List",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#q-a-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#q-a-forum-layout",
 					],
 					"layout_threaded_intro_topics_toggle" => [
 						"type"                 => "radio",
@@ -438,7 +438,7 @@ class Settings extends stdClass {
 							[ 'value' => false, 'label' => __( 'Collapsed', 'wpforo' ) ],
 							[ 'value' => true, 'label' => __( 'Expanded', 'wpforo' ) ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#threaded-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#threaded-forum-layout",
 					],
 					"layout_threaded_display_subforums"   => [
 						"type"                 => "radio",
@@ -446,7 +446,7 @@ class Settings extends stdClass {
 						"label_original"       => "Threaded Layout - Display Sub Forums with Parent Forums",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#threaded-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#threaded-forum-layout",
 					],
 					"layout_threaded_filter_buttons"      => [
 						"type"                 => "radio",
@@ -462,7 +462,7 @@ class Settings extends stdClass {
 						"label_original"       => "Threaded Layout - Display Add Topic Button on Forum List",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#threaded-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#threaded-forum-layout",
 					],
 					"layout_threaded_intro_topics_count"  => [
 						"type"                 => "number",
@@ -471,7 +471,7 @@ class Settings extends stdClass {
 						"label_original"       => "Threaded Layout - Number of Recent topics",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#threaded-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#threaded-forum-layout",
 					],
 					"layout_threaded_intro_topics_length" => [
 						"type"                 => "number",
@@ -480,7 +480,7 @@ class Settings extends stdClass {
 						"label_original"       => "Threaded Layout - Recent topic length",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-forums/#threaded-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-forums/#threaded-forum-layout",
 					],
 				
 				],
@@ -494,7 +494,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "Here you can change your forum style. There are six predefined styles (default, red, green, orange, gray and dark), these are set of different colors. You can change them and create your own set of colors. If you need more customization, you can add custom CSS code in the corresponding textarea. Also, you can change font size of forums, topics and post content.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/colors-styles/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/colors-styles/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -507,7 +507,7 @@ class Settings extends stdClass {
 						"label_original"       => "Font Sizes:",
 						"description"          => __( 'These options allow you to change the font sizes of forum and topic titles as well as the font size of post content.', 'wpforo' ),
 						"description_original" => 'These options allow you to change the font sizes of forum and topic titles as well as the font size of post content.',
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/colors-styles/#font-sizes",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/colors-styles/#font-sizes",
 						"options_keys"         => [ 'font_size_forum', 'font_size_topic', 'font_size_post_content' ],
 					],
 					"font_size_forum"        => [
@@ -594,7 +594,7 @@ class Settings extends stdClass {
 						"label_original"       => "Custom CSS Code",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/colors-styles/#custom-css-code",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/colors-styles/#custom-css-code",
 					],
 					"style"                  => [
 						"type"                 => "color",
@@ -602,7 +602,7 @@ class Settings extends stdClass {
 						"label_original"       => "Forum Color Styles",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/colors-styles/#forum-styles",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/colors-styles/#forum-styles",
 					],
 				],
 			],
@@ -615,7 +615,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "This is the right place to manage topics and posts displaying options. Here you can manage the number of topics and posts per page, also you can display or hide recent posts under each topic in certain forum layouts. Some options are grouped by forum layouts.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -632,7 +632,7 @@ class Settings extends stdClass {
 							[ 'value' => false, 'label' => __( 'Collapsed', 'wpforo' ) ],
 							[ 'value' => true, 'label' => __( 'Expanded', 'wpforo' ) ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#extended-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#extended-forum-layout",
 					],
 					"layout_extended_intro_posts_count"  => [
 						"type"                 => "number",
@@ -641,7 +641,7 @@ class Settings extends stdClass {
 						"label_original"       => "Extended Layout - Number of Recent posts",
 						"description"          => esc_html__( "Set this option value 0 if you want to show all posts in recent posts area.", "wpforo" ),
 						"description_original" => "Set this option value 0 if you want to show all posts in recent posts area.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#extended-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#extended-forum-layout",
 					],
 					"layout_extended_intro_posts_length" => [
 						"type"                 => "number",
@@ -650,7 +650,7 @@ class Settings extends stdClass {
 						"label_original"       => "Extended Layout - Recent post length",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#extended-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#extended-forum-layout",
 					],
 					"layout_qa_posts_per_page"           => [
 						"type"                 => "number",
@@ -659,7 +659,7 @@ class Settings extends stdClass {
 						"label_original"       => "Q&A Layout - Number of Answers per Page",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#q-a-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#q-a-forum-layout",
 					],
 					"layout_qa_comments_limit_count"     => [
 						"type"                 => "number",
@@ -671,7 +671,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "This is the number of comments under the answers before clicking the [load more comments] button. Set this option value 0 if you want to show all comments",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#q-a-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#q-a-forum-layout",
 					],
 					"layout_qa_first_post_reply"         => [
 						"type"                 => "radio",
@@ -679,7 +679,7 @@ class Settings extends stdClass {
 						"label_original"       => "Q&A Layout - Enable Comments on the First Post (question)",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#q-a-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#q-a-forum-layout",
 					],
 					"layout_threaded_posts_per_page"     => [
 						"type"                 => "number",
@@ -688,7 +688,7 @@ class Settings extends stdClass {
 						"label_original"       => "Threaded Layout - Number of Parent Posts per Page",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#threaded-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#threaded-forum-layout",
 					],
 					"layout_threaded_nesting_level"      => [
 						"type"                 => "number",
@@ -698,7 +698,7 @@ class Settings extends stdClass {
 						"label_original"       => "Threaded Layout - Replies Nesting Levels Deep",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#threaded-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#threaded-forum-layout",
 					],
 					"layout_threaded_first_post_reply"   => [
 						"type"                 => "radio",
@@ -706,7 +706,7 @@ class Settings extends stdClass {
 						"label_original"       => "Threaded Layout - First Post Reply Button",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#threaded-forum-layout",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#threaded-forum-layout",
 					],
 					"include_subforums_topics"           => [
 						"type"                 => "radio",
@@ -723,7 +723,7 @@ class Settings extends stdClass {
 						"label_original"       => "Number of Topics per Page",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#number-of-topics-and-posts-per-page",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#number-of-topics-and-posts-per-page",
 					],
 					"posts_per_page"                     => [
 						"type"                 => "number",
@@ -732,7 +732,7 @@ class Settings extends stdClass {
 						"label_original"       => "Number of Posts per Page",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#number-of-topics-and-posts-per-page",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#number-of-topics-and-posts-per-page",
 					],
 					"search_max_results"                 => [
 						"type"                 => "number",
@@ -741,7 +741,7 @@ class Settings extends stdClass {
 						"label_original"       => "Maximum number of search results",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#maximum-number-of-search-results",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#maximum-number-of-search-results",
 					],
 					"union_first_post"                   => [
 						"type"                 => "radio",
@@ -752,7 +752,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "This option keeps the first topic post on top when you navigate through pages of that topic. You can manage this option by forum layouts.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#maximum-number-of-search-results",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#maximum-number-of-search-results",
 					],
 					"recent_posts_type"                  => [
 						"type"                 => "radio",
@@ -764,7 +764,7 @@ class Settings extends stdClass {
 							[ 'value' => 'topics', 'label' => 'Topics' ],
 							[ 'value' => 'posts', 'label' => 'Posts' ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-topics-posts/#recent-posts-display-type",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-topics-posts/#recent-posts-display-type",
 					],
 					"topic_head"                         => [
 						"type"                 => "radio",
@@ -793,7 +793,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "Tags are a free form method of categorization, currently being used to group and categorize similar topics. The goal of using these tags in the forum is to create a \"heat map\", an index of topics covered within the Forum. The larger the size of the tag, the more discussions about the topic.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/topic-tags/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/topic-tags/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -807,7 +807,7 @@ class Settings extends stdClass {
 						"label_original"       => "Maximum Number of Tags per Topic",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/topic-tags/#maximum-number-of-tags-per-topic",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/topic-tags/#maximum-number-of-tags-per-topic",
 					],
 					"per_page"      => [
 						"type"                 => "number",
@@ -816,7 +816,7 @@ class Settings extends stdClass {
 						"label_original"       => "Number of Tags per Page",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/topic-tags/#number-of-tags-per-page",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/topic-tags/#number-of-tags-per-page",
 					],
 					"length"        => [
 						"type"                 => "number",
@@ -826,7 +826,7 @@ class Settings extends stdClass {
 						"label_original"       => "Maximum Tag Length",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/topic-tags/#maximum-tags-length",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/topic-tags/#maximum-tags-length",
 					],
 					"suggest_limit" => [
 						"type"                 => "number",
@@ -835,7 +835,7 @@ class Settings extends stdClass {
 						"label_original"       => "Maximum Number of Suggested Tags",
 						"description"          => esc_html__( "Tags are suggested while you type in the tag field. Using this option you can limit the maximum number of suggested tags.", "wpforo" ),
 						"description_original" => "Tags are suggested while you type in the tag field. Using this option you can limit the maximum number of suggested tags.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/topic-tags/#maximum-number-of-suggested-tags",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/topic-tags/#maximum-number-of-suggested-tags",
 					],
 					"lowercase"     => [
 						"type"                 => "radio",
@@ -843,7 +843,7 @@ class Settings extends stdClass {
 						"label_original"       => "Force Lowercase Tags",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/topic-tags/#force-lowercase-tags",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/topic-tags/#force-lowercase-tags",
 					],
 				],
 			],
@@ -856,7 +856,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "Here, you can find all settings related to topic and post creation including rich editor settings, text limitations, attachments control, option to enable WordPress plugin shortcodes in wpForo posts, post drafting and preview options. Some settings are grouped by forum layouts and some of them are general for all forum layouts.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -869,7 +869,7 @@ class Settings extends stdClass {
 						"label_original"       => "Q&A Layout - Display Answer Editor",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#q-a-layout-%E2%80%93-display-answer-editor",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#q-a-layout-%E2%80%93-display-answer-editor",
 					],
 					"qa_comments_rich_editor"       => [
 						"type"                 => "radio",
@@ -881,7 +881,7 @@ class Settings extends stdClass {
 							[ 'value' => false, 'label' => __( 'Text Editor', 'wpforo' ) ],
 							[ 'value' => true, 'label' => __( 'Visual Editor', 'wpforo' ) ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#q-a-layout-%E2%80%93-comment-form-type",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#q-a-layout-%E2%80%93-comment-form-type",
 					],
 					"threaded_reply_rich_editor"    => [
 						"type"                 => "radio",
@@ -893,7 +893,7 @@ class Settings extends stdClass {
 							[ 'value' => false, 'label' => __( 'Text Editor', 'wpforo' ) ],
 							[ 'value' => true, 'label' => __( 'Visual Editor', 'wpforo' ) ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#threaded-layout-%E2%80%93-reply-form-type",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#threaded-layout-%E2%80%93-reply-form-type",
 					],
 					"topic_title_min_length"        => [
 						"type"                 => "number",
@@ -1013,7 +1013,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "The topic edit logging information 'This post was modified 2 hours ago by John' is displayed under modified topic first post content...",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#display-topic-and-post-editing-information",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#display-topic-and-post-editing-information",
 					],
 					"edit_post"                     => [
 						"type"                 => "radio",
@@ -1021,7 +1021,7 @@ class Settings extends stdClass {
 						"label_original"       => "Display Post Editing Information",
 						"description"          => esc_html__( "The post edit logging information 'This post was modified 2 hours ago by John' is displayed under modified post content...", "wpforo" ),
 						"description_original" => "The post edit logging information 'This post was modified 2 hours ago by John' is displayed under modified post content...",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#display-topic-and-post-editing-information",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#display-topic-and-post-editing-information",
 					],
 					"edit_log_display_limit"        => [
 						"type"                 => "number",
@@ -1033,7 +1033,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Limit the post edit logging information 'This post was modified 2 hours ago by John'. Set this option value 0 if you want to disable limiting.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#limit-post-editing-information",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#limit-post-editing-information",
 					],
 					"is_preview_on"                 => [
 						"type"                 => "radio",
@@ -1041,7 +1041,7 @@ class Settings extends stdClass {
 						"label_original"       => "Post Preview",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#post-preview-and-auto-drafting",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#post-preview-and-auto-drafting",
 					],
 					"is_draft_on"                   => [
 						"type"                 => "radio",
@@ -1049,7 +1049,7 @@ class Settings extends stdClass {
 						"label_original"       => "Post Revisions and Draft Saving",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#post-preview-and-auto-drafting",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#post-preview-and-auto-drafting",
 					],
 					"auto_draft_interval"           => [
 						"type"                 => "select",
@@ -1065,7 +1065,7 @@ class Settings extends stdClass {
 							[ 'value' => 120000, 'label' => __( '2 minute', 'wpforo' ) ],
 							[ 'value' => 300000, 'label' => __( '5 minute', 'wpforo' ) ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#post-preview-and-auto-drafting",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#post-preview-and-auto-drafting",
 					],
 					"max_drafts_per_page"           => [
 						"type"                 => "number",
@@ -1074,7 +1074,7 @@ class Settings extends stdClass {
 						"label_original"       => "Max Number of Revisions",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#post-preview-and-auto-drafting",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#post-preview-and-auto-drafting",
 					],
 					"max_upload_size"               => [
 						"type"                 => "megabyte",
@@ -1105,7 +1105,7 @@ class Settings extends stdClass {
 							[ 'value' => 'top', 'label' => __( 'Top', 'wpforo' ) ],
 							[ 'value' => 'bottom', 'label' => __( 'Bottom', 'wpforo' ) ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#rich-editor-toolbar-location",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#rich-editor-toolbar-location",
 					],
 					"reply_editor_toolbar_location" => [
 						"type"                 => "radio",
@@ -1117,7 +1117,7 @@ class Settings extends stdClass {
 							[ 'value' => 'top', 'label' => __( 'Top', 'wpforo' ) ],
 							[ 'value' => 'bottom', 'label' => __( 'Bottom', 'wpforo' ) ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/posting-editor-settings/#rich-editor-toolbar-location",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/posting-editor-settings/#rich-editor-toolbar-location",
 					],
 					"content_do_shortcode"          => [
 						"type"                 => "radio",
@@ -1149,7 +1149,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "This is the members' directory setting page. wpForo forum has a members' page where you can see all members. The members' page is called members directory, and it's general for all forum boards. Starting from wpForo 2.0 you can create multiple separate forum boards in your website, however the members' directory will be one for all forums.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-members/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-members/",
 				"status"               => "ok",
 				"base"                 => true,
 				"callback_for_page"    => function() {
@@ -1179,7 +1179,7 @@ class Settings extends stdClass {
 						"label_original"       => "Hide Inactive Members",
 						"description"          => esc_html__( "Members who have not confirmed their email after the registration are set as 'inactive'. In most cases they are spam bots.", "wpforo" ),
 						"description_original" => "Members who have not confirmed their email after the registration are set as 'inactive'. In most cases they are spam bots.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/display-members/#hide-inactive-members",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/display-members/#hide-inactive-members",
 					],
 					"members_per_page" => [
 						"type"                 => "number",
@@ -1213,7 +1213,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "wpForo forum has a powerful user profile system which can be managed in this setting page. Here you can hide/show forum header and footer on profile pages, manage profile components like avatars, member titles, nickname, URL structure, signature etc... In case you use BuddyPress or Ultimate Members plugins, you can switch forum profile page to the plugin profile page.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-profile/",
 				"status"               => "ok",
 				"base"                 => true,
 				"callback_for_page"    => function() {
@@ -1250,7 +1250,7 @@ class Settings extends stdClass {
 								'disabled' => ! function_exists( 'UM' ),
 							],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#profile-page",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-profile/#profile-page",
 					],
 					"profile_header"           => [
 						"type"                 => "radio",
@@ -1258,7 +1258,7 @@ class Settings extends stdClass {
 						"label_original"       => "Show Forum Header on Profile Pages",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#show-forum-header-and-footer-on-profile-pages",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-profile/#show-forum-header-and-footer-on-profile-pages",
 					],
 					"profile_footer"           => [
 						"type"                 => "radio",
@@ -1266,7 +1266,7 @@ class Settings extends stdClass {
 						"label_original"       => "Show Forum Footer under Profile Pages",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#show-forum-header-and-footer-on-profile-pages",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-profile/#show-forum-header-and-footer-on-profile-pages",
 					],
 					"url_structure"            => [
 						"type"                 => "radio",
@@ -1274,7 +1274,7 @@ class Settings extends stdClass {
 						"label_original"       => "Members URL Structure",
 						"description"          => esc_html__( "By default ", "wpforo" ),
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#members-url-structure-and-member-nickname",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-profile/#members-url-structure-and-member-nickname",
 						"variants"             => [
 							[ 'value' => 'id', 'label' => 'USER_ID', 'title' => wpforo_url( 'profile', 'member' ) . 'USER_ID/' ],
 							[ 'value' => 'nicename', 'label' => 'USER_NICENAME', 'title' => wpforo_url( 'profile', 'member' ) . 'USER_NICENAME/' ],
@@ -1294,7 +1294,7 @@ class Settings extends stdClass {
 						"label_original"       => "Member Custom Titles",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#member-custom-title",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-profile/#member-custom-title",
 					],
 					"default_title"            => [
 						"type"                 => "text",
@@ -1302,7 +1302,7 @@ class Settings extends stdClass {
 						"label_original"       => "Member Custom Title by Default",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#member-custom-title",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-profile/#member-custom-title",
 					],
 					"title_groupids"           => [
 						"type"                 => "checkbox",
@@ -1310,7 +1310,7 @@ class Settings extends stdClass {
 						"label_original"       => "Display Member Primary Usergroup",
 						"description"          => esc_html__( "The names of selected usergroups will be displayed under the corresponding usergroup's users avatar in forum posts.", "wpforo" ),
 						"description_original" => "The selected usergroup names will be displayed under the corresponding usergroup users avatar in forum posts.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#display-primary-and-secondary-usergroups-under-post-author-avata",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-profile/#display-primary-and-secondary-usergroups-under-post-author-avata",
 						"variants"             => $this->get_variants_usergroups(),
 					],
 					"title_secondary_groupids" => [
@@ -1322,7 +1322,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "The names of selected secondary usergroups will be displayed under the corresponding usergroup's users avatar in forum posts.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#display-primary-and-secondary-usergroups-under-post-author-avata",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-profile/#display-primary-and-secondary-usergroups-under-post-author-avata",
 						"variants"             => $this->get_variants_usergroups( [], true ),
 					],
 					"mention_nicknames"        => [
@@ -1334,7 +1334,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Nicknames are displayed with '@' symbol, like @john and are used for the user mentioning in posts. Please note, that this is not the user login name (username). If they are the same, users can change their nickname in the profile account page to secure the login name.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#members-url-structure-and-member-nickname",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-profile/#members-url-structure-and-member-nickname",
 					],
 					"avatars"                  => [
 						"type"                 => "radio",
@@ -1356,7 +1356,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "By default wpForo uses WordPress avatars. In most cases it's the Gravatar. If this option is enabled, users will be able to set their avatars with external URLs or upload from their devices.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-profile/#enable-custom-avatars",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-profile/#enable-custom-avatars",
 					],
 					"replace_avatar"           => [
 						"type"                 => "radio",
@@ -1396,7 +1396,7 @@ class Settings extends stdClass {
 					                          "wpforo"
 				                          ) . '<a href="https://gvectors.com/product/wpforo-mycred/" target="_blank">wpForo myCRED Integration.</a>',
 				"description_original" => "wpForo has built-in member reputation system based on points user get when he/she creates new topic, posts, when gets likes or dislikes. This system grants Rating Titles and Rating Badges. All component of this system (number of posts, titles, badges) can be customized and changed in this admin section.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-rating/",
 				"status"               => "ok",
 				"base"                 => true,
 				"callback_for_page"    => function() {
@@ -1409,7 +1409,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable Member Rating Badges",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/#enable-member-rating-badges-and-titles",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-rating/#enable-member-rating-badges-and-titles",
 					],
 					"rating_title"    => [
 						"type"                 => "radio",
@@ -1417,7 +1417,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable Member Rating Titles",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/#enable-member-rating-badges-and-titles",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-rating/#enable-member-rating-badges-and-titles",
 					],
 					"member_rating"   => [
 						"label"                => esc_html__( "Member Reputation and Titles", "wpforo" ),
@@ -1433,7 +1433,7 @@ class Settings extends stdClass {
 						"label_original"       => "Points for One Topic",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/#reputation-point-counting",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-rating/#reputation-point-counting",
 					],
 					"post_points"     => [
 						"type"                 => "float",
@@ -1442,7 +1442,7 @@ class Settings extends stdClass {
 						"label_original"       => "Points for 1 Post",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/#reputation-point-counting",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-rating/#reputation-point-counting",
 					],
 					"like_points"     => [
 						"type"                 => "float",
@@ -1451,7 +1451,7 @@ class Settings extends stdClass {
 						"label_original"       => "Points for One Post",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/#reputation-point-counting",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-rating/#reputation-point-counting",
 					],
 					"dislike_points"  => [
 						"type"                 => "float",
@@ -1460,7 +1460,7 @@ class Settings extends stdClass {
 						"label_original"       => "Points for One Dislike",
 						"description"          => esc_html__( "This should be set a negative value like '-1' to decrease the user reputation points if he/she receives dislikes.", "wpforo" ),
 						"description_original" => "This should be set a negative value like '-1' to decrease the user reputation points if he/she receives dislikes.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/member-rating/#reputation-point-counting",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/member-rating/#reputation-point-counting",
 					],
 					"rating_title_ug" => [
 						"type"                 => "checkbox",
@@ -1502,7 +1502,7 @@ class Settings extends stdClass {
 					                          'wpforo'
 				                          ) . ' <a href="https://gvectors.com/product/wpforo-user-custom-fields/" target="_blank">wpForo Users Custom Field.</a>',
 				"description_original" => "wpForo is one of the very rare plugins which has its own user registration and login pages. Both features are based on WordPress functions. Here you can control user registration, account approval and deleting settings. Also, you can manage redirections after user login, register and password resting actions.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/login-registration/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/login-registration/",
 				"status"               => "ok",
 				"base"                 => true,
 				"callback_for_page"    => function() {
@@ -1518,7 +1518,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "This option is not synced with WordPress 'Anyone can register' option in Dashboard > Settings > General admin page. If this option is enabled new users will always be able to register.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/login-registration/#enable-user-registration",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/login-registration/#enable-user-registration",
 					],
 					"user_register_email_confirm"       => [
 						"type"                 => "radio",
@@ -1526,7 +1526,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable User Registration email confirmation",
 						"description"          => esc_html__( "If you have enabled this option, after registering, user can not login without confirming the email.", "wpforo" ),
 						"description_original" => "If you have enabled this option, after registering, user can not login without confirming the email.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/login-registration/#enable-user-registration-email-confirmation",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/login-registration/#enable-user-registration-email-confirmation",
 					],
 					"manually_approval"                 => [
 						"type"                 => "radio",
@@ -1534,7 +1534,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable User Manually Approval System",
 						"description"          => esc_html__( "If you have enabled this option, after registering, user can not login without manually approving of administrator.", "wpforo" ),
 						"description_original" => "If you have enabled this option, after registering, user can not login without manually approving of administrator.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/login-registration/#enable-user-manually-approval-system",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/login-registration/#enable-user-manually-approval-system",
 					],
 					"manually_approval_contact_form"    => [
 						"type"                 => "radio",
@@ -1545,7 +1545,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "This option displays a contact form under the 'Awaiting approval' text to allow inactive users send a message to website administrator. This message will be sent to the administrator email address.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/login-registration/#enable-user-manually-approval-system",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/login-registration/#enable-user-manually-approval-system",
 					],
 					"role_synch"                        => [
 						"type"                 => "radio",
@@ -1556,7 +1556,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Keep enabled this option to synch WordPress User Roles with Forum Usergroups. This connection allows to automatically change Usergroup of a user when his/her User Role is changed by administrators or by membership plugins. In other words this option allows to manage Usergroups based on Users Roles, thus you can directly control users forum accesses based on Users Roles. If this option is turned off, User Roles don't have any affection to users forum accesses, they are only controlled by forum Usergroups.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/login-registration/#role-usergroup-synchronization",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/login-registration/#role-usergroup-synchronization",
 					],
 					"user_delete_method"                => [
 						"type"                 => "radio",
@@ -1575,7 +1575,7 @@ class Settings extends stdClass {
 							],
 							[ 'value' => 'hard', 'label' => __( 'Hard', 'wpforo' ), 'title' => __( 'This method will also remove all user information and content.', 'wpforo' ) ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/login-registration/#user-delete-method",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/login-registration/#user-delete-method",
 					],
 					"send_email_after_user_delete"      => [
 						"type"                 => "radio",
@@ -1618,7 +1618,7 @@ class Settings extends stdClass {
 							'wpforo'
 						),
 						"description_original" => "Use this option only if you have set other pages for authorization. wpForo doesn\'t change its own URLs, these options are only for other plugin compatibility. For example, if you use BuddyPress or Ultimate Member plugin you can set your profile plugin url",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/login-registration/#custom-authorization-urls",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/login-registration/#custom-authorization-urls",
 						"options_keys"         => [ 'login_url', 'register_url', 'lost_password_url' ],
 					],
 					"login_url"                         => [
@@ -1692,7 +1692,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "Here, you can configure header information (FROM name and email) of forum specific emails. You can set administrators and moderators email addresses to get email notification when a new topic or reply is posted. Here you can also find user registration, password resetting and post reporting email templates.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/email-settings/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/email-settings/",
 				"status"               => "ok",
 				"base"                 => true,
 				"callback_for_page"    => function() {
@@ -1705,7 +1705,7 @@ class Settings extends stdClass {
 						"label_original"       => "FROM Name",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/email-settings/#from-name-and-email-address",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/email-settings/#from-name-and-email-address",
 					],
 					"from_email"                                         => [
 						"type"                 => "text",
@@ -1713,7 +1713,7 @@ class Settings extends stdClass {
 						"label_original"       => "FROM Email Address",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/email-settings/#from-name-and-email-address",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/email-settings/#from-name-and-email-address",
 					],
 					"admin_emails"                                       => [
 						"type"                 => "text_,",
@@ -1737,6 +1737,14 @@ class Settings extends stdClass {
 						"label_original"       => "Notify Admins via Email on New Post",
 						"description"          => esc_html__( "Send Notification emails to all email addresses (comma separated ) of forum administrators when a new Reply is created.", "wpforo" ),
 						"description_original" => "Send Notification emails to all email addresses (comma separated ) of forum administrators when a new Reply is created.",
+						"docurl"               => "",
+					],
+					"async_notifications"                                => [
+						"type"                 => "radio",
+						"label"                => esc_html__( "Send Notification Emails Asynchronously", "wpforo" ),
+						"label_original"       => "Send Notification Emails Asynchronously",
+						"description"          => esc_html__( "Queue subscription, mention, and follow notification emails to be sent in the background. This prevents delays when posting replies to topics with many subscribers. Recommended for forums with active subscriptions.", "wpforo" ),
+						"description_original" => "Queue subscription, mention, and follow notification emails to be sent in the background. This prevents delays when posting replies to topics with many subscribers. Recommended for forums with active subscriptions.",
 						"docurl"               => "",
 					],
 					"disable_new_user_admin_notification"                => [
@@ -1933,7 +1941,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "wpForo has almost all kind of way to keep forum users updated about the latest posted content. Users can subscribe to forums and topics, they can be mentioned in posts, they can follow to other users. On all these cases, users get email and in-forum notification. And all these features can be managed in this admin section.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/subscriptions-mentioning/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/subscriptions-mentioning/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -1946,7 +1954,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable Subscription Confirmation",
 						"description"          => esc_html__( "Forum and Topic subscription with double opt-in/confirmation system.", "wpforo" ),
 						"description_original" => "Forum and Topic subscription with double opt-in/confirmation system.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/subscriptions-mentioning/#enable-subscription-confirmation",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/subscriptions-mentioning/#enable-subscription-confirmation",
 					],
 					"subscribe_checkbox_on_post_editor"    => [
 						"type"                 => "radio",
@@ -1954,7 +1962,7 @@ class Settings extends stdClass {
 						"label_original"       => "Topic subscription option on post editor",
 						"description"          => esc_html__( "This option adds topic subscription checkbox next to new topic and post submit button.", "wpforo" ),
 						"description_original" => "This option adds topic subscription checkbox next to new topic and post submit button.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/subscriptions-mentioning/#topic-subscription-option-on-post-editor",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/subscriptions-mentioning/#topic-subscription-option-on-post-editor",
 					],
 					"subscribe_checkbox_default_status"    => [
 						"type"                 => "radio",
@@ -1962,7 +1970,7 @@ class Settings extends stdClass {
 						"label_original"       => "Topic subscription option on post editor - checked/enabled",
 						"description"          => esc_html__( "Enable this option if you want the topic subscription checkbox to be checked by default.", "wpforo" ),
 						"description_original" => "Enable this option if you want the topic subscription checkbox to be checked by default.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/subscriptions-mentioning/#topic-subscription-option-on-post-editor",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/subscriptions-mentioning/#topic-subscription-option-on-post-editor",
 					],
 					"user_mention_notify"                  => [
 						"type"                 => "radio",
@@ -1970,7 +1978,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable User Mentioning",
 						"description"          => esc_html__( "If this option is enabled, users will receive email notification when someone uses @nickname of the user in posts.", "wpforo" ),
 						"description_original" => "If this option is enabled, users will receive email notification when someone uses @nickname of the user in posts.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/subscriptions-mentioning/#enable-user-mentioning",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/subscriptions-mentioning/#enable-user-mentioning",
 					],
 					"user_following_notify"                => [
 						"type"                 => "radio",
@@ -1981,7 +1989,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "If this option is enabled, the [Follow] button will be displayed on user's profile pages, allowing users to subscribe to certain users topics and posts. The follower user will receive email notification when the followed user posts a new topic or post.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/subscriptions-mentioning/#enable-user-following",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/subscriptions-mentioning/#enable-user-following",
 					],
 					"confirmation_email_subject"           => [
 						"type"                 => "text",
@@ -2146,7 +2154,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "As an addition to email notification functions, wpForo has in-forum notification system. You can see the notification bell on forum menu bar or in the sidebar with 'My Profile and Notifications' widget.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-notifications/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/forum-notifications/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -2167,7 +2175,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable User Notification Live Update",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-notifications/#enable-user-notification-live-update",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/forum-notifications/#enable-user-notification-live-update",
 					],
 					"notifications_bar"  => [
 						"type"                 => "radio",
@@ -2175,7 +2183,7 @@ class Settings extends stdClass {
 						"label_original"       => "Display User Notification Bell on Menu Bar",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-notifications/#display-user-notification-bell-on-menu-bar",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/forum-notifications/#display-user-notification-bell-on-menu-bar",
 					],
 				],
 			],
@@ -2287,7 +2295,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "wpForo logging system allows tracking and providing live information about forum viewers. It detects read/unread status of forums and posts for guests and logged-in users individually. Here you can manage all functions and features of the forum logging system.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/action-logging-views/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/action-logging-views/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -2300,7 +2308,7 @@ class Settings extends stdClass {
 						"label_original"       => "Log Viewed Forums and Topics",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/action-logging-views/#log-viewed-forums-and-topics",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/action-logging-views/#log-viewed-forums-and-topics",
 					],
 					"track_logging"                 => [
 						"type"                 => "radio",
@@ -2308,7 +2316,7 @@ class Settings extends stdClass {
 						"label_original"       => "Track Forum and Topic Current Viewers",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/action-logging-views/#track-forum-and-topic-current-viewers",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/action-logging-views/#track-forum-and-topic-current-viewers",
 					],
 					"goto_unread"                   => [
 						"type"                 => "radio",
@@ -2319,7 +2327,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "If this option is enabled, all topic links on forums page and on topics page will refer to the first unread post. This behavior is only enabled for logged-in users.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/action-logging-views/#topic-links-jump-to-first-unread-post",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/action-logging-views/#topic-links-jump-to-first-unread-post",
 					],
 					"goto_unread_button"            => [
 						"type"                 => "radio",
@@ -2327,7 +2335,7 @@ class Settings extends stdClass {
 						"label_original"       => "Jump to First Unread Post with [new] Button in Topic Link",
 						"description"          => esc_html__( "Adds [new] button at the and of topic links, which jumps to the first unread post.", "wpforo" ),
 						"description_original" => "Adds [new] button at the and of topic links, which jumps to the first unread post.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/action-logging-views/#jump-to-first-unread-post-with-new-button-in-topic-link",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/action-logging-views/#jump-to-first-unread-post-with-new-button-in-topic-link",
 					],
 					"display_forum_current_viewers" => [
 						"type"                 => "radio",
@@ -2335,7 +2343,7 @@ class Settings extends stdClass {
 						"label_original"       => "Display Forum Current Viewers",
 						"description"          => esc_html__( "Displays information about forum current viewers (x viewing) next to forum title.", "wpforo" ),
 						"description_original" => "Displays information about forum current viewers (x viewing) next to forum title.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/action-logging-views/#display-forum-and-topic-current-viewers",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/action-logging-views/#display-forum-and-topic-current-viewers",
 					],
 					"display_topic_current_viewers" => [
 						"type"                 => "radio",
@@ -2343,7 +2351,7 @@ class Settings extends stdClass {
 						"label_original"       => "Display Topic Current Viewers",
 						"description"          => esc_html__( "Displays information about topic current viewers (x viewing) next to topic title", "wpforo" ),
 						"description_original" => "Displays information about topic current viewers (x viewing) next to topic title",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/action-logging-views/#display-forum-and-topic-current-viewers",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/action-logging-views/#display-forum-and-topic-current-viewers",
 					],
 					"display_recent_viewers"        => [
 						"type"                 => "radio",
@@ -2351,7 +2359,7 @@ class Settings extends stdClass {
 						"label_original"       => "Display Recent Viewers in the Topic Footer",
 						"description"          => esc_html__( "Displays information about topic recent viewers (users visited within last one hour)", "wpforo" ),
 						"description_original" => "Displays information about topic recent viewers (users visited within last one hour)",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/action-logging-views/#display-recent-viewers-in-the-topic-footer",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/action-logging-views/#display-recent-viewers-in-the-topic-footer",
 					],
 					"display_admin_viewers"         => [
 						"type"                 => "radio",
@@ -2372,7 +2380,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "wpForo comes with built-in powerful forum SEO features. wpForo doesn't need any SEO plugin, however you should use SEO plugins for other parts of your website (posts, pages, products, etc...). wpForo disables SEO plugins on forum pages and generates all necessary SEO meta tags.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/wpforo-seo/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -2385,7 +2393,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable eta Titles",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-meta-title-and-seo-tags",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/wpforo-seo/#enable-meta-title-and-seo-tags",
 					],
 					"seo_meta"        => [
 						"type"                 => "radio",
@@ -2393,7 +2401,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable Meta Tags",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-meta-title-and-seo-tags",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/wpforo-seo/#enable-meta-title-and-seo-tags",
 					],
 					"seo_profile"     => [
 						"type"                 => "radio",
@@ -2401,7 +2409,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable User Profile Page indexing",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-user-profile-page-indexing",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/wpforo-seo/#enable-user-profile-page-indexing",
 					],
 					"forums_sitemap"  => [
 						"type"                 => "radio",
@@ -2409,7 +2417,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable Forums Sitemap",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-forums-topics-and-members-sitemap",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/wpforo-seo/#enable-forums-topics-and-members-sitemap",
 					],
 					"topics_sitemap"  => [
 						"type"                 => "radio",
@@ -2417,7 +2425,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable Topics Sitemap",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-forums-topics-and-members-sitemap",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/wpforo-seo/#enable-forums-topics-and-members-sitemap",
 					],
 					"members_sitemap" => [
 						"type"                 => "radio",
@@ -2425,7 +2433,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable Members Sitemap",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/wpforo-seo/#enable-forums-topics-and-members-sitemap",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/wpforo-seo/#enable-forums-topics-and-members-sitemap",
 					],
 					"dofollow"        => [
 						"type"                 => 'textarea_\n',
@@ -2462,7 +2470,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "Here you can find many ways to protect your forum from spammers. Most of them are already configured and enabled with default values. You can make spam protection more powerfully if you configure Google reCAPTCHA in Settings > Google reCAPTCHA section and install others spam protection plugins like Akismet.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/",
 				"status"               => "ok",
 				"base"                 => true,
 				"callback_for_page"    => function() {
@@ -2475,7 +2483,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable wpForo Spam Control",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#wpforo-spam-control",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/#wpforo-spam-control",
 					],
 					"spam_user_ban"                    => [
 						"type"                 => "radio",
@@ -2483,7 +2491,7 @@ class Settings extends stdClass {
 						"label_original"       => "Ban user when spam is suspected",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#wpforo-spam-control",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/#wpforo-spam-control",
 					],
 					"should_unapprove_after_report"    => [
 						"type"                 => "radio",
@@ -2491,7 +2499,7 @@ class Settings extends stdClass {
 						"label_original"       => "Make the reported post unapproved.",
 						"description"          => esc_html__( "When a post is reported set it under moderation.", "wpforo" ),
 						"description_original" => "When a post is reported set it under moderation.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#wpforo-spam-control",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/#wpforo-spam-control",
 					],
 					"spam_filter_level_topic"          => [
 						"type"                 => "number",
@@ -2501,7 +2509,7 @@ class Settings extends stdClass {
 						"label_original"       => "Spam Suspicion Level for Topics",
 						"description"          => esc_html__( "Lower values require higher similarity to flag as spam (1 = 99% match, 20 = 80% match).", "wpforo" ),
 						"description_original" => "Lower values require higher similarity to flag as spam (1 = 99% match, 20 = 80% match).",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#wpforo-spam-control",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/#wpforo-spam-control",
 					],
 					"spam_filter_level_post"           => [
 						"type"                 => "number",
@@ -2511,7 +2519,7 @@ class Settings extends stdClass {
 						"label_original"       => "Spam Suspicion Level for Posts",
 						"description"          => esc_html__( "Lower values require higher similarity to flag as spam (1 = 99% match, 20 = 80% match).", "wpforo" ),
 						"description_original" => "Lower values require higher similarity to flag as spam (1 = 99% match, 20 = 80% match).",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#wpforo-spam-control",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/#wpforo-spam-control",
 					],
 					"new_user_max_posts"               => [
 						"type"                 => "number",
@@ -2520,7 +2528,7 @@ class Settings extends stdClass {
 						"label_original"       => "User is New (under hard spam control) during first [X] posts",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#user-is-new-under-hard-spam-control-during-first-x-posts",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/#user-is-new-under-hard-spam-control-during-first-x-posts",
 					],
 					"unapprove_post_if_user_is_new"    => [
 						"type"                 => "radio",
@@ -2528,7 +2536,7 @@ class Settings extends stdClass {
 						"label_original"       => "Posts must be manually approved",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#posts-must-be-manually-approved",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/#posts-must-be-manually-approved",
 					],
 					"min_number_posts_to_edit_account" => [
 						"type"                 => "number",
@@ -2537,7 +2545,7 @@ class Settings extends stdClass {
 						"label_original"       => "Min number of posts to be able to edit profile information",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#min-number-of-posts-to-be-able-to-edit-profile-information",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/#min-number-of-posts-to-be-able-to-edit-profile-information",
 					],
 					"min_number_posts_to_attach"       => [
 						"type"                 => "number",
@@ -2546,7 +2554,7 @@ class Settings extends stdClass {
 						"label_original"       => "Min number of posts to be able to attach files",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#min-number-of-posts-to-be-able-to-attach-a-file-or-post-links",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/#min-number-of-posts-to-be-able-to-attach-a-file-or-post-links",
 					],
 					"min_number_posts_to_link"         => [
 						"type"                 => "number",
@@ -2555,7 +2563,7 @@ class Settings extends stdClass {
 						"label_original"       => "Min number of posts to be able to post links",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#min-number-of-posts-to-be-able-to-attach-a-file-or-post-links",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/#min-number-of-posts-to-be-able-to-attach-a-file-or-post-links",
 					],
 					"limited_file_ext"                 => [
 						"type"                 => "textarea_|",
@@ -2563,7 +2571,7 @@ class Settings extends stdClass {
 						"label_original"       => "Do not allow attaching files with following extensions",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/spam-protection/#do-not-allow-attaching-files-with-following-extensions",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/spam-protection/#do-not-allow-attaching-files-with-following-extensions",
 					],
 					"flood_protection_enabled"         => [
 						"type"                 => "radio",
@@ -2666,7 +2674,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "reCAPTCHA protects you against spam and other types of automated abuse. It secures topic and post editors when Guest Posting is allowed, and protects login and registration forms against spam attacks. wpForo supports reCAPTCHA v2 (Checkbox and Invisible) and v3 (score-based, invisible).",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/google-recaptcha/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/google-recaptcha/",
 				"status"               => "ok",
 				"base"                 => true,
 				"callback_for_page"    => function() {
@@ -2698,7 +2706,7 @@ class Settings extends stdClass {
 							                          'wpforo'
 						                          ) . '<a href="https://www.google.com/recaptcha/admin" target="_blank">' . __( 'Register your site and get API keys here &raquo;', 'wpforo' ) . '</a>',
 						"description_original" => 'To start using reCAPTCHA, you need to sign up for an API key pair for your site. Important: API keys are version-specific.',
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/google-recaptcha/#recaptcha-api-keys-version-2-%E2%80%9Ci%E2%80%99m-not-a-robot%E2%80%9D-checkbox",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/google-recaptcha/#recaptcha-api-keys-version-2-%E2%80%9Ci%E2%80%99m-not-a-robot%E2%80%9D-checkbox",
 						"options_keys"         => [ 'site_key', 'secret_key' ],
 					],
 					"site_key"            => [
@@ -2852,7 +2860,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "RSS (Rich Site Summary; originally RDF Site Summary; often called Really Simple Syndication) uses a family of standard web feed formats to publish frequently updated information like new topics in forums, new posts in topics. An RSS document (called “feed”, “web feed”, or “channel”) includes topic and post  titles/links/excerpt publishing date and author’s name.",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-feed-rss/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/forum-feed-rss/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -2865,7 +2873,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable RSS Feed",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-feed-rss/#enable-rss-feed",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/forum-feed-rss/#enable-rss-feed",
 					],
 					"feed_general" => [
 						"type"                 => "radio",
@@ -2873,7 +2881,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable General RSS Feed",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-feed-rss/#enable-general-rss-feed",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/forum-feed-rss/#enable-general-rss-feed",
 					],
 					"feed_forum"   => [
 						"type"                 => "radio",
@@ -2881,7 +2889,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable Forum RSS Feed",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-feed-rss/#enable-forum-rss-feed",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/forum-feed-rss/#enable-forum-rss-feed",
 					],
 					"feed_topic"   => [
 						"type"                 => "radio",
@@ -2889,7 +2897,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable Topic RSS Feed",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/forum-feed-rss/#enable-topic-rss-feed",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/forum-feed-rss/#enable-topic-rss-feed",
 					],
 				],
 			],
@@ -2902,7 +2910,7 @@ class Settings extends stdClass {
 					"wpforo"
 				),
 				"description_original" => "Here you can find social network sharing options. wpForo allows sharing almost all forum content (forums, topics, posts individually). The share button style and location is very flexible. There are a lot of options to set button style, type, location, etc...",
-				"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/social-share/",
+				"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/social-share/",
 				"status"               => "ok",
 				"base"                 => false,
 				"callback_for_page"    => function() {
@@ -2917,7 +2925,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Check the checkbox share options to activate.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/social-share/#active-share-buttons",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/social-share/#active-share-buttons",
 					],
 					"sb_on"              => [
 						"type"                 => "radio",
@@ -2928,7 +2936,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "General share buttons are forum and topic sharing buttons. They are located on the top and the bottom of each page. You can manage location of these buttons using 'Share Buttons Location' options below.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/social-share/#enable-general-share-buttons",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/social-share/#enable-general-share-buttons",
 					],
 					"sb_toggle_on"       => [
 						"type"                 => "radio",
@@ -2936,7 +2944,7 @@ class Settings extends stdClass {
 						"label_original"       => "Enable Post Sharing Toggle",
 						"description"          => "",
 						"description_original" => "",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/social-share/#general-share-buttons-color",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/social-share/#general-share-buttons-color",
 					],
 					"sb_style"           => [
 						"type"                 => "radio",
@@ -2948,7 +2956,7 @@ class Settings extends stdClass {
 							[ 'value' => 'grey', 'label' => 'Grey' ],
 							[ 'value' => 'colored', 'label' => 'Colored' ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/social-share/#general-share-buttons-color",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/social-share/#general-share-buttons-color",
 					],
 					"sb_type"            => [
 						"type"                 => "radio",
@@ -2971,7 +2979,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Post sharing toggle allows you to share posts individually. You can see post sharing toggles on the left, right side or in top bar of each post. The toggle blue color is the current primary color (#12) of your forum style. For example, if you use the red forum style, the color of all share toggles will be red. This doesn't affect share button colors. They are always gray with original colors on mouse hover.",
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/social-share/#post-sharing-toggle",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/social-share/#post-sharing-toggle",
 					],
 					"sb_toggle_type"     => [
 						"type"                 => "radio",
@@ -2983,7 +2991,7 @@ class Settings extends stdClass {
 							[ 'value' => 'collapsed', 'label' => __( 'Collapsed', 'wpforo' ) ],
 							[ 'value' => 'expanded', 'label' => __( 'Expanded', 'wpforo' ) ],
 						],
-						"docurl"               => "https://wpforo.com/docs/wpforo-v2/settings/social-share/#post-sharing-toggle",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/settings/social-share/#post-sharing-toggle",
 					],
 					"sb_icon"            => [
 						"type"                 => "radio",
@@ -3273,7 +3281,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Enable or disable the AI Assistant widget on the forum frontend.",
-						"docurl"               => "",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/ai-features/ai-semantic-search/",
 					],
 					"assistant_open"     => [
 						"type"                 => "radio",
@@ -3340,7 +3348,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Enable or disable the AI-powered semantic search feature in the AI Assistant widget.",
-						"docurl"               => "",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/ai-features/ai-semantic-search/",
 					],
 					"search_quality"     => [
 						"type"                 => "select",
@@ -3438,7 +3446,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Enable or disable the AI-powered translation feature that allows users to translate forum posts.",
-						"docurl"               => "",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/ai-features/ai-translation/",
 					],
 					"translation_quality" => [
 						"type"                 => "select",
@@ -3466,7 +3474,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Enable or disable the AI-powered topic summarization feature that generates concise summaries of forum discussions.",
-						"docurl"               => "",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/ai-features/ai-topic-summarization/",
 					],
 					"topic_summary_quality" => [
 						"type"                 => "select",
@@ -3536,7 +3544,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "When enabled, AI will suggest similar topics, related topics, and quick answers when users create new topics. This helps prevent duplicate topics and provides immediate assistance.",
-						"docurl"               => "",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/ai-features/ai-topic-suggestions/",
 					],
 					"topic_suggestions_quality"         => [
 						"type"                 => "select",
@@ -3658,7 +3666,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "When enabled, AI will analyze new content for spam patterns including promotional content, link spam, and automated bot submissions.",
-						"docurl"               => "",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/ai-features/ai-content-moderation/ai-spam-detection/",
 					],
 					"moderation_spam_quality"           => [
 						"type"                 => "select",
@@ -3808,7 +3816,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "When enabled, AI will detect toxic content including hate speech, harassment, threats, profanity, and other harmful content that violates community guidelines.",
-						"docurl"               => "",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/ai-features/ai-content-moderation/ai-toxicity-detection/",
 					],
 					"moderation_toxicity_sensitivity"   => [
 						"type"                 => "select",
@@ -3852,7 +3860,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "When enabled, AI will check content against forum rules and policies, detecting off-topic posts, prohibited content types, and policy violations.",
-						"docurl"               => "",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/ai-features/ai-content-moderation/ai-rule-compliance/",
 					],
 					"moderation_compliance_action"      => [
 						"type"                 => "select",
@@ -3880,7 +3888,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Enable or disable the AI Chatbot feature in the AI Assistant widget. When enabled, users can have conversations with an AI assistant that has knowledge of your forum content.",
-						"docurl"               => "",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/ai-features/ai-chatbot/",
 					],
 					"chatbot_quality"                   => [
 						"type"                 => "select",
@@ -4018,7 +4026,7 @@ class Settings extends stdClass {
 							"wpforo"
 						),
 						"description_original" => "Enable or disable the AI Bot Reply feature. This adds a Bot Reply button to posts and a Suggest Reply button in the reply form for moderators.",
-						"docurl"               => "",
+						"docurl"               => "https://wpforo.com/docs/wpforo-v3/ai-features/ai-bot-reply/",
 					],
 					"bot_reply_quality"                 => [
 						"type"                 => "select",
@@ -5360,6 +5368,7 @@ class Settings extends stdClass {
 		$this->_email         = [
 			'from_name'                                          => $blogname . ' - ' . __( 'Forum', 'wpforo' ),
 			'from_email'                                         => $adminemail,
+			'async_notifications'                                => true,
 			'admin_emails'                                       => (array) $adminemail,
 			'new_topic_notify'                                   => true,
 			'new_reply_notify'                                   => false,

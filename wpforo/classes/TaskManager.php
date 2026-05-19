@@ -77,16 +77,13 @@ class TaskManager {
 			add_action( 'wp_ajax_wpforo_ai_get_task_stats', [ $this, 'ajax_get_task_stats' ] );
 		}
 
-		// Register cron hooks (2 args: task_id, board_id)
+		// Register cron callbacks unconditionally so any already-scheduled
+		// event (from a prior connected state or from a single-event task)
+		// still has a handler. Scheduling of the recurring task-checker is
+		// gated by AI connection — see schedule_cron_jobs().
 		add_action( 'wpforo_ai_execute_task', [ $this, 'cron_execute_task' ], 10, 2 );
 		add_action( 'wpforo_ai_check_scheduled_tasks', [ $this, 'cron_check_scheduled_tasks' ] );
-		// Hook for run_on_approval tasks (3 args: task_id, topic_id, board_id)
 		add_action( 'wpforo_ai_execute_task_for_topic', [ $this, 'cron_execute_task_for_topic' ], 10, 3 );
-
-		// Schedule the task checker if not already scheduled
-		if ( ! wp_next_scheduled( 'wpforo_ai_check_scheduled_tasks' ) ) {
-			wp_schedule_event( time(), 'hourly', 'wpforo_ai_check_scheduled_tasks' );
-		}
 
 		// Check and reschedule overdue tasks when admin page loads
 		add_action( 'admin_init', [ $this, 'reschedule_overdue_tasks' ] );
@@ -98,6 +95,33 @@ class TaskManager {
 		// Also hook into topic/post creation for run_on_approval tasks (for content created with status=0)
 		add_action( 'wpforo_after_add_topic', [ $this, 'on_topic_created' ], 20, 2 );
 		add_action( 'wpforo_after_add_post', [ $this, 'on_post_created' ], 20, 3 );
+	}
+
+	/**
+	 * Schedule the recurring task-checker cron.
+	 *
+	 * Called from AIClient::register_ai_crons() on tenant connect.
+	 */
+	public function schedule_cron_jobs() {
+		if ( ! wp_next_scheduled( 'wpforo_ai_check_scheduled_tasks' ) ) {
+			wp_schedule_event( time(), 'hourly', 'wpforo_ai_check_scheduled_tasks' );
+		}
+	}
+
+	/**
+	 * Unschedule the recurring task-checker cron.
+	 *
+	 * Called from AIClient::unregister_ai_crons() on tenant disconnect.
+	 * Single-event tasks (wpforo_ai_execute_task / _for_topic) are cleared
+	 * elsewhere on a per-task basis; the recurring checker is the only one
+	 * managed here.
+	 */
+	public function unschedule_cron_jobs() {
+		$ts = wp_next_scheduled( 'wpforo_ai_check_scheduled_tasks' );
+		if ( $ts ) {
+			wp_unschedule_event( $ts, 'wpforo_ai_check_scheduled_tasks' );
+		}
+		wp_clear_scheduled_hook( 'wpforo_ai_check_scheduled_tasks' );
 	}
 
 	/**

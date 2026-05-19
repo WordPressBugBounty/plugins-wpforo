@@ -10,7 +10,7 @@
             </svg>
             <div>
                 <h3 style="font-weight:600; padding:0 0 5px 0; margin:0; color:#666666; font-size: 18px;">
-					<?php _e( 'Forum Privacy Policy and GDPR compliant', 'wpforo' ) ?> &nbsp;|&nbsp; <a href="https://wpforo.com/docs/wpforo-v2/gdpr/" rel="noreferrer"
+					<?php _e( 'Forum Privacy Policy and GDPR compliant', 'wpforo' ) ?> &nbsp;|&nbsp; <a href="https://wpforo.com/docs/wpforo-v3/gdpr/" rel="noreferrer"
                                                                                                         style="text-decoration: none; font-weight: normal;" target="_blank"><?php _e(
 							'Documentation',
 							'wpforo'

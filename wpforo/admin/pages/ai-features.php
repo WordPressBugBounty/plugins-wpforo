@@ -18,6 +18,7 @@ require_once __DIR__ . '/tabs/ai-features-helpers.php';
 require_once __DIR__ . '/tabs/ai-features-tab-overview.php';
 require_once __DIR__ . '/tabs/ai-features-tab-rag-indexing.php';
 require_once __DIR__ . '/tabs/ai-features-tab-wp-indexing.php';
+require_once __DIR__ . '/tabs/ai-features-tab-ai-tools.php';
 require_once __DIR__ . '/tabs/ai-features-tab-ai-tasks.php';
 require_once __DIR__ . '/tabs/ai-features-tab-analytics.php';
 require_once __DIR__ . '/tabs/ai-features-tab-ai-logs.php';
@@ -40,6 +41,13 @@ wp_enqueue_script( 'wpforo-ai-features', WPFORO_URL . '/admin/assets/js/ai-featu
 if ( $current_tab === 'wp_indexing' ) {
 	wp_enqueue_style( 'wpforo-ai-wp-indexing', WPFORO_URL . '/admin/assets/css/ai-features-wp-indexing.css', [ 'wpforo-ai-features' ], WPFORO_VERSION );
 	wp_enqueue_script( 'wpforo-ai-wp-indexing', WPFORO_URL . '/admin/assets/js/ai-features-wp-indexing.js', [ 'jquery' ], WPFORO_VERSION, true );
+}
+
+// File Indexing tab - load isolated scripts/styles and media library
+if ( $current_tab === 'ai_tools' ) {
+	wp_enqueue_media();
+	wp_enqueue_style( 'wpforo-ai-tools', WPFORO_URL . '/admin/assets/css/ai-features-tools.css', [ 'wpforo-ai-features' ], WPFORO_VERSION );
+	wp_enqueue_script( 'wpforo-ai-tools', WPFORO_URL . '/admin/assets/js/ai-features-tools.js', [ 'jquery', 'wpforo-ai-features' ], WPFORO_VERSION, true );
 }
 
 // Localize script with AJAX URL and nonce
@@ -163,6 +171,11 @@ if ( $current_state === 'pending_approval' && ( ! $status || is_wp_error( $statu
 			$tabs['wp_indexing'] = __( 'WordPress Indexing', 'wpforo' );
 		}
 
+		// File Indexing tab - only show if custom_knowledge feature is available (Business+ plan + cloud storage)
+		if ( isset( WPF()->ai_client ) && WPF()->ai_client->is_feature_available( 'custom_knowledge' ) ) {
+			$tabs['ai_tools'] = __( 'File Indexing', 'wpforo' );
+		}
+
 		$tabs['ai_tasks']     = __( 'AI Tasks', 'wpforo' );
 		$tabs['analytics']    = __( 'AI Analytics', 'wpforo' );
 		$tabs['ai_logs']      = __( 'AI Logs', 'wpforo' );
@@ -238,6 +251,10 @@ if ( $current_state === 'pending_approval' && ( ! $status || is_wp_error( $statu
 
 			case 'wp_indexing':
 				wpforo_ai_render_wp_indexing_tab( $is_connected, $status );
+				break;
+
+			case 'ai_tools':
+				wpforo_ai_render_ai_tools_tab( $is_connected, $status );
 				break;
 
 			case 'ai_tasks':

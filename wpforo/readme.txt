@@ -2,8 +2,8 @@
 Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
-Tested up to: 6.9
-Stable tag: 3.0.9
+Tested up to: 7.0
+Stable tag: 3.1.0
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -234,6 +234,24 @@ IMPORTANT NOTES for UPDATE
 
 [wpForo Forum v3.0 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-0-is-released/)
 
+
+
+= wpForo Forum 3.1.0 | 19.05.2026 =
+
+* Security: Fixed vulnerability issue in the Revisions module
+* Security: Fixed vulnerability issue in Gutenberg block renderers
+* New: Tools - Email Queue Tab, email notifications now sent asynchronously with automatic fallback to direct sending when WP-Cron is broken or disabled, dramatically reducing post-submission delays on busy forums
+* New: Tools - Cron Jobs Tab, listing every WordPress scheduled event with per-row Run Now / Delete / Details, wpForo events sorted to the top
+* Fixed: Duplicate email notifications could be sent for posts that pass moderation
+* Fixed: Duplicate topic view counts could be recorded for the same user
+* Fixed: Processing spinner could remain visible after indexing completed
+* Fixed: Email Queue admin tab now shows "Cron idle" instead of "unknown" when there are no emails to send
+* AI New: Custom Knowledge - upload TXT, MD, JSON, and PDF files (Business+ plan) to enhance AI Chatbot and Bot Reply with your own documentation
+* AI New: Custom Knowledge - scanned/image-only PDFs auto-fall back to OCR when native text is sparse
+* AI New: Custom Knowledge integrated into AI Chatbot, and AI Topic Suggestions
+* AI Improved: AI cron jobs are now only registered when a tenant is connected to the AI service, preventing stale wp_cron entries on installs that do not use AI features
+* AI Improved: AI Indexing breakdown loads asynchronously on large forums for faster admin page loads
+* AI Improved: AI Logs filter now includes Knowledge Indexing entries
 
 
 = wpForo Forum 3.0.9 | 28.04.2026 =

@@ -433,52 +433,15 @@ function wpforo_ai_render_rag_indexing_tab( $is_connected, $status ) {
 					</div>
 
 
-                    <?php
-                    // Get indexing status breakdown
-                    $status_breakdown = $storage_manager->get_indexing_status_breakdown();
-                    $has_excluded_topics = ( $status_breakdown['private'] > 0 || $status_breakdown['unapproved'] > 0 );
-                    ?>
-                    <?php if ( $has_excluded_topics ) : ?>
-                        <div class="wpforo-ai-indexing-breakdown">
-                            <details class="wpforo-ai-breakdown-details">
-                                <summary class="wpforo-ai-breakdown-summary">
-                                    <span class="dashicons dashicons-info-outline"></span>
-                                    <?php
-                                    $excluded_count = $status_breakdown['private'] + $status_breakdown['unapproved'];
-                                    printf(
-                                            __( '%s topics are excluded from indexing', 'wpforo' ),
-                                            '<strong>' . number_format( $excluded_count ) . '</strong>'
-                                    );
-                                    ?>
-                                    <span class="dashicons dashicons-arrow-down-alt2 wpforo-ai-breakdown-arrow"></span>
-                                </summary>
-                                <div class="wpforo-ai-breakdown-content">
-                                    <p class="wpforo-ai-breakdown-intro">
-                                        <?php _e( 'The following topics are automatically excluded from AI indexing:', 'wpforo' ); ?>
-                                    </p>
-                                    <ul class="wpforo-ai-breakdown-list">
-                                        <?php if ( $status_breakdown['private'] > 0 ) : ?>
-                                            <li>
-                                                <span class="dashicons dashicons-lock"></span>
-                                                <strong><?php echo number_format( $status_breakdown['private'] ); ?></strong>
-                                                <?php _e( 'private topics - these are only visible to their authors', 'wpforo' ); ?>
-                                            </li>
-                                        <?php endif; ?>
-                                        <?php if ( $status_breakdown['unapproved'] > 0 ) : ?>
-                                            <li>
-                                                <span class="dashicons dashicons-clock"></span>
-                                                <strong><?php echo number_format( $status_breakdown['unapproved'] ); ?></strong>
-                                                <?php _e( 'unapproved topics - these will be indexed once approved by moderators', 'wpforo' ); ?>
-                                            </li>
-                                        <?php endif; ?>
-                                    </ul>
-                                    <p class="wpforo-ai-breakdown-note">
-                                        <em><?php _e( 'Private topics are never indexed to protect user privacy. Unapproved topics will be automatically indexed when approved.', 'wpforo' ); ?></em>
-                                    </p>
-                                </div>
-                            </details>
-                        </div>
-                    <?php endif; ?>
+                    <!-- Indexing breakdown loaded via AJAX (cached 1 day) -->
+                    <div id="wpforo-ai-indexing-breakdown-container"
+                         data-loading-text="<?php esc_attr_e( 'Loading...', 'wpforo' ); ?>"
+                         data-excluded-text="<?php esc_attr_e( '%s topics are excluded from indexing', 'wpforo' ); ?>"
+                         data-intro-text="<?php esc_attr_e( 'The following topics are automatically excluded from AI indexing:', 'wpforo' ); ?>"
+                         data-private-text="<?php esc_attr_e( 'private topics - these are only visible to their authors', 'wpforo' ); ?>"
+                         data-unapproved-text="<?php esc_attr_e( 'unapproved topics - these will be indexed once approved by moderators', 'wpforo' ); ?>"
+                         data-note-text="<?php esc_attr_e( 'Private topics are never indexed to protect user privacy. Unapproved topics will be automatically indexed when approved.', 'wpforo' ); ?>">
+                    </div>
 				</div>
 
 				<div class="wpforo-ai-section-divider">
