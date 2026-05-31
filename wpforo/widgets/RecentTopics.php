@@ -137,6 +137,18 @@ class RecentTopics extends WP_Widget {
                     $topic_args['order'] = $this->default_instance['order'];
                 }
             }
+
+            // SECURITY: coerce id-list fields to integer arrays so a serialized
+            // payload from an unauthenticated POST can never reach
+            // wpforo_parse_args() / unserialize() downstream. Defense in depth
+            // alongside the allowed_classes=>false hardening in wpforo_parse_args.
+            foreach( [ 'forumids', 'include', 'exclude' ] as $idfield ) {
+                if( isset( $topic_args[ $idfield ] ) ) {
+                    $topic_args[ $idfield ] = is_array( $topic_args[ $idfield ] )
+                        ? array_map( 'intval', $topic_args[ $idfield ] )
+                        : [];
+                }
+            }
         }
 
         wp_send_json_success( [ 'html' => $this->get_widget( $instance, $topic_args ) ] );

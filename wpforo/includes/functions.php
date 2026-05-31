@@ -785,7 +785,12 @@ function wpforo_parse_args( $args, $default = [] ) {
 	} elseif( is_integer( $args ) || is_float( $args ) ) {
 		$defined[0] = $args;
 	} elseif( is_serialized( $args ) ) {
-		$defined = unserialize( $args );
+		// SECURITY: refuse to instantiate any class — only scalars and arrays
+		// of scalars are recovered. Blocks PHP Object Injection via widget
+		// AJAX (forumids etc.) and any other caller that may receive
+		// attacker-controlled strings.
+		$defined = unserialize( $args, [ 'allowed_classes' => false ] );
+		if( ! is_array( $defined ) ) $defined = (array) $defined;
 	} elseif( strpos( (string) $args, '=' ) !== false ) {
 		parse_str( $args, $defined );
 	} else {
@@ -811,7 +816,11 @@ if( ! function_exists( 'is_serialized' ) ) {
 	function is_serialized( $value ) {
 		if( $value == '' ) return false;
 		$value = trim( (string) $value );
-		$chsd  = @unserialize( $value );
+		// SECURITY: the very act of detecting a serialized payload must not
+		// instantiate classes — @unserialize() with the default options runs
+		// __wakeup() / __destruct() for any embedded object even when the
+		// caller only wanted to test the format. Limit to scalars/arrays.
+		$chsd  = @unserialize( $value, [ 'allowed_classes' => false ] );
 		if( $chsd !== false || $value === 'b:0;' ) {
 			return true;
 		} else {

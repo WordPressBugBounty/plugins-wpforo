@@ -1173,3 +1173,17 @@ tr:not(.wpf-moderation-report-row):has(+ .wpf-moderation-report-row:not(.wpf-mod
 .wpf-manage-subscription{
     background: #6753FF; color: #fff; border-color: #2E1DAE;
 }
+/* ==========================================================================
+   WordPress 7.0+ Dashicons Alignment Fix
+   WP 7.0 changed: .wp-core-ui .button .dashicons { line-height: 1.9; vertical-align: top; }
+   This breaks dashicon vertical alignment in wpForo admin buttons.
+   ========================================================================== */
+#wpf-admin-wrap .button .dashicons,
+#wpf-admin-wrap .button-primary .dashicons,
+#wpf-admin-wrap .button-secondary .dashicons,
+.wp-core-ui .wpforo-ai-wrap .button .dashicons,
+.wp-core-ui .wpforo-ai-wrap .button-primary .dashicons,
+.wp-core-ui .wpforo-ai-wrap .button-secondary .dashicons {
+    line-height: 1;
+    vertical-align: text-bottom;
+}

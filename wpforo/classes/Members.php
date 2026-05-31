@@ -641,6 +641,24 @@ class Members {
     public function update( $data, $type = 'full', $check_permissions = true ) {
         $type = (array) $type;
 
+        // SECURITY: when permission checks are skipped, strip reserved wp_users
+        // column names from custom-field input to block mass assignment.
+        if( ! $check_permissions ) {
+            if( isset( $data['data'] ) && is_array( $data['data'] ) ) {
+                foreach( [
+                    'user_email',
+                    'user_login',
+                    'user_pass',
+                    'user_pass1',
+                    'user_pass2',
+                    'userid',
+                    'ID',
+                ] as $reserved ) {
+                    unset( $data['data'][ $reserved ] );
+                }
+            }
+        }
+
         switch( WPF()->current_object['template'] ) {
             case 'register':
                 $form        = 'wpfreg';
@@ -673,6 +691,15 @@ class Members {
                         'userid'
                 ) ) {
             $data[ $form ]['userid'] = $data['userid'];
+        }
+
+        // SECURITY: when permission checks are skipped, force the form userid
+        // to the trusted caller-supplied $data['userid'] (overrides user input).
+        if( ! $check_permissions && wpfval( $data, 'userid' ) ) {
+            if( ! isset( $data[ $form ] ) || ! is_array( $data[ $form ] ) ) {
+                $data[ $form ] = [];
+            }
+            $data[ $form ]['userid'] = (int) $data['userid'];
         }
 
         if( wpfval( $data, $form, 'userid' ) ) {

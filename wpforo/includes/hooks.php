@@ -2203,12 +2203,34 @@ function wpforo_do_hook_user_register( $userid ) {
 	if( wpfval( $_POST, 'wpfreg' ) ) {
 		$data           = $_POST;
 		$data['userid'] = $userid;
-		$data['wpfreg'] = wpforo_clear_array( $data['wpfreg'], [
+
+		// SECURITY: allowlist wpfreg keys + force the trusted userid so an
+		// attacker cannot pivot the downstream update() onto another user.
+		$wpfreg         = is_array( $data['wpfreg'] ) ? $data['wpfreg'] : [];
+		$data['wpfreg'] = array_intersect_key( $wpfreg, array_flip( [
 			'user_login',
 			'user_email',
 			'user_pass1',
 			'user_pass2',
-		],                                    'key' );
+		] ) );
+		$data['wpfreg']['userid'] = (int) $userid;
+
+		// SECURITY: strip reserved wp_users column names from custom-field
+		// input so they cannot mass-assign via Members::update()'s array_merge().
+		if( isset( $data['data'] ) && is_array( $data['data'] ) ) {
+			foreach( [
+				'user_email',
+				'user_login',
+				'user_pass',
+				'user_pass1',
+				'user_pass2',
+				'userid',
+				'ID',
+			] as $reserved ) {
+				unset( $data['data'][ $reserved ] );
+			}
+		}
+
 		WPF()->member->update( $data, 'full', false );
 	}
 }

@@ -1,9 +1,9 @@
-﻿=== wpForo Forum ===
+=== wpForo Forum ===
 Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 7.0
-Stable tag: 3.1.0
+Stable tag: 3.1.1
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -232,8 +232,14 @@ IMPORTANT NOTES for UPDATE
  - After the update, please delete all caches and purge CDN if you have
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
-[wpForo Forum v3.0 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-0-is-released/)
+[wpForo Forum v3.1 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-1-is-released/)
 
+
+
+= wpForo Forum 3.1.1 | 31.05.2026 =
+
+* Security: Fixed Broken Authentication vulnerability allowing administrator email mutation
+* Security: Fixed PHP Object Injection vulnerability via widget AJAX handlers
 
 
 = wpForo Forum 3.1.0 | 19.05.2026 =

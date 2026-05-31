@@ -200,6 +200,18 @@ class RecentPosts extends WP_Widget {
                     $post_args['order'] = $this->default_instance['order'];
                 }
             }
+
+            // SECURITY: coerce id-list fields to integer arrays so a serialized
+            // payload from an unauthenticated POST can never reach
+            // wpforo_parse_args() / unserialize() downstream. Defense in depth
+            // alongside the allowed_classes=>false hardening in wpforo_parse_args.
+            foreach( [ 'forumids', 'include', 'exclude', 'postids' ] as $idfield ) {
+                if( isset( $post_args[ $idfield ] ) ) {
+                    $post_args[ $idfield ] = is_array( $post_args[ $idfield ] )
+                        ? array_map( 'intval', $post_args[ $idfield ] )
+                        : [];
+                }
+            }
         }
         
         wp_send_json_success( [ 'html' => $this->get_widget( $instance, $post_args ) ] );
