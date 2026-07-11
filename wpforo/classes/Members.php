@@ -998,6 +998,15 @@ class Members {
 
         if( $check_permissions ) {
             WPF()->perm->can_edit_user( $userid );
+
+            // SECURITY: Strip admin-only fields from user input unless user has
+            // edit members permission. Prevents mass assignment attacks where
+            // users manipulate their own status, reputation, or email confirmation.
+            if( ! WPF()->usergroup->can( 'em' ) ) {
+                unset( $data['custom_points'] );
+                unset( $data['status'] );
+                unset( $data['is_email_confirmed'] );
+            }
         }
 
         $member = $this->encode( $data );

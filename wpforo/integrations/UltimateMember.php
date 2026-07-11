@@ -382,6 +382,9 @@ class UltimateMember {
 						case 'activity':
 							$url = $user_domain . '?profiletab=foro';
 						break;
+						case 'favored':
+							$url = $user_domain . '?profiletab=foro&subnav=favorites';
+						break;
 						case 'subscriptions':
 							$url = $user_domain . '?profiletab=foro&subnav=subscriptions';
 						break;

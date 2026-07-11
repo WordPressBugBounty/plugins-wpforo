@@ -1,9 +1,9 @@
-=== wpForo Forum ===
+﻿=== wpForo Forum ===
 Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 7.0
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -232,8 +232,19 @@ IMPORTANT NOTES for UPDATE
  - After the update, please delete all caches and purge CDN if you have
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
-[wpForo Forum v3.1 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-1-is-released/)
+[wpForo Forum v3.0 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-0-is-released/)
 
+
+
+= wpForo Forum 3.1.2 | 11.07.2026 =
+
+* Security: Fixed Stored XSS vulnerability in profile fields
+* Security: Fixed IDOR vulnerability in AI Chat messaging
+* Security: Fixed Mass Assignment vulnerability with privilege escalation via profile fields
+* Added: UltimateMember profile integration now supports 'favored' subnav
+* Fixed: Issue with User Custom Fields addon, the miaaing fields data
+* Fixed: PostMeta array-value guard incorrectly dropping checkbox/multi-select field values
+* Fixed: Undefined array key 'topicurl' warning in Feed.php
 
 
 = wpForo Forum 3.1.1 | 31.05.2026 =

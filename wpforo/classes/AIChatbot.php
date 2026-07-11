@@ -205,7 +205,14 @@ class AIChatbot {
 	public function delete_conversation( $conversation_id ) {
 		$userid = WPF()->current_userid;
 
-		// Delete messages first
+		// SECURITY: Verify ownership before deleting anything
+		// get_conversation() returns null if conversation doesn't belong to current user
+		$conversation = $this->get_conversation( $conversation_id );
+		if ( ! $conversation ) {
+			return false;
+		}
+
+		// Delete messages first (now safe - ownership verified above)
 		$messages_table = WPF()->tables->ai_chat_messages;
 		WPF()->db->delete(
 			$messages_table,

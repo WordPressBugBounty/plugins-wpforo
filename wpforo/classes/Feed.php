@@ -118,7 +118,7 @@ class Feed {
 					<?php echo esc_html( $topic['title'] ); ?> - <?php echo esc_html( wpfval( $forum, 'title' ) ); ?>
 				<?php endif; ?>
             </title>
-            <link><?php echo esc_url( (string) $topic['topicurl'] ); ?></link>
+            <link><?php echo esc_url( (string) wpfval( $topic, 'topicurl' ) ); ?></link>
             <description><?php echo esc_html( WPF()->board->get_current( 'settings' )['desc'] ); ?></description>
             <language><?php bloginfo_rss( 'language' ); ?></language>
             <lastBuildDate><?php echo mysql2date( 'D, d M Y H:i:s +0000', gmdate( 'Y-m-d H:i:s' ), false ); ?></lastBuildDate>

@@ -983,13 +983,13 @@ class Forms {
 				$f['value'] = wpforo_date( $f['value'], 'datetime', false );
 			break;
 			case 'url':
-				$f['value'] = sprintf( '<a href="%1$s" target="_blank" rel="nofollow">%2$s</a>', $f['value'], $f['value'] );
+				$f['value'] = sprintf( '<a href="%1$s" target="_blank" rel="nofollow">%2$s</a>', esc_url( $f['value'] ), esc_html( $f['value'] ) );
 			break;
 			case 'email':
-				$f['value'] = sprintf( '<a href="mailto:%1$s" rel="nofollow">%2$s</a>', $f['value'], $f['value'] );
+				$f['value'] = sprintf( '<a href="mailto:%1$s" rel="nofollow">%2$s</a>', esc_attr( $f['value'] ), esc_html( $f['value'] ) );
 			break;
 			case 'tel':
-				$f['value'] = sprintf( '<a href="tel:%1$s" rel="nofollow">%2$s</a>', $f['value'], $f['value'] );
+				$f['value'] = sprintf( '<a href="tel:%1$s" rel="nofollow">%2$s</a>', esc_attr( $f['value'] ), esc_html( $f['value'] ) );
 			break;
 			case 'file':
 				if( ! empty( $f['value'] ) ) {
@@ -1006,15 +1006,15 @@ class Forms {
 					if( wpforo_is_image( $extension ) ) {
 						$f['value'] = sprintf(
 							'<a href="%1$s" target="_blank" title="%2$s"><img src="%1$s" alt="%2$s" class="wpf-field-file-img" style="max-width:120px; max-height:120px"></a>',
-							$file_url,
-							$file_name
+							esc_url( $file_url ),
+							esc_attr( $file_name )
 						);
 					} elseif( wpforo_is_audio( $extension ) ) {
-						$f['value'] = sprintf( '<audio src="%1$s" controls title="%2$s"></audio>', $file_url, $file_name );
+						$f['value'] = sprintf( '<audio src="%1$s" controls title="%2$s"></audio>', esc_url( $file_url ), esc_attr( $file_name ) );
 					} elseif( wpforo_is_video( $extension ) ) {
-						$f['value'] = sprintf( '<video src="%1$s" controls title="%2$s"></video>', $file_url, $file_name );
+						$f['value'] = sprintf( '<video src="%1$s" controls title="%2$s"></video>', esc_url( $file_url ), esc_attr( $file_name ) );
 					} else {
-						$f['value'] = sprintf( '<a href="%s" target="_blank">%s</a>', $file_url, $file_name );
+						$f['value'] = sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( $file_url ), esc_html( $file_name ) );
 					}
 				}
 			break;
@@ -1023,16 +1023,16 @@ class Forms {
 			break;
 			case 'color':
 				if( $f['value'] ) {
-					$f['value'] = '<input type="color" value="' . $f['value'] . '" disabled title="' . $f['value'] . '" style="min-width: 100px; min-height: 25px;">';
+					$f['value'] = '<input type="color" value="' . esc_attr( $f['value'] ) . '" disabled title="' . esc_attr( $f['value'] ) . '" style="min-width: 100px; min-height: 25px;">';
 				}
 			break;
 		}
 		switch( $f['name'] ) {
 			case 'skype':
-				$f['value'] = sprintf( '<a href="skype:%s?userinfo" rel="nofollow">%s</a>', $f['value'], $f['value'] );
+				$f['value'] = sprintf( '<a href="skype:%s?userinfo" rel="nofollow">%s</a>', esc_attr( $f['value'] ), esc_html( $f['value'] ) );
 			break;
 			case 'location':
-				$f['value'] = sprintf( '<a href="//maps.google.com/?q=%s" target="_blank" rel="nofollow">%s</a>', $f['value'], $f['value'] );
+				$f['value'] = sprintf( '<a href="//maps.google.com/?q=%s" target="_blank" rel="nofollow">%s</a>', esc_attr( $f['value'] ), esc_html( $f['value'] ) );
 			break;
 			case 'signature':
 				$f['value'] = wpforo_signature( $f['value'], [ 'echo' => 0 ] );
