@@ -71,7 +71,7 @@ function wpforo_ai_render_not_connected_state() {
 										__( 'I have read and agree to the %1$s and %2$s. I understand that my forum content will be processed by %3$s service as described in these documents.', 'wpforo' ),
 										'<a href="#" class="wpforo-ai-legal-link" data-document="terms" style="text-decoration: none;">' . __( 'Terms of Service', 'wpforo' ) . '</a>',
 										'<a href="#" class="wpforo-ai-legal-link" data-document="privacy" style="text-decoration: none;">' . __( 'Privacy Policy', 'wpforo' ) . '</a>',
-                                        '<a href="https://v3.wpforo.com/gvectors-ai/" target="_blank" style="text-decoration: none;">' . __( 'gVectors AI', 'wpforo' ) . '</a>',
+                                        '<a href="https://wpforo.com/gvectors-ai/" target="_blank" style="text-decoration: none;">' . __( 'gVectors AI', 'wpforo' ) . '</a>',
 									);
 									?>
 								</span>
@@ -1428,15 +1428,15 @@ function wpforo_ai_render_getting_started_steps( $is_connected = true ) {
 function wpforo_ai_render_video_tutorials() {
 	$videos = [
 		[
-			'id'    => 'ZmNEAYSWg8M',
+			'url'   => 'https://www.youtube.com/watch?v=ZmNEAYSWg8M',
 			'title' => __( 'wpForo AI Search', 'wpforo' ),
 		],
 		[
-			'id'    => 'Pq5BvlrkXwE',
+			'url'   => 'https://www.youtube.com/watch?v=Pq5BvlrkXwE',
 			'title' => __( 'wpForo AI Topic Summary', 'wpforo' ),
 		],
 		[
-			'id'    => '2NmKtJO6miQ',
+			'url'   => 'https://www.youtube.com/watch?v=2NmKtJO6miQ',
 			'title' => __( 'wpForo AI Translation', 'wpforo' ),
 		],
 	];
@@ -1450,13 +1450,7 @@ function wpforo_ai_render_video_tutorials() {
 				<?php foreach ( $videos as $video ) : ?>
 					<div class="wpforo-ai-video-item">
 						<div class="wpforo-ai-video-wrapper">
-							<iframe
-								src="https://www.youtube-nocookie.com/embed/<?php echo esc_attr( $video['id'] ); ?>"
-								title="<?php echo esc_attr( $video['title'] ); ?>"
-								frameborder="0"
-								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-								allowfullscreen
-							></iframe>
+								<?php echo wp_oembed_get( $video['url'] ); ?>
 						</div>
 						<h4 class="wpforo-ai-video-title"><?php echo esc_html( $video['title'] ); ?></h4>
 					</div>
@@ -2075,7 +2069,7 @@ function wpforo_ai_render_pricing_table( $tenant_id, $subscription = [] ) {
 								<?php endif; ?>
 							</div>
 						<?php else : ?>
-							<a href="https://v3.wpforo.com/gvectors-ai/#gvai-contact" target="_blank" class="button button-secondary" style="padding: 5px 20px;">
+							<a href="https://wpforo.com/gvectors-ai/#gvai-contact" target="_blank" class="button button-secondary" style="padding: 5px 20px;">
 								<?php _e( 'Contact Us', 'wpforo' ) ?>
 							</a>
 						<?php endif; ?>
@@ -2441,7 +2435,7 @@ function wpforo_ai_render_pricing_table( $tenant_id, $subscription = [] ) {
 								<?php _e( 'Active', 'wpforo' ); ?>
 							</div>
 						<?php else : ?>
-                            <a href="https://v3.wpforo.com/gvectors-ai/#gvai-contact" target="_blank" class="button button-secondary" style="padding: 5px 20px;">
+                            <a href="https://wpforo.com/gvectors-ai/#gvai-contact" target="_blank" class="button button-secondary" style="padding: 5px 20px;">
                                 <?php _e( 'Contact Us', 'wpforo' ) ?>
                             </a>
 						<?php endif; ?>

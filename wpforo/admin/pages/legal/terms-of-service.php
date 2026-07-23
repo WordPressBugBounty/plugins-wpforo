@@ -422,7 +422,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
         <li><strong>Support Portal:</strong> <a href="https://v3.wpforo.com/login-register/?tab=login" target="_blank" rel="noopener">Open Support Ticket</a></li>
         <li><strong>Website:</strong> <a href="https://wpforo.com" target="_blank" rel="noopener">wpforo.com</a></li>
         <li><strong>Company:</strong> gVectors Team</li>
-        <li><strong>Service:</strong> <a href="https://v3.wpforo.com/gvectors-ai/" target="_blank">gVectors AI</a></li>
+        <li><strong>Service:</strong> <a href="https://wpforo.com/gvectors-ai/" target="_blank">gVectors AI</a></li>
     </ul>
 
     <hr>

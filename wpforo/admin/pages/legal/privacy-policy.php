@@ -40,7 +40,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
     <hr>
 
     <h2 id="introduction">1. Introduction</h2>
-    <p>wpForo AI features are provided by <a href="https://v3.wpforo.com/gvectors-ai/" target="_blank">gVectors AI</a>. This Privacy Policy explains how gVectors Team ("we", "us", "our") collects, uses, stores, and protects information when you use the wpForo AI Features service ("Service").</p>
+    <p>wpForo AI features are provided by <a href="https://wpforo.com/gvectors-ai/" target="_blank">gVectors AI</a>. This Privacy Policy explains how gVectors Team ("we", "us", "our") collects, uses, stores, and protects information when you use the wpForo AI Features service ("Service").</p>
     <p>By using the Service, you agree to the collection and use of information as described in this Privacy Policy. This policy should be read in conjunction with our Terms of Service.</p>
     <p><strong>Important:</strong> This Privacy Policy covers data processed by our Service. As a forum operator, you are responsible for your own privacy policy that governs how you collect and process your forum users' data.</p>
 
@@ -72,7 +72,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
     </ul>
 
     <h3>3.2 Our Role as Data Processor</h3>
-    <p>gVectors Team (through <a href="https://v3.wpforo.com/gvectors-ai/" target="_blank">gVectors AI</a>) acts as a <strong>Data Processor</strong> for forum content you submit to the Service. We:</p>
+    <p>gVectors Team (through <a href="https://wpforo.com/gvectors-ai/" target="_blank">gVectors AI</a>) acts as a <strong>Data Processor</strong> for forum content you submit to the Service. We:</p>
     <ul>
         <li>Process data only according to your instructions (indexing requests)</li>
         <li>Implement appropriate security measures</li>
@@ -549,7 +549,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
         <li><strong>wpForo Website:</strong> <a href="https://wpforo.com" target="_blank" rel="noopener">wpforo.com</a></li>
         <li><strong>wpForo Community:</strong> <a href="https://wpforo.com/community/" target="_blank" rel="noopener">wpforo.com</a></li>
         <li><strong>Company:</strong> gVectors Team</li>
-        <li><strong>Service:</strong> <a href="https://v3.wpforo.com/gvectors-ai/" target="_blank">gVectors AI</a></li>
+        <li><strong>Service:</strong> <a href="https://wpforo.com/gvectors-ai/" target="_blank">gVectors AI</a></li>
         <li><strong>gVectors Website:</strong> <a href="https://gvectors.com" target="_blank">gvectors.com</a></li>
     </ul>
 
