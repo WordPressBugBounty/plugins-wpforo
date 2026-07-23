@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 7.0
-Stable tag: 3.1.2
+Stable tag: 3.1.3
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -236,6 +236,17 @@ IMPORTANT NOTES for UPDATE
 
 
 
+= wpForo Forum 3.1.3 | 23.07.2026 =
+
+* Security: Fixed access control bypass in widget AJAX handlers (Recent Topics, Recent Posts, Online Members)
+* Security: Fixed missing view_access() checks in AI translation and summarization endpoints
+* Security: Fixed AI search indexing unapproved forum posts
+* Security: Fixed WordPress content indexer ignoring password-protected posts
+* Security: Fixed XSS vulnerability in AI-generated HTML responses
+* Security: Fixed mass assignment bypass in profile and registration forms
+* Fixed: Missing itemprop name attribute in Members breadcrumb
+
+
 = wpForo Forum 3.1.2 | 11.07.2026 =
 
 * Security: Fixed Stored XSS vulnerability in profile fields
@@ -245,6 +256,7 @@ IMPORTANT NOTES for UPDATE
 * Fixed: Issue with User Custom Fields addon, the miaaing fields data
 * Fixed: PostMeta array-value guard incorrectly dropping checkbox/multi-select field values
 * Fixed: Undefined array key 'topicurl' warning in Feed.php
+* Fixed: Profile "Blog Comments" stat now counts only approved, public blog post comments (excludes pingbacks, trackbacks, unapproved and other post-type comments)
 
 
 = wpForo Forum 3.1.1 | 31.05.2026 =

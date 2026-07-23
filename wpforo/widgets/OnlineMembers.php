@@ -56,6 +56,24 @@ class OnlineMembers extends WP_Widget {
 	public function load_ajax_widget() {
 		$_POST = wp_unslash( $_POST );
 		$instance  = json_decode( (string) wpfval( $_POST, 'instance' ), true );
+
+		// SECURITY: Sanitize instance parameters
+		if( is_array( $instance ) ) {
+			// Intersect groupids with visible usergroups to prevent hidden group enumeration
+			if( isset( $instance['groupids'] ) ) {
+				$visible_groupids = WPF()->usergroup->get_visible_usergroup_ids();
+				$instance['groupids'] = array_values( array_intersect(
+					array_map( 'intval', (array) $instance['groupids'] ),
+					$visible_groupids
+				) );
+			}
+
+			// Cap count to prevent resource exhaustion
+			if( isset( $instance['count'] ) ) {
+				$instance['count'] = min( 50, max( 1, intval( $instance['count'] ) ) );
+			}
+		}
+
         wp_send_json_success( ['html' => $this->get_widget( $instance )] );
 	}
 

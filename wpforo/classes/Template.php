@@ -2031,9 +2031,9 @@ class Template {
                     </div>
                     <?php if( isset( $_GET['wpfms'] ) ) : ?>
                         <div itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem" class="wpf-item-element"><a itemprop="item"
-                                                                                                                                        href="<?php echo wpforo_members_url() ?>"><?php wpforo_phrase(
+                                                                                                                                        href="<?php echo wpforo_members_url() ?>"><span itemprop="name"><?php wpforo_phrase(
                                         'Members'
-                                ) ?></a>
+                                ) ?></span></a>
                             <meta itemprop="position" content="2">
                         </div>
                         <div class="wpf-item-element active"><span><?php wpforo_phrase( 'Search' ) ?></span></div>

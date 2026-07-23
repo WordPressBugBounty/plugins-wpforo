@@ -187,6 +187,15 @@ class RecentPosts extends WP_Widget {
             // Force permission checks — prevents check_private=false injection
             $post_args['check_private'] = true;
 
+            // SECURITY: Strip forumid (singular) to force use of forumids (array)
+            // forumid bypasses access_filter() which only runs when forumid is null
+            unset( $post_args['forumid'] );
+
+            // Cap row_count to prevent resource exhaustion
+            if( isset( $post_args['row_count'] ) ) {
+                $post_args['row_count'] = min( 50, max( 1, intval( $post_args['row_count'] ) ) );
+            }
+
             // Validate 'orderby' parameter against whitelist
             if( isset( $post_args['orderby'] ) ) {
                 if( ! key_exists( $post_args['orderby'], $this->orderby_fields ) ) {

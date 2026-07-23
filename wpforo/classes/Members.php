@@ -711,6 +711,15 @@ class Members {
             //Define $user
             $user = $data[ $form ];
 
+            // SECURITY: Strip admin-only profile fields from form input unless
+            // user has edit members permission. Prevents mass assignment attacks
+            // where users manipulate status, reputation, or email confirmation.
+            if( ! WPF()->usergroup->can( 'em' ) ) {
+                unset( $user['custom_points'] );
+                unset( $user['status'] );
+                unset( $user['is_email_confirmed'] );
+            }
+
             //Define $userid
             $userid = intval( $data[ $form ]['userid'] );
 
@@ -2300,13 +2309,41 @@ class Members {
 
     public function blog_comments( $userid, $user_email ) {
         global $wpdb;
-        if( ! $userid || ! $user_email ) return 0;
 
-        return (int) $wpdb->get_var(
-                "SELECT COUNT(*) FROM " . $wpdb->comments . " WHERE `user_id` = " . intval(
-                        $userid
-                ) . " OR `comment_author_email` = '" . esc_sql( $user_email ) . "'"
-        );
+        $userid = intval( $userid );
+
+        // Match the author by WP user id and/or by email (for guest/imported comments).
+        // A comment made while logged in has both columns set, but COUNT(*) still counts
+        // that single row once, so the OR never double-counts.
+        $author_conditions = [];
+        $params            = [];
+        if( $userid ) {
+            $author_conditions[] = 'c.user_id = %d';
+            $params[]            = $userid;
+        }
+        if( $user_email && is_email( $user_email ) ) {
+            $author_conditions[] = 'c.comment_author_email = %s';
+            $params[]            = $user_email;
+        }
+        if( empty( $author_conditions ) ) return 0;
+
+        // WordPress stores every kind of comment in the same table (pingbacks, trackbacks,
+        // reviews, comments on pages/CPTs, etc.). Restrict to real, approved, public blog
+        // post comments only:
+        //  - comment_approved = '1'      -> approved only (not spam/trash/pending)
+        //  - comment_type IN ('','comment') -> regular comments (not pingback/trackback/review)
+        //  - p.post_type = 'post'        -> blog posts, not pages/products/other CPTs
+        //  - p.post_status = 'publish'   -> public posts only
+        $sql = "SELECT COUNT(*)
+                FROM {$wpdb->comments} AS c
+                INNER JOIN {$wpdb->posts} AS p ON p.ID = c.comment_post_ID
+                WHERE ( " . implode( ' OR ', $author_conditions ) . " )
+                  AND c.comment_approved = '1'
+                  AND c.comment_type IN ( '', 'comment' )
+                  AND p.post_type = 'post'
+                  AND p.post_status = 'publish'";
+
+        return (int) $wpdb->get_var( $wpdb->prepare( $sql, $params ) );
     }
 
     public function show_delete_form( $current_user, $userids ) {

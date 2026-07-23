@@ -39,12 +39,12 @@ function wpforo_ai_render_not_connected_state() {
 					<?php _e( 'Not Connected', 'wpforo' ); ?>
 				</div>
 
-				<p class="wpforo-ai-description">
+				<p class="wpforo-ai-description" style="display: none;">
 					<?php _e( 'Connect your forum to wpForo AI to unlock powerful AI features including semantic search, content creation, moderation, and intelligent assistance.', 'wpforo' ); ?>
 				</p>
 
 				<div class="wpforo-ai-callout">
-					<strong><?php _e( 'Start with 500 FREE credits! Generate your API key in one click and activate AI features!', 'wpforo' ); ?></strong>
+					<strong><?php _e( 'Start with 500 FREE credits, then subscribe to an AI Plan whenever you\'re ready! Activate AI features in one click!', 'wpforo' ); ?></strong>
 				</div>
 
 				<?php if ( $block_localhost ) : ?>
@@ -54,7 +54,7 @@ function wpforo_ai_render_not_connected_state() {
 					</div>
 					<button type="button" class="button button-primary button-hero" disabled>
 						<span class="dashicons dashicons-admin-plugins" style="vertical-align: sub;"></span>
-						<?php _e( 'Generate API Key & Connect', 'wpforo' ); ?>
+						<?php _e( 'Connect to wpForo AI Features', 'wpforo' ); ?>
 					</button>
 				<?php else : ?>
 					<form method="post" action="" id="wpforo-ai-connect-form">
@@ -80,7 +80,7 @@ function wpforo_ai_render_not_connected_state() {
 
 						<button type="submit" class="button button-primary button-hero" id="wpforo-ai-connect-btn">
 							<span class="dashicons dashicons-admin-plugins" style="vertical-align: sub;"></span>
-							<?php _e( 'Generate API Key & Connect', 'wpforo' ); ?>
+							<?php _e( 'Connect to wpForo AI Features', 'wpforo' ); ?>
 						</button>
 					</form>
 				<?php endif; ?>
@@ -107,6 +107,12 @@ function wpforo_ai_render_not_connected_state() {
 				</div>
 			</div>
 		</div>
+
+		<!-- Getting Started Steps Box -->
+		<?php wpforo_ai_render_getting_started_steps( false ); ?>
+
+		<!-- Video Tutorials Box -->
+		<?php wpforo_ai_render_video_tutorials(); ?>
 
 		<!-- Features Preview Box -->
 		<div class="wpforo-ai-box wpforo-ai-features-preview-box">
@@ -191,6 +197,9 @@ function wpforo_ai_render_pending_approval_state( $status ) {
 			</div>
 		</div>
 
+		<!-- Video Tutorials Box -->
+		<?php wpforo_ai_render_video_tutorials(); ?>
+
 		<!-- Features Preview Box -->
 		<div class="wpforo-ai-box wpforo-ai-features-preview-box">
 			<div class="wpforo-ai-box-header">
@@ -263,6 +272,9 @@ function wpforo_ai_render_inactive_state( $status ) {
 				</div>
 			</div>
 		</div>
+
+		<!-- Video Tutorials Box -->
+		<?php wpforo_ai_render_video_tutorials(); ?>
 
 		<!-- Features Preview Box (disabled state) -->
 		<div class="wpforo-ai-box wpforo-ai-features-preview-box" style="opacity: 0.6;">
@@ -597,6 +609,12 @@ function wpforo_ai_render_connected_state( $status, $mode = 'free_trial', $is_po
 			</div>
 		</div>
 
+		<!-- Getting Started Steps Box -->
+		<?php wpforo_ai_render_getting_started_steps(); ?>
+
+		<!-- Video Tutorials Box -->
+		<?php wpforo_ai_render_video_tutorials(); ?>
+
 		<!-- Available Features Box -->
 		<div class="wpforo-ai-box wpforo-ai-features-box">
 			<div class="wpforo-ai-box-header">
@@ -786,6 +804,9 @@ function wpforo_ai_render_expired_state( $status ) {
 			</div>
 		</div>
 
+		<!-- Video Tutorials Box -->
+		<?php wpforo_ai_render_video_tutorials(); ?>
+
 		<!-- Plans Section for expired users -->
 		<div id="wpforo-ai-plans" class="wpforo-ai-box" style="margin-top: 20px;">
 			<div class="wpforo-ai-box-header">
@@ -893,6 +914,9 @@ function wpforo_ai_render_cancelled_state( $status ) {
 				</div>
 			</div>
 		</div>
+
+		<!-- Video Tutorials Box -->
+		<?php wpforo_ai_render_video_tutorials(); ?>
 
 		<!-- Plans Section -->
 		<div id="wpforo-ai-plans" class="wpforo-ai-box" style="margin-top: 20px;">
@@ -1202,6 +1226,311 @@ function wpforo_ai_render_features_preview() {
 	echo '</li>';
 
 	echo '</ul>';
+}
+
+/**
+ * Render Getting Started Steps Box
+ *
+ * Displays a visual progress indicator showing the steps to use wpForo AI.
+ * First step (Connect) is marked as completed when connected, shows "1" when not.
+ *
+ * @param bool $is_connected Whether the user is connected to AI services
+ */
+function wpforo_ai_render_getting_started_steps( $is_connected = true ) {
+	// Build URLs for each step
+	$indexing_url = admin_url( 'admin.php?page=wpforo-ai&tab=rag_indexing' );
+	$settings_url = admin_url( 'admin.php?page=wpforo-settings&wpf_tab=ai' );
+	$spam_url = admin_url( 'admin.php?page=wpforo-settings&wpf_tab=ai#moderation_spam' );
+	$forum_url = wpforo_home_url();
+	$logs_url = admin_url( 'admin.php?page=wpforo-ai&tab=ai_logs' );
+	?>
+	<div class="wpforo-ai-box wpforo-ai-getting-started-box">
+		<div class="wpforo-ai-box-header">
+			<h2><?php _e( 'Getting Started with wpForo AI', 'wpforo' ); ?></h2>
+		</div>
+		<div class="wpforo-ai-box-body">
+			<div class="wpforo-ai-steps">
+				<div class="wpforo-ai-step <?php echo $is_connected ? 'completed' : ''; ?>">
+					<div class="wpforo-ai-step-icon">
+						<?php if ( $is_connected ) : ?>
+							<span class="dashicons dashicons-yes-alt"></span>
+						<?php else : ?>
+							<span class="wpforo-ai-step-number">1</span>
+						<?php endif; ?>
+					</div>
+					<div class="wpforo-ai-step-label"><?php _e( 'Connect wpForo AI', 'wpforo' ); ?></div>
+				</div>
+				<div class="wpforo-ai-step-connector"></div>
+				<?php if ( $is_connected ) : ?>
+				<a href="<?php echo esc_url( $indexing_url ); ?>" class="wpforo-ai-step">
+				<?php else : ?>
+				<div class="wpforo-ai-step">
+				<?php endif; ?>
+					<div class="wpforo-ai-step-icon">
+						<span class="wpforo-ai-step-number">2</span>
+					</div>
+					<div class="wpforo-ai-step-label"><?php _e( 'Index Forum Content', 'wpforo' ); ?></div>
+				<?php echo $is_connected ? '</a>' : '</div>'; ?>
+				<div class="wpforo-ai-step-connector"></div>
+				<?php if ( $is_connected ) : ?>
+				<a href="<?php echo esc_url( $settings_url ); ?>" class="wpforo-ai-step">
+				<?php else : ?>
+				<div class="wpforo-ai-step">
+				<?php endif; ?>
+					<div class="wpforo-ai-step-icon">
+						<span class="wpforo-ai-step-number">3</span>
+					</div>
+					<div class="wpforo-ai-step-label"><?php _e( 'Manage AI Features', 'wpforo' ); ?></div>
+				<?php echo $is_connected ? '</a>' : '</div>'; ?>
+				<div class="wpforo-ai-step-connector"></div>
+				<?php if ( $is_connected ) : ?>
+				<a href="<?php echo esc_url( $forum_url ); ?>" class="wpforo-ai-step" target="_blank">
+				<?php else : ?>
+				<div class="wpforo-ai-step">
+				<?php endif; ?>
+					<div class="wpforo-ai-step-icon">
+						<span class="wpforo-ai-step-number">4</span>
+					</div>
+					<div class="wpforo-ai-step-label"><?php _e( 'Use', 'wpforo' ); ?><br><?php _e( 'AI Features', 'wpforo' ); ?></div>
+				<?php echo $is_connected ? '</a>' : '</div>'; ?>
+				<div class="wpforo-ai-step-connector"></div>
+				<?php if ( $is_connected ) : ?>
+				<a href="<?php echo esc_url( $spam_url ); ?>" class="wpforo-ai-step">
+				<?php else : ?>
+				<div class="wpforo-ai-step">
+				<?php endif; ?>
+					<div class="wpforo-ai-step-icon">
+						<span class="wpforo-ai-step-number">5</span>
+					</div>
+					<div class="wpforo-ai-step-label"><?php _e( 'Enable AI Spam Protection', 'wpforo' ); ?></div>
+				<?php echo $is_connected ? '</a>' : '</div>'; ?>
+				<div class="wpforo-ai-step-connector"></div>
+				<?php if ( $is_connected ) : ?>
+				<a href="<?php echo esc_url( $logs_url ); ?>" class="wpforo-ai-step">
+				<?php else : ?>
+				<div class="wpforo-ai-step">
+				<?php endif; ?>
+					<div class="wpforo-ai-step-icon">
+						<span class="wpforo-ai-step-number">6</span>
+					</div>
+					<div class="wpforo-ai-step-label"><?php _e( 'Monitor AI Usage', 'wpforo' ); ?></div>
+				<?php echo $is_connected ? '</a>' : '</div>'; ?>
+			</div>
+			<div class="wpforo-ai-steps-cta">
+				<a href="https://wpforo.com/docs/wpforo-v3/ai-features/#getting-started" target="_blank" class="button button-primary button-hero">
+					<span class="dashicons dashicons-book" style="vertical-align: middle; margin-right: 5px;"></span>
+					<?php _e( 'Read AI Features Documentation', 'wpforo' ); ?>
+				</a>
+			</div>
+		</div>
+	</div>
+	<style>
+		.wpforo-ai-getting-started-box {
+			margin-bottom: 20px;
+		}
+		.wpforo-ai-steps-cta {
+			text-align: center;
+			margin-top: 10px;
+			padding-top: 20px;
+			border-top: 1px solid #e0e0e0;
+		}
+		.wpforo-ai-steps-cta .button-hero {
+			font-size: 15px;
+			padding: 10px 25px;
+			height: auto;
+		}
+		.wpforo-ai-steps {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 30px 20px;
+			gap: 0;
+		}
+		.wpforo-ai-step {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-decoration: none;
+			color: #1d2327;
+			transition: transform 0.2s ease;
+		}
+		a.wpforo-ai-step:hover {
+			transform: translateY(-3px);
+		}
+		a.wpforo-ai-step:hover .wpforo-ai-step-icon {
+			background: #2271b1;
+			color: #fff;
+			border-color: #2271b1;
+		}
+		.wpforo-ai-step-icon {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			background: #f0f0f1;
+			border: 2px solid #c3c4c7;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-bottom: 10px;
+			transition: all 0.2s ease;
+		}
+		.wpforo-ai-step.completed .wpforo-ai-step-icon {
+			background: #00a32a;
+			border-color: #00a32a;
+			color: #fff;
+		}
+		.wpforo-ai-step.completed .wpforo-ai-step-icon .dashicons {
+			font-size: 24px;
+			width: 24px;
+			height: 24px;
+		}
+		.wpforo-ai-step-number {
+			font-size: 18px;
+			font-weight: 600;
+			color: #50575e;
+		}
+		a.wpforo-ai-step:hover .wpforo-ai-step-number {
+			color: #fff;
+		}
+		.wpforo-ai-step-label {
+			font-size: 13px;
+			font-weight: 500;
+			text-align: center;
+			max-width: 100px;
+			line-height: 1.3;
+		}
+		.wpforo-ai-step-connector {
+			width: 40px;
+			height: 2px;
+			background: #c3c4c7;
+			margin: 0 5px;
+			margin-bottom: 30px;
+		}
+		@media (max-width: 900px) {
+			.wpforo-ai-steps {
+				flex-wrap: wrap;
+				gap: 15px;
+			}
+			.wpforo-ai-step-connector {
+				display: none;
+			}
+		}
+	</style>
+	<?php
+}
+
+/**
+ * Render Video Tutorials Box
+ *
+ * Displays 3 YouTube video tutorials in a 3-column grid layout.
+ * Shown on the AI Features overview page between connection status and features list.
+ */
+function wpforo_ai_render_video_tutorials() {
+	$videos = [
+		[
+			'id'    => 'ZmNEAYSWg8M',
+			'title' => __( 'wpForo AI Search', 'wpforo' ),
+		],
+		[
+			'id'    => 'Pq5BvlrkXwE',
+			'title' => __( 'wpForo AI Topic Summary', 'wpforo' ),
+		],
+		[
+			'id'    => '2NmKtJO6miQ',
+			'title' => __( 'wpForo AI Translation', 'wpforo' ),
+		],
+	];
+	?>
+	<div class="wpforo-ai-box wpforo-ai-video-tutorials-box">
+		<div class="wpforo-ai-box-header">
+			<h2><?php _e( 'wpForo AI Features in Action', 'wpforo' ); ?></h2>
+		</div>
+		<div class="wpforo-ai-box-body">
+			<div class="wpforo-ai-videos-grid">
+				<?php foreach ( $videos as $video ) : ?>
+					<div class="wpforo-ai-video-item">
+						<div class="wpforo-ai-video-wrapper">
+							<iframe
+								src="https://www.youtube-nocookie.com/embed/<?php echo esc_attr( $video['id'] ); ?>"
+								title="<?php echo esc_attr( $video['title'] ); ?>"
+								frameborder="0"
+								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+								allowfullscreen
+							></iframe>
+						</div>
+						<h4 class="wpforo-ai-video-title"><?php echo esc_html( $video['title'] ); ?></h4>
+					</div>
+				<?php endforeach; ?>
+			</div>
+			<div class="wpforo-ai-videos-cta">
+				<a href="https://wpforo.com/#ai-features" target="_blank" class="button button-primary button-hero">
+					<span class="dashicons dashicons-video-alt3" style="vertical-align: middle; margin-right: 5px;"></span>
+					<?php _e( 'See All AI Features', 'wpforo' ); ?>
+				</a>
+			</div>
+		</div>
+	</div>
+	<style>
+		.wpforo-ai-video-tutorials-box {
+			margin-bottom: 20px;
+		}
+		.wpforo-ai-videos-cta {
+			text-align: center;
+			margin-top: 20px;
+			padding-top: 20px;
+			border-top: 1px solid #e0e0e0;
+		}
+		.wpforo-ai-videos-cta .button-hero {
+			font-size: 15px;
+			padding: 10px 25px;
+			height: auto;
+		}
+		.wpforo-ai-videos-grid {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 20px;
+		}
+		.wpforo-ai-video-item {
+			background: #f9f9f9;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+		.wpforo-ai-video-wrapper {
+			position: relative;
+			padding-bottom: 56.25%;
+			height: 0;
+			overflow: hidden;
+		}
+		.wpforo-ai-video-wrapper iframe {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			border-radius: 8px 8px 0 0;
+		}
+		.wpforo-ai-video-title {
+			margin: 0;
+			padding: 12px 15px;
+			font-size: 14px;
+			font-weight: 600;
+			color: #1d2327;
+			text-align: center;
+			background: #fff;
+			border-top: 1px solid #e0e0e0;
+		}
+		@media (max-width: 1200px) {
+			.wpforo-ai-videos-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+		@media (max-width: 782px) {
+			.wpforo-ai-videos-grid {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
+	<?php
 }
 
 /**

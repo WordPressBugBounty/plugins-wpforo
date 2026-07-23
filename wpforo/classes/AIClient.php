@@ -3597,6 +3597,9 @@ class AIClient {
 				$wp_post = get_post( (int) $wp_post_id );
 				if ( ! $wp_post || $wp_post->post_status !== 'publish' ) continue;
 
+				// Skip password-protected posts unless user has entered the password
+				if ( post_password_required( $wp_post ) ) continue;
+
 				// Use real WP post_type (post, page, product, etc.)
 				$post_type_obj   = get_post_type_object( $wp_post->post_type );
 				$post_type_label = $post_type_obj ? $post_type_obj->labels->singular_name : ucfirst( $wp_post->post_type );
@@ -3872,6 +3875,19 @@ class AIClient {
 
 		// Update total to reflect filtered results count
 		$filtered_total = count( $enriched_results );
+
+		// Sanitize AI enhancement output to prevent XSS
+		if ( $ai_enhancement ) {
+			if ( isset( $ai_enhancement['summary'] ) ) {
+				$ai_enhancement['summary'] = wpforo_kses( (string) $ai_enhancement['summary'] );
+			}
+			if ( isset( $ai_enhancement['quick_answer'] ) ) {
+				$ai_enhancement['quick_answer'] = wpforo_kses( (string) $ai_enhancement['quick_answer'] );
+			}
+			if ( isset( $ai_enhancement['recommendations_html'] ) ) {
+				$ai_enhancement['recommendations_html'] = wpforo_kses( (string) $ai_enhancement['recommendations_html'] );
+			}
+		}
 
 		// Return enriched results with AI enhancement
 		wp_send_json_success( [
@@ -7084,6 +7100,13 @@ class AIClient {
 			], 404 );
 		}
 
+		// SECURITY: Check if user can view this post before allowing translation
+		if ( ! WPF()->post->view_access( $post ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'You do not have permission to view this content', false )
+			], 403 );
+		}
+
 		// Get the rendered HTML content using output buffering
 		// (wpforo_content echoes instead of returning)
 		ob_start();
@@ -7115,8 +7138,9 @@ class AIClient {
 				] );
 			}
 			// Return cached translation (no credits used)
+			// Sanitize AI output to prevent XSS - wpforo_kses allows all post-safe HTML tags
 			wp_send_json_success( [
-				'translated_content' => wpfval( $cached_result, 'translated_content' ) ?: '',
+				'translated_content' => wpforo_kses( (string) wpfval( $cached_result, 'translated_content' ) ),
 				'source_language'    => wpfval( $cached_result, 'source_language' ) ?: 'auto',
 				'target_language'    => $target_language,
 				'credits_used'       => 0,
@@ -7174,8 +7198,9 @@ class AIClient {
 		$this->set_ai_cache( self::CACHE_TYPE_TRANSLATE, $cache_key, $cache_data, 0, $post_id );
 
 		// Return translated content
+		// Sanitize AI output to prevent XSS - wpforo_kses allows all post-safe HTML tags
 		wp_send_json_success( [
-			'translated_content' => wpfval( $result, 'translated_content' ) ?: '',
+			'translated_content' => wpforo_kses( (string) wpfval( $result, 'translated_content' ) ),
 			'source_language'    => wpfval( $result, 'source_language' ) ?: 'auto',
 			'target_language'    => $target_language,
 			'credits_used'       => $credits_used,
@@ -7337,6 +7362,13 @@ class AIClient {
 			], 404 );
 		}
 
+		// SECURITY: Check if user can view this topic before allowing summarization
+		if ( ! WPF()->topic->view_access( $topic ) ) {
+			wp_send_json_error( [
+				'message' => wpforo_phrase( 'You do not have permission to view this content', false )
+			], 403 );
+		}
+
 		// Get summary style from settings or request
 		$style = sanitize_text_field( wpfval( $_POST, 'style' ) );
 		if ( empty( $style ) ) {
@@ -7447,11 +7479,12 @@ class AIClient {
 
 			// Return cached summary (no credits used)
 			// Process link markers to convert [[#POST_ID]] to clickable links
-			$cached_summary = wpfval( $cached_result, 'summary' ) ?: '';
+			$cached_summary = (string) wpfval( $cached_result, 'summary' );
 			$cached_summary = $this->replace_summary_link_markers( $cached_summary, $topicid );
 
+			// Sanitize AI output to prevent XSS - wpforo_kses allows all post-safe HTML tags
 			wp_send_json_success( [
-				'summary'           => $cached_summary,
+				'summary'           => wpforo_kses( $cached_summary ),
 				'style'             => wpfval( $cached_result, 'style' ) ?: $style,
 				'topic_id'          => $topicid,
 				'reply_count'       => $reply_count,
@@ -7492,7 +7525,7 @@ class AIClient {
 		}
 
 		// Get raw summary and store in cache (keep raw with link markers for re-processing)
-		$raw_summary = wpfval( $result, 'summary' ) ?: '';
+		$raw_summary = (string) wpfval( $result, 'summary' );
 		// Strip markdown code fence wrappers (```html ... ```) that LLMs sometimes add around HTML output
 		$raw_summary = preg_replace( '/^\s*```\w*\s*\n([\s\S]*?)\n\s*```\s*$/s', '$1', $raw_summary );
 		$credits_used = wpfval( $result, 'credits_used' ) ?: 1;
@@ -7525,8 +7558,9 @@ class AIClient {
 		$processed_summary = $this->replace_summary_link_markers( $raw_summary, $topicid );
 
 		// Return summary with clickable links
+		// Sanitize AI output to prevent XSS - wpforo_kses allows all post-safe HTML tags
 		wp_send_json_success( [
-			'summary'           => $processed_summary,
+			'summary'           => wpforo_kses( $processed_summary ),
 			'style'             => wpfval( $result, 'style' ) ?: $style,
 			'topic_id'          => $topicid,
 			'reply_count'       => $reply_count,

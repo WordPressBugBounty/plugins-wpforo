@@ -584,6 +584,10 @@ class AIWordPressIndexer {
 		$posts = [];
 
 		foreach ( $query->posts as $post ) {
+			// Skip password-protected posts - their content should not be searchable
+			if ( ! empty( $post->post_password ) ) {
+				continue;
+			}
 			$posts[] = $this->format_post_for_indexing( $post );
 		}
 
@@ -954,6 +958,11 @@ class AIWordPressIndexer {
 		foreach ( $post_ids as $post_id ) {
 			$post = get_post( $post_id );
 			if ( $post && $post->post_status === 'publish' ) {
+				// Skip password-protected posts - their content should not be searchable
+				if ( ! empty( $post->post_password ) ) {
+					$skipped++;
+					continue;
+				}
 				// Skip posts with non-indexable content (shortcodes only, binary, too short)
 				if ( ! $this->is_content_indexable( $post ) ) {
 					$skipped++;

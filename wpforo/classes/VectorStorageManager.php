@@ -564,11 +564,13 @@ class VectorStorageManager {
 			return new \WP_Error( 'unapproved_topic', wpforo_phrase( 'Unapproved topics cannot be indexed', false ) );
 		}
 
-		// Get all posts for this topic ordered by creation date
+		// Get all approved posts for this topic ordered by creation date
+		// Only index approved posts (status=0) to prevent unapproved content from appearing in search
 		$posts = WPF()->post->get_posts( [
 			'topicid' => $topicid,
 			'orderby' => 'created',
 			'order'   => 'ASC',
+			'status'  => 0,
 		] );
 		if ( empty( $posts ) ) {
 			return new \WP_Error( 'no_posts', wpforo_phrase( 'No posts found for topic', false ) );
@@ -827,10 +829,12 @@ class VectorStorageManager {
 
 			// Bypass user permission check - this is admin-initiated backend indexing.
 			// Private/unapproved topics are already filtered above.
+			// Only index approved posts (status=0) to prevent unapproved content from appearing in search.
 			$posts = WPF()->post->get_posts( [
 				'topicid'       => $topicid,
 				'orderby'       => 'created',
 				'order'         => 'ASC',
+				'status'        => 0,
 				'check_private' => false,
 			] );
 

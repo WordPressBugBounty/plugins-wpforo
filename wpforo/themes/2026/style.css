@@ -1522,7 +1522,7 @@ Author: gVectors Team
 /****************************************************/
 #wpforo #wpforo-wrap input{border-radius: 0; box-shadow: none; font-weight: normal;}
 #wpforo #wpforo-wrap textarea{padding: 5px 3px 3px 5px; border-radius: 0; box-shadow: none; font-weight: normal;}
-#wpforo #wpforo-wrap select {text-indent: 0.01px; text-overflow: ''; padding: 5px 5px 5px 7px; font-size: 14px; line-height:18px;}
+#wpforo #wpforo-wrap select {text-indent: 0.01px; text-overflow: ''; padding: 5px 5px 5px 7px; font-size: 14px; line-height:18px; height: auto; min-height: auto;}
 #wpforo #wpforo-wrap input[type="text"], #wpforo #wpforo-wrap input[type="password"], #wpforo #wpforo-wrap input[type="email"], #wpforo #wpforo-wrap textarea, #wpforo #wpforo-wrap select {margin: 2px; outline: 0 none; padding: 5px 5px 5px 7px; font-size: 14px; line-height:18px;}
 #wpforo #wpforo-wrap input[type="submit"],
 #wpforo #wpforo-wrap input[type="reset"],

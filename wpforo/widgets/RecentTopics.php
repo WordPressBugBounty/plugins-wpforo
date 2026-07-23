@@ -124,6 +124,19 @@ class RecentTopics extends WP_Widget {
             // Remove dangerous 'where' parameter
             unset( $topic_args['where'] );
 
+            // SECURITY: Strip parameters that bypass access controls
+            // access_filter=false skips all permission checks (intended for admin backend only)
+            // permgroup allows impersonating another usergroup's permissions
+            // forumid (singular) bypasses access_filter() which only runs when forumid is null
+            unset( $topic_args['access_filter'] );
+            unset( $topic_args['permgroup'] );
+            unset( $topic_args['forumid'] );
+
+            // Cap row_count to prevent resource exhaustion
+            if( isset( $topic_args['row_count'] ) ) {
+                $topic_args['row_count'] = min( 50, max( 1, intval( $topic_args['row_count'] ) ) );
+            }
+
             // Validate 'orderby' parameter against whitelist
             if( isset( $topic_args['orderby'] ) ) {
                 if( ! key_exists( $topic_args['orderby'], $this->orderby_fields ) ) {
