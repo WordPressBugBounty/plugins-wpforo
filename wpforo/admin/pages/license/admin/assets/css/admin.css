@@ -1,0 +1,778 @@
+/* gVectors License Module - Admin Styles */
+
+#gvlicense-admin-wrap {
+    margin-top: 0;
+}
+
+#gvlicense-admin-wrap #gvlicense-store-logo {
+    float: left;
+    margin: 20px 10px 20px;
+}
+
+.logo-text {
+    font-size: 22px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #4d9113 0%, #649e2d 50%, #7ab83a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+}
+
+.logo-g {
+    font-weight: 900;
+    font-size: 24px;
+}
+
+.logo-store {
+    font-size: 22px;
+    font-weight: 600;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.3px;
+    background: linear-gradient(135deg, rgb(85, 85, 85) 0%, rgb(136, 136, 136) 100%) text;
+}
+
+#gvlicense-admin-wrap #gvlicense-store-title {
+    padding-top: 15px;
+    padding-bottom: 10px;
+}
+
+/* License Activation Bar */
+.gvlicense-license-bar {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-left: 4px solid #008EC2;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+}
+
+.gvlicense-license-bar h3 {
+    margin: 0 0 10px;
+    font-size: 14px;
+}
+
+.gvlicense-license-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.gvlicense-license-form .regular-text {
+    min-width: 300px;
+    width: 29rem;
+    max-width: 100%;
+}
+
+.gvlicense-product-select {
+    min-width: 200px;
+}
+
+.gvlicense-status {
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.gvlicense-status.success {
+    color: #46b450;
+}
+
+.gvlicense-status.error {
+    color: #dc3232;
+}
+
+/* Products Grid */
+.gvlicense-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.gvlicense-loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 14px;
+}
+
+.gvlicense-loading .spinner {
+    margin-right: 10px;
+}
+
+.gvlicense-no-products {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 14px;
+}
+
+/* Product Card */
+.gvlicense-product-card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+
+.gvlicense-product-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.gvlicense-product-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    padding: 20px 0 0;
+}
+
+.gvlicense-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.gvlicense-product-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gvlicense-product-placeholder .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Badge */
+.gvlicense-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.gvlicense-badge-active {
+    background: #46b450;
+    color: #fff;
+}
+
+.gvlicense-badge-trial {
+    background: #ffb900;
+    color: #23282d;
+}
+
+.gvlicense-badge-bundle {
+    background: #8e44ad;
+    color: #fff;
+    top: 10px;
+    left: 10px;
+    right: auto;
+}
+
+/* Bundle Card */
+.gvlicense-bundle-card {
+    border: 2px solid #8e44ad;
+}
+
+.gvlicense-bundle-card .gvlicense-product-placeholder {
+    background: linear-gradient(135deg, #8e44ad 0%, #3498db 100%);
+}
+
+.gvlicense-bundle-includes {
+    margin: 0 0 12px;
+    padding: 8px 12px;
+    background: #f8f4fc;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.gvlicense-bundle-includes strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #8e44ad;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.gvlicense-bundle-includes ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gvlicense-bundle-includes li {
+    padding: 2px 0;
+    color: #444;
+}
+
+.gvlicense-bundle-includes li .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #46b450;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+/* Product Info */
+.gvlicense-product-info {
+    padding: 15px;
+}
+
+.gvlicense-product-name {
+    margin: 0 0 8px;
+    font-size: 16px;
+    line-height: 1.3;
+}
+
+.gvlicense-product-desc {
+    color: #666;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0 0 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 10;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.gvlicense-product-price {
+    margin-bottom: 12px;
+}
+
+.gvlicense-price-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: #23282d;
+}
+
+.gvlicense-price-interval {
+    font-size: 13px;
+    color: #999;
+}
+
+/* Active Plan Label */
+.gvlicense-active-plan {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e7e34;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Price Select */
+.gvlicense-price-select-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.gvlicense-price-select {
+    width: 100%;
+    max-width: 100%;
+    padding: 6px 28px 6px 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    background: #fff;
+    color: #2c3338;
+    cursor: pointer;
+    appearance: auto;
+}
+
+.gvlicense-price-select:focus {
+    border-color: #008EC2;
+    box-shadow: 0 0 0 1px #008EC2;
+    outline: none;
+}
+
+.gvlicense-price-detail {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 2px 0;
+}
+
+.gvlicense-price-detail .gvlicense-price-amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: #23282d;
+}
+
+.gvlicense-price-detail .gvlicense-price-interval {
+    font-size: 12px;
+    color: #999;
+}
+
+.gvlicense-price-detail .gvlicense-price-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+}
+
+.gvlicense-price-desc {
+    display: block;
+    width: 100%;
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+}
+
+/* Product Actions */
+.gvlicense-product-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.gvlicense-addon-active {
+    color: #46b450;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.gvlicense-addon-active .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+
+/* Licenses Section */
+.gvlicense-licenses-section {
+    margin-top: 30px;
+}
+
+.gvlicense-licenses-section h2 {
+    margin-bottom: 15px;
+}
+
+/* Status Badges */
+.gvlicense-status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.gvlicense-status-active {
+    background: #e6f4ea;
+    color: #1e7e34;
+}
+
+.gvlicense-status-trial {
+    background: #fff8e1;
+    color: #856404;
+}
+
+.gvlicense-status-expired {
+    background: #fce4ec;
+    color: #c62828;
+}
+
+.gvlicense-status-unknown {
+    background: #f5f5f5;
+    color: #666;
+}
+
+/* Modal */
+.gvlicense-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gvlicense-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.gvlicense-modal-content {
+    position: relative;
+    background: #fff;
+    border-radius: 6px;
+    padding: 30px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.gvlicense-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    line-height: 1;
+}
+
+.gvlicense-modal-close:hover {
+    color: #23282d;
+}
+
+/* Modal Manage Content */
+.gvlicense-manage-info {
+    margin-bottom: 20px;
+}
+
+.gvlicense-modal-section {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.gvlicense-modal-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.gvlicense-modal-section h4 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #23282d;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.gvlicense-modal-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.gvlicense-modal-table th {
+    text-align: left;
+    padding: 5px 12px 5px 0;
+    width: 140px;
+    color: #888;
+    font-weight: normal;
+    font-size: 13px;
+    vertical-align: top;
+}
+
+.gvlicense-modal-table td {
+    padding: 5px 0;
+    font-size: 13px;
+    color: #23282d;
+    word-break: break-all;
+}
+
+.gvlicense-modal-table code {
+    font-size: 12px;
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.gvlicense-modal-interval {
+    color: #999;
+    font-size: 12px;
+}
+
+.gvlicense-modal-expired {
+    color: #c62828;
+    font-weight: 600;
+}
+
+.gvlicense-modal-site {
+    display: inline-block;
+    background: #f0f6fc;
+    border: 1px solid #d0e3f7;
+    border-radius: 3px;
+    padding: 2px 8px;
+    font-size: 12px;
+    margin: 2px 4px 2px 0;
+    color: #0073aa;
+}
+
+.gvlicense-modal-addon-active {
+    color: #1e7e34;
+    font-weight: 600;
+}
+
+.gvlicense-modal-addon-installed {
+    color: #856404;
+    font-weight: 600;
+}
+
+.gvlicense-modal-addon-none {
+    color: #999;
+}
+
+.gvlicense-modal-footer-info {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 10px;
+    text-align: right;
+}
+
+.gvlicense-manage-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+/* Toast Notifications */
+.gvlicense-toast {
+    position: fixed;
+    top: 40px;
+    right: 20px;
+    z-index: 100200;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: gvectorsLicenseSlideIn 0.3s ease;
+    max-width: 400px;
+}
+
+.gvlicense-toast-success {
+    background: #46b450;
+    color: #fff;
+}
+
+.gvlicense-toast-error {
+    background: #dc3232;
+    color: #fff;
+}
+
+.gvlicense-toast-info {
+    background: #00a0d2;
+    color: #fff;
+}
+
+.gvlicense-toast-warning {
+    background: #ffb900;
+    color: #ffffff;
+}
+
+@keyframes gvectorsLicenseSlideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Validate All button (next to Active Licenses heading) */
+.gvlicense-validate-all-btn {
+    vertical-align: middle;
+}
+
+/* Validated timestamp label */
+.gvlicense-validated-label {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 12px;
+    color: #00a32a;
+    font-style: italic;
+    vertical-align: middle;
+}
+
+/* Button loading state */
+.gvlicense-btn-loading {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.gvlicense-btn-loading::after {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: gvectorsLicenseSpin 0.6s linear infinite;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+@keyframes gvectorsLicenseSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Subscription Timeline */
+.gvlicense-timeline {
+    position: relative;
+    padding-left: 28px;
+}
+
+.gvlicense-timeline::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: #ddd;
+}
+
+.gvlicense-tl-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.gvlicense-tl-item:last-child {
+    margin-bottom: 0;
+}
+
+.gvlicense-tl-dot {
+    position: absolute;
+    left: -28px;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.gvlicense-tl-dot .dashicons {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+    color: inherit;
+}
+
+.gvlicense-tl-green .gvlicense-tl-dot {
+    border-color: #46b450;
+    color: #46b450;
+}
+
+.gvlicense-tl-blue .gvlicense-tl-dot {
+    border-color: #0073aa;
+    color: #0073aa;
+}
+
+.gvlicense-tl-red .gvlicense-tl-dot {
+    border-color: #dc3232;
+    color: #dc3232;
+}
+
+.gvlicense-tl-orange .gvlicense-tl-dot {
+    border-color: #f56e28;
+    color: #f56e28;
+}
+
+.gvlicense-tl-gray .gvlicense-tl-dot {
+    border-color: #999;
+    color: #999;
+}
+
+.gvlicense-tl-content {
+    padding: 2px 0 0 0;
+}
+
+.gvlicense-tl-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #23282d;
+}
+
+.gvlicense-tl-date {
+    font-size: 12px;
+    color: #888;
+    margin-top: 1px;
+}
+
+.gvlicense-tl-detail {
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+}
+
+.gvlicense-tl-detail code {
+    font-size: 11px;
+    background: #f5f5f5;
+    padding: 1px 4px;
+    border-radius: 2px;
+}
+
+.gvlicense-tl-separator {
+    position: relative;
+    text-align: center;
+    margin: 16px 0 16px 18px;
+    border-top: 1px dashed #ccd0d4;
+    padding-top: 0;
+}
+
+.gvlicense-tl-separator-label {
+    position: relative;
+    top: -10px;
+    background: #fff;
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #72777c;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.gvlicense-tl-old {
+    opacity: 0.55;
+}
+
+.gvlicense-tl-old .gvlicense-tl-label {
+    font-style: italic;
+}
+
+.gvlicense-timeline-empty {
+    color: #999;
+    font-size: 13px;
+    font-style: italic;
+    margin: 0;
+}

@@ -492,7 +492,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
     <p>To exercise any of these rights:</p>
     <ol>
         <li>Use in-plugin controls for data deletion</li>
-        <li>Open a support ticket at <a href="https://v3.wpforo.com/login-register/?tab=login" target="_blank" rel="noopener">our support portal</a></li>
+        <li>Open a support ticket at <a href="https://wpforo.com/login-register/?tab=login" target="_blank" rel="noopener">our support portal</a></li>
         <li>We will respond within 30 days (or sooner if required by law)</li>
         <li>We may need to verify your identity before processing requests</li>
     </ol>
@@ -545,7 +545,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
     <h2 id="contact">15. Contact Us</h2>
     <p>For questions, concerns, or requests regarding this Privacy Policy:</p>
     <ul>
-        <li><strong>Support Portal:</strong> <a href="https://v3.wpforo.com/login-register/?tab=login" target="_blank" rel="noopener">Open Support Ticket</a></li>
+        <li><strong>Support Portal:</strong> <a href="https://wpforo.com/login-register/?tab=login" target="_blank" rel="noopener">Open Support Ticket</a></li>
         <li><strong>wpForo Website:</strong> <a href="https://wpforo.com" target="_blank" rel="noopener">wpforo.com</a></li>
         <li><strong>wpForo Community:</strong> <a href="https://wpforo.com/community/" target="_blank" rel="noopener">wpforo.com</a></li>
         <li><strong>Company:</strong> gVectors Team</li>

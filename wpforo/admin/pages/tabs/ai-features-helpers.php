@@ -87,14 +87,14 @@ function wpforo_ai_get_freemius_pricing() {
 			'starter' => [
 				'plan_id' => '36610',
 				'pricing_id' => '47813',
-				'price' => 15.00,
+				'price' => 9.00,
 				'currency' => 'usd',
 				'billing_cycle' => 'monthly'
 			],
 			'professional' => [
 				'plan_id' => '36612',
 				'pricing_id' => '47815',
-				'price' => 25.00,
+				'price' => 19.00,
 				'currency' => 'usd',
 				'billing_cycle' => 'monthly'
 			],
@@ -168,8 +168,8 @@ function wpforo_ai_get_paddle_pricing() {
 	if ( $env === 'live' ) {
 		return [
 			'plans'        => [
-				'starter'      => [ 'price_id' => 'pri_01km85yz3r7yakw5z9vj0a7j4f', 'price' => 15.00 ],
-				'professional' => [ 'price_id' => 'pri_01km863kcef4vwtwm95ph7h5ys', 'price' => 25.00 ],
+				'starter'      => [ 'price_id' => 'pri_01km85yz3r7yakw5z9vj0a7j4f', 'price' => 9.00 ],
+				'professional' => [ 'price_id' => 'pri_01km863kcef4vwtwm95ph7h5ys', 'price' => 19.00 ],
 				'business'     => [ 'price_id' => 'pri_01km865rt82y0sckrw1fq59ftk', 'price' => 49.00 ],
 				'enterprise'   => [ 'price_id' => 'pri_01km86kpkf9802tazpv912hgeh', 'price' => 99.00 ],
 			],
@@ -185,8 +185,8 @@ function wpforo_ai_get_paddle_pricing() {
 	// Sandbox (default)
 	return [
 		'plans'        => [
-			'starter'      => [ 'price_id' => 'pri_01km87cgsb37gtznd8qvyfx2zt', 'price' => 15.00 ],
-			'professional' => [ 'price_id' => 'pri_01km87dsd0ts43ay9rask9xsgg', 'price' => 25.00 ],
+			'starter'      => [ 'price_id' => 'pri_01km87cgsb37gtznd8qvyfx2zt', 'price' => 9.00 ],
+			'professional' => [ 'price_id' => 'pri_01km87dsd0ts43ay9rask9xsgg', 'price' => 19.00 ],
 			'business'     => [ 'price_id' => 'pri_01km87evv46y756xwex931mjx5', 'price' => 49.00 ],
 			'enterprise'   => [ 'price_id' => 'pri_01km87g2ppkw7xhp8j99qws7k7', 'price' => 99.00 ],
 		],

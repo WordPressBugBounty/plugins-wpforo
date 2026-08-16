@@ -1,0 +1,172 @@
+# gVectors News Module — translation template
+msgid ""
+msgstr ""
+"Project-Id-Version: gvectors/news\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: gvectors\n"
+
+msgid "Category"
+msgstr ""
+
+msgid "Dashboard notices"
+msgstr ""
+
+msgid "Dismiss this notice."
+msgstr ""
+
+msgid "Emails"
+msgstr ""
+
+msgid "Enable"
+msgstr ""
+
+msgid "Enable addon news & license reminders?"
+msgstr ""
+
+msgid "Enable the addon news service"
+msgstr ""
+
+msgid "Get notified about new addons, new features and expiring addon licenses. When enabled, this site connects to the gVectors server once a day and sends: your site address, an anonymous site identifier (a hash), and the slugs and versions of installed gVectors addons. No personal data, email addresses or content is ever sent."
+msgstr ""
+
+msgid "Learn more"
+msgstr ""
+
+msgid "Master switch. When enabled, this site connects to the gVectors server once a day to fetch addon news and check for expiring licenses. When disabled, the daily sync stops and no outbound requests are made."
+msgstr ""
+
+msgid "My Preferences"
+msgstr ""
+
+msgid "News & Emails"
+msgstr ""
+
+msgid "News from gVectors"
+msgstr ""
+
+msgid "Not now"
+msgstr ""
+
+msgid "Permission denied"
+msgstr ""
+
+msgid "Privacy policy"
+msgstr ""
+
+msgid "Save My Preferences"
+msgstr ""
+
+msgid "Save Site-Wide Settings"
+msgstr ""
+
+msgid "Site-Wide Settings"
+msgstr ""
+
+msgid "Site-wide settings have been saved."
+msgstr ""
+
+msgid "These settings apply only to your own account (%s). Other administrators manage their preferences on this same page. A dashboard notice you dismiss is dismissed only for you."
+msgstr ""
+
+msgid "These settings apply to the whole site and all administrators: a category disabled here is off for everyone, regardless of personal preferences."
+msgstr ""
+
+msgid "They are shared by all installed gVectors products (%s) — news, emails and license reminders are managed once for all of them."
+msgstr ""
+
+msgid "Unsubscribe my email from ALL news module emails"
+msgstr ""
+
+msgid "When checked, you receive no emails from this module regardless of the matrix below. Dashboard notices are not affected."
+msgstr ""
+
+msgid "You can change this decision or manage email preferences anytime on the %s page."
+msgstr ""
+
+msgid "You received this email because you are an administrator of %1$s. To unsubscribe or choose which emails you receive, open the %2$s settings page in your WordPress dashboard."
+msgstr ""
+
+msgid "Your addon licenses are expiring soon"
+msgstr ""
+
+msgid "Your preferences have been saved."
+msgstr ""
+
+
+#: src/AdminPage.php (CATEGORY_LABELS)
+msgid "License expiry & billing reminders"
+msgstr ""
+
+msgid "Transactional — expiring/expired license warnings and failed-payment notices. Email only."
+msgstr ""
+
+msgid "Renewal discount offers"
+msgstr ""
+
+msgid "Reminders about unused personal renewal discounts reserved for this site, before they expire. Email only."
+msgstr ""
+
+msgid "New addon announcements"
+msgstr ""
+
+msgid "Marketing — when a new addon is released."
+msgstr ""
+
+msgid "New feature announcements"
+msgstr ""
+
+msgid "Marketing — when an addon gets a major new feature."
+msgstr ""
+
+msgid "New version releases"
+msgstr ""
+
+msgid "Version releases — changelogs, scheduled release dates, and actions required before or after an update."
+msgstr ""
+
+msgid "Discounts & promotions"
+msgstr ""
+
+msgid "Marketing — sales, coupon codes and limited-time offers."
+msgstr ""
+
+msgid "General announcements"
+msgstr ""
+
+msgid "Marketing — other news from gVectors."
+msgstr ""
+
+msgid "News about installed addons"
+msgstr ""
+
+msgid "Addon-targeted news for addons this site has installed."
+msgstr ""
+
+msgid "News about addons not installed here"
+msgstr ""
+
+msgid "Addon-targeted news for addons this site does not have — disable to skip irrelevant news."
+msgstr ""
+
+msgid "Addon recommendations"
+msgstr ""
+
+msgid "Personalized suggestions of addons other sites with a similar setup use. Each recommendation is sent at most once. Email only."
+msgstr ""
+
+msgid "Recommended for you"
+msgstr ""
+
+msgid "Addons picked for your site"
+msgstr ""
+
+msgid "You didn't finish your purchase"
+msgstr ""
+
+msgid "Unfinished purchase reminders"
+msgstr ""
+
+msgid "Reminders when a checkout you started was not completed, including any recovery discount. Sent only to the administrator who started the purchase. Email only."
+msgstr ""

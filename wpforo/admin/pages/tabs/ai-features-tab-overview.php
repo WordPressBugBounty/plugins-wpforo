@@ -254,7 +254,7 @@ function wpforo_ai_render_inactive_state( $status ) {
 					<?php
 					printf(
 						__( 'Please %s if you believe this is an error or if you need assistance reactivating your account.', 'wpforo' ),
-						'<a href="https://v3.wpforo.com/login-register/?tab=login" target="_blank">' . __( 'open a support ticket', 'wpforo' ) . '</a>'
+						'<a href="https://wpforo.com/login-register/?tab=login" target="_blank">' . __( 'open a support ticket', 'wpforo' ) . '</a>'
 					);
 					?>
 				</div>
@@ -589,7 +589,7 @@ function wpforo_ai_render_connected_state( $status, $mode = 'free_trial', $is_po
 					<?php if ( $is_free_trial ) : ?>
 						<button type="button" class="button button-primary button-large" onclick="document.getElementById('wpforo-ai-plans').scrollIntoView({ behavior: 'smooth' })">
 							<span class="dashicons dashicons-cart"></span>
-							<?php _e( 'Upgrade Now / View Plans', 'wpforo' ); ?>&nbsp;
+							<?php _e( 'Upgrade Now / View Subscription Plans', 'wpforo' ); ?>&nbsp;
 						</button>
 					<?php else : ?>
 						<?php foreach ( $payment_providers as $provider ) : ?>
@@ -778,7 +778,7 @@ function wpforo_ai_render_expired_state( $status ) {
 				<div class="wpforo-ai-error-actions">
 					<button type="button" class="button button-primary button-large" onclick="document.getElementById('wpforo-ai-plans').scrollIntoView({ behavior: 'smooth' })">
 						<span class="dashicons dashicons-cart"></span>
-						<?php _e( 'Upgrade Now / View Plans', 'wpforo' ); ?>&nbsp;
+						<?php _e( 'Upgrade Now / View Subscription Plans', 'wpforo' ); ?>&nbsp;
 					</button>
 
 					<form method="post" action="" style="display: inline;">
@@ -796,7 +796,7 @@ function wpforo_ai_render_expired_state( $status ) {
 						<?php
 						printf(
 							__( 'Need help? %s', 'wpforo' ),
-							'<a href="https://v3.wpforo.com/login-register/?tab=login" target="_blank">' . __( 'Open Support Ticket', 'wpforo' ) . '</a>'
+							'<a href="https://wpforo.com/login-register/?tab=login" target="_blank">' . __( 'Open Support Ticket', 'wpforo' ) . '</a>'
 						);
 						?>
 					</p>
@@ -907,7 +907,7 @@ function wpforo_ai_render_cancelled_state( $status ) {
 						<?php
 						printf(
 							__( 'Need help? %s', 'wpforo' ),
-							'<a href="https://v3.wpforo.com/login-register/?tab=login" target="_blank">' . __( 'Open Support Ticket', 'wpforo' ) . '</a>'
+							'<a href="https://wpforo.com/login-register/?tab=login" target="_blank">' . __( 'Open Support Ticket', 'wpforo' ) . '</a>'
 						);
 						?>
 					</p>
@@ -1026,7 +1026,7 @@ function wpforo_ai_render_error_state( $error ) {
 						<?php
 						printf(
 							__( 'Need help? %s', 'wpforo' ),
-							'<a href="https://v3.wpforo.com/login-register/?tab=login" target="_blank">' . __( 'Open Support Ticket', 'wpforo' ) . '</a>'
+							'<a href="https://wpforo.com/login-register/?tab=login" target="_blank">' . __( 'Open Support Ticket', 'wpforo' ) . '</a>'
 						);
 						?>
 					</p>
@@ -1269,7 +1269,7 @@ function wpforo_ai_render_getting_started_steps( $is_connected = true ) {
 					<div class="wpforo-ai-step-icon">
 						<span class="wpforo-ai-step-number">2</span>
 					</div>
-					<div class="wpforo-ai-step-label"><?php _e( 'Index Forum Content', 'wpforo' ); ?></div>
+					<div class="wpforo-ai-step-label" style="color: rgb(214, 39, 224);"><?php _e( 'Index Forum Content', 'wpforo' ); ?></div>
 				<?php echo $is_connected ? '</a>' : '</div>'; ?>
 				<div class="wpforo-ai-step-connector"></div>
 				<?php if ( $is_connected ) : ?>
@@ -1316,6 +1316,14 @@ function wpforo_ai_render_getting_started_steps( $is_connected = true ) {
 					<div class="wpforo-ai-step-label"><?php _e( 'Monitor AI Usage', 'wpforo' ); ?></div>
 				<?php echo $is_connected ? '</a>' : '</div>'; ?>
 			</div>
+			<div class="wpforo-ai-privacy-note">
+				<p><span class="dashicons dashicons-shield" style="color: #0073aa;"></span> <strong><?php _e( 'Your Data Stays Yours', 'wpforo' ); ?></strong></p>
+				<ul>
+					<li><strong style="color: rgb(214, 39, 224);"><?php _e( 'Forum content indexing', 'wpforo' ); ?></strong> <?php _e( 'converts your forum content into mathematical vectors (embeddings) to power AI search and features.', 'wpforo' ); ?></li>
+					<li><?php _e( 'Your data is never used to train AI models. We use pre-trained models from Amazon Bedrock.', 'wpforo' ); ?></li>
+					<li><?php _e( 'By default your data embeddings are stored locally in your WordPress database.', 'wpforo' ); ?></li>
+				</ul>
+			</div>
 			<div class="wpforo-ai-steps-cta">
 				<a href="https://wpforo.com/docs/wpforo-v3/ai-features/#getting-started" target="_blank" class="button button-primary button-hero">
 					<span class="dashicons dashicons-book" style="vertical-align: middle; margin-right: 5px;"></span>
@@ -1325,6 +1333,26 @@ function wpforo_ai_render_getting_started_steps( $is_connected = true ) {
 		</div>
 	</div>
 	<style>
+		.wpforo-ai-privacy-note {
+			background: #f0f7fc;
+			border-left: 4px solid #0073aa;
+			padding: 15px 20px;
+			margin: 20px 0;
+			border-radius: 0 4px 4px 0;
+		}
+		.wpforo-ai-privacy-note p {
+			margin: 0 0 10px 0;
+			font-size: 14px;
+		}
+		.wpforo-ai-privacy-note ul {
+			margin: 0;
+			padding-left: 20px;
+		}
+		.wpforo-ai-privacy-note li {
+			margin-bottom: 5px;
+			font-size: 13px;
+			color: #444;
+		}
 		.wpforo-ai-getting-started-box {
 			margin-bottom: 20px;
 		}
@@ -1373,6 +1401,13 @@ function wpforo_ai_render_getting_started_steps( $is_connected = true ) {
 			justify-content: center;
 			margin-bottom: 10px;
 			transition: all 0.2s ease;
+		}
+		a.wpforo-ai-step .wpforo-ai-step-icon {
+			background: #edfaef;
+			border-color: #00a32a;
+		}
+		a.wpforo-ai-step .wpforo-ai-step-number {
+			color: #00a32a;
 		}
 		.wpforo-ai-step.completed .wpforo-ai-step-icon {
 			background: #00a32a;
@@ -1916,7 +1951,7 @@ function wpforo_ai_render_pricing_table( $tenant_id, $subscription = [] ) {
 	$plans = $pricing['plans'];
 
 	?>
-	<div class="wpforo-ai-callout">
+	<div class="wpforo-ai-callout" style="display: none;">
 		<span class="dashicons dashicons-info"></span>
 		<div>
 			<strong><?php _e( 'Credit-Based Pricing', 'wpforo' ); ?></strong>

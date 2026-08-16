@@ -17,7 +17,7 @@ add_filter( 'plugin_action_links_' . WPFORO_BASENAME, function( $links ) {
 			'wpforo'
 		) . '</a>';
 	array_unshift( $links, $settings_link );
-	
+
 	return $links;
 } );
 
@@ -37,7 +37,7 @@ add_action( 'show_admin_bar', function( $show_admin_bar ) {
 			(array) wpforo_setting( 'general', 'admin_bar' )
 		);
 	}
-	
+
 	return $show_admin_bar;
 } );
 
@@ -77,13 +77,13 @@ add_action( 'admin_notices', function() {
 
 add_filter( 'comments_open', function( $open ) {
 	if( is_wpforo_page() ) $open = false;
-	
+
 	return $open;
 } );
 
 add_filter( 'comments_array', function( $comments ) {
 	if( is_wpforo_page() ) $comments = [];
-	
+
 	return $comments;
 },          10, 2 );
 
@@ -107,22 +107,22 @@ add_action( 'wpforo_actions_end', function() {
 				'is_page'       => true,
 				'is_singular'   => true,
 			];
-			
+
 			$target_post = get_post( $pageid );
 			if( ! is_a( $target_post, 'WP_Post' ) ) {
 				return;
 			}
-			
+
 			$post = $target_post;
-			
+
 			$wp_query->posts             = [ $post ];
 			$wp_query->queried_object_id = $post->ID;
 			$wp_query->queried_object    = $post;
-			
+
 			foreach( $args as $key => $value ) {
 				$wp_query->$key = $value;
 			}
-			
+
 			setup_postdata( $post );
 		}
 	}
@@ -130,7 +130,7 @@ add_action( 'wpforo_actions_end', function() {
 
 add_filter( 'author_link', function( $link, $author_id ) {
 	if( wpforo_setting( 'profiles', 'profile' ) === 'wpforo' ) return WPF()->member->get_profile_url( $author_id );
-	
+
 	return $link;
 },          10, 2 );
 
@@ -143,13 +143,13 @@ add_filter( 'get_comment_author_url', function( $link, $ID = 0, $object = null )
 			$object->user_id
 		);
 	}
-	
+
 	return $link;
 },          10, 3 );
 
 add_filter( 'register_url', function( $register_url ) {
 	if( wpforo_setting( 'authorization', 'use_our_register_url' ) ) $register_url = wpforo_register_url();
-	
+
 	return $register_url;
 } );
 
@@ -163,13 +163,13 @@ add_filter( 'login_url', function( $login_url ) {
 	                                                                         ) === false ) {
 		$login_url = wpforo_login_url();
 	}
-	
+
 	return $login_url;
 } );
 
 add_filter( 'logout_url', function( $logout_url ) {
 	if( wpforo_setting( 'authorization', 'use_our_login_url' ) ) $logout_url = wpforo_logout_url();
-	
+
 	return $logout_url;
 } );
 
@@ -178,7 +178,7 @@ add_filter( 'pre_trash_post', function( $check, $post ) {
 		$check = false;
 		WPF()->notice->add( 'DO NOT DELETE WPFORO PAGE!!!', 'error' );
 	}
-	
+
 	return $check;
 },          10, 2 );
 
@@ -193,7 +193,7 @@ add_filter( 'wp_dropdown_pages', function( $output, $r ) {
 			) . ')[\'"][^<>]*?>[^<>]*?</option>#isu';
 		$output  = preg_replace( $pattern, '', (string) $output );
 	}
-	
+
 	return $output;
 },          10, 2 );
 
@@ -223,7 +223,7 @@ add_filter( 'pre_update_option', function( $value, $option, $old_value ) {
 			$value = ( $page_id && ! is_wp_error( $page_id ) ? $page_id : $old_value );
 		}
 	}
-	
+
 	return $value;
 },          10, 3 );
 
@@ -235,7 +235,7 @@ function wpftpl_url( $filename ) {
 		}
 		if( ! $tpl_url ) $tpl_url = WPF()->tpl->template_url . '/' . $filename;
 	}
-	
+
 	return apply_filters( 'wpforo_wpftpl_url', $tpl_url, $filename );
 }
 
@@ -245,7 +245,7 @@ function wpftpl( $filename ) {
 		$tpl = locate_template( 'wpforo/' . $filename );
 		if( ! $tpl ) $tpl = WPF()->tpl->template_dir . '/' . $filename;
 	}
-	
+
 	return apply_filters( 'wpforo_wpftpl', $tpl, $filename );
 }
 
@@ -261,7 +261,7 @@ add_shortcode( 'wpforo', function( $atts ) {
 	if( apply_filters( 'on_wpforo_load_remove_the_content_all_filters', false ) ) {
 		remove_all_filters( 'the_content' );
 	}
-	
+
 	ob_start();
 	if( wpforo_current_user_is( 'admin' ) || ! wpforo_setting( 'board', 'under_construction' ) ) {
 		include( wpftpl( 'index.php' ) );
@@ -271,13 +271,13 @@ add_shortcode( 'wpforo', function( $atts ) {
 	$output = ob_get_clean();
 	$output = trim( (string) $output );
 	if( ! $output ) $output = wpforo_hook_usage( 'the_content' );
-	
+
 	return $output;
 } );
 
 function wpforo_hook_usage( $hook = '' ) {
 	global $wp_filter;
-	
+
 	$output = '<div style="color: #990000; font-size: 16px;">Notice: a plugin conflict has been detected. wpForo forums are affected by other plugin errors.
         Please deactivate all plugins, delete all caches and test again.
         Then activate all plugins back one by one and find the conflict maker plugin.</div>
@@ -285,7 +285,7 @@ function wpforo_hook_usage( $hook = '' ) {
 			$wp_filter[ $hook ],
 			true
 		) ) . '</pre>';
-	
+
 	return $output;
 }
 
@@ -293,7 +293,7 @@ add_action( 'wpforo_actions_end', 'wpforo_set_header_status' );
 function wpforo_set_header_status() {
 	if( is_wpforo_page() ) {
 		global $wp_query;
-		
+
 		$status = ( WPF()->current_object['is_404'] ? 404 : 200 );
 		status_header( $status );
 		if( $status === 404 ) nocache_headers();
@@ -303,7 +303,7 @@ function wpforo_set_header_status() {
 
 add_filter( 'pre_handle_404', function( $bypass ) {
 	if( is_wpforo_page() ) return true;
-	
+
 	return $bypass;
 } );
 
@@ -316,7 +316,7 @@ add_action( 'wpforo_actions_end', function() {
 				) ) ) {
 				return $wpforo_template;
 			}
-			
+
 			return $template;
 		} );
 	}
@@ -330,7 +330,7 @@ add_filter( 'rewrite_rules_array', function( $rules ) {
 				pll_languages_list()
 			) . ')/)?';
 	}
-	
+
 	if( ! WPF()->board->get_current( 'is_standalone' ) ) {
 		$pageid = 0;
 		$boards = WPF()->board->get_boards( [ 'status' => true ] );
@@ -343,7 +343,7 @@ add_filter( 'rewrite_rules_array', function( $rules ) {
 			$to_url  = 'index.php?lang=$matches[1]&page_id=' . $board['pageid'];
 			if( ! array_key_exists( $pattern, $rules ) ) $rules = array_merge( [ $pattern => $to_url ], $rules );
 		}
-		
+
 		if( ! $pageid ) $pageid = wpforo_get_option( 'wpforo_pageid', 0 );
 		foreach( WPF()->board->routes as $route ) {
 			//            $route   = utf8_uri_encode( urldecode( (string) $route ) );
@@ -355,7 +355,7 @@ add_filter( 'rewrite_rules_array', function( $rules ) {
 			if( ! array_key_exists( $pattern, $rules ) ) $rules = array_merge( [ $pattern => $to_url ], $rules );
 		}
 	}
-	
+
 	return $rules;
 } );
 
@@ -370,7 +370,7 @@ add_action( 'wpforo_actions_end', function() {
 function wpforo_include_once_theme_functions() {
 	$path = wpftpl( 'functions.php' );
 	if( file_exists( $path ) ) include_once( $path );
-	
+
 	$path = wpftpl( 'functions-wp.php' );
 	if( file_exists( $path ) ) include_once( $path );
 }
@@ -379,9 +379,9 @@ add_action( 'wpforo_after_init', 'wpforo_include_once_theme_functions' );
 
 function wpforo_meta_title( $title ) {
 	$meta_title = [];
-	
+
 	if( ! wpforo_setting( 'seo', 'seo_title' ) ) return $title;
-	
+
 	if( is_wpforo_page() ) {
 		$template = WPF()->current_object['template'];
 		if( ! WPF()->current_object['is_404'] ) {
@@ -530,7 +530,7 @@ function wpforo_meta_wp_title( $title ) {
 	if( is_array( $meta_title ) && ! empty( $meta_title ) ) {
 		$title = implode( ' &#8211; ', $meta_title );
 	}
-	
+
 	return $title;
 }
 
@@ -540,7 +540,7 @@ function wpforo_add_meta_tags() {
 	if( ! wpforo_setting( 'seo', 'seo_meta' ) ) {
 		return;
 	}
-	
+
 	if( is_wpforo_page() && ! is_wpforo_shortcode_page() ) {
 		$title       = '';
 		$og_img      = '';
@@ -792,20 +792,20 @@ function wpf_report() {
 		WPF()->notice->add( wpforo_get_login_or_register_notice_text() );
 		wp_send_json_error( WPF()->notice->get_notices() );
 	}
-	
+
 	if( ! isset( $_POST['reportmsg'] ) || ! $_POST['reportmsg'] || ! isset( $_POST['postid'] ) || ! $_POST['postid'] ) {
 		WPF()->notice->add( 'Error: please insert some text to report.', 'error' );
 		wp_send_json_error( WPF()->notice->get_notices() );
 	}
-	
+
 	$postid  = intval( $_POST['postid'] );
 	$forumid = wpforo_post( $postid, 'forumid' );
-	
+
 	if( ! WPF()->perm->can_report( $forumid ) ) {
 		WPF()->notice->add( 'You are not allowed to report.', 'error' );
 		wp_send_json_error( WPF()->notice->get_notices() );
 	}
-	
+
 	############### Sending Email  ##################
 	$report_text = substr( strip_tags( (string) $_POST['reportmsg'] ), 0, 1000 );
 	$reporter    = '<a href="' . WPF()->current_user['profile_url'] . '">' . ( WPF()->current_user['display_name'] ? WPF()->current_user['display_name'] : urldecode(
@@ -813,31 +813,31 @@ function wpf_report() {
 		) ) . '</a>';
 	$reportmsg   = wpforo_kses( $report_text, 'email' );
 	$post_url    = WPF()->post->get_url( $postid );
-	
+
 	$subject = wpforo_setting( 'email', 'report_email_subject' );
 	$message = wpforo_setting( 'email', 'report_email_message' );
-	
+
 	$from_tags = [ "[reporter]", "[message]", "[post_url]" ];
 	$to_words  = [
 		sanitize_text_field( $reporter ),
 		$reportmsg,
 		'<a target="_blank" href="' . esc_url( (string) $post_url ) . '">' . esc_url( (string) $post_url ) . '</a>',
 	];
-	
+
 	$subject = stripslashes( strip_tags( str_replace( $from_tags, $to_words, (string) $subject ) ) );
 	$message = stripslashes( str_replace( $from_tags, $to_words, (string) $message ) );
-	
+
 	$admin_emails = wpforo_setting( 'email', 'admin_emails' );
 	$admin_email  = wpfval( $admin_emails, 0 );
 	$headers      = wpforo_admin_mail_headers();
-	
+
 	add_filter( 'wp_mail_content_type', 'wpforo_set_html_content_type', 999 );
 	if( ! @wp_mail( $admin_email, $subject, $message, $headers ) ) {
 		WPF()->notice->add( 'Can\'t send report email', 'error' );
 		wp_send_json_error( WPF()->notice->get_notices() );
 	}
 	remove_filter( 'wp_mail_content_type', 'wpforo_set_html_content_type' );
-	
+
 	############### Sending Email end  ##############
 	do_action( 'wpforo_after_post_report', $postid, $forumid, $_POST['reportmsg'] );
 	WPF()->notice->add( 'Message has been sent', 'success' );
@@ -853,7 +853,7 @@ function wpf_sticky() {
 	if( ! $topicid = wpforo_bigintval( wpfval( $_POST, 'topicid' ) ) ) {
 		wp_send_json_error( $response );
 	}
-	
+
 	$sql     = "SELECT `forumid` FROM `" . WPF()->tables->topics . "` WHERE `topicid` = $topicid";
 	$forumid = WPF()->db->get_var( $sql );
 	if( ! WPF()->perm->forum_can( 's', $forumid ) ) {
@@ -1064,7 +1064,7 @@ function wpf_delete() {
 			wp_send_json_success( $resp );
 		}
 	}
-	
+
 	$resp['notice'] = WPF()->notice->get_notices();
 	wp_send_json_error( $resp );
 }
@@ -1082,7 +1082,7 @@ function wpfl4_loadmore() {
 		'paged'   => 1,
 	];
 	$request  = array_merge( $request, $_POST );
-	
+
 	if( $forumid = intval( $request['forumid'] ) ) {
 		$items_count = 0;
 		$childs      = WPF()->forum->get_childs( $forumid );
@@ -1094,7 +1094,7 @@ function wpfl4_loadmore() {
 			'orderby'   => 'type, modified',
 			'order'     => 'DESC',
 		];
-		
+
 		switch( $request['filter'] ) {
 			case 'solved':
 				$args['solved'] = 1;
@@ -1109,7 +1109,7 @@ function wpfl4_loadmore() {
 				$args['orderby'] = 'posts';
 			break;
 		}
-		
+
 		$topics = WPF()->topic->get_topics( $args, $items_count );
 		if( $topics ) {
 			ob_start();
@@ -1127,13 +1127,13 @@ function wpfl4_loadmore() {
 		} else {
 			$response['no_more'] = 1;
 		}
-		
+
 		if( $response['no_more'] ) {
 			WPF()->notice->add( 'all topics has been loaded in this list', 'success' );
 			$response['notice'] = WPF()->notice->get_notices();
 		}
 	}
-	
+
 	if( $success ) {
 		wp_send_json_success( $response );
 	} else {
@@ -1339,11 +1339,11 @@ function wpforo_qa_comment_loadrest() {
 			ob_start();
 			include_once( wpftpl( 'layouts/3/comment.php' ) );
 			ob_clean();
-			
+
 			foreach( $comments as $comment ) {
 				wpforo_qa_comment_template( $comment );
 			}
-			
+
 			$response['output_html'] = ob_get_clean();
 			$response['notice']      = '';
 			wp_send_json_success( $response );
@@ -1422,7 +1422,7 @@ function wpforo_mail_headers( $from_name = '', $from_email = '', $cc = [], $bcc 
 			$H[] = 'BCC: ' . $b;
 		}
 	}
-	
+
 	return $H;
 }
 
@@ -1448,7 +1448,7 @@ function wpforo_admin_mail_headers( $from_name = '', $from_email = '', $cc = [],
 			$H[] = 'BCC: ' . $b;
 		}
 	}
-	
+
 	return $H;
 }
 
@@ -1467,7 +1467,7 @@ function wpforo_get_login_or_register_notice_text() {
 			) . '</a>'
 		);
 	}
-	
+
 	return apply_filters( 'wpforo_login_or_register_popup_message', $popup_html );
 }
 
@@ -1476,7 +1476,7 @@ function wpforo_dynamic_phrases_register() {
 		return;
 	}
 	$md5_js = md5( $js );
-	
+
 	$inline          = false;
 	$dynamic_js_file = WPF()->folders['assets']['dir'] . DIRECTORY_SEPARATOR . 'phrases.js';
 	if( ! file_exists( $dynamic_js_file ) || $md5_js !== md5_file( $dynamic_js_file ) ) {
@@ -1485,7 +1485,7 @@ function wpforo_dynamic_phrases_register() {
 			$inline = true;
 		}
 	}
-	
+
 	wp_register_script(
 		'wpforo-dynamic-phrases',
 		WPF()->folders['assets']['url'] . '/phrases.js',
@@ -1503,7 +1503,7 @@ function wpforo_dynamic_style_enqueue() {
 		return;
 	}
 	$md5_css = md5( $css );
-	
+
 	$inline           = false;
 	$dynamic_css_file = WPF()->folders['assets']['dir'] . DIRECTORY_SEPARATOR . 'colors.css';
 	if( ! file_exists( $dynamic_css_file ) || $md5_css !== md5_file( $dynamic_css_file ) ) {
@@ -1512,7 +1512,7 @@ function wpforo_dynamic_style_enqueue() {
 			$inline = true;
 		}
 	}
-	
+
 	wp_register_style(
 		'wpforo-dynamic-style',
 		WPF()->folders['assets']['url'] . '/colors.css',
@@ -1523,7 +1523,7 @@ function wpforo_dynamic_style_enqueue() {
 		$css = preg_replace( '|[\r\n\t]+|', '', $css );
 		wp_add_inline_style( 'wpforo-dynamic-style', $css );
 	}
-	
+
 	wp_enqueue_style( 'wpforo-dynamic-style' );
 }
 
@@ -1617,7 +1617,7 @@ function wpforo_frontend_register_scripts() {
 		$wpforo_widgets['live_notifications_interval'] = $interval;
 	}
 	wp_localize_script( 'wpforo-widgets-js', 'wpforo_widgets', $wpforo_widgets );
-	
+
 	if( ! WPF()->perm->forum_can( 'va' ) || ! WPF()->usergroup->can( 'caa' ) ) {
 		wp_add_inline_script(
 			'wpforo-frontend-js',
@@ -1635,9 +1635,9 @@ function wpforo_frontend_register_scripts() {
         })"
 		);
 	}
-	
+
 	do_action( 'wpforo_frontend_register_scripts' );
-	
+
 	wpforo_frontend_enqueue_scripts();
 }
 
@@ -1649,7 +1649,7 @@ function wpforo_frontend_enqueue_scripts() {
 		wp_enqueue_style( 'wpforo-font-awesome' );
 		//if( is_rtl() ) wp_enqueue_style( 'wpforo-font-awesome-rtl' );
 	}
-	
+
 	if( is_wpforo_page() ) {
 		wp_enqueue_script( 'wpforo-dynamic-phrases' );
 		wp_enqueue_script( 'wpforo-frontend-js' );
@@ -1674,13 +1674,13 @@ function wpforo_frontend_enqueue_scripts() {
 			wp_enqueue_style( 'wpforo-style' );
 		}
 	}
-	
+
 	if( is_rtl() ) {
 		wp_enqueue_style( 'wpforo-widgets-rtl' );
 	} else {
 		wp_enqueue_style( 'wpforo-widgets' );
 	}
-	
+
 	do_action( 'wpforo_frontend_enqueue_scripts' );
 }
 
@@ -1700,7 +1700,7 @@ function wpforo_style_options( $css ) {
 		        'styles',
 		        'font_size_post_content'
 	        ) . "px;}";
-	
+
 	if( 'bottom' === wpforo_setting( 'posting', 'topic_editor_toolbar_location' ) ) {
 		$css .= "\r\n
 	    #wpforo #wpforo-wrap .wpf-topic-create .mce-container-body{display: flex; flex-direction: column;}
@@ -1827,7 +1827,7 @@ function wpforo_admin_enqueue() {
 		'jquery-ui-slider',
 		'jquery-touch-punch',
 	],                  false, true );
-	
+
 	// Register AI Features admin assets
 	wp_register_style(
 		'wpforo-ai-features',
@@ -1904,16 +1904,16 @@ function wpforo_admin_enqueue() {
 		wp_enqueue_style( 'wpforo-deactivation-css' );
 		wp_enqueue_script( 'wpforo-deactivation-js' );
 	}
-	
+
 	$screen = get_current_screen();
 	if( ( 'user-edit' === $screen->id || 'profile' === $screen->id ) ) {
 		wp_enqueue_style( 'wpforo-font-awesome' );
 	}
-	
+
 	if( $screen->id === 'widgets' ) {
 		wp_enqueue_script( 'wpforo-backend-widgets-js' );
 	}
-	
+
 	do_action( 'wpforo_admin_enqueue_scripts' );
 }
 
@@ -2212,6 +2212,9 @@ function wpforo_do_hook_user_register( $userid ) {
 			'user_email',
 			'user_pass1',
 			'user_pass2',
+            'first_name',
+            'last_name',
+            'user_url',
 		] ) );
 		$data['wpfreg']['userid'] = (int) $userid;
 
@@ -2264,12 +2267,12 @@ function wpforo_do_hook_update_profile( $userid ) {
 							$can_change_own_rating = false;
 						}
 					}
-					
+
 					$custom_points = ( $can_change_own_rating && wpfval(
 							$_POST,
 							'wpforo_use_member_custom_points'
 						) ) ? (int) wpfval( $_POST, 'wpforo_member_custom_points' ) : 0;
-					
+
 					$args = [
 						'groupid'            => intval( $groupid ),
 						'about'              => wpforo_kses( $_POST['description'], 'user_description' ),
@@ -2280,7 +2283,7 @@ function wpforo_do_hook_update_profile( $userid ) {
 						'custom_points'      => $custom_points,
 					];
 					WPF()->member->update_profile_fields( $userid, $args, false );
-					
+
 					if( ! wpforo_is_owner( $userid ) ) {
 						WPF()->member->inactive_to_active( $userid );
 					}
@@ -2312,7 +2315,7 @@ function wpforo_avatar( $avatar, $id_or_email, $size, $default, $alt ) {
 	} else {
 		$user = get_user_by( 'email', $id_or_email );
 	}
-	
+
 	if( $user && is_object( $user ) ) {
 		if( $src = WPF()->member->get_avatar_url( $user->data->ID ) ) {
 			$avatar = "<img alt='" . esc_attr( $alt ) . "' src='" . esc_url(
@@ -2322,7 +2325,7 @@ function wpforo_avatar( $avatar, $id_or_email, $size, $default, $alt ) {
 			          ) . "' width='" . esc_attr( $size ) . "' />";
 		}
 	}
-	
+
 	return $avatar;
 }
 
@@ -2361,7 +2364,7 @@ function wpforo_pre_get_avatar_data( $args, $id_or_email ) {
 					}
 				}
 			}
-			
+
 			if( $user && is_object( $user ) ) {
 				if( $avatar_url = WPF()->member->get_avatar_url( $user->data->ID ) ) {
 					WPF()->ram_cache->set( $key, $avatar_url );
@@ -2370,7 +2373,7 @@ function wpforo_pre_get_avatar_data( $args, $id_or_email ) {
 			}
 		}
 	}
-	
+
 	return $args;
 }
 
@@ -2383,7 +2386,7 @@ function wpforo_move_uploded_default_attach( $argname, $return = 'html' ) {
 		$tmp_name = sanitize_text_field( $_FILES[ $argname ]['tmp_name'] ); //D:\wamp\tmp\php986B.tmp
 		$error    = intval( $_FILES[ $argname ]['error'] );                 //0
 		$size     = intval( $_FILES[ $argname ]['size'] );                  //6112
-		
+
 		$phpFileUploadErrors = [
 			0 => 'There is no error, the file uploaded with success',
 			1 => 'The uploaded file size is too big',
@@ -2394,17 +2397,17 @@ function wpforo_move_uploded_default_attach( $argname, $return = 'html' ) {
 			7 => 'Failed to write file to disk.',
 			8 => 'A PHP extension stopped the file upload.',
 		];
-		
+
 		if( $error ) {
 			WPF()->notice->add( $phpFileUploadErrors[ $error ], 'error' );
-			
+
 			return '';
 		} elseif( $size > wpforo_setting( 'posting', 'max_upload_size' ) ) {
 			WPF()->notice->add( 'The uploaded file size is too big', 'error' );
-			
+
 			return '';
 		}
-		
+
 		if( function_exists( 'pathinfo' ) ) {
 			$ext = pathinfo( $name, PATHINFO_EXTENSION );
 		} else {
@@ -2418,20 +2421,20 @@ function wpforo_move_uploded_default_attach( $argname, $return = 'html' ) {
 			$expld         = explode( '|', $allowed_types );
 			if( ! in_array( $ext, $expld ) ) {
 				WPF()->notice->add( 'File type is not allowed', 'error' );
-				
+
 				return '';
 			}
 			if( ! WPF()->perm->can_attach_file_type( $ext ) ) {
 				WPF()->notice->add( 'You are not allowed to attach this file type', 'error' );
-				
+
 				return '';
 			}
 		}
-		
+
 		$attach_dir = WPF()->folders['default_attachments']['dir'];
 		$attach_url = WPF()->folders['default_attachments']['url//'];
 		if( ! is_dir( $attach_dir ) ) wp_mkdir_p( $attach_dir );
-		
+
 		$fnm = pathinfo( $name, PATHINFO_FILENAME );
 		$fnm = str_replace( ' ', '-', $fnm );
 		while( strpos( (string) $fnm, '--' ) !== false ) {
@@ -2440,12 +2443,12 @@ function wpforo_move_uploded_default_attach( $argname, $return = 'html' ) {
 		$fnm       = preg_replace( "/[^-a-zA-Z0-9_]/", "", (string) $fnm );
 		$fnm       = trim( (string) $fnm, "-" );
 		$fnm_empty = ! $fnm;
-		
+
 		$file_name = $fnm . "." . $ext;
-		
+
 		$attach_fname = time() . ( ! $fnm_empty ? '-' : '' ) . $file_name;
 		$attach_path  = $attach_dir . DIRECTORY_SEPARATOR . $attach_fname;
-		
+
 		if( is_dir( $attach_dir ) && move_uploaded_file( $tmp_name, $attach_path ) ) {
 			$attach_id = wpforo_insert_to_media_library( $attach_path, $fnm );
 			if( $return === 'html' ) {
@@ -2467,7 +2470,7 @@ function wpforo_move_uploded_default_attach( $argname, $return = 'html' ) {
 			WPF()->notice->add( 'Can\'t upload file', 'error' );
 		}
 	}
-	
+
 	return '';
 }
 
@@ -2480,7 +2483,7 @@ function wpforo_add_default_attachment( $args ) {
 			}
 		}
 	}
-	
+
 	return $args;
 }
 
@@ -2538,7 +2541,7 @@ function wpforo_default_attachments_filter( $text ) {
 			}
 		}
 	}
-	
+
 	return $text;
 }
 
@@ -2562,7 +2565,7 @@ add_filter( 'wpforo_body_text_filter', function( $text ) {
 			(string) $text
 		);
 	}
-	
+
 	return $text;
 } );
 
@@ -2578,7 +2581,7 @@ add_filter( 'retrieve_password_message', function( $message, $key, $user_login, 
 			$reset_password_url = $match[0];
 		}
 	}
-	
+
 	if( wpforo_setting( 'email', 'overwrite_reset_password_email' ) && $reset_password_url ) {
 		$message = str_replace(
 			[ '[user_login]', '[reset_password_url]' ],
@@ -2588,13 +2591,13 @@ add_filter( 'retrieve_password_message', function( $message, $key, $user_login, 
 		$message = _wpforo_apply_email_shortcodes( $message, [ 'user' => [ 'userid' => $user_data->ID ] ] );
 		add_filter( 'wp_mail_content_type', '__wpforo_set_html_content_type', 999 );
 	}
-	
+
 	return $message;
 },          999, 4 );
 
 function wpforo_user_field_shortcode_to_value( $shortcode, $userid = null, $implode = true, $separator = ',' ) {
 	$value = null;
-	
+
 	if( $shortcode && ( $field = preg_replace(
 			'#^\s*\[?\s*(?:user_|owner_)?(?:fields_)?([^\[\]]+?)\s*]?\s*$#iu',
 			'$1',
@@ -2611,13 +2614,13 @@ function wpforo_user_field_shortcode_to_value( $shortcode, $userid = null, $impl
 		$value = wpforo_member( $userid, $field );
 		if( $implode && wpforo_is_array_of_scalars( $value ) ) $value = implode( $separator, $value );
 	}
-	
+
 	return $value;
 }
 
 function wpforo_forum_field_shortcode_to_value( $shortcode, $forumid, $implode = true, $separator = ',' ) {
 	$value = null;
-	
+
 	if( $forumid ) {
 		if( $shortcode && ( $field = preg_replace(
 				'#^\s*\[?\s*(?:forum_)?(?:fields_)?([^\[\]]+?)\s*]?\s*$#iu',
@@ -2637,13 +2640,13 @@ function wpforo_forum_field_shortcode_to_value( $shortcode, $forumid, $implode =
 			}
 		}
 	}
-	
+
 	return $value;
 }
 
 function wpforo_topic_field_shortcode_to_value( $shortcode, $topicid, $implode = true, $separator = ',' ) {
 	$value = null;
-	
+
 	if( $topicid ) {
 		if( $shortcode && ( $field = preg_replace(
 				'#^\s*\[?\s*(?:topic_)?(?:fields_)?([^\[\]]+?)\s*]?\s*$#iu',
@@ -2663,13 +2666,13 @@ function wpforo_topic_field_shortcode_to_value( $shortcode, $topicid, $implode =
 			}
 		}
 	}
-	
+
 	return $value;
 }
 
 function wpforo_post_field_shortcode_to_value( $shortcode, $postid, $implode = true, $separator = ',' ) {
 	$value = null;
-	
+
 	if( $postid ) {
 		if( $shortcode && ( $field = preg_replace(
 				'#^\s*\[?\s*(?:post_)?(?:fields_)?([^\[\]]+?)\s*]?\s*$#iu',
@@ -2689,7 +2692,7 @@ function wpforo_post_field_shortcode_to_value( $shortcode, $postid, $implode = t
 			}
 		}
 	}
-	
+
 	return $value;
 }
 
@@ -2719,12 +2722,12 @@ function wpforo_new_user_notification_email_admin( $wp_new_user_notification_ema
 		function( $match ) use ( $userid ) {
 			$value = wpforo_user_field_shortcode_to_value( $match[0], $userid );
 			if( ! $value || ! ( is_string( $value ) || is_numeric( $value ) ) ) $value = '';
-			
+
 			return $value;
 		},
 		(string) $wp_new_user_notification_email_admin['message']
 	);
-	
+
 	return $wp_new_user_notification_email_admin;
 }
 
@@ -2744,7 +2747,7 @@ function wpforo_new_user_notification_email( $wp_new_user_notification_email, $u
 			$set_password_url = $match[0];
 		}
 	}
-	
+
 	if( wpforo_setting( 'email', 'overwrite_new_user_notification' ) && $set_password_url ) {
 		$wp_new_user_notification_email['subject'] = str_replace(
 			'[blogname]',
@@ -2761,7 +2764,7 @@ function wpforo_new_user_notification_email( $wp_new_user_notification_email, $u
 		);
 		add_filter( 'wp_mail_content_type', '__wpforo_set_html_content_type', 999 );
 	}
-	
+
 	return $wp_new_user_notification_email;
 }
 
@@ -2772,16 +2775,16 @@ function wpforo_get_wprp_url_pattern() {
 }
 
 function wpforo_synch_user_roles( $userid ) {
-	
+
 	$user = get_userdata( $userid );
-	
+
 	if( ! empty( $user ) && ! empty( $user->roles ) ) {
 		$role_usergroups = WPF()->usergroup->get_role_usergroup_relation();
-		
+
 		if( ! empty( $role_usergroups ) ) {
 			$append_second_groups = apply_filters( 'wpforo_synch_user_roles_append_secondary_groups', false );
 			$ug_users_array       = WPF()->usergroup->build_users_groupid_array( $role_usergroups, [ $user ] );
-			
+
 			if( wpfval( $ug_users_array, 'user_prime_group' ) ) {
 				$userid_groupids = current( $ug_users_array['user_prime_group'] );
 				if( ! empty( $userid_groupids ) ) {
@@ -2789,7 +2792,7 @@ function wpforo_synch_user_roles( $userid ) {
 					if( $groupid ) WPF()->member->set_groupid( $userid, $groupid );
 				}
 			}
-			
+
 			if( wpfval( $ug_users_array, 'user_second_groups' ) ) {
 				foreach( $ug_users_array['user_second_groups'] as $userid => $secondary_usergroups ) {
 					if( ! empty( $secondary_usergroups ) ) {
@@ -2805,7 +2808,7 @@ function wpforo_synch_user_roles( $userid ) {
 			} elseif( ! $append_second_groups && ! wpfval( $ug_users_array, 'user_second_groups' ) ) {
 				WPF()->member->set_secondary_groupids( $userid, [] );
 			}
-			
+
 			delete_user_meta( intval( $userid ), '_wpf_member_obj' );
 		}
 	}
@@ -2828,7 +2831,7 @@ function wpforo_synch_roles() {
 	];
 
 	$wpforo_synch_roles_data = isset( $_POST['wpforo_synch_roles_data'] ) ? $_POST['wpforo_synch_roles_data'] : '';
-	
+
 	if( $wpforo_synch_roles_data ) {
 		parse_str( $wpforo_synch_roles_data, $data );
 		check_ajax_referer( 'wpforo_synch_roles', 'checkthis' );
@@ -2920,11 +2923,11 @@ function wpforo_synch_roles() {
 			}
 		}
 	}
-	
+
 	if( intval( wpfval( $status, 'progress' ) ) === 100 ) {
 		WPF()->notice->add( 'Role-Usergroup synchronization is complete!', 'success' );
 	}
-	
+
 	wp_die( wp_json_encode( $status ) );
 }
 
@@ -2949,25 +2952,26 @@ function wpforo_wp_admin_bar_red_circle_number( $number ) {
 			$number
 		);
 	}
-	
+
 	return '';
 }
 
 function wpforo_get_memb_attention_count(): int {
+	if( is_null( WPF()->member ) ) return 0;
 	return WPF()->member->get_count( [ 'p.status' => [ 'banned', 'inactive' ] ] );
 }
 
 function wpforo_get_admin_bar_numbers(): array {
 	$all_count = 0;
-	$mod_count = WPF()->post->unapproved_count();
+	$mod_count = is_null( WPF()->post ) ? 0 : WPF()->post->unapproved_count();
 	$all_count += $mod_count;
-	
+
 	return compact( 'all_count', 'mod_count' );
 }
 
 function wpforo_admin_bar_menu( $wp_admin_bar ) {
 	$admin_bar_numbers = wpforo_get_admin_bar_numbers();
-	
+
 	if( wpforo_current_user_is( 'admin' ) ) {
 		$args = [
 			'id'     => 'new-forum',
@@ -2993,7 +2997,7 @@ function wpforo_admin_bar_menu( $wp_admin_bar ) {
 		];
 		$wp_admin_bar->add_node( $args );
 	}
-	
+
 	$args = [
 		'id'     => 'wpforo-home',
 		'title'  => __( 'Visit Forum', 'wpforo' ),
@@ -3002,7 +3006,7 @@ function wpforo_admin_bar_menu( $wp_admin_bar ) {
 		//		'meta'   => [ 'target' => '_blank' ]
 	];
 	$wp_admin_bar->add_node( $args );
-	
+
 	if( wpforo_current_user_is( 'admin' ) || WPF()->usergroup->can( 'mf' ) || WPF()->usergroup->can( 'ms' ) || WPF()->usergroup->can( 'vm' ) || WPF()->usergroup->can( 'mp' ) || WPF()->usergroup->can(
 			'aum'
 		) || WPF()->usergroup->can( 'vmg' ) || WPF()->usergroup->can( 'mth' ) ) {
@@ -3160,13 +3164,13 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 			'parent' => 'new-content',
 		];
 		$wp_admin_bar->add_node( $args );
-		
+
 		if( $boardids = WPF()->board->get_active_boardids() ) {
 			foreach( $boardids as $boardid ) {
 				WPF()->change_board( $boardid );
 				$current                     = WPF()->board->get_current();
 				$bds_bar_numbers[ $boardid ] = wpforo_get_admin_bar_numbers();
-				
+
 				$menuid = 'wpforo-new-content-' . $current['slug'];
 				$args   = [
 					'id'     => $menuid,
@@ -3201,11 +3205,11 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 					'parent' => $menuid,
 				];
 				$wp_admin_bar->add_node( $args );
-				
+
 			}
 		}
 	}
-	
+
 	if( wpforo_current_user_is( 'admin' ) || WPF()->usergroup->can( 'mf' ) || WPF()->usergroup->can( 'ms' ) || WPF()->usergroup->can( 'vm' ) || WPF()->usergroup->can( 'mp' ) || WPF()->usergroup->can(
 			'aum'
 		) || WPF()->usergroup->can( 'vmg' ) || WPF()->usergroup->can( 'mth' ) ) {
@@ -3217,13 +3221,13 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 			'href'  => admin_url( 'admin.php?page=wpforo-overview' ),
 		];
 		$wp_admin_bar->add_node( $args );
-		
-		
+
+
 		if( $boardids = WPF()->board->get_active_boardids() ) {
 			foreach( $boardids as $boardid ) {
 				WPF()->change_board( $boardid );
 				$current = WPF()->board->get_current();
-				
+
 				$menuid = 'wpforo-' . $current['slug'];
 				$args   = [
 					'id'     => $menuid,
@@ -3235,9 +3239,9 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 					'parent' => 'wpforo',
 				];
 				$wp_admin_bar->add_node( $args );
-				
+
 				## ----------------------------------------------------------------------------------  ####
-				
+
 				$args = [
 					'id'     => $menuid . '-home',
 					'title'  => '' . __( 'Visit Forum', 'wpforo' ),
@@ -3246,7 +3250,7 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 					//                    'meta'   => [ 'target' => '_blank' ]
 				];
 				$wp_admin_bar->add_node( $args );
-				
+
 				if( WPF()->usergroup->can( 'mf' ) || wpforo_current_user_is( 'admin' ) ) {
 					$args = [
 						'id'     => $menuid . '-forums',
@@ -3313,9 +3317,9 @@ function wpforo_multiboard_admin_bar_menu( $wp_admin_bar ) {
 				}
 			}
 		}
-		
+
 		##### -- ##### ----- $ ----- ###
-		
+
 		if( WPF()->usergroup->can( 'ms' ) || wpforo_current_user_is( 'admin' ) ) {
 			$args = [
 				'id'     => 'wpforo-boards',
@@ -3492,7 +3496,7 @@ add_action( 'wp_ajax_wpforo_notifications', 'wpforo_check_notifications' );
 
 function wpforo_can_display_recaptcha_note() {
 	$d = wpforo_is_admin() ? 'recaptcha_backend_note' : 'recaptcha_note';
-	
+
 	return ! WPF()->dissmissed[ $d ] && current_user_can( 'administrator' ) && ! wp_is_mobile() && wpforo_setting(
 			'authorization',
 			'user_register'
@@ -3644,7 +3648,7 @@ function wpforo_esc_html( $var ) {
 	} else {
 		$var = wpforo_esc_html( $var );
 	}
-	
+
 	return $var;
 }
 
@@ -3679,14 +3683,14 @@ add_filter( 'wpforo_topic_list_args', function( $args ) {
 		unset( $args['forumid'] );
 		$args['forumids'] = $forumids;
 	}
-	
+
 	return $args;
 } );
 
 function wpf_body_wp_encode_emoji( $post ) {
 	if( wpfkey( $post, 'title' ) ) $post['title'] = wp_encode_emoji( $post['title'] );
 	if( wpfkey( $post, 'body' ) ) $post['body'] = wp_encode_emoji( $post['body'] );
-	
+
 	return $post;
 }
 
@@ -3719,3 +3723,52 @@ add_action( 'admin_init', function() {
 		exit;
 	}
 }, 1 );
+
+// AI Pricing Promo Notice - shows to users without active AI subscription
+add_action( 'admin_notices', function() {
+	if( ! current_user_can( 'manage_options' ) ) return;
+
+	// Check if dismissed
+	$dismissed = get_option( 'wpforo_ai_pricing_promo_dismissed' );
+	if( $dismissed === '2026-08' ) return;
+
+	// Check if user has active paid subscription - don't show to them
+	if( function_exists( 'WPF' ) && WPF()->ai_client ) {
+		$status = WPF()->ai_client->get_subscription_status();
+		$plan = WPF()->ai_client->get_subscription_plan();
+		$paid_plans = [ 'starter', 'professional', 'business', 'enterprise' ];
+		if( $status === 'active' && in_array( $plan, $paid_plans, true ) ) return;
+	}
+
+	$ai_url = admin_url( 'admin.php?page=wpforo-ai' );
+	?>
+	<div class="notice notice-info is-dismissible wpforo-ai-pricing-notice" style="border-left-color: #43a6df; padding: 15px 20px; display: flex; align-items: center;">
+		<svg class="wpf-ai-sparkle-icon" xmlns="http://www.w3.org/2000/svg" height="55px" viewBox="0 0 24 24" fill="none" stroke="#43a6df" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-right: 20px;"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"></path><path d="M5 3v4"></path><path d="M3 5h4"></path><path d="M19 17v4"></path><path d="M17 19h4"></path></svg>
+		<div>
+			<p style="margin: 0 0 4px 0; font-size: 17px; font-weight: 600; color: #1d2327;">
+                wpForo AI Features — Free Month with 500 Credits and Subscription Starting at Just <span style="font-size: 17px;">&cuepr; <span style="color: #DA5800;">$9</span> &cuesc; !</span>
+			</p>
+			<p style="margin: 0 0 8px 0; font-size: 16px; color: #50575e;">
+				Unlock AI-powered smart search, spam protection, content moderation, topic summarization, topic suggestions, translation, and more...
+			</p>
+            <style>
+                .button.button-primary.wpforo-ai-get-started{background-color: #43a6df; border-color: #43a6df;}
+                .button.button-primary.wpforo-ai-get-started:hover{background-color: #178ac6; border-color: #178ac6;}
+            </style>
+			<p style="margin: 5px 0 0;">
+				<a href="<?php echo esc_url( $ai_url ); ?>" class="button button-primary wpforo-ai-get-started" style=" padding: 0 20px !important; min-height: 10px; height: 34px; line-height: 31px;">Get Started</a>
+			</p>
+		</div>
+	</div>
+	<script>
+	jQuery(document).on('click', '.wpforo-ai-pricing-notice .notice-dismiss', function() {
+		jQuery.post(ajaxurl, { action: 'wpforo_dismiss_ai_pricing_promo' });
+	});
+	</script>
+	<?php
+} );
+
+add_action( 'wp_ajax_wpforo_dismiss_ai_pricing_promo', function() {
+	update_option( 'wpforo_ai_pricing_promo_dismissed', '2026-08' );
+	wp_die();
+} );

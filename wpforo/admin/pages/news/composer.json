@@ -1,0 +1,20 @@
+{
+  "name": "gvectors/news",
+  "description": "gVectors News & License Expiry Notification Module",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "gVectors\\News\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "blackraz",
+      "email": "blackraz7@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.2",
+    "ext-json": "*"
+  }
+}

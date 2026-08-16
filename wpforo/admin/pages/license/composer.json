@@ -1,0 +1,23 @@
+{
+  "name": "gvectors/license",
+  "description": "gVectors License Manager Module",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "gVectors\\License\\": "src/"
+    },
+    "files": [
+      "includes/compat-legacy-license-manager.php"
+    ]
+  },
+  "authors": [
+    {
+      "name": "blackraz",
+      "email": "blackraz7@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.2",
+    "ext-json": "*"
+  }
+}

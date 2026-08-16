@@ -187,18 +187,39 @@ class Logs {
 		$read_topics = $this->get_read_topics();
 		if( ! empty( $read_topics ) && is_array( $read_topics ) ) {
 			$last_read_postid = $this->get_all_read( 'post' );
+
+			// First pass: filter out topics already covered by all_read
+			$topics_to_check = [];
 			foreach( $read_topics as $topicid => $postid ) {
 				if( $last_read_postid && (int) $postid <= $last_read_postid ) {
 					unset( $read_topics[ $topicid ] );
 				} else {
-					$current_last_postid = wpforo_topic( $topicid, 'last_post' );
-					if( $current_last_postid ) {
-						if( (int) $current_last_postid <= (int) $postid ) {
-							$topic_ids[] = $topicid;
-						}
-					} else {
+					$topics_to_check[ $topicid ] = $postid;
+				}
+			}
+
+			// Batch fetch last_post for all topics in a single query
+			$current_last_posts = [];
+			if( ! empty( $topics_to_check ) ) {
+				$ids_sql = implode( ',', array_map( 'intval', array_keys( $topics_to_check ) ) );
+				$rows = WPF()->db->get_results(
+					"SELECT `topicid`, `last_post` FROM `" . WPF()->tables->topics . "` WHERE `topicid` IN (" . $ids_sql . ")",
+					ARRAY_A
+				);
+				foreach( $rows as $row ) {
+					$current_last_posts[ (int) $row['topicid'] ] = (int) $row['last_post'];
+				}
+			}
+
+			// Second pass: compare using batch-fetched data
+			foreach( $topics_to_check as $topicid => $postid ) {
+				$current_last_postid = isset( $current_last_posts[ $topicid ] ) ? $current_last_posts[ $topicid ] : 0;
+				if( $current_last_postid ) {
+					if( (int) $current_last_postid <= (int) $postid ) {
 						$topic_ids[] = $topicid;
 					}
+				} else {
+					$topic_ids[] = $topicid;
 				}
 			}
 		}

@@ -1,0 +1,39 @@
+/* gVectors News Module — admin notices */
+.gvectors-news-notice {
+	position: relative;
+	padding-right: 38px;
+}
+
+.gvectors-news-notice .notice-dismiss {
+	position: absolute;
+	top: 0;
+	right: 1px;
+	border: none;
+	margin: 0;
+	padding: 9px;
+	background: none;
+	color: #787c82;
+	cursor: pointer;
+}
+
+.gvectors-news-notice .notice-dismiss:before {
+	background: none;
+	color: #787c82;
+	content: "\f153";
+	display: block;
+	font: normal 16px/20px dashicons;
+	speak: never;
+	height: 20px;
+	text-align: center;
+	width: 20px;
+	-webkit-font-smoothing: antialiased;
+}
+
+.gvectors-news-notice .notice-dismiss:hover:before,
+.gvectors-news-notice .notice-dismiss:focus:before {
+	color: #d63638;
+}
+
+.gvectors-news-optin p:first-child {
+	font-size: 14px;
+}
