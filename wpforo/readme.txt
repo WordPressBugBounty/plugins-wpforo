@@ -2,8 +2,8 @@
 Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
-Tested up to: 7.0
-Stable tag: 3.1.5
+Tested up to: 7.1
+Stable tag: 3.1.6
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -234,6 +234,19 @@ IMPORTANT NOTES for UPDATE
 
 [wpForo Forum v3.0 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-0-is-released/)
 
+
+
+= wpForo Forum 3.1.6 | 18.09.2026 =
+
+* Compatibility: WordPress 7.1
+* Security: Fixed PHP Object Injection vulnerability in custom form fields
+* Security: Fixed Guest Post Takeover vulnerability allowing guest topics and posts to be edited via a forged ownership cookie
+* Security: Fixed Stored XSS vulnerability in topic tags, exposed on topic pages, forum listings, the Tags page and search results
+* Security: Fixed AI credit exhaustion via rate limit manipulation
+* Security: Hardened profile field deserialization against crafted payloads, including a denial of service on the registration form
+* Added: Frequency, A-Z and Z-A sort controls on the Tags page
+* Optimized: Forum cache file limit is now calculated from the online members count, with oldest-first cleanup instead of a full cache wipe
+* Fixed: Tag links no longer break for tags containing &, # or + characters
 
 
 = wpForo Forum 3.1.5 | 16.08.2026 =

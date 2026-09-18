@@ -5,7 +5,7 @@
 * Description: WordPress Forum plugin. wpForo is the only AI powered forum solution for your community. Modern design and 5 forum layouts.
 * Author: gVectors Team
 * Author URI: https://gvectors.com/
-* Version: 3.1.5
+* Version: 3.1.6
 * Requires at least: 5.2
 * Requires PHP: 7.1
 * Text Domain: wpforo
@@ -14,7 +14,7 @@
 
 namespace wpforo;
 
-define( 'WPFORO_VERSION', '3.1.5' );
+define( 'WPFORO_VERSION', '3.1.6' );
 
 //Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;
@@ -1292,7 +1292,14 @@ final class wpforo {
 				];
 			} elseif( $this->current_object['template'] === 'tags' ) {
 				$current_object['items_per_page'] = wpforo_setting( 'tags', 'per_page' );
+				// Tag sort: whitelist the URL key, then map to orderby/order. Never pass raw input to get_tags().
+				$tag_sort_map                     = [ 'count' => [ 'count', 'DESC' ], 'az' => [ 'tag', 'ASC' ], 'za' => [ 'tag', 'DESC' ] ];
+				$tag_sort_key                     = sanitize_key( (string) wpfval( $_GET, 'wpf_tag_sort' ) );
+				if( ! isset( $tag_sort_map[ $tag_sort_key ] ) ) $tag_sort_key = 'count';
+				$current_object['tag_sort']       = $tag_sort_key;
 				$args                             = [
+					'orderby'   => $tag_sort_map[ $tag_sort_key ][0],
+					'order'     => $tag_sort_map[ $tag_sort_key ][1],
 					'offset'    => ( $current_object['paged'] - 1 ) * $current_object['items_per_page'],
 					'row_count' => $current_object['items_per_page'],
 				];

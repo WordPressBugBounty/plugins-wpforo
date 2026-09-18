@@ -953,3 +953,9 @@ body.wpf-dark #wpf-msg-box a:hover, body.wpf-dark #wpf-msg-box a:active{color:__
 #wpforo #wpforo-wrap .wpf-timeline-card{border-color: __WPFCOLOR_8__;}
 #wpforo #wpforo-wrap .wpf-timeline-card::after{border-right-color: __WPFCOLOR_8__;}
 #wpforo #wpforo-wrap .wpf-timeline-date-stick{border-bottom: 2px dashed __WPFCOLOR_11__;}
+
+/* Tag sort controls (Frequency / A-Z / Z-A) - dynamic colors */
+#wpforo #wpforo-wrap .wpf-tags-sort .wpf-tags-sort__label{color:__WPFCOLOR_4__;}
+#wpforo #wpforo-wrap .wpf-tags-sort a{background:__WPFCOLOR_9__;border-color:__WPFCOLOR_8__;color:__WPFCOLOR_2__;}
+#wpforo #wpforo-wrap .wpf-tags-sort a:hover{background:__WPFCOLOR_8__;color:__WPFCOLOR_2__;}
+#wpforo #wpforo-wrap .wpf-tags-sort a.is-active{background:__WPFCOLOR_12__;border-color:__WPFCOLOR_14__;color:__WPFCOLOR_1__;}

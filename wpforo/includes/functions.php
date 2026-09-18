@@ -2827,6 +2827,87 @@ function wpforo_current_guest( $email ) {
 	}
 }
 
+/**
+ * Add a post to the guest's signed ownership cookie.
+ * Called when a guest creates a new post or topic.
+ *
+ * @param int $postid The post ID to add to ownership
+ */
+function wpforo_add_guest_ownership( $postid ) {
+	// Respect the forum cookie policy, like every other wpForo cookie writer.
+	if( ! wpforo_setting( 'legal', 'cookies' ) ) return;
+
+	$postid = (int) $postid;
+	if( ! $postid ) return;
+
+	$owned   = wpforo_get_guest_owned_posts();
+	$owned[] = $postid;
+
+	// Keep the newest N ids only, so the cookie can't grow past browser limits.
+	$max   = (int) apply_filters( 'wpforo_guest_ownership_max_posts', 100 );
+	$owned = array_values( array_unique( $owned ) );
+	if( $max > 0 && count( $owned ) > $max ) $owned = array_slice( $owned, - $max );
+
+	$data = wp_json_encode( $owned );
+	if( ! is_string( $data ) ) return;
+
+	$signature    = hash_hmac( 'sha256', $data, wp_salt( 'auth' ) );
+	$cookie_value = base64_encode( $data ) . '.' . $signature;
+
+	$expire = time() + ( 30 * DAY_IN_SECONDS );
+	$secure = is_ssl() && 'https' === parse_url( get_option( 'home' ), PHP_URL_SCHEME );
+	$path   = ( COOKIEPATH != SITECOOKIEPATH ) ? SITECOOKIEPATH : COOKIEPATH;
+
+	// Suppressed: output may already have started on some themes/hooks, and a
+	// failed cookie must degrade to "cannot edit", never to a PHP warning.
+	@setcookie( 'wpforo_guest_ownership', $cookie_value, $expire, $path, COOKIE_DOMAIN, $secure, true );
+
+	// Make it readable within the same request.
+	$_COOKIE['wpforo_guest_ownership'] = $cookie_value;
+}
+
+/**
+ * Get list of post IDs this guest owns (verified via signature).
+ * Returns empty array if cookie is missing, corrupted, or signature invalid.
+ *
+ * @return array List of post IDs
+ */
+function wpforo_get_guest_owned_posts() {
+	$cookie = isset( $_COOKIE['wpforo_guest_ownership'] ) ? $_COOKIE['wpforo_guest_ownership'] : '';
+
+	// The cookie is fully attacker-controlled: it can arrive as an array
+	// (wpforo_guest_ownership[]=x), which would fatal on strpos() in PHP 8.
+	if( ! is_string( $cookie ) || $cookie === '' ) return [];
+
+	$parts = explode( '.', $cookie, 2 );
+	if( count( $parts ) !== 2 ) return [];
+
+	list( $data_b64, $signature ) = $parts;
+	$data = base64_decode( $data_b64, true );
+	if( ! is_string( $data ) || $data === '' ) return [];
+
+	// Verify HMAC signature - prevents forgery
+	$expected = hash_hmac( 'sha256', $data, wp_salt( 'auth' ) );
+	if( ! hash_equals( $expected, $signature ) ) return [];
+
+	$owned = json_decode( $data, true );
+	if( ! is_array( $owned ) ) return [];
+
+	return array_values( array_filter( array_map( 'intval', $owned ) ) );
+}
+
+/**
+ * Check if the current guest owns a specific post.
+ * Uses cryptographically signed cookie - cannot be forged.
+ *
+ * @param int $postid The post ID to check
+ * @return bool True if guest owns this post
+ */
+function wpforo_guest_owns_post( $postid ) {
+	$owned = wpforo_get_guest_owned_posts();
+	return in_array( (int) $postid, $owned, true );
+}
+
 function wpforo_extra_html_parser( $extra_html = '', $allowed_html = [] ) {
 	if( $extra_html ) {
 		$extra_html = explode( ',', $extra_html );

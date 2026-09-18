@@ -35,7 +35,7 @@ class Tags extends WP_Widget {
 			echo '<ul class="wpf-widget-tags">';
 			foreach( $tags as $tag ) {
 				$topic_count = ( wpfval( $instance, 'topics' ) ) ? '<span>' . $tag['count'] . '</span>' : '';
-				echo '<li><a href="' . esc_url( wpforo_home_url() . '?wpfin=tag&wpfs=' . $tag['tag'] ) . '" title="' . esc_attr( $tag['tag'] ) . '">' . wpforo_text( $tag['tag'], 25, false ) . '</a>' . $topic_count . '</li>';
+				echo '<li><a href="' . esc_url( wpforo_home_url() . '?wpfin=tag&wpfs=' . urlencode( $tag['tag'] ) ) . '" title="' . esc_attr( $tag['tag'] ) . '">' . wpforo_text( $tag['tag'], 25, false ) . '</a>' . $topic_count . '</li>';
 			}
 			echo '</ul>';
 			if( wpfval($instance, 'count' ) < $items_count ) {

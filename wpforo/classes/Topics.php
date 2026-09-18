@@ -85,11 +85,11 @@ class Topics {
 		if( ! is_user_logged_in() ) {
 			if( ! isset( $topic['email'] ) || ! $topic['email'] ) {
 				WPF()->notice->add( 'Permission denied', 'error' );
-				
+
 				return false;
-			} elseif( ! wpforo_current_guest( $topic['email'] ) ) {
+			} elseif( ! wpforo_guest_owns_post( $topic['first_postid'] ) ) {
 				WPF()->notice->add( 'You are not allowed to edit this post', 'error' );
-				
+
 				return false;
 			}
 		}
@@ -504,7 +504,13 @@ class Topics {
 					
 					$topic = apply_filters( 'wpforo_after_add_topic_filter', $args, $forum );
 					do_action( 'wpforo_after_add_topic', $topic, $forum );
-					
+
+					// Set guest ownership cookie for secure edit verification.
+					// Uses the local $userid/$email actually written to the post row.
+					if( ! $userid && $email ) {
+						wpforo_add_guest_ownership( $first_postid );
+					}
+
 					wpforo_clean_cache( 'topic', $topicid, $topic );
 					if( $status ) {
 						WPF()->notice->add( 'Your topic successfully added and awaiting moderation', 'success' );

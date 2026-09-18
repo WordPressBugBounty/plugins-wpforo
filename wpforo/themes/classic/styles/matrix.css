@@ -817,3 +817,9 @@ body.wpf-dark #wpf-msg-box a:hover, body.wpf-dark #wpf-msg-box a:active{color:__
 #wpforo #wpforo-wrap.wpf-dark .wpf-acp-footer a.wpf-button-secondary:last-child{color: #fff!important; background: #e22d00;}
 #wpforo #wpforo-wrap.wpf-dark .wpf-profile-panel{background: transparent;}
 .wpf-link{ color: __WPFCOLOR_12__ !important; }
+
+/* Tag sort controls (Frequency / A-Z / Z-A) - dynamic colors */
+#wpforo #wpforo-wrap .wpf-tags-sort .wpf-tags-sort__label{color:__WPFCOLOR_4__;}
+#wpforo #wpforo-wrap .wpf-tags-sort a{background:__WPFCOLOR_9__;border-color:__WPFCOLOR_8__;color:__WPFCOLOR_2__;}
+#wpforo #wpforo-wrap .wpf-tags-sort a:hover{background:__WPFCOLOR_8__;color:__WPFCOLOR_2__;}
+#wpforo #wpforo-wrap .wpf-tags-sort a.is-active{background:__WPFCOLOR_12__;border-color:__WPFCOLOR_14__;color:__WPFCOLOR_1__;}

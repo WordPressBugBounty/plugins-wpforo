@@ -36,6 +36,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
                 </div>
             </div>
         </form>
+        <?php wpforo_tags_sort() ?>
     </div>
 
     <hr style="margin: 20px 0px"/>
@@ -44,7 +45,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
 		<?php if( wpforo_is_module_enabled( 'tags' ) ): ?>
 			<?php if( $tags = WPF()->current_object['tags'] ): ?>
 				<?php foreach( $tags as $tag ): ?>
-                    <tag><a href="<?php echo wpforo_home_url() . '?wpfin=tag&wpfs=' . $tag['tag'] ?>"><?php echo esc_html( $tag['tag'] ); ?><?php if( $tag['count'] ) echo ' &nbsp;[' . $tag['count'] . ']&nbsp;'; ?></a></tag>
+                    <tag><a href="<?php echo esc_url( wpforo_home_url() . '?wpfin=tag&wpfs=' . urlencode( $tag['tag'] ) ) ?>"><?php echo esc_html( $tag['tag'] ); ?><?php if( $tag['count'] ) echo ' &nbsp;[' . $tag['count'] . ']&nbsp;'; ?></a></tag>
 				<?php endforeach ?>
 			<?php else: ?>
                 <p class="wpf-p-error"><?php wpforo_phrase( 'No tags found' ) ?>  </p>

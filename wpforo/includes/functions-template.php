@@ -657,10 +657,10 @@ function _wpforo_tag( $tagid, $var = 'item' ) {
     if( ! $tagid ) return $tag;
 
     if( $var === 'url' && wpfval( $tag, 'tag' ) ) {
-        $tag['url'] = wpforo_home_url() . '?wpfin=tag&wpfs=' . $tag['tag'];
+        $tag['url'] = wpforo_home_url() . '?wpfin=tag&wpfs=' . urlencode( $tag['tag'] );
     } else {
         $tag = WPF()->topic->get_tag( $tagid );
-        if( ! empty( $tag ) ) $tag['url'] = wpforo_home_url() . '?wpfin=tag&wpfs=' . $tag['tag'];
+        if( ! empty( $tag ) ) $tag['url'] = wpforo_home_url() . '?wpfin=tag&wpfs=' . urlencode( $tag['tag'] );
     }
 
     if( $var !== 'item' ) $tag = wpfval( $tag, $var );
@@ -678,11 +678,11 @@ function wpforo_tag( $tagid, $var = 'item', $echo = false ) {
     if( empty( $tag ) ) {
         $tag = [];
         if( ! $cache && $var == 'url' && wpfval( $tag, 'tag' ) ) {
-            $tag['url'] = wpforo_home_url() . '?wpfin=tag&wpfs=' . $tag['tag'];
+            $tag['url'] = wpforo_home_url() . '?wpfin=tag&wpfs=' . urlencode( $tag['tag'] );
         } else {
             $tag = WPF()->topic->get_tag( $tagid );
             if( ! empty( $tag ) ) {
-                $tag['url'] = wpforo_home_url() . '?wpfin=tag&wpfs=' . $tag['tag'];
+                $tag['url'] = wpforo_home_url() . '?wpfin=tag&wpfs=' . urlencode( $tag['tag'] );
                 if( ! empty( $tag ) ) {
                     $cache_item = [ md5( $tagid ) => $tag ];
                     WPF()->cache->create( 'item', $cache_item, 'tag' );
@@ -1559,7 +1559,7 @@ function wpforo_tags( $topic, $wrap = true, $type = 'medium', $count = false ) {
                         <?php foreach( $tags as $tag ): ?>
                             <?php $item = wpforo_tag( $tag ) ?>
                             <tag wpf-tooltip="<?php echo esc_attr( wpforo_phrase( 'Topic Tag', false ) ); ?>">
-                                <a href="<?php echo wpforo_home_url() . '?wpfin=tag&wpfs=' . $tag ?>">
+                                <a href="<?php echo esc_url( wpforo_home_url() . '?wpfin=tag&wpfs=' . urlencode( $tag ) ) ?>">
                                     <?php if( is_rtl() ): ?>
                                         <?php if( $count && wpfval(
                                                         $item,
@@ -1591,7 +1591,7 @@ function wpforo_tags( $topic, $wrap = true, $type = 'medium', $count = false ) {
                     <?php foreach( $tags as $tag ): ?>
                         <?php $item = wpforo_tag( $tag ) ?>
                         <tag wpf-tooltip="<?php echo esc_attr( wpforo_phrase( 'Topic Tag', false ) ); ?>"><a
-                                    href="<?php echo wpforo_home_url() . '?wpfin=tag&wpfs=' . $tag ?>"><?php echo esc_html(
+                                    href="<?php echo esc_url( wpforo_home_url() . '?wpfin=tag&wpfs=' . urlencode( $tag ) ) ?>"><?php echo esc_html(
                                         $tag
                                 ); ?><?php if( $count && wpfval(
                                                 $item,
@@ -2099,6 +2099,31 @@ function wpforo_posts_ordering_dropdown( $orderby = null, $topicid = null ) {
 
 function wpforo_template_pagenavi( $class = '', $permalink = true, $paged = null, $items_count = null, $items_per_page = null ) {
     WPF()->tpl->pagenavi( $paged, $items_count, $items_per_page, $permalink, $class );
+}
+
+function wpforo_tags_sort() {
+    if( ! wpforo_is_module_enabled( 'tags' ) ) return;
+    $active   = wpfval( WPF()->current_object, 'tag_sort' ) ?: 'count';
+    $base_url = wpforo_home_url( wpforo_settings_get_slug( 'tags' ) );
+    // Inline stroke SVG icons. Layout lives in theme style.css, colors in styles/matrix.css. Static, trusted markup.
+    $icons = [
+        'count' => '<svg viewBox="0 0 20 20" focusable="false"><path d="M3 17V11h3v6M8.5 17V7h3v10M14 17V3h3v14M2 17.5h16"/></svg>',
+        'az'    => '<svg viewBox="0 0 20 20" focusable="false"><path d="M6 3v13M3.5 13.5 6 16l2.5-2.5"/><path d="M11 5h6M11 5l5-2M11 10h6M11 15h6"/></svg>',
+        'za'    => '<svg viewBox="0 0 20 20" focusable="false"><path d="M6 17V4M3.5 6.5 6 4l2.5 2.5"/><path d="M11 5h6M11 10h6M11 15h6M11 15l5 2"/></svg>',
+    ];
+    $labels = [ 'count' => 'Frequency', 'az' => 'A-Z', 'za' => 'Z-A' ];
+    ?>
+    <div class="wpf-tags-sort" aria-label="<?php echo esc_attr( wpforo_phrase( 'Sort tags', false ) ) ?>">
+        <span class="wpf-tags-sort__label"><?php echo esc_html( wpforo_phrase( 'Sort by', false ) ) ?>:</span>
+        <?php foreach( $labels as $key => $label ):
+            $url = ( $key === 'count' ) ? $base_url : add_query_arg( 'wpf_tag_sort', $key, $base_url );
+            // Jump back to the forum wrapper on reload so the view is not stuck at the page top.
+            $url .= '#wpforo';
+            $cls = ( $active === $key ) ? ' is-active' : ''; ?>
+            <a href="<?php echo esc_url( $url ) ?>" class="wpf-tags-sort__button<?php echo $cls ?>"<?php echo ( $active === $key ) ? ' aria-current="page"' : '' ?>><?php echo $icons[ $key ] ?><span><?php echo esc_html( wpforo_phrase( $label, false ) ) ?></span></a>
+        <?php endforeach; ?>
+    </div>
+    <?php
 }
 
 function wpforo_template_add_topic_button( $forumid = null ) {

@@ -277,18 +277,16 @@ trait AIAjaxTrait {
 	}
 
 	/**
-	 * Get the client IP address, considering proxy headers.
+	 * Get the client IP address.
+	 *
+	 * Uses REMOTE_ADDR only to prevent IP spoofing via X-Forwarded-For headers.
+	 * Proxy headers (CF-Connecting-IP, X-Forwarded-For) can be spoofed by clients
+	 * when the server is not behind a trusted reverse proxy, allowing attackers
+	 * to bypass IP-based rate limits.
 	 *
 	 * @return string Client IP address
 	 */
 	protected function get_client_ip() {
-		$ip_keys = [ 'HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR' ];
-		foreach ( $ip_keys as $key ) {
-			if ( ! empty( $_SERVER[ $key ] ) ) {
-				$ip = explode( ',', sanitize_text_field( wp_unslash( $_SERVER[ $key ] ) ) )[0];
-				return trim( $ip );
-			}
-		}
-		return '0.0.0.0';
+		return sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0' ) );
 	}
 }

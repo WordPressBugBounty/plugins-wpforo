@@ -1006,6 +1006,12 @@ function wpforo_post_edit() {
 	$r = [ 'html' => '' ];
 	if( $postid = wpforo_bigintval( wpfval( $_POST, 'postid' ) ) ) {
 		if( $post = WPF()->post->get_post( $postid, false ) ) {
+			// forum_can() is a usergroup-level check and takes no post id, so for
+			// guests it cannot prove ownership of THIS post. Without this gate the
+			// edit form (post body + a valid form nonce) is handed to any visitor.
+			if( ! is_user_logged_in() && ! wpforo_guest_owns_post( $postid ) ) {
+				wp_send_json_error( $r );
+			}
 			if( WPF()->perm->forum_can( 'eor', $post['forumid'] ) || WPF()->perm->forum_can(
 					'eot',
 					$post['forumid']

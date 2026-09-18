@@ -1217,12 +1217,33 @@ class Forms {
 			if( ! strlen( (string) $var ) ) return [];
 		}
 		if( is_serialized( $var ) ) {
-			$var = unserialize( $var );
+			// This value can come straight from the request: the field state is
+			// rebuilt from POST, and prepare_args() HTML-decodes it first, so an
+			// entity-encoded payload arrives here fully restored. Never
+			// instantiate classes, and never let one through as a value.
+			$decoded = unserialize( $var, [ 'allowed_classes' => false ] );
+			if( is_array( $decoded ) ) {
+				$var = $decoded;
+			} elseif( is_scalar( $decoded ) ) {
+				$var = [ $decoded ];
+			} else {
+				return [];
+			}
 		} elseif( is_scalar( $var ) && strpos( (string) $var, $sep ) !== false ) {
 			$var = explode( $sep, $var );
 		}
-		
-		return array_map( 'trim', (array) $var );
+
+		// A multi-choice field value is a flat list of scalars. Only arrays and
+		// objects are dropped, which a crafted payload can nest here and which
+		// are a TypeError in trim() on PHP 8. Every other type is cast exactly
+		// as trim() used to coerce it, so null and bool values are unchanged.
+		$values = [];
+		foreach( (array) $var as $key => $value ) {
+			if( is_array( $value ) || is_object( $value ) ) continue;
+			$values[ $key ] = trim( (string) $value );
+		}
+
+		return $values;
 	}
 	
 	public function build_array_using_string_rows( $string, $regexp = '' ) {

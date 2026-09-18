@@ -991,7 +991,7 @@ class Template {
                             </p>
                             <input id="wpf_tags_<?php echo $uniqid ?>" class="wpf-tags"
                                    placeholder="<?php echo sprintf( wpforo_phrase( 'Start typing tags here (maximum %d tags are allowed)...', false ), wpforo_setting( 'tags', 'max_per_topic' ) ) ?>"
-                                   name="thread[tags]" autocomplete="off" value="<?php echo wpfval( $values, 'tags' ) ?>" type="text">
+                                   name="thread[tags]" autocomplete="off" value="<?php echo esc_attr( wpfval( $values, 'tags' ) ) ?>" type="text">
                         </div>
                     <?php endif; ?>
                     <?php do_action( 'wpforo_editor_topic_submit_before', $forum, $values ) ?>

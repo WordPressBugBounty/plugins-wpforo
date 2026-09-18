@@ -902,6 +902,8 @@ class Members {
             }
 
             //Update Custom Fields
+            // $custom_fields is still the raw $_POST['data']. The same values were merged into $user, where validate() has since dropped every field the current user may not edit and sanitize() has cleaned the rest, so read them back from $user: a key that is still there is one this user was allowed to submit, and its value is the sanitized one.
+            $custom_fields = array_intersect_key( $user, $custom_fields );
             if( ! empty( $custom_fields ) && ( in_array( 'full', $type ) || in_array( 'custom_fields', $type ) ) ) {
                 $result_fields = $this->update_custom_fields( $userid, $custom_fields, false );
             }

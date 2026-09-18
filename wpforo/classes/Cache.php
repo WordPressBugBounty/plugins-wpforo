@@ -125,7 +125,7 @@ class Cache {
 					$cache_file = $this->dir . '/' . $template . '/' . $key;
 					$array      = wpforo_get_file_content( $cache_file );
 
-					return @unserialize( $array );
+					return @unserialize( $array, [ 'allowed_classes' => false ] );
 				}
 			}
 		}
@@ -138,7 +138,7 @@ class Cache {
 			if( $this->exists( $key, 'item', $type, $sub_type ) ) {
 				$cache_file = $this->dir . '/item/' . $type . '/' . ( $sub_type ? $sub_type . '_' : '' ) . $key;
 				$array      = wpforo_get_file_content( $cache_file );
-                $data = @unserialize( $array );
+                $data = @unserialize( $array, [ 'allowed_classes' => false ] );
                 if( $type === 'url' ) {
                     // Always make sure the cached URLs are pointed to current website
                     if( strpos( (string) $data, $domain_path ) === FALSE ) return null;
@@ -443,20 +443,49 @@ class Cache {
 	public function check( $directory ) {
 		$directory = (string) $directory;
 		$directory = wpforo_fix_dir_sep( $directory );
-		$filecount = 0;
-		if( class_exists( 'FilesystemIterator' ) && is_dir( $directory ) ) {
-			$fi        = new FilesystemIterator( $directory, FilesystemIterator::SKIP_DOTS );
-			$filecount = iterator_count( $fi );
+
+		if( ! class_exists( 'FilesystemIterator' ) || ! is_dir( $directory ) ) return;
+
+		$fi = new FilesystemIterator( $directory, FilesystemIterator::SKIP_DOTS );
+		$filecount = iterator_count( $fi );
+		if( ! $filecount ) return;
+
+		// Dynamic limit based on online members (scales with forum activity)
+		$stats = WPF()->statistic();
+		$online = max( 2, intval( $stats['online_members_count'] ) );
+		$max = $online * 500;
+		$max = max( 1000, min( $max, 50000 ) );
+
+		/**
+		 * Filter the maximum cache files allowed per directory.
+		 *
+		 * @param int    $max       Maximum files (default: dynamic based on online users)
+		 * @param string $directory The cache directory being checked
+		 */
+		$max = (int) apply_filters( 'wpforo_cache_dir_max_files', $max, $directory );
+		if( $max === 0 ) return; // 0 = disable cache limit
+
+		if( $filecount > $max ) {
+			$this->clean_old_files( $directory, (int) ceil( $filecount * 0.5 ) );
 		}
-		if( ! $filecount ) {
-			$directory_ns = trim( $directory, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '*';
-			$directory_ws = DIRECTORY_SEPARATOR . trim( $directory, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '*';
-			$files        = glob( $directory_ns );
-			if( empty( $files ) ) $files = glob( $directory_ws );
-			$filecount = count( $files );
-		}
-		if( $filecount > 1000 ) {
-			$this->clean_files( $directory );
+	}
+
+	private function clean_old_files( $directory, $delete_count ) {
+		$directory_ns = trim( $directory, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '*';
+		$directory_ws = DIRECTORY_SEPARATOR . trim( $directory, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '*';
+		$files = glob( $directory_ns );
+		if( empty( $files ) ) $files = glob( $directory_ws );
+		if( empty( $files ) ) return;
+
+		// Sort by modification time (oldest first)
+		usort( $files, function( $a, $b ) {
+			return filemtime( $a ) - filemtime( $b );
+		});
+
+		// Delete oldest 50%
+		foreach( array_slice( $files, 0, $delete_count ) as $file ) {
+			if( strpos( (string) $file, 'index.html' ) !== false || strpos( (string) $file, '.htaccess' ) !== false ) continue;
+			if( ! is_dir( $file ) && file_exists( $file ) ) @unlink( $file );
 		}
 	}
 

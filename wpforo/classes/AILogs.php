@@ -1494,34 +1494,13 @@ class AILogs {
 	/**
 	 * Get client IP address
 	 *
+	 * Uses REMOTE_ADDR only to prevent IP spoofing via X-Forwarded-For headers.
+	 *
 	 * @return string|null
 	 */
 	private function get_client_ip() {
-		$ip_keys = [
-			'HTTP_CF_CONNECTING_IP',
-			'HTTP_CLIENT_IP',
-			'HTTP_X_FORWARDED_FOR',
-			'HTTP_X_FORWARDED',
-			'HTTP_X_CLUSTER_CLIENT_IP',
-			'HTTP_FORWARDED_FOR',
-			'HTTP_FORWARDED',
-			'REMOTE_ADDR',
-		];
-
-		foreach ( $ip_keys as $key ) {
-			if ( ! empty( $_SERVER[ $key ] ) ) {
-				$ip = sanitize_text_field( $_SERVER[ $key ] );
-				// Handle comma-separated list (X-Forwarded-For)
-				if ( strpos( $ip, ',' ) !== false ) {
-					$ip = trim( explode( ',', $ip )[0] );
-				}
-				if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) {
-					return $ip;
-				}
-			}
-		}
-
-		return null;
+		$ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
+		return filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : null;
 	}
 
 	/**

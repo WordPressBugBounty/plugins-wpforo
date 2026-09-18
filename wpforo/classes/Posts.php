@@ -261,7 +261,14 @@ class Posts {
 			
 			$post = apply_filters( 'wpforo_after_add_post_filter', $post, $topic, $forum );
 			do_action( 'wpforo_after_add_post', $post, $topic, $forum );
-			
+
+			// Set guest ownership cookie for secure edit verification.
+			// Uses the local $userid/$email actually written to the row, not the
+			// twice-filtered $post array, which addons may alter.
+			if( ! $userid && $email ) {
+				wpforo_add_guest_ownership( $postid );
+			}
+
 			wpforo_clean_cache( 'post', $postid, $post );
 			WPF()->notice->add( 'You successfully replied', 'success' );
 			
@@ -314,11 +321,11 @@ class Posts {
 		if( ! is_user_logged_in() ) {
 			if( ! isset( $post['email'] ) || ! $post['email'] ) {
 				WPF()->notice->add( 'Permission denied', 'error' );
-				
+
 				return false;
-			} elseif( ! wpforo_current_guest( $post['email'] ) ) {
+			} elseif( ! wpforo_guest_owns_post( $post['postid'] ) ) {
 				WPF()->notice->add( 'You are not allowed to edit this post', 'error' );
-				
+
 				return false;
 			}
 			if( ! $args['name'] || ! $args['email'] ) {
