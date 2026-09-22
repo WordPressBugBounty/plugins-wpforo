@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Forum - wpForo\n"
-"POT-Creation-Date: 2026-05-19 22:17+0400\n"
+"POT-Creation-Date: 2026-09-22 08:34+0400\n"
 "PO-Revision-Date: 2016-06-28 21:09+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -123,7 +123,7 @@ msgstr ""
 msgid "Other"
 msgstr ""
 
-#: admin/includes/deactivation-dialog.php:142 includes/hooks.php:1816
+#: admin/includes/deactivation-dialog.php:142 includes/hooks.php:1822
 msgid "Please provide more information"
 msgstr ""
 
@@ -150,69 +150,72 @@ msgstr ""
 
 #: admin/index.php:54 admin/index.php:215 admin/pages/dashboard.php:25
 #: admin/tools-tabs/misc.php:67 blocks/forums/render.php:12
-#: includes/hooks.php:2999 includes/hooks.php:3231 includes/phrases.php:309
+#: includes/hooks.php:3031 includes/hooks.php:3263 includes/phrases.php:309
 #: integrations/BuddyPress.php:12 integrations/BuddyPress.php:44
 #: integrations/BuddyPress.php:117 widgets/Forums.php:23
 msgid "Forums"
 msgstr ""
 
 #: admin/index.php:59 admin/index.php:160 admin/index.php:220
-#: admin/pages/settings.php:205 includes/hooks.php:3015 includes/hooks.php:3247
-#: includes/hooks.php:3359
+#: admin/pages/settings.php:205 includes/hooks.php:3047 includes/hooks.php:3279
+#: includes/hooks.php:3391
 msgid "Settings"
 msgstr ""
 
 #: admin/index.php:64 admin/index.php:165
-#: admin/pages/tabs/ai-features-tab-overview.php:1613 classes/Settings.php:3260
-#: includes/hooks.php:3024 includes/hooks.php:3368
+#: admin/pages/tabs/ai-features-tab-overview.php:1294
+#: admin/pages/tabs/ai-features-tab-overview.php:1971 classes/Settings.php:3260
+#: includes/hooks.php:3056 includes/hooks.php:3400
 msgid "AI Features"
 msgstr ""
 
-#: admin/index.php:69 admin/index.php:225 classes/AILogs.php:1549
-#: classes/AILogs.php:1577 includes/hooks.php:3042 includes/hooks.php:3266
+#: admin/index.php:69 admin/index.php:225 classes/AILogs.php:1528
+#: classes/AILogs.php:1556 includes/hooks.php:3074 includes/hooks.php:3298
 msgid "Moderation"
 msgstr ""
 
-#: admin/index.php:74 admin/index.php:230 includes/hooks.php:3098
-#: includes/hooks.php:3277 includes/phrases.php:793
+#: admin/index.php:74 admin/index.php:230 includes/hooks.php:3130
+#: includes/hooks.php:3309 includes/phrases.php:793
 msgid "Phrases"
 msgstr ""
 
-#: admin/index.php:79 admin/index.php:235 includes/hooks.php:3033
-#: includes/hooks.php:3256 includes/phrases.php:959
+#: admin/index.php:79 admin/index.php:235 includes/hooks.php:3065
+#: includes/hooks.php:3288 includes/phrases.php:959
 msgid "Tools"
 msgstr ""
 
 #: admin/index.php:88 admin/index.php:144 admin/pages/board.php:16
-#: includes/hooks.php:16 includes/hooks.php:3300
+#: includes/hooks.php:16 includes/hooks.php:3332
 msgid "Boards"
 msgstr ""
 
-#: admin/index.php:93 admin/index.php:149 includes/hooks.php:3053
-#: includes/hooks.php:3316
+#: admin/index.php:93 admin/index.php:149 includes/hooks.php:3085
+#: includes/hooks.php:3348
 msgid "Accesses"
 msgstr ""
 
 #: admin/index.php:97 admin/index.php:153 admin/pages/usergroup.php:12
-#: admin/pages/usergroup.php:207 includes/hooks.php:3080 includes/hooks.php:3332
+#: admin/pages/usergroup.php:207 includes/hooks.php:3112 includes/hooks.php:3364
 msgid "Usergroups"
 msgstr ""
 
 #: admin/index.php:100 admin/index.php:156 admin/pages/dashboard.php:37
 #: admin/pages/member.php:10 admin/pages/usergroup.php:40
-#: admin/tools-tabs/misc.php:87 includes/hooks.php:3069 includes/hooks.php:3348
+#: admin/tools-tabs/misc.php:87 includes/hooks.php:3101 includes/hooks.php:3380
 #: includes/phrases.php:364
 msgid "Members"
 msgstr ""
 
-#: admin/index.php:104 admin/index.php:170 includes/hooks.php:3114
-#: includes/hooks.php:3377 includes/phrases.php:794
+#: admin/index.php:104 admin/index.php:170 includes/hooks.php:3146
+#: includes/hooks.php:3409 includes/phrases.php:794
 msgid "Themes"
 msgstr ""
 
 #: admin/index.php:109 admin/index.php:175 admin/pages/board.php:118
-#: admin/pages/settings.php:22 includes/hooks.php:3123 includes/hooks.php:3386
-#: includes/phrases.php:211
+#: admin/pages/license/admin/store-page.php:17
+#: admin/pages/license/src/AdminPage.php:24
+#: admin/pages/license/src/AdminPage.php:25 admin/pages/settings.php:22
+#: includes/hooks.php:3155 includes/hooks.php:3418 includes/phrases.php:211
 msgid "Addons"
 msgstr ""
 
@@ -278,7 +281,7 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-ai-tools.php:424 admin/pages/themes.php:68
 #: admin/pages/usergroup.php:104 admin/pages/usergroup.php:358
 #: admin/settings/antispam.php:96 admin/tools-tabs/cron-jobs.php:512
-#: classes/AILogs.php:1445 includes/hooks.php:1783 includes/phrases.php:252
+#: classes/AILogs.php:1445 includes/hooks.php:1789 includes/phrases.php:252
 msgid "Delete"
 msgstr ""
 
@@ -342,7 +345,9 @@ msgid "Are you sure, you want to UNBAN this user?"
 msgstr ""
 
 #: admin/listtables/Members.php:113 admin/listtables/Members.php:116
-#: admin/listtables/Members.php:274
+#: admin/listtables/Members.php:274 admin/pages/license/admin/store-page.php:44
+#: admin/pages/license/admin/store-page.php:182
+#: admin/pages/license/src/AdminPage.php:87
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:556 admin/pages/themes.php:67
 #: includes/phrases.php:203
 msgid "Activate"
@@ -353,7 +358,7 @@ msgid "Are you sure, you want to activate this user?"
 msgstr ""
 
 #: admin/listtables/Members.php:117 admin/listtables/Members.php:120
-#: admin/listtables/Members.php:275
+#: admin/listtables/Members.php:275 admin/pages/license/src/AdminPage.php:85
 msgid "Deactivate"
 msgstr ""
 
@@ -390,6 +395,7 @@ msgid "Secondary Groups"
 msgstr ""
 
 #: admin/listtables/Members.php:197 admin/pages/board.php:177
+#: admin/pages/license/admin/store-page.php:58
 #: admin/pages/tabs/ai-features-tab-ai-logs.php:149
 #: admin/pages/tabs/ai-features-tab-ai-logs.php:232
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:219
@@ -483,8 +489,8 @@ msgid "Delete&nbsp;User"
 msgstr ""
 
 #: admin/listtables/Moderations.php:187 classes/Settings.php:224
-#: includes/phrases.php:520 widgets/Forums.php:96 widgets/OnlineMembers.php:88
-#: widgets/RecentPosts.php:291 widgets/RecentTopics.php:207 widgets/Search.php:76
+#: includes/phrases.php:520 widgets/Forums.php:96 widgets/OnlineMembers.php:106
+#: widgets/RecentPosts.php:312 widgets/RecentTopics.php:232 widgets/Search.php:76
 #: widgets/Tags.php:89
 msgid "Title"
 msgstr ""
@@ -537,8 +543,8 @@ msgid ""
 msgstr ""
 
 #: admin/listtables/Moderations.php:542
-#: admin/pages/tabs/ai-features-tab-analytics.php:589 classes/AILogs.php:1548
-#: classes/AILogs.php:1576 includes/phrases.php:1337
+#: admin/pages/tabs/ai-features-tab-analytics.php:589 classes/AILogs.php:1527
+#: classes/AILogs.php:1555 includes/phrases.php:1337
 msgid "Spam Detection"
 msgstr ""
 
@@ -667,8 +673,8 @@ msgid "Original"
 msgstr ""
 
 #: admin/listtables/Phrases.php:138 admin/pages/phrase.php:62
-#: admin/pages/tabs/ai-features-tab-analytics.php:579 classes/AILogs.php:1538
-#: classes/AILogs.php:1568
+#: admin/pages/tabs/ai-features-tab-analytics.php:579 classes/AILogs.php:1517
+#: classes/AILogs.php:1547
 msgid "Translation"
 msgstr ""
 
@@ -707,7 +713,7 @@ msgstr ""
 msgid "Read the documentation"
 msgstr ""
 
-#: admin/pages/accesses.php:29 includes/hooks.php:3060 includes/hooks.php:3323
+#: admin/pages/accesses.php:29 includes/hooks.php:3092 includes/hooks.php:3355
 #: includes/phrases.php:207
 msgid "Add New Forum Access"
 msgstr ""
@@ -779,7 +785,7 @@ msgstr ""
 msgid "Thank you!<br> Sincerely yours,<br> gVectors Team"
 msgstr ""
 
-#: admin/pages/addons.php:63
+#: admin/pages/addons.php:63 admin/pages/license/src/AdminPage.php:88
 msgid "Installed"
 msgstr ""
 
@@ -838,7 +844,7 @@ msgid "No logs found."
 msgstr ""
 
 #: admin/pages/ai-features.php:147
-#: admin/pages/tabs/ai-features-tab-overview.php:114 classes/AIClient.php:290
+#: admin/pages/tabs/ai-features-tab-overview.php:120 classes/AIClient.php:290
 msgid "wpForo AI Features"
 msgstr ""
 
@@ -978,7 +984,7 @@ msgstr ""
 msgid "one URL per line"
 msgstr ""
 
-#: admin/pages/dashboard.php:7 includes/hooks.php:2989
+#: admin/pages/dashboard.php:7 includes/hooks.php:3021
 msgid "Forum Dashboard"
 msgstr ""
 
@@ -1083,7 +1089,7 @@ msgid ""
 "\"wp_options\" table and .htaccess-bk-{sec} backup file in the root directory."
 msgstr ""
 
-#: admin/pages/forum.php:15 includes/functions.php:941 includes/phrases.php:487
+#: admin/pages/forum.php:15 includes/functions.php:950 includes/phrases.php:487
 msgid "Show on screen"
 msgstr ""
 
@@ -1111,7 +1117,7 @@ msgstr ""
 msgid "Number of Columns"
 msgstr ""
 
-#: admin/pages/forum.php:45 includes/functions.php:956 includes/phrases.php:460
+#: admin/pages/forum.php:45 includes/functions.php:965 includes/phrases.php:460
 msgid "Screen Options"
 msgstr ""
 
@@ -1307,23 +1313,696 @@ msgid ""
 "will be inherited from this forum."
 msgstr ""
 
-#: admin/pages/member.php:17 admin/pages/moderation.php:18
-#: admin/pages/phrase.php:142 classes/Settings.php:1201
-msgid "Filter"
+#: admin/pages/license/admin/store-page.php:20
+#: admin/pages/license/src/AdminPage.php:109
+#: admin/pages/tabs/ai-features-tab-ai-tools.php:234
+#: admin/pages/tabs/ai-features-tab-overview.php:394
+msgid "Refresh"
 msgstr ""
 
+#: admin/pages/license/admin/store-page.php:25
+msgid "Validate All Licenses"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:34
+#: admin/pages/license/src/AdminPage.php:84
+#: admin/pages/tabs/ai-features-tab-overview.php:442
+msgid "Activate License"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:36
+msgid ""
+"Enter your license key or transaction ID, or leave empty to automatically find "
+"and activate all licenses registered to this domain."
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:39
+msgid "License key, transaction ID, or leave empty for auto-detect..."
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:41
+msgid "All addons"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:52
+msgid "Active Licenses"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:56
+msgid "Product"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:57
+#: admin/pages/license/src/Services/AddonsService.php:1803
+msgid "License Key"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:59
+msgid "Expires"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:60
+#: admin/pages/tabs/ai-features-tab-ai-logs.php:234
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:316
+#: admin/pages/tabs/ai-features-tab-ai-tools.php:258
+#: admin/tools-tabs/cron-jobs.php:424
+msgid "Actions"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:71
+msgid "Loading products..."
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:106
+msgid "Bundle"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:109
+msgid "Licensed"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:111
+#: admin/pages/license/src/AdminPage.php:91
+#: admin/pages/license/src/Services/AddonsService.php:1809
+#: admin/pages/license/src/Services/LicenseService.php:751
+msgid "Trial"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:119
+msgid "Includes:"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:172
+msgid "All Addons Licensed"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:175
+msgid "Buy Bundle"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:180
+#: admin/pages/license/src/AdminPage.php:89
+#: admin/pages/license/src/Services/LicenseService.php:750
 #: admin/pages/member.php:57 admin/pages/tabs/ai-features-tab-ai-tasks.php:224
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:281
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:433
-#: admin/pages/tabs/ai-features-tab-overview.php:1686
-#: admin/pages/tabs/ai-features-tab-overview.php:1705
-#: admin/pages/tabs/ai-features-tab-overview.php:1724
-#: admin/pages/tabs/ai-features-tab-overview.php:1743
-#: admin/pages/tabs/ai-features-tab-overview.php:2064
-#: admin/pages/tabs/ai-features-tab-overview.php:2080
-#: admin/pages/tabs/ai-features-tab-overview.php:2096
-#: admin/pages/tabs/ai-features-tab-overview.php:2112 includes/phrases.php:787
+#: admin/pages/tabs/ai-features-tab-overview.php:2044
+#: admin/pages/tabs/ai-features-tab-overview.php:2063
+#: admin/pages/tabs/ai-features-tab-overview.php:2082
+#: admin/pages/tabs/ai-features-tab-overview.php:2101
+#: admin/pages/tabs/ai-features-tab-overview.php:2422
+#: admin/pages/tabs/ai-features-tab-overview.php:2438
+#: admin/pages/tabs/ai-features-tab-overview.php:2454
+#: admin/pages/tabs/ai-features-tab-overview.php:2470 includes/phrases.php:787
 msgid "Active"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:184
+msgid "Install & Activate"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:186
+msgid "Manage"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:189
+#: admin/pages/license/src/AdminPage.php:82
+#: admin/pages/tabs/ai-features-tab-overview.php:2592
+#: admin/pages/tabs/ai-features-tab-overview.php:2605
+#: admin/pages/tabs/ai-features-tab-overview.php:2618
+#: admin/pages/tabs/ai-features-tab-overview.php:2631
+msgid "Buy Now"
+msgstr ""
+
+#: admin/pages/license/admin/store-page.php:192
+#: admin/pages/license/src/AdminPage.php:83
+msgid "Start Free Trial"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:81
+#: admin/pages/tabs/ai-features-tab-analytics.php:380
+#: admin/pages/tabs/ai-features-tab-analytics.php:399
+#: admin/pages/tabs/ai-features-tab-analytics.php:448
+#: admin/pages/tabs/ai-features-tab-rag-indexing.php:438 includes/phrases.php:933
+#: includes/phrases.php:1309
+msgid "Loading..."
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:86 includes/phrases.php:326
+msgid "Install"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:90
+#: admin/pages/license/src/Services/LicenseService.php:752
+msgid "Expired"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:92
+#: admin/pages/license/src/Services/LicenseService.php:753
+msgid "Cancelled"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:93
+msgid "Enter license key"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:94
+msgid "Enter license key or transaction ID"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:95
+msgid "Searching for licenses registered to this domain..."
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:96
+#: admin/pages/license/src/Services/ActionsService.php:580
+msgid "No licenses found for this domain"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:97
+msgid "Are you sure you want to cancel this subscription?"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:98
+msgid "Processing..."
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:99 includes/phrases.php:674
+msgid "Success!"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:100
+#: admin/pages/tabs/ai-features-tab-ai-logs.php:153
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:283
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:435
+#: admin/pages/tabs/ai-features-tab-overview.php:996
+#: admin/tools-tabs/email-queue.php:343 classes/AILogs.php:1679
+msgid "Error"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:101
+msgid "/month"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:102
+msgid "/year"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:103
+#: admin/pages/tabs/ai-features-tab-overview.php:2588
+#: admin/pages/tabs/ai-features-tab-overview.php:2601
+#: admin/pages/tabs/ai-features-tab-overview.php:2614
+#: admin/pages/tabs/ai-features-tab-overview.php:2627
+msgid "one-time"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:104
+msgid "Manage Subscription"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:105
+msgid "Update Payment Method"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:106
+msgid "Cancel Subscription"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:107
+msgid "Pause Subscription"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:108
+msgid "Resume Subscription"
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:110
+msgid "No products available at this time."
+msgstr ""
+
+#: admin/pages/license/src/AdminPage.php:111
+msgid "Checkout could not be opened. Please try again."
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:179
+msgid "Failed to load products"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:185
+#: admin/pages/license/src/Services/AddonsService.php:138
+#: admin/pages/license/src/Services/AddonsService.php:819
+#: admin/pages/license/src/Services/AddonsService.php:836
+#: admin/pages/news/src/AdminPage.php:86 admin/pages/news/src/AdminPage.php:104
+#: classes/AIAjaxTrait.php:45 classes/AIAjaxTrait.php:79
+#: classes/AIWordPressIndexer.php:1340 classes/AIWordPressIndexer.php:1354
+#: classes/AIWordPressIndexer.php:1370 classes/AIWordPressIndexer.php:1393
+#: classes/AIWordPressIndexer.php:1412 classes/AIWordPressIndexer.php:1448
+#: classes/AIWordPressIndexer.php:1489 includes/phrases.php:654
+msgid "Permission denied"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:190
+#: classes/AIAjaxTrait.php:61
+msgid "Security check failed"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:207
+#: admin/pages/license/src/Services/ActionsService.php:589
+#: admin/pages/license/src/Services/ActionsService.php:657
+#: admin/pages/license/src/Services/ActionsService.php:711
+#: admin/pages/license/src/Services/ActionsService.php:813
+msgid "Product ID required"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:216
+msgid "Failed to load prices"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:236
+msgid "Failed to check overlap"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:250
+msgid "Price ID required"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:268
+msgid "Failed to create checkout"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:416
+#: admin/pages/license/src/Services/ActionsService.php:517
+#: admin/pages/license/src/Services/ActionsService.php:884
+msgid "Transaction ID required"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:475
+msgid "Failed to verify transaction"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:491
+#: admin/pages/license/src/Services/ActionsService.php:911
+msgid "License key required"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:502
+#: admin/pages/license/src/Services/ActionsService.php:558
+msgid "License activated successfully"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:505
+msgid "Failed to activate license"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:528
+#: admin/pages/license/src/Services/ActionsService.php:552
+#: admin/pages/license/src/Services/ActionsService.php:577
+msgid "Licenses activated successfully"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:531
+msgid "Failed to activate licenses by transaction"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:565
+msgid "Could not activate. Please check your key."
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:596
+msgid "License deactivated"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:598
+msgid "Failed to deactivate license"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:618
+#: admin/pages/license/src/Services/LicenseService.php:107
+msgid ""
+"Could not reach the license server. Your current license status is preserved. "
+"Will retry automatically."
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:627
+msgid "All licenses validated successfully"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:629
+msgid ""
+"Validation complete. Some licenses have issues — check the status column below."
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:631
+msgid "All licenses validated"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:666
+#: admin/pages/license/src/Services/AddonsService.php:199
+msgid "Installation failed"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:675
+#: admin/pages/license/src/Services/ActionsService.php:693
+msgid "Plugin file required"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:684
+msgid "Activation failed"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:702
+msgid "Deactivation failed"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:720
+msgid "Install & activate failed"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:733
+#: admin/pages/license/src/Services/ActionsService.php:752
+#: admin/pages/license/src/Services/ActionsService.php:771
+#: admin/pages/license/src/Services/ActionsService.php:790
+msgid "Subscription ID required"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:740
+msgid "Subscription will be cancelled at the end of the billing period"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:742
+msgid "Failed to cancel subscription"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:759
+msgid "Subscription resumed"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:761
+msgid "Failed to resume subscription"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:780
+msgid "Failed to get update URL"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:799
+msgid "Failed to get portal URL"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:825
+msgid "Trial started successfully"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:829
+msgid "Failed to start trial"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:845
+msgid "Failed to load account"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:920
+msgid "Failed to load timeline"
+msgstr ""
+
+#: admin/pages/license/src/Services/ActionsService.php:928
+msgid "Cache cleared"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:118
+msgid "Could not determine plugin file after installation"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:129
+msgid "Addon installed and activated successfully"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:143
+msgid "No active license for this product"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:152
+#: admin/pages/license/src/Services/AddonsService.php:1216
+msgid ""
+"This addon cannot be updated because its files have been modified or are not "
+"original. To resolve this, please: 1) Go to Plugins and deactivate, then "
+"delete this addon. 2) Visit the gVectors Store Addons page and make sure your "
+"license is active. 3) Re-install the addon from the gVectors Store Addons "
+"page. Once re-installed, everything will work normally again."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:162
+msgid "Failed to get download URL"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:243
+msgid ""
+"Addon installed but signature verification failed. The download may have been "
+"corrupted. Please try again."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:251
+msgid "Addon installed successfully"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:828
+msgid "Addon activated successfully"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:841
+msgid "Addon deactivated successfully"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1277
+msgid "No valid license found for this addon on this site."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1284
+msgid ""
+"Missing signature manifest — addon was not installed through the official "
+"channel."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1285
+msgid "File integrity check failed — one or more addon files have been modified."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1286
+msgid "Domain mismatch — this addon copy is signed for a different website."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1287
+msgid ""
+"Missing PHP header signatures — addon files lack required security headers."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1288
+msgid "Nulled/patched code detected — this addon appears to be a pirated copy."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1290
+msgid "Addon verification failed."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1298
+msgid "gVectors Addon Activation Blocked"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1301
+msgid ""
+"Please install a valid licensed copy from the gVectors Store Addons dashboard."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1302
+msgid "Activation Blocked"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1741
+msgid "gVectors: Development Environment Detected"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1743
+msgid ""
+"This site is running in a development environment. Some features, including "
+"gVectors-Addons updates are disabled. Please contact your developer to "
+"configure the site for production."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1747
+msgid "Dismiss for 7 days"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1800
+msgid "Transaction ID"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1822
+msgid "gVectors: Active Licenses on Development Domain"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1824
+msgid ""
+"You have active addon licenses on this development/staging site. Before "
+"deploying to production, note the Transaction IDs or License Keys below, "
+"deactivate all licenses from this domain, then re-activate them on your live "
+"site using the Transaction ID or License Key:"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1829
+#, php-format
+msgid ""
+"On your production site go to %s and activate each license using its "
+"Transaction ID or License Key."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1830
+msgid "gVectors Store Addons"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1833
+msgid "Dismiss for 24 hours"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1870
+msgid "File integrity check failed — files have been modified."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1871
+msgid ""
+"Missing signature manifest — this copy was not obtained through an authorized "
+"license."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1872
+msgid ""
+"Domain signature mismatch — this addon was licensed for a different website."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1873
+msgid ""
+"Missing file header signatures — files have been stripped of authorization "
+"data."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1874
+msgid ""
+"Suspicious code patterns detected — this appears to be a nulled or patched "
+"version."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1882
+msgid "This addon has been deactivated on:"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1898
+#, php-format
+msgid ""
+"This addon will be automatically deactivated in %d day(s) if not resolved."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1905
+msgid "This addon will be deactivated on the next security check."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1923
+msgid "gVectors Security Alert — Unauthorized Addon Detected"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1928
+#, php-format
+msgid "Please purchase a valid license at %s or remove the unauthorized addon."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:1932
+#: admin/pages/license/src/Services/AddonsService.php:2064
+#: admin/pages/license/src/Services/AddonsService.php:2121
+msgid "Dismiss for 5 days"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:2005
+#, php-format
+msgid ""
+"Warning: your license is not active. Please <a href=\"%1$s\">activate your "
+"existing license</a> or <a href=\"%1$s\">purchase a new one</a> to receive "
+"updates."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:2036
+#, php-format
+msgid ""
+"A new version (%1$s) is available but your current version (%2$s) cannot be "
+"updated without an active subscription."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:2053
+msgid "gVectors License Expired:"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:2055
+#, php-format
+msgid ""
+"Your license for \"%s\" has expired. The addon will continue to work, but you "
+"will not receive updates or support."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:2060
+#, php-format
+msgid "Renew your subscription at %s to receive updates and support."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:2105
+msgid "gVectors Addon — Legacy License:"
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:2108
+#, php-format
+msgid ""
+"Your \"%s\" addon is using a legacy license that has expired. The addon will "
+"continue to work without any issues, but automatic updates are not available."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:2115
+#, php-format
+msgid ""
+"To receive new updates, please purchase a new subscription at the %1$s. After "
+"completing the transaction, re-download and install the addon to get the "
+"latest version with full license activation."
+msgstr ""
+
+#: admin/pages/license/src/Services/AddonsService.php:2118
+msgid "Addons Store"
+msgstr ""
+
+#: admin/pages/license/src/Services/LicenseService.php:437
+msgid "No license found for this product"
+msgstr ""
+
+#: admin/pages/license/src/Services/LicenseService.php:747
+msgid "Not Licensed"
+msgstr ""
+
+#: admin/pages/license/src/Services/LicenseService.php:754
+msgid "Past Due"
+msgstr ""
+
+#: admin/pages/license/src/Services/LicenseService.php:755
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:230
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:282
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:434
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:470
+msgid "Paused"
+msgstr ""
+
+#: admin/pages/license/src/Services/LicenseService.php:760
+#: admin/pages/tabs/ai-features-tab-ai-logs.php:412
+#: admin/tools-tabs/email-queue.php:228 classes/AILogs.php:976
+#: classes/AILogs.php:1043 classes/AILogs.php:1391
+msgid "Unknown"
+msgstr ""
+
+#: admin/pages/member.php:17 admin/pages/moderation.php:18
+#: admin/pages/phrase.php:142 classes/Settings.php:1201
+msgid "Filter"
 msgstr ""
 
 #: admin/pages/member.php:63 admin/pages/themes.php:49 includes/phrases.php:324
@@ -1338,6 +2017,190 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:1022
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:1575
 msgid "Published"
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:66 admin/pages/news/src/AdminPage.php:67
+#: admin/pages/news/src/AdminPage.php:234
+#: admin/pages/news/src/Services/ConsentService.php:55
+#: admin/pages/news/src/Services/EmailService.php:649
+msgid "News & Emails"
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:188
+msgid "Category"
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:189
+msgid "Dashboard notices"
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:190 includes/phrases.php:262
+msgid "Emails"
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:237
+msgid "Your preferences have been saved."
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:239
+msgid "Site-wide settings have been saved."
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:243
+msgid "My Preferences"
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:248
+#, php-format
+msgid ""
+"These settings apply only to your own account (%s). Other administrators "
+"manage their preferences on this same page. A dashboard notice you dismiss is "
+"dismissed only for you."
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:261
+msgid "Unsubscribe my email from ALL news module emails"
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:263
+msgid ""
+"When checked, you receive no emails from this module regardless of the matrix "
+"below. Dashboard notices are not affected."
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:268
+msgid "Save My Preferences"
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:274
+msgid "Site-Wide Settings"
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:276
+msgid ""
+"These settings apply to the whole site and all administrators: a category "
+"disabled here is off for everyone, regardless of personal preferences."
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:281
+#, php-format
+msgid ""
+"They are shared by all installed gVectors products (%s) — news, emails and "
+"license reminders are managed once for all of them."
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:295
+msgid "Enable the addon news service"
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:298
+msgid ""
+"Master switch. When enabled, this site connects to the gVectors server once a "
+"day to fetch addon news and check for expiring licenses. When disabled, the "
+"daily sync stops and no outbound requests are made."
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:299
+#: admin/pages/news/src/Services/ConsentService.php:58
+msgid "Privacy policy"
+msgstr ""
+
+#: admin/pages/news/src/AdminPage.php:305
+msgid "Save Site-Wide Settings"
+msgstr ""
+
+#: admin/pages/news/src/Services/ConsentService.php:47
+msgid "Enable addon news & license reminders?"
+msgstr ""
+
+#: admin/pages/news/src/Services/ConsentService.php:50
+msgid ""
+"Get notified about new addons, new features and expiring addon licenses. When "
+"enabled, this site connects to the gVectors server once a day and sends: your "
+"site address, an anonymous site identifier (a hash), and the slugs and "
+"versions of installed gVectors addons. No personal data, email addresses or "
+"content is ever sent."
+msgstr ""
+
+#: admin/pages/news/src/Services/ConsentService.php:54
+#, php-format
+msgid ""
+"You can change this decision or manage email preferences anytime on the %s "
+"page."
+msgstr ""
+
+#: admin/pages/news/src/Services/ConsentService.php:61
+msgid "Enable"
+msgstr ""
+
+#: admin/pages/news/src/Services/ConsentService.php:62
+msgid "Not now"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:129
+#: admin/pages/news/src/Services/EmailService.php:659
+msgid "News from gVectors"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:141
+msgid "Addons picked for your site"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:186
+msgid "Recommended for you"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:218
+msgid "Your addon licenses are expiring soon"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:231
+msgid "Your addon license has expired"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:310
+msgid "Lifetime"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:314
+msgid "Addon"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:370
+msgid "You didn't finish your purchase"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:389
+msgid "Payment received — your license key(s)"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:396
+msgid "Payment received — your license key(s) for {site_name}"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:451
+msgid "You have an unused discount for your addons"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:487
+msgid "A payment failed for your addon subscription"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:569
+#: admin/pages/news/src/Services/NoticesService.php:92
+msgid "Learn more"
+msgstr ""
+
+#: admin/pages/news/src/Services/EmailService.php:647
+#, php-format
+msgid ""
+"You received this email because you are an administrator of %1$s. To "
+"unsubscribe or choose which emails you receive, open the %2$s settings page in "
+"your WordPress dashboard."
+msgstr ""
+
+#: admin/pages/news/src/Services/NoticesService.php:97 includes/phrases.php:255
+msgid "Dismiss this notice."
 msgstr ""
 
 #: admin/pages/overview.php:21
@@ -2031,19 +2894,11 @@ msgstr ""
 msgid "All Status"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-logs.php:152 classes/AILogs.php:1699
+#: admin/pages/tabs/ai-features-tab-ai-logs.php:152 classes/AILogs.php:1678
 msgid "Success"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-logs.php:153
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:283
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:435
-#: admin/pages/tabs/ai-features-tab-overview.php:972
-#: admin/tools-tabs/email-queue.php:343 classes/AILogs.php:1700
-msgid "Error"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-ai-logs.php:154 classes/AILogs.php:1701
+#: admin/pages/tabs/ai-features-tab-ai-logs.php:154 classes/AILogs.php:1680
 msgid "Cached"
 msgstr ""
 
@@ -2086,7 +2941,7 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-analytics.php:273
 #: admin/pages/tabs/ai-features-tab-analytics.php:711
 #: admin/pages/tabs/ai-features-tab-analytics.php:1221
-#: admin/pages/tabs/ai-features-tab-analytics.php:1736 includes/functions.php:947
+#: admin/pages/tabs/ai-features-tab-analytics.php:1736 includes/functions.php:956
 #: includes/phrases.php:222
 msgid "Apply"
 msgstr ""
@@ -2137,13 +2992,6 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-ai-logs.php:233
 #: admin/pages/tabs/ai-features-tab-analytics.php:3093
 msgid "Summary"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-ai-logs.php:234
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:316
-#: admin/pages/tabs/ai-features-tab-ai-tools.php:258
-#: admin/tools-tabs/cron-jobs.php:424
-msgid "Actions"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-logs.php:243
@@ -2219,12 +3067,6 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-logs.php:412
-#: admin/tools-tabs/email-queue.php:228 classes/AILogs.php:976
-#: classes/AILogs.php:1043 classes/AILogs.php:1391
-msgid "Unknown"
-msgstr ""
-
 #: admin/pages/tabs/ai-features-tab-ai-logs.php:457 classes/AILogs.php:1280
 #: classes/AILogs.php:1436
 msgid "Duration"
@@ -2263,7 +3105,7 @@ msgid "Upgrade to Professional Plan to Unlock"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:55
-#: admin/pages/tabs/ai-features-tab-overview.php:1871
+#: admin/pages/tabs/ai-features-tab-overview.php:2229
 msgid "AI Tasks and Automations"
 msgstr ""
 
@@ -2364,13 +3206,6 @@ msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:213
 msgid "A descriptive name for this task (3-100 characters)"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:230
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:282
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:434
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:470
-msgid "Paused"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:234
@@ -2494,7 +3329,7 @@ msgstr ""
 #: admin/pages/tabs/ai-features-tab-analytics.php:692
 #: admin/pages/tabs/ai-features-tab-analytics.php:1202
 #: admin/pages/tabs/ai-features-tab-analytics.php:1717
-#: admin/pages/tabs/ai-features-tab-overview.php:1672
+#: admin/pages/tabs/ai-features-tab-overview.php:2030
 msgid "Custom"
 msgstr ""
 
@@ -2523,8 +3358,8 @@ msgid "Total Runs"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:529 includes/phrases.php:396
-#: widgets/OnlineMembers.php:98 widgets/RecentPosts.php:361
-#: widgets/RecentTopics.php:267 widgets/Tags.php:108
+#: widgets/OnlineMembers.php:116 widgets/RecentPosts.php:382
+#: widgets/RecentTopics.php:292 widgets/Tags.php:108
 msgid "Number of Items"
 msgstr ""
 
@@ -2898,7 +3733,7 @@ msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:874
 #: admin/pages/tabs/ai-features-tab-ai-tasks.php:1430
-#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1818
+#: admin/pages/tabs/ai-features-tab-ai-tasks.php:1818 includes/phrases.php:1423
 msgid "Frequency"
 msgstr ""
 
@@ -3713,11 +4548,6 @@ msgstr ""
 msgid "Indexed Knowledge Files"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tools.php:234
-#: admin/pages/tabs/ai-features-tab-overview.php:382
-msgid "Refresh"
-msgstr ""
-
 #: admin/pages/tabs/ai-features-tab-ai-tools.php:241
 msgid "Loading files..."
 msgstr ""
@@ -3819,12 +4649,12 @@ msgid "Custom Knowledge"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-ai-tools.php:352
-#: admin/pages/tabs/ai-features-tab-analytics.php:593 classes/AILogs.php:1551
+#: admin/pages/tabs/ai-features-tab-analytics.php:593 classes/AILogs.php:1530
 msgid "AI Chatbot"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-ai-tools.php:375 classes/AILogs.php:1541
-#: classes/AILogs.php:1571 includes/phrases.php:1416
+#: admin/pages/tabs/ai-features-tab-ai-tools.php:375 classes/AILogs.php:1520
+#: classes/AILogs.php:1550 includes/phrases.php:1416
 msgid "Bot Reply"
 msgstr ""
 
@@ -3848,8 +4678,8 @@ msgid ""
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-analytics.php:58
-#: admin/pages/tabs/ai-features-tab-overview.php:1311
-#: admin/pages/tabs/ai-features-tab-overview.php:1899
+#: admin/pages/tabs/ai-features-tab-overview.php:1669
+#: admin/pages/tabs/ai-features-tab-overview.php:2257
 msgid "AI Analytics & Insights"
 msgstr ""
 
@@ -3876,28 +4706,28 @@ msgid "Get AI-powered insights and recommendations"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-analytics.php:135
-#: admin/pages/tabs/ai-features-tab-overview.php:1913
+#: admin/pages/tabs/ai-features-tab-overview.php:2271
 msgid "AI Usage Analytics"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-analytics.php:136
-#: admin/pages/tabs/ai-features-tab-overview.php:1920
+#: admin/pages/tabs/ai-features-tab-overview.php:2278
 msgid "Forum Activity"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-analytics.php:137
 #: admin/pages/tabs/ai-features-tab-analytics.php:2665
-#: admin/pages/tabs/ai-features-tab-overview.php:1927
+#: admin/pages/tabs/ai-features-tab-overview.php:2285
 msgid "User Engagement"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-analytics.php:138
-#: admin/pages/tabs/ai-features-tab-overview.php:1934
+#: admin/pages/tabs/ai-features-tab-overview.php:2292
 msgid "Content Performance"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-analytics.php:139
-#: admin/pages/tabs/ai-features-tab-overview.php:1906
+#: admin/pages/tabs/ai-features-tab-overview.php:2264
 msgid "AI Insights"
 msgstr ""
 
@@ -3991,14 +4821,6 @@ msgstr ""
 msgid "Credits by Feature"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-analytics.php:380
-#: admin/pages/tabs/ai-features-tab-analytics.php:399
-#: admin/pages/tabs/ai-features-tab-analytics.php:448
-#: admin/pages/tabs/ai-features-tab-rag-indexing.php:438 includes/phrases.php:933
-#: includes/phrases.php:1309
-msgid "Loading..."
-msgstr ""
-
 #: admin/pages/tabs/ai-features-tab-analytics.php:390
 msgid "Moderation Statistics"
 msgstr ""
@@ -4008,7 +4830,7 @@ msgid "Feature Usage Details"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-analytics.php:417
-#: admin/pages/tabs/ai-features-tab-overview.php:1498 admin/settings/ai.php:480
+#: admin/pages/tabs/ai-features-tab-overview.php:1856 admin/settings/ai.php:480
 msgid "Feature"
 msgstr ""
 
@@ -4058,13 +4880,13 @@ msgstr ""
 msgid "Search Enhancement"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-analytics.php:580 classes/AILogs.php:1539
-#: classes/AILogs.php:1569
+#: admin/pages/tabs/ai-features-tab-analytics.php:580 classes/AILogs.php:1518
+#: classes/AILogs.php:1548
 msgid "Topic Summary"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-analytics.php:581 classes/AILogs.php:1544
-#: classes/AILogs.php:1574
+#: admin/pages/tabs/ai-features-tab-analytics.php:581 classes/AILogs.php:1523
+#: classes/AILogs.php:1553
 msgid "Content Indexing"
 msgstr ""
 
@@ -4077,8 +4899,8 @@ msgid "Document Indexing"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-analytics.php:584
-#: admin/pages/tabs/ai-features-tab-overview.php:1353
-#: admin/pages/tabs/ai-features-tab-overview.php:1989
+#: admin/pages/tabs/ai-features-tab-overview.php:1711
+#: admin/pages/tabs/ai-features-tab-overview.php:2347
 msgid "Custom Knowledge Indexing"
 msgstr ""
 
@@ -4337,10 +5159,10 @@ msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-analytics.php:2268
 #: admin/pages/tabs/ai-features-tab-analytics.php:2364
-#: admin/pages/tabs/ai-features-tab-overview.php:1625
-#: admin/pages/tabs/ai-features-tab-overview.php:1642
-#: admin/pages/tabs/ai-features-tab-overview.php:1657
-#: admin/pages/tabs/ai-features-tab-overview.php:1672 includes/phrases.php:1328
+#: admin/pages/tabs/ai-features-tab-overview.php:1983
+#: admin/pages/tabs/ai-features-tab-overview.php:2000
+#: admin/pages/tabs/ai-features-tab-overview.php:2015
+#: admin/pages/tabs/ai-features-tab-overview.php:2030 includes/phrases.php:1328
 msgid "credits"
 msgstr ""
 
@@ -4607,16 +5429,16 @@ msgid "Forecast"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:27
-#: admin/pages/tabs/ai-features-tab-overview.php:142
-#: admin/pages/tabs/ai-features-tab-overview.php:224
-#: admin/pages/tabs/ai-features-tab-overview.php:376
+#: admin/pages/tabs/ai-features-tab-overview.php:148
+#: admin/pages/tabs/ai-features-tab-overview.php:233
+#: admin/pages/tabs/ai-features-tab-overview.php:388
 msgid "Connection Status"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:31
-#: admin/pages/tabs/ai-features-tab-overview.php:146
-#: admin/pages/tabs/ai-features-tab-overview.php:228
-#: admin/pages/tabs/ai-features-tab-overview.php:380
+#: admin/pages/tabs/ai-features-tab-overview.php:152
+#: admin/pages/tabs/ai-features-tab-overview.php:237
+#: admin/pages/tabs/ai-features-tab-overview.php:392
 #: admin/pages/tabs/ai-features-tab-rag-indexing.php:132
 #: admin/pages/tabs/ai-features-tab-wp-indexing.php:116
 msgid "Refresh Status"
@@ -4630,8 +5452,8 @@ msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:47
 msgid ""
-"Start with 500 FREE credits! Generate your API key in one click and activate "
-"AI features!"
+"Start with 500 FREE credits, then subscribe to an AI Plan whenever you're "
+"ready! Activate AI features in one click!"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:53
@@ -4642,7 +5464,7 @@ msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:57
 #: admin/pages/tabs/ai-features-tab-overview.php:83
-msgid "Generate API Key & Connect"
+msgid "Connect to wpForo AI Features"
 msgstr ""
 
 #: admin/pages/tabs/ai-features-tab-overview.php:71
@@ -4671,459 +5493,455 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:154
+#: admin/pages/tabs/ai-features-tab-overview.php:160
 msgid "Awaiting Activation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:158
+#: admin/pages/tabs/ai-features-tab-overview.php:164
 msgid ""
 "Your API key has been generated and your account is registered. An "
 "administrator will review and activate your account shortly."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:165
+#: admin/pages/tabs/ai-features-tab-overview.php:171
 #, php-format
 msgid ""
 "Once activated, you will have %s free credits to get started with AI features."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:178
+#: admin/pages/tabs/ai-features-tab-overview.php:184
 msgid "Check Activation Status"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:187
+#: admin/pages/tabs/ai-features-tab-overview.php:193
 msgid "Cancel Registration"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:197
+#: admin/pages/tabs/ai-features-tab-overview.php:206
 msgid "Available After Activation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:236
+#: admin/pages/tabs/ai-features-tab-overview.php:245
 msgid "Temporarily Inactive"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:240
+#: admin/pages/tabs/ai-features-tab-overview.php:249
 msgid ""
 "Your wpForo AI account has been temporarily deactivated by an administrator. "
 "AI features are currently unavailable."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:247
+#: admin/pages/tabs/ai-features-tab-overview.php:256
 #, php-format
 msgid ""
 "Please %s if you believe this is an error or if you need assistance "
 "reactivating your account."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:248
+#: admin/pages/tabs/ai-features-tab-overview.php:257
 msgid "open a support ticket"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:260
+#: admin/pages/tabs/ai-features-tab-overview.php:269
 msgid "Check Account Status"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:270
+#: admin/pages/tabs/ai-features-tab-overview.php:282
 msgid "Features Unavailable"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:390
+#: admin/pages/tabs/ai-features-tab-overview.php:402
 msgid "Subscription plan is being updated..."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:395
+#: admin/pages/tabs/ai-features-tab-overview.php:407
 msgid "Connected (Free Trial)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:397
+#: admin/pages/tabs/ai-features-tab-overview.php:409
 #, php-format
 msgid "Connected (%s Plan)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:405
-#: admin/pages/tabs/ai-features-tab-overview.php:658
+#: admin/pages/tabs/ai-features-tab-overview.php:417
+#: admin/pages/tabs/ai-features-tab-overview.php:676
 msgid "Tenant ID:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:409
+#: admin/pages/tabs/ai-features-tab-overview.php:421
 msgid "API Key:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:418
+#: admin/pages/tabs/ai-features-tab-overview.php:430
 msgid "Activate by License ID (Freemius payment only)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:425
+#: admin/pages/tabs/ai-features-tab-overview.php:437
 msgid "Enter License ID from purchase email"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:430
-msgid "Activate License"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-overview.php:435
+#: admin/pages/tabs/ai-features-tab-overview.php:447
 msgid ""
 "If your Freemius plan was not activated automatically after purchase, enter "
 "your License ID here."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:437
+#: admin/pages/tabs/ai-features-tab-overview.php:449
 msgid ""
 "You can find your License ID in the purchase confirmation email from Freemius."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:449
+#: admin/pages/tabs/ai-features-tab-overview.php:461
 msgid "Activate by Transaction ID (Paddle payment only)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:456
+#: admin/pages/tabs/ai-features-tab-overview.php:468
 msgid "e.g. txn_ . . . . "
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:461
+#: admin/pages/tabs/ai-features-tab-overview.php:473
 msgid "Activate Transaction"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:466
+#: admin/pages/tabs/ai-features-tab-overview.php:478
 msgid ""
 "If your Paddle payment was not registered automatically, enter your "
 "Transaction ID here."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:468
+#: admin/pages/tabs/ai-features-tab-overview.php:480
 msgid ""
 "You can find the Transaction ID in invoice file of the payment confirmation "
 "email from Paddle."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:478
-#: admin/pages/tabs/ai-features-tab-overview.php:485
+#: admin/pages/tabs/ai-features-tab-overview.php:490
+#: admin/pages/tabs/ai-features-tab-overview.php:497
 msgid "Bonus Credits:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:481
+#: admin/pages/tabs/ai-features-tab-overview.php:493
 #, php-format
 msgid "Granted Extra Free Credits %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:488
+#: admin/pages/tabs/ai-features-tab-overview.php:500
 msgid "Request Free Credits for Forum Content Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:495
-#: admin/pages/tabs/ai-features-tab-overview.php:876
+#: admin/pages/tabs/ai-features-tab-overview.php:507
+#: admin/pages/tabs/ai-features-tab-overview.php:897
 msgid "Disconnect Service"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:500
-#: admin/pages/tabs/ai-features-tab-overview.php:880
+#: admin/pages/tabs/ai-features-tab-overview.php:512
+#: admin/pages/tabs/ai-features-tab-overview.php:901
 msgid "Disconnect and Remove All Data"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:508
+#: admin/pages/tabs/ai-features-tab-overview.php:520
 msgid "AI Credits"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:513
+#: admin/pages/tabs/ai-features-tab-overview.php:525
 msgid "remaining"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:523
+#: admin/pages/tabs/ai-features-tab-overview.php:535
 #, php-format
 msgid "Trial expires: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:528
+#: admin/pages/tabs/ai-features-tab-overview.php:540
 #, php-format
 msgid "Next billing: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:539
+#: admin/pages/tabs/ai-features-tab-overview.php:551
 #, php-format
 msgid "Maximum credit accumulation (one year of subscription plan credits): %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:552
+#: admin/pages/tabs/ai-features-tab-overview.php:564
 #, php-format
 msgid ""
 "You're on Free Trial. Expires on %s. Upgrade to  continue using all AI "
 "features!"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:561
+#: admin/pages/tabs/ai-features-tab-overview.php:573
 #, php-format
 msgid "All features of %s plan are unlocked!"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:570
+#: admin/pages/tabs/ai-features-tab-overview.php:582
 #, php-format
 msgid "Payment: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:580
-#: admin/pages/tabs/ai-features-tab-overview.php:763
-msgid "Upgrade Now / View Plans"
+#: admin/pages/tabs/ai-features-tab-overview.php:592
+#: admin/pages/tabs/ai-features-tab-overview.php:781
+msgid "Upgrade Now / View Subscription Plans"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:586
-#: admin/pages/tabs/ai-features-tab-overview.php:865
-#: admin/pages/tabs/ai-features-tab-overview.php:995
+#: admin/pages/tabs/ai-features-tab-overview.php:598
+#: admin/pages/tabs/ai-features-tab-overview.php:886
+#: admin/pages/tabs/ai-features-tab-overview.php:1019
 #, php-format
 msgid "Manage Subscription (%s)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:592
+#: admin/pages/tabs/ai-features-tab-overview.php:604
 msgid "Upgrade to Business"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:603
+#: admin/pages/tabs/ai-features-tab-overview.php:621
 msgid "Available AI Features"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:603
+#: admin/pages/tabs/ai-features-tab-overview.php:621
 msgid "Active AI Features"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:613
+#: admin/pages/tabs/ai-features-tab-overview.php:631
 msgid "Upgrade Your Plan"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:613
+#: admin/pages/tabs/ai-features-tab-overview.php:631
 msgid "Subscription Plans"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:624
+#: admin/pages/tabs/ai-features-tab-overview.php:642
 msgid "Buy Additional Credits"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:635
+#: admin/pages/tabs/ai-features-tab-overview.php:653
 msgid "Usage Statistics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:645
+#: admin/pages/tabs/ai-features-tab-overview.php:663
 msgid "Account Information"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:650
+#: admin/pages/tabs/ai-features-tab-overview.php:668
 msgid "Forum URL:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:654
+#: admin/pages/tabs/ai-features-tab-overview.php:672
 msgid "Admin Email:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:675
-#: admin/pages/tabs/ai-features-tab-overview.php:915
+#: admin/pages/tabs/ai-features-tab-overview.php:693
+#: admin/pages/tabs/ai-features-tab-overview.php:939
 msgid "Warning: This will disconnect your forum from wpForo AI service."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:676
-#: admin/pages/tabs/ai-features-tab-overview.php:916
+#: admin/pages/tabs/ai-features-tab-overview.php:694
+#: admin/pages/tabs/ai-features-tab-overview.php:940
 msgid ""
 "Your credits will be preserved and restored when you reconnect. Your indexed "
 "content will be deleted after 30 days. You can reconnect anytime with the same "
 "site URL."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:681
-#: admin/pages/tabs/ai-features-tab-overview.php:921
+#: admin/pages/tabs/ai-features-tab-overview.php:699
+#: admin/pages/tabs/ai-features-tab-overview.php:945
 msgid "I understand and want to disconnect the service"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:685
-#: admin/pages/tabs/ai-features-tab-overview.php:707
-#: admin/pages/tabs/ai-features-tab-overview.php:925
-#: admin/pages/tabs/ai-features-tab-overview.php:946
+#: admin/pages/tabs/ai-features-tab-overview.php:703
+#: admin/pages/tabs/ai-features-tab-overview.php:725
+#: admin/pages/tabs/ai-features-tab-overview.php:949
+#: admin/pages/tabs/ai-features-tab-overview.php:970
 msgid "Reason (optional):"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:686
-#: admin/pages/tabs/ai-features-tab-overview.php:926
+#: admin/pages/tabs/ai-features-tab-overview.php:704
+#: admin/pages/tabs/ai-features-tab-overview.php:950
 msgid "Help us improve by telling us why you're disconnecting"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:697
-#: admin/pages/tabs/ai-features-tab-overview.php:936
+#: admin/pages/tabs/ai-features-tab-overview.php:715
+#: admin/pages/tabs/ai-features-tab-overview.php:960
 msgid ""
 "Warning: This will permanently delete ALL your data from gVectors AI servers."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:698
-#: admin/pages/tabs/ai-features-tab-overview.php:937
+#: admin/pages/tabs/ai-features-tab-overview.php:716
+#: admin/pages/tabs/ai-features-tab-overview.php:961
 msgid ""
 "This action will disconnect your forum and immediately delete all indexed "
 "content, embeddings, and tenant data from the AI service. This cannot be "
 "undone. Your credits will NOT be preserved."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:703
-#: admin/pages/tabs/ai-features-tab-overview.php:942
+#: admin/pages/tabs/ai-features-tab-overview.php:721
+#: admin/pages/tabs/ai-features-tab-overview.php:966
 msgid ""
 "I understand that all my data will be permanently deleted and want to proceed"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:708
-#: admin/pages/tabs/ai-features-tab-overview.php:947
+#: admin/pages/tabs/ai-features-tab-overview.php:726
+#: admin/pages/tabs/ai-features-tab-overview.php:971
 msgid "Help us improve by telling us why you're removing your data"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:731
-#: admin/pages/tabs/ai-features-tab-overview.php:826
+#: admin/pages/tabs/ai-features-tab-overview.php:749
+#: admin/pages/tabs/ai-features-tab-overview.php:847
 msgid "Subscription Status"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:736
+#: admin/pages/tabs/ai-features-tab-overview.php:754
 msgid "Trial Expired"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:736
+#: admin/pages/tabs/ai-features-tab-overview.php:754
 msgid "Subscription Expired"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:741
+#: admin/pages/tabs/ai-features-tab-overview.php:759
 msgid "Your free trial has expired."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:742
+#: admin/pages/tabs/ai-features-tab-overview.php:760
 msgid "To continue using AI features, please upgrade to a paid plan."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:744
+#: admin/pages/tabs/ai-features-tab-overview.php:762
 msgid "Your subscription has expired."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:745
+#: admin/pages/tabs/ai-features-tab-overview.php:763
 msgid "Please renew your subscription to continue using AI features."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:752
+#: admin/pages/tabs/ai-features-tab-overview.php:770
 #, php-format
 msgid "Expired on: %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:771
-#: admin/pages/tabs/ai-features-tab-overview.php:859
+#: admin/pages/tabs/ai-features-tab-overview.php:789
+#: admin/pages/tabs/ai-features-tab-overview.php:880
 msgid "Check Status"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:780
-#: admin/pages/tabs/ai-features-tab-overview.php:888
-#: admin/pages/tabs/ai-features-tab-overview.php:1004
+#: admin/pages/tabs/ai-features-tab-overview.php:798
+#: admin/pages/tabs/ai-features-tab-overview.php:909
+#: admin/pages/tabs/ai-features-tab-overview.php:1028
 #, php-format
 msgid "Need help? %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:781
-#: admin/pages/tabs/ai-features-tab-overview.php:889
-#: admin/pages/tabs/ai-features-tab-overview.php:1005
+#: admin/pages/tabs/ai-features-tab-overview.php:799
+#: admin/pages/tabs/ai-features-tab-overview.php:910
+#: admin/pages/tabs/ai-features-tab-overview.php:1029
 msgid "Open Support Ticket"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:792
-#: admin/pages/tabs/ai-features-tab-overview.php:900
+#: admin/pages/tabs/ai-features-tab-overview.php:813
+#: admin/pages/tabs/ai-features-tab-overview.php:924
 msgid "Available Plans"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:831
+#: admin/pages/tabs/ai-features-tab-overview.php:852
 msgid "Subscription Refunded"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:831
+#: admin/pages/tabs/ai-features-tab-overview.php:852
 msgid "Subscription Cancelled"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:836
+#: admin/pages/tabs/ai-features-tab-overview.php:857
 msgid "Your subscription has been refunded."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:837
-#: admin/pages/tabs/ai-features-tab-overview.php:840
+#: admin/pages/tabs/ai-features-tab-overview.php:858
+#: admin/pages/tabs/ai-features-tab-overview.php:861
 msgid ""
 "AI features are currently disabled. You can purchase a new plan to reactivate "
 "the service, or disconnect to start fresh."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:839
+#: admin/pages/tabs/ai-features-tab-overview.php:860
 msgid "Your subscription has been cancelled."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:844
+#: admin/pages/tabs/ai-features-tab-overview.php:865
 msgid ""
 "Your indexed content is still preserved. If you purchase a new plan, your data "
 "will be restored automatically."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:851
+#: admin/pages/tabs/ai-features-tab-overview.php:872
 msgid "Purchase New Plan"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:872
+#: admin/pages/tabs/ai-features-tab-overview.php:893
 msgid ""
 "Want to start fresh? Disconnect to remove the current connection and register "
 "again."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:961
+#: admin/pages/tabs/ai-features-tab-overview.php:985
 msgid "Unable to connect to AI service."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:967
+#: admin/pages/tabs/ai-features-tab-overview.php:991
 msgid "Connection Issue"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:985
+#: admin/pages/tabs/ai-features-tab-overview.php:1009
 msgid "Retry Connection"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1087
+#: admin/pages/tabs/ai-features-tab-overview.php:1111
 msgid "Starter Features"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1088
-#: admin/pages/tabs/ai-features-tab-overview.php:1839
+#: admin/pages/tabs/ai-features-tab-overview.php:1112
+#: admin/pages/tabs/ai-features-tab-overview.php:2197
 msgid "Professional Features"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1089
-#: admin/pages/tabs/ai-features-tab-overview.php:1944
+#: admin/pages/tabs/ai-features-tab-overview.php:1113
+#: admin/pages/tabs/ai-features-tab-overview.php:2302
 msgid "Business Features"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1090
-#: admin/pages/tabs/ai-features-tab-overview.php:2005
+#: admin/pages/tabs/ai-features-tab-overview.php:1114
+#: admin/pages/tabs/ai-features-tab-overview.php:2363
 msgid "Enterprise Features"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1155
+#: admin/pages/tabs/ai-features-tab-overview.php:1179
 msgid "Free / Starter"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1156
-#: admin/pages/tabs/ai-features-tab-overview.php:1636 admin/settings/ai.php:323
+#: admin/pages/tabs/ai-features-tab-overview.php:1180
+#: admin/pages/tabs/ai-features-tab-overview.php:1994 admin/settings/ai.php:323
 msgid "Professional"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1157
-#: admin/pages/tabs/ai-features-tab-overview.php:1651 admin/settings/ai.php:420
+#: admin/pages/tabs/ai-features-tab-overview.php:1181
+#: admin/pages/tabs/ai-features-tab-overview.php:2009 admin/settings/ai.php:420
 msgid "Business"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1158
-#: admin/pages/tabs/ai-features-tab-overview.php:1666
+#: admin/pages/tabs/ai-features-tab-overview.php:1182
+#: admin/pages/tabs/ai-features-tab-overview.php:2024
 msgid "Enterprise"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1183
-#: admin/pages/tabs/ai-features-tab-overview.php:1982
+#: admin/pages/tabs/ai-features-tab-overview.php:1207
+#: admin/pages/tabs/ai-features-tab-overview.php:2340
 msgid "Coming Soon"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1198
+#: admin/pages/tabs/ai-features-tab-overview.php:1222
 msgid "And Many More AI Features Coming Soon!"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1199
+#: admin/pages/tabs/ai-features-tab-overview.php:1223
 msgid ""
 "This is just the beginning. We're actively developing additional AI features "
 "including sentiment analysis, member retention predictions, personalized "
@@ -5131,15 +5949,92 @@ msgid ""
 "help shape the future of forum AI."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1201
+#: admin/pages/tabs/ai-features-tab-overview.php:1225
 msgid "For All Plans"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1215
+#: admin/pages/tabs/ai-features-tab-overview.php:1249
+msgid "Getting Started with wpForo AI"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1261
+msgid "Connect wpForo AI"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1272
+msgid "Index Forum Content"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1283
+msgid "Manage AI Features"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1294
+msgid "Use"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1305
+msgid "Enable AI Spam Protection"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1316
+msgid "Monitor AI Usage"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1320
+msgid "Your Data Stays Yours"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1322
+msgid "Forum content indexing"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1322
+msgid ""
+"converts your forum content into mathematical vectors (embeddings) to power AI "
+"search and features."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1323
+msgid ""
+"Your data is never used to train AI models. We use pre-trained models from "
+"Amazon Bedrock."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1324
+msgid ""
+"By default your data embeddings are stored locally in your WordPress database."
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1330
+msgid "Read AI Features Documentation"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1467
+msgid "wpForo AI Search"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1471
+msgid "wpForo AI Topic Summary"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1475
+msgid "wpForo AI Translation"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1481
+msgid "wpForo AI Features in Action"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1497
+msgid "See All AI Features"
+msgstr ""
+
+#: admin/pages/tabs/ai-features-tab-overview.php:1573
 msgid "AI Knowledge Generation - Forum Content Indexing & Vectorization"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1216
+#: admin/pages/tabs/ai-features-tab-overview.php:1574
 msgid ""
 "Index forum content to build a searchable vector database optimized for "
 "Retrieval Augmented Generation (RAG). This feature transforms unstructured "
@@ -5147,11 +6042,11 @@ msgid ""
 "truly understands your domain, products, and audience."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1221
+#: admin/pages/tabs/ai-features-tab-overview.php:1579
 msgid "AI Indexed Vector Database - Local Storage"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1222
+#: admin/pages/tabs/ai-features-tab-overview.php:1580
 msgid ""
 "Store AI-generated vector embeddings locally on your WordPress server. Perfect "
 "for smaller forums or sites with storage capacity. Vectors are stored in your "
@@ -5159,11 +6054,11 @@ msgid ""
 "search and AI features without external dependencies."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1227
+#: admin/pages/tabs/ai-features-tab-overview.php:1585
 msgid "AI Powered Semantic Search"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1228
+#: admin/pages/tabs/ai-features-tab-overview.php:1586
 msgid ""
 "Traditional search fails when users don't know exact keywords. Stop losing "
 "members to \"no results found\". AI-powered semantic search understands what "
@@ -5171,12 +6066,12 @@ msgid ""
 "different wording, typos, or synonyms—delivering answers that actually help."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1233
-#: admin/pages/tabs/ai-features-tab-overview.php:1782
+#: admin/pages/tabs/ai-features-tab-overview.php:1591
+#: admin/pages/tabs/ai-features-tab-overview.php:2140
 msgid "AI Search Enhancement"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1234
+#: admin/pages/tabs/ai-features-tab-overview.php:1592
 msgid ""
 "Elevate search results with AI-powered summaries and recommendations. When "
 "users search, AI analyzes the results and generates a contextual summary "
@@ -5184,13 +6079,13 @@ msgid ""
 "for related topics and better answers instantly."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1239
-#: admin/pages/tabs/ai-features-tab-overview.php:1789 admin/settings/ai.php:91
+#: admin/pages/tabs/ai-features-tab-overview.php:1597
+#: admin/pages/tabs/ai-features-tab-overview.php:2147 admin/settings/ai.php:91
 #: admin/settings/ai.php:471
 msgid "AI Topic Summarization"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1240
+#: admin/pages/tabs/ai-features-tab-overview.php:1598
 msgid ""
 "Get instant AI-generated summaries of long forum discussions. Help members "
 "quickly understand the key points, main conclusions, and important details of "
@@ -5198,13 +6093,13 @@ msgid ""
 "on active discussions or reviewing complex threads at a glance."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1245
-#: admin/pages/tabs/ai-features-tab-overview.php:1796 admin/settings/ai.php:108
+#: admin/pages/tabs/ai-features-tab-overview.php:1603
+#: admin/pages/tabs/ai-features-tab-overview.php:2154 admin/settings/ai.php:108
 #: admin/settings/ai.php:472 includes/phrases.php:1411
 msgid "AI Topic Suggestions"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1246
+#: admin/pages/tabs/ai-features-tab-overview.php:1604
 msgid ""
 "Enhance topic creation with intelligent suggestions. AI analyzes what members "
 "are typing and instantly recommends similar existing discussions, related "
@@ -5213,12 +6108,12 @@ msgid ""
 "time."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1251
-#: admin/pages/tabs/ai-features-tab-overview.php:1803
+#: admin/pages/tabs/ai-features-tab-overview.php:1609
+#: admin/pages/tabs/ai-features-tab-overview.php:2161
 msgid "AI Multi-Language Translation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1252
+#: admin/pages/tabs/ai-features-tab-overview.php:1610
 msgid ""
 "Break language barriers and grow your global community. No more limiting your "
 "community to one language. Multi-language AI translation lets members from "
@@ -5226,22 +6121,22 @@ msgid ""
 "posts in their language, and AI bridges the gap—no manual translation needed."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1257
+#: admin/pages/tabs/ai-features-tab-overview.php:1615
 msgid "AI Moderation - Spam Detection and User Banning"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1258
+#: admin/pages/tabs/ai-features-tab-overview.php:1616
 msgid ""
 "Keep your forum clean with intelligent spam detection. AI automatically "
 "identifies spam content after post submission, blocking malicious posts before "
 "they appear while learning from your moderation decisions to improve accuracy."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1263
+#: admin/pages/tabs/ai-features-tab-overview.php:1621
 msgid "AI Moderation - Content Safety & Toxicity Detection"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1264
+#: admin/pages/tabs/ai-features-tab-overview.php:1622
 msgid ""
 "Protect your community from harmful content with advanced toxicity detection. "
 "AI analyzes posts for hate speech, harassment, personal attacks, threats, and "
@@ -5251,11 +6146,11 @@ msgid ""
 "moderation."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1269
+#: admin/pages/tabs/ai-features-tab-overview.php:1627
 msgid "AI Moderation - Rule Compliance & Policy Enforcement"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1270
+#: admin/pages/tabs/ai-features-tab-overview.php:1628
 msgid ""
 "Automatically enforce your forum rules and community guidelines. AI checks "
 "every post against configurable policies including topic relevance, "
@@ -5265,11 +6160,11 @@ msgid ""
 "and let AI ensure members stay on topic and follow your guidelines."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1275
+#: admin/pages/tabs/ai-features-tab-overview.php:1633
 msgid "AI Knowledge Generation - Forum Image Indexing & Vectorization"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1276
+#: admin/pages/tabs/ai-features-tab-overview.php:1634
 msgid ""
 "Unlock the power of visual content in your forum. AI automatically analyzes "
 "images embedded in posts—screenshots, diagrams, infographics, product photos—"
@@ -5279,11 +6174,11 @@ msgid ""
 "forums, support communities, and visual-heavy discussions."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1281
+#: admin/pages/tabs/ai-features-tab-overview.php:1639
 msgid "AI Knowledge Generation - Forum Document Indexing & Vectorization"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1282
+#: admin/pages/tabs/ai-features-tab-overview.php:1640
 msgid ""
 "Transform document attachments into searchable knowledge. AI automatically "
 "extracts text from PDF, Word (DOCX), PowerPoint (PPTX), RTF, and plain text "
@@ -5294,11 +6189,11 @@ msgid ""
 "attachments."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1287
+#: admin/pages/tabs/ai-features-tab-overview.php:1645
 msgid "AI Bot Reply and Reply Suggestion"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1288
+#: admin/pages/tabs/ai-features-tab-overview.php:1646
 msgid ""
 "Generate AI-powered replies manually with a single click or use the Suggest "
 "Reply button to get AI-generated content directly in the editor. Moderators "
@@ -5306,11 +6201,11 @@ msgid ""
 "responses based on forum context, topic content, and AI knowledge base."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1293
+#: admin/pages/tabs/ai-features-tab-overview.php:1651
 msgid "AI Tasks - Automated Topic Generation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1294
+#: admin/pages/tabs/ai-features-tab-overview.php:1652
 msgid ""
 "Keep your forum active with AI-generated topics! The AI analyzes your existing "
 "discussions and automatically creates engaging threads based on your "
@@ -5320,11 +6215,11 @@ msgid ""
 "then create timely, relevant topics that drive engagement."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1299
+#: admin/pages/tabs/ai-features-tab-overview.php:1657
 msgid "AI Tasks - Automated Reply Generation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1300
+#: admin/pages/tabs/ai-features-tab-overview.php:1658
 msgid ""
 "Boost engagement with intelligent reply generation. AI monitors your forum for "
 "unanswered topics, analyzes context from existing discussions and knowledge "
@@ -5333,11 +6228,11 @@ msgid ""
 "community interaction."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1305
+#: admin/pages/tabs/ai-features-tab-overview.php:1663
 msgid "AI Tasks - Automated Topic Tag Moderation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1306
+#: admin/pages/tabs/ai-features-tab-overview.php:1664
 msgid ""
 "Improve content discovery with smart tag management. Complete tag management "
 "powered by AI. Automatically generates relevant tags for new and existing "
@@ -5347,7 +6242,7 @@ msgid ""
 "evolves while leaving existing topics untouched to preserve forum integrity."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1312
+#: admin/pages/tabs/ai-features-tab-overview.php:1670
 msgid ""
 "Stop guessing what your community wants. AI Analytics reveals hidden patterns "
 "in member behavior. Comprehensive AI-driven analytics for smarter community "
@@ -5357,13 +6252,13 @@ msgid ""
 "retention insights, and predictive trends help you stay ahead."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1317
-#: admin/pages/tabs/ai-features-tab-overview.php:1947 admin/settings/ai.php:418
+#: admin/pages/tabs/ai-features-tab-overview.php:1675
+#: admin/pages/tabs/ai-features-tab-overview.php:2305 admin/settings/ai.php:418
 #: admin/settings/ai.php:473
 msgid "AI Chat Assistant"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1318
+#: admin/pages/tabs/ai-features-tab-overview.php:1676
 msgid ""
 "24/7 intelligent assistance for your forum members. Intelligent chatbot "
 "powered by your forum's content. Provides instant answers based on indexed "
@@ -5373,11 +6268,11 @@ msgid ""
 "and style."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1323
+#: admin/pages/tabs/ai-features-tab-overview.php:1681
 msgid "AI Indexed Vector Database - Cloud Storage"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1324
+#: admin/pages/tabs/ai-features-tab-overview.php:1682
 msgid ""
 "Scale your AI capabilities with cloud-based vector storage powered by AWS S3 "
 "Vectors. Ideal for large forums with thousands of posts and growing "
@@ -5386,45 +6281,45 @@ msgid ""
 "knowledge base."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1329
-#: admin/pages/tabs/ai-features-tab-overview.php:1961
+#: admin/pages/tabs/ai-features-tab-overview.php:1687
+#: admin/pages/tabs/ai-features-tab-overview.php:2319
 msgid "Extended Knowledge Base"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1330
+#: admin/pages/tabs/ai-features-tab-overview.php:1688
 msgid ""
 "Expand AI knowledge beyond forum content to include WordPress posts, pages, "
 "and products."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1335
+#: admin/pages/tabs/ai-features-tab-overview.php:1693
 #: admin/pages/tabs/ai-features-tab-wp-indexing.php:181
 msgid "WordPress Content Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1336
+#: admin/pages/tabs/ai-features-tab-overview.php:1694
 msgid "Index WordPress posts and pages for comprehensive site-wide AI search."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1341
+#: admin/pages/tabs/ai-features-tab-overview.php:1699
 msgid "Custom Post Types Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1342
+#: admin/pages/tabs/ai-features-tab-overview.php:1700
 msgid ""
 "Include custom post types in AI knowledge base for complete content coverage."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1347
+#: admin/pages/tabs/ai-features-tab-overview.php:1705
 msgid "WooCommerce Products Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1348
+#: admin/pages/tabs/ai-features-tab-overview.php:1706
 msgid ""
 "Index WooCommerce products to provide AI-powered product search and support."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1354
+#: admin/pages/tabs/ai-features-tab-overview.php:1712
 msgid ""
 "Upload and index custom knowledge files (JSON, Markdown, Text) to enhance AI "
 "responses with your expert documentation, FAQs, and specialized content. "
@@ -5432,103 +6327,103 @@ msgid ""
 "bases."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1359
-#: admin/pages/tabs/ai-features-tab-overview.php:1996
+#: admin/pages/tabs/ai-features-tab-overview.php:1717
+#: admin/pages/tabs/ai-features-tab-overview.php:2354
 msgid "File Indexing (TXT, MD, JSON, PDF)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1360
+#: admin/pages/tabs/ai-features-tab-overview.php:1718
 msgid ""
 "Index plain text, Markdown, JSON, and PDF files into the AI knowledge base for "
 "richer answers from custom documentation and reference material. Scanned PDFs "
 "are auto-OCR'd when the text layer is too sparse."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1365
-#: admin/pages/tabs/ai-features-tab-overview.php:2008
+#: admin/pages/tabs/ai-features-tab-overview.php:1723
+#: admin/pages/tabs/ai-features-tab-overview.php:2366
 msgid "Developer Features"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1366
+#: admin/pages/tabs/ai-features-tab-overview.php:1724
 msgid "Advanced developer tools and API access for custom integrations."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1371
-#: admin/pages/tabs/ai-features-tab-overview.php:2015
+#: admin/pages/tabs/ai-features-tab-overview.php:1729
+#: admin/pages/tabs/ai-features-tab-overview.php:2373
 msgid "REST API Access"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1372
+#: admin/pages/tabs/ai-features-tab-overview.php:1730
 msgid ""
 "Full REST API access for custom applications and third-party integrations."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1377
-#: admin/pages/tabs/ai-features-tab-overview.php:2022
+#: admin/pages/tabs/ai-features-tab-overview.php:1735
+#: admin/pages/tabs/ai-features-tab-overview.php:2380
 msgid "Custom AI Models"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1378
+#: admin/pages/tabs/ai-features-tab-overview.php:1736
 msgid "Use custom-trained AI models tailored to your specific community needs."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1383
-#: admin/pages/tabs/ai-features-tab-overview.php:2029
+#: admin/pages/tabs/ai-features-tab-overview.php:1741
+#: admin/pages/tabs/ai-features-tab-overview.php:2387
 msgid "Custom feature development"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1384
+#: admin/pages/tabs/ai-features-tab-overview.php:1742
 msgid ""
 "Dedicated development resources for custom AI features unique to your forum."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1389
-#: admin/pages/tabs/ai-features-tab-overview.php:2036
+#: admin/pages/tabs/ai-features-tab-overview.php:1747
+#: admin/pages/tabs/ai-features-tab-overview.php:2394
 msgid "Premium Support"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1390
+#: admin/pages/tabs/ai-features-tab-overview.php:1748
 msgid ""
 "Priority support with dedicated account management and faster response times."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1395
-#: admin/pages/tabs/ai-features-tab-overview.php:2043
+#: admin/pages/tabs/ai-features-tab-overview.php:1753
+#: admin/pages/tabs/ai-features-tab-overview.php:2401
 msgid "Dedicated account manager"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1396
+#: admin/pages/tabs/ai-features-tab-overview.php:1754
 msgid "Personal account manager for strategic guidance and priority assistance."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1401
-#: admin/pages/tabs/ai-features-tab-overview.php:2050
+#: admin/pages/tabs/ai-features-tab-overview.php:1759
+#: admin/pages/tabs/ai-features-tab-overview.php:2408
 msgid "Enterprise Capabilities"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1402
+#: admin/pages/tabs/ai-features-tab-overview.php:1760
 msgid ""
 "Enterprise-grade features including SLA, compliance support, and advanced "
 "security."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1490
+#: admin/pages/tabs/ai-features-tab-overview.php:1848
 msgid "Lifetime Credits Used"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1499
+#: admin/pages/tabs/ai-features-tab-overview.php:1857
 msgid "Since Last Purchase"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1501
+#: admin/pages/tabs/ai-features-tab-overview.php:1859
 msgid "Lifetime Total"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1599
+#: admin/pages/tabs/ai-features-tab-overview.php:1957
 msgid "Credit-Based Pricing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1600
+#: admin/pages/tabs/ai-features-tab-overview.php:1958
 msgid ""
 "Pay only for what you use with flexible credit-based pricing. Credits roll "
 "over month-to-month as long as you have an active subscription plan. Each plan "
@@ -5537,183 +6432,183 @@ msgid ""
 "level."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1600
+#: admin/pages/tabs/ai-features-tab-overview.php:1958
 msgid "You can select the quality of AI model for each feature individually: "
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1602
+#: admin/pages/tabs/ai-features-tab-overview.php:1960
 msgid "Fast (1 action = 1 credit)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1603
+#: admin/pages/tabs/ai-features-tab-overview.php:1961
 msgid "Balanced (1 action = 2 credits)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1604
+#: admin/pages/tabs/ai-features-tab-overview.php:1962
 msgid "Advanced (1 action = 3 credits)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1605
+#: admin/pages/tabs/ai-features-tab-overview.php:1963
 msgid "Premium (1 action = 4 credits)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1617
-#: admin/pages/tabs/ai-features-tab-overview.php:1632
-#: admin/pages/tabs/ai-features-tab-overview.php:1649
-#: admin/pages/tabs/ai-features-tab-overview.php:1664
+#: admin/pages/tabs/ai-features-tab-overview.php:1975
+#: admin/pages/tabs/ai-features-tab-overview.php:1990
+#: admin/pages/tabs/ai-features-tab-overview.php:2007
+#: admin/pages/tabs/ai-features-tab-overview.php:2022
 msgid "YOUR PLAN"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1619
+#: admin/pages/tabs/ai-features-tab-overview.php:1977
 msgid "Starter"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1634
+#: admin/pages/tabs/ai-features-tab-overview.php:1992
 msgid "POPULAR"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1668
+#: admin/pages/tabs/ai-features-tab-overview.php:2026
 msgid "Custom Price"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1688
-#: admin/pages/tabs/ai-features-tab-overview.php:1707
-#: admin/pages/tabs/ai-features-tab-overview.php:1726
-#: admin/pages/tabs/ai-features-tab-overview.php:1745
+#: admin/pages/tabs/ai-features-tab-overview.php:2046
+#: admin/pages/tabs/ai-features-tab-overview.php:2065
+#: admin/pages/tabs/ai-features-tab-overview.php:2084
+#: admin/pages/tabs/ai-features-tab-overview.php:2103
 #, php-format
 msgid "Renews %s"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1693
-#: admin/pages/tabs/ai-features-tab-overview.php:1697
-#: admin/pages/tabs/ai-features-tab-overview.php:1712
-#: admin/pages/tabs/ai-features-tab-overview.php:1716
-#: admin/pages/tabs/ai-features-tab-overview.php:1731
-#: admin/pages/tabs/ai-features-tab-overview.php:1735
-#: admin/pages/tabs/ai-features-tab-overview.php:2068
-#: admin/pages/tabs/ai-features-tab-overview.php:2072
-#: admin/pages/tabs/ai-features-tab-overview.php:2084
-#: admin/pages/tabs/ai-features-tab-overview.php:2088
-#: admin/pages/tabs/ai-features-tab-overview.php:2100
-#: admin/pages/tabs/ai-features-tab-overview.php:2104
+#: admin/pages/tabs/ai-features-tab-overview.php:2051
+#: admin/pages/tabs/ai-features-tab-overview.php:2055
+#: admin/pages/tabs/ai-features-tab-overview.php:2070
+#: admin/pages/tabs/ai-features-tab-overview.php:2074
+#: admin/pages/tabs/ai-features-tab-overview.php:2089
+#: admin/pages/tabs/ai-features-tab-overview.php:2093
+#: admin/pages/tabs/ai-features-tab-overview.php:2426
+#: admin/pages/tabs/ai-features-tab-overview.php:2430
+#: admin/pages/tabs/ai-features-tab-overview.php:2442
+#: admin/pages/tabs/ai-features-tab-overview.php:2446
+#: admin/pages/tabs/ai-features-tab-overview.php:2458
+#: admin/pages/tabs/ai-features-tab-overview.php:2462
 msgid "Upgrade"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1697
-#: admin/pages/tabs/ai-features-tab-overview.php:1716
-#: admin/pages/tabs/ai-features-tab-overview.php:1735
+#: admin/pages/tabs/ai-features-tab-overview.php:2055
+#: admin/pages/tabs/ai-features-tab-overview.php:2074
+#: admin/pages/tabs/ai-features-tab-overview.php:2093
 msgid "Get Started"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1750
-#: admin/pages/tabs/ai-features-tab-overview.php:2116 includes/phrases.php:141
+#: admin/pages/tabs/ai-features-tab-overview.php:2108
+#: admin/pages/tabs/ai-features-tab-overview.php:2474 includes/phrases.php:141
 msgid "Contact Us"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1758
+#: admin/pages/tabs/ai-features-tab-overview.php:2116
 msgid "ALL Core AI Features"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1761
+#: admin/pages/tabs/ai-features-tab-overview.php:2119
 msgid "AI Knowledge - Content Text Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1768
+#: admin/pages/tabs/ai-features-tab-overview.php:2126
 msgid "AI Vector Database - Local Storage"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1775 admin/settings/ai.php:58
+#: admin/pages/tabs/ai-features-tab-overview.php:2133 admin/settings/ai.php:58
 #: admin/settings/ai.php:469
 msgid "AI Semantic Search"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1810
+#: admin/pages/tabs/ai-features-tab-overview.php:2168
 msgid "AI Auto Moderation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1817
+#: admin/pages/tabs/ai-features-tab-overview.php:2175
 msgid "Spam Detection and User Banning"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1824
+#: admin/pages/tabs/ai-features-tab-overview.php:2182
 msgid "Content Safety & Toxicity Detection"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1831
+#: admin/pages/tabs/ai-features-tab-overview.php:2189
 msgid "Rule Compliance & Policy Enforcement"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1843
+#: admin/pages/tabs/ai-features-tab-overview.php:2201
 msgid "AI Knowledge - Image Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1850
+#: admin/pages/tabs/ai-features-tab-overview.php:2208
 msgid "AI Knowledge - Document Indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1857 admin/settings/ai.php:321
+#: admin/pages/tabs/ai-features-tab-overview.php:2215 admin/settings/ai.php:321
 msgid "AI Bot Reply"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1864
+#: admin/pages/tabs/ai-features-tab-overview.php:2222
 msgid "AI Reply Suggestion"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1878
+#: admin/pages/tabs/ai-features-tab-overview.php:2236
 msgid "New Topic Creation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1885
+#: admin/pages/tabs/ai-features-tab-overview.php:2243
 msgid "Auto Reply to Topics"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1892
+#: admin/pages/tabs/ai-features-tab-overview.php:2250
 msgid "Topic Tag Moderation"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1954
+#: admin/pages/tabs/ai-features-tab-overview.php:2312
 msgid "AI Vector Database - Cloud Storage"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1968
+#: admin/pages/tabs/ai-features-tab-overview.php:2326
 msgid "WordPress Content indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1975
+#: admin/pages/tabs/ai-features-tab-overview.php:2333
 msgid "Custom Post Types indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:1982
+#: admin/pages/tabs/ai-features-tab-overview.php:2340
 msgid "WooCommerce indexing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2136
+#: admin/pages/tabs/ai-features-tab-overview.php:2494
 msgid "Payment Method:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2141
+#: admin/pages/tabs/ai-features-tab-overview.php:2499
 msgid "Paddle (Credit Card, PayPal)"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2147
+#: admin/pages/tabs/ai-features-tab-overview.php:2505
 msgid "Freemius"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2157
+#: admin/pages/tabs/ai-features-tab-overview.php:2515
 msgid ""
 "Payment and Subscription Management is Powered by Paddle - Secure Checkout"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2159
+#: admin/pages/tabs/ai-features-tab-overview.php:2517
 msgid ""
 "Payment and Subscription Management is Powered by Freemius - Secure Checkout"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2161
+#: admin/pages/tabs/ai-features-tab-overview.php:2519
 msgid "Secure Payment Processing"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2221
+#: admin/pages/tabs/ai-features-tab-overview.php:2579
 #, php-format
 msgid ""
 "Need more credits? Purchase one-time credit packs. Credits accumulate with "
@@ -5721,45 +6616,31 @@ msgid ""
 "plan credits) and can be used %s."
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2221
+#: admin/pages/tabs/ai-features-tab-overview.php:2579
 msgid "as long as you have an active subscription"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2229
+#: admin/pages/tabs/ai-features-tab-overview.php:2587
 msgid "500 Credits"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2230
-#: admin/pages/tabs/ai-features-tab-overview.php:2243
-#: admin/pages/tabs/ai-features-tab-overview.php:2256
-#: admin/pages/tabs/ai-features-tab-overview.php:2269
-msgid "one-time"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-overview.php:2234
-#: admin/pages/tabs/ai-features-tab-overview.php:2247
-#: admin/pages/tabs/ai-features-tab-overview.php:2260
-#: admin/pages/tabs/ai-features-tab-overview.php:2273
-msgid "Buy Now"
-msgstr ""
-
-#: admin/pages/tabs/ai-features-tab-overview.php:2242
+#: admin/pages/tabs/ai-features-tab-overview.php:2600
 msgid "1,500 Credits"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2255
+#: admin/pages/tabs/ai-features-tab-overview.php:2613
 msgid "4,500 Credits"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2268
+#: admin/pages/tabs/ai-features-tab-overview.php:2626
 msgid "15,000 Credits"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2280
+#: admin/pages/tabs/ai-features-tab-overview.php:2638
 msgid "Important:"
 msgstr ""
 
-#: admin/pages/tabs/ai-features-tab-overview.php:2280
+#: admin/pages/tabs/ai-features-tab-overview.php:2638
 msgid ""
 "Credit packs are one-time purchases that accumulate with your monthly "
 "subscription credits up to your plan's maximum accumulation limit (one year of "
@@ -6508,7 +7389,7 @@ msgid "Usergroup"
 msgstr ""
 
 #: admin/pages/usergroup.php:44 classes/Settings.php:291
-#: classes/Settings.php:1232 includes/hooks.php:1756
+#: classes/Settings.php:1232 includes/hooks.php:1762
 msgid "Default"
 msgstr ""
 
@@ -7239,23 +8120,23 @@ msgstr ""
 
 #: admin/settings/topics.php:69 admin/tools-tabs/cleanup.php:40
 #: classes/Settings.php:3393 classes/Settings.php:4261 includes/phrases.php:552
-#: widgets/Forums.php:110 widgets/OnlineMembers.php:104
-#: widgets/RecentPosts.php:305 widgets/RecentPosts.php:323
-#: widgets/RecentPosts.php:375 widgets/RecentPosts.php:385
-#: widgets/RecentPosts.php:395 widgets/RecentPosts.php:406
-#: widgets/RecentTopics.php:221 widgets/RecentTopics.php:239
-#: widgets/RecentTopics.php:274 widgets/RecentTopics.php:285 widgets/Tags.php:101
+#: widgets/Forums.php:110 widgets/OnlineMembers.php:122
+#: widgets/RecentPosts.php:326 widgets/RecentPosts.php:344
+#: widgets/RecentPosts.php:396 widgets/RecentPosts.php:406
+#: widgets/RecentPosts.php:416 widgets/RecentPosts.php:427
+#: widgets/RecentTopics.php:246 widgets/RecentTopics.php:264
+#: widgets/RecentTopics.php:299 widgets/RecentTopics.php:310 widgets/Tags.php:101
 msgid "Yes"
 msgstr ""
 
 #: admin/settings/topics.php:70 admin/tools-tabs/cleanup.php:41
 #: classes/Settings.php:3394 classes/Settings.php:4262 includes/phrases.php:382
-#: widgets/Forums.php:113 widgets/OnlineMembers.php:107
-#: widgets/RecentPosts.php:309 widgets/RecentPosts.php:328
-#: widgets/RecentPosts.php:379 widgets/RecentPosts.php:389
-#: widgets/RecentPosts.php:399 widgets/RecentPosts.php:410
-#: widgets/RecentTopics.php:225 widgets/RecentTopics.php:244
-#: widgets/RecentTopics.php:278 widgets/RecentTopics.php:289 widgets/Tags.php:104
+#: widgets/Forums.php:113 widgets/OnlineMembers.php:125
+#: widgets/RecentPosts.php:330 widgets/RecentPosts.php:349
+#: widgets/RecentPosts.php:400 widgets/RecentPosts.php:410
+#: widgets/RecentPosts.php:420 widgets/RecentPosts.php:431
+#: widgets/RecentTopics.php:250 widgets/RecentTopics.php:269
+#: widgets/RecentTopics.php:303 widgets/RecentTopics.php:314 widgets/Tags.php:104
 msgid "No"
 msgstr ""
 
@@ -7919,18 +8800,6 @@ msgstr ""
 msgid "Forum Search"
 msgstr ""
 
-#: classes/AIAjaxTrait.php:45 classes/AIAjaxTrait.php:79
-#: classes/AIWordPressIndexer.php:1331 classes/AIWordPressIndexer.php:1345
-#: classes/AIWordPressIndexer.php:1361 classes/AIWordPressIndexer.php:1384
-#: classes/AIWordPressIndexer.php:1403 classes/AIWordPressIndexer.php:1439
-#: classes/AIWordPressIndexer.php:1480 includes/phrases.php:654
-msgid "Permission denied"
-msgstr ""
-
-#: classes/AIAjaxTrait.php:61
-msgid "Security check failed"
-msgstr ""
-
 #: classes/AIAjaxTrait.php:209
 #, php-format
 msgid "Missing required parameters: %s"
@@ -7948,53 +8817,53 @@ msgstr ""
 msgid "Daily limit reached. Please try again tomorrow."
 msgstr ""
 
-#: classes/AIChatbot.php:416
+#: classes/AIChatbot.php:423
 msgid "Conversation not found"
 msgstr ""
 
-#: classes/AIChatbot.php:530
+#: classes/AIChatbot.php:537
 msgid "Knowledge Base"
 msgstr ""
 
-#: classes/AIChatbot.php:575 classes/Settings.php:3931
+#: classes/AIChatbot.php:582 classes/Settings.php:3931
 msgid ""
 "I couldn't find information about that topic in the forum. Please try "
 "searching directly or create a new topic to start a discussion."
 msgstr ""
 
-#: classes/AIChatbot.php:628
+#: classes/AIChatbot.php:635
 msgid "Source: Knowledge Base"
 msgstr ""
 
-#: classes/AIChatbot.php:818 classes/AIChatbot.php:854 classes/AIChatbot.php:870
-#: classes/AIChatbot.php:894 classes/AIChatbot.php:940 classes/AIChatbot.php:967
+#: classes/AIChatbot.php:825 classes/AIChatbot.php:861 classes/AIChatbot.php:877
+#: classes/AIChatbot.php:901 classes/AIChatbot.php:947 classes/AIChatbot.php:974
 msgid "You do not have permission to use the chatbot"
 msgstr ""
 
-#: classes/AIChatbot.php:825
+#: classes/AIChatbot.php:832
 msgid "Missing required parameters"
 msgstr ""
 
-#: classes/AIChatbot.php:875 classes/AIChatbot.php:945
+#: classes/AIChatbot.php:882 classes/AIChatbot.php:952
 msgid "Missing conversation ID"
 msgstr ""
 
-#: classes/AIChatbot.php:901
+#: classes/AIChatbot.php:908
 msgid "Failed to create conversation"
 msgstr ""
 
-#: classes/AIChatbot.php:909
+#: classes/AIChatbot.php:916
 msgid ""
 "Hello! I'm your forum assistant. I can help you find information, answer "
 "questions about discussions, and navigate the forum. What would you like to "
 "know?"
 msgstr ""
 
-#: classes/AIChatbot.php:951
+#: classes/AIChatbot.php:958
 msgid "Failed to delete conversation"
 msgstr ""
 
-#: classes/AIChatbot.php:986 includes/phrases.php:1291
+#: classes/AIChatbot.php:993 includes/phrases.php:1291
 msgid "New Conversation"
 msgstr ""
 
@@ -8172,39 +9041,39 @@ msgstr ""
 msgid "No logs found matching your filters."
 msgstr ""
 
-#: classes/AILogs.php:1536 classes/AILogs.php:1566
+#: classes/AILogs.php:1515 classes/AILogs.php:1545
 msgid "Semantic Search"
 msgstr ""
 
-#: classes/AILogs.php:1537 classes/AILogs.php:1567
+#: classes/AILogs.php:1516 classes/AILogs.php:1546
 msgid "Public Search"
 msgstr ""
 
-#: classes/AILogs.php:1540 classes/AILogs.php:1570
+#: classes/AILogs.php:1519 classes/AILogs.php:1549
 msgid "Topic Suggestions"
 msgstr ""
 
-#: classes/AILogs.php:1542 classes/AILogs.php:1572 includes/phrases.php:1418
+#: classes/AILogs.php:1521 classes/AILogs.php:1551 includes/phrases.php:1418
 msgid "Suggest Reply"
 msgstr ""
 
-#: classes/AILogs.php:1543 classes/AILogs.php:1573
+#: classes/AILogs.php:1522 classes/AILogs.php:1552
 msgid "Analytics Insights"
 msgstr ""
 
-#: classes/AILogs.php:1545 classes/AILogs.php:1575
+#: classes/AILogs.php:1524 classes/AILogs.php:1554
 msgid "Knowledge Indexing"
 msgstr ""
 
-#: classes/AILogs.php:1546
+#: classes/AILogs.php:1525
 msgid "Batch Embedding"
 msgstr ""
 
-#: classes/AILogs.php:1547
+#: classes/AILogs.php:1526
 msgid "Queue Processing"
 msgstr ""
 
-#: classes/AILogs.php:1550 classes/AILogs.php:1578
+#: classes/AILogs.php:1529 classes/AILogs.php:1557
 msgid "Task Execution"
 msgstr ""
 
@@ -8214,28 +9083,28 @@ msgid ""
 "like to start a new topic to discuss this?"
 msgstr ""
 
-#: classes/AIWordPressIndexer.php:786 classes/AIWordPressIndexer.php:847
-#: classes/AIWordPressIndexer.php:1178 classes/AIWordPressIndexer.php:1307
+#: classes/AIWordPressIndexer.php:790 classes/AIWordPressIndexer.php:851
+#: classes/AIWordPressIndexer.php:1187 classes/AIWordPressIndexer.php:1316
 msgid "AI service is not connected"
 msgstr ""
 
-#: classes/AIWordPressIndexer.php:795
+#: classes/AIWordPressIndexer.php:799
 msgid "No valid terms specified"
 msgstr ""
 
-#: classes/AIWordPressIndexer.php:832
+#: classes/AIWordPressIndexer.php:836
 msgid "No posts found in this term"
 msgstr ""
 
-#: classes/AIWordPressIndexer.php:886
+#: classes/AIWordPressIndexer.php:890
 msgid "No posts found matching criteria"
 msgstr ""
 
-#: classes/AIWordPressIndexer.php:1197 classes/AIWordPressIndexer.php:1282
+#: classes/AIWordPressIndexer.php:1206 classes/AIWordPressIndexer.php:1291
 msgid "Local storage is not available"
 msgstr ""
 
-#: classes/AIWordPressIndexer.php:1420
+#: classes/AIWordPressIndexer.php:1429
 msgid "Invalid taxonomy or term"
 msgstr ""
 
@@ -8255,111 +9124,111 @@ msgstr ""
 msgid "Theme delete success"
 msgstr ""
 
-#: classes/Cache.php:495
+#: classes/Cache.php:525
 msgid "Please navigate in Dashboard to Settings > WP Super Cache"
 msgstr ""
 
-#: classes/Cache.php:496
+#: classes/Cache.php:526
 msgid "Go to Advanced Tab, scroll down to \"Rejected URL Strings\" option"
 msgstr ""
 
-#: classes/Cache.php:497 classes/Cache.php:505
+#: classes/Cache.php:527 classes/Cache.php:535
 msgid ""
 "Insert the URL path(s) of your forum page(s) one per line in the option "
 "textarea:"
 msgstr ""
 
-#: classes/Cache.php:498 classes/Cache.php:506 classes/Cache.php:514
-#: classes/Cache.php:531 classes/Cache.php:539 classes/Cache.php:547
+#: classes/Cache.php:528 classes/Cache.php:536 classes/Cache.php:544
+#: classes/Cache.php:561 classes/Cache.php:569 classes/Cache.php:577
 msgid "Save it and delete all caches."
 msgstr ""
 
-#: classes/Cache.php:503
+#: classes/Cache.php:533
 msgid "Please navigate in Dashboard to LiteSpeed Cache > Cache admin page"
 msgstr ""
 
-#: classes/Cache.php:504
+#: classes/Cache.php:534
 msgid "Go to Exclude Tab, find the \"Do Not Cache URIs\" option"
 msgstr ""
 
-#: classes/Cache.php:511
+#: classes/Cache.php:541
 msgid "Please navigate in Dashboard to WP Rocket > Advanced Rules Tab"
 msgstr ""
 
-#: classes/Cache.php:512
+#: classes/Cache.php:542
 msgid "Scroll down to \"Never cache (URLs)\" option"
 msgstr ""
 
-#: classes/Cache.php:513
+#: classes/Cache.php:543
 msgid ""
 "Insert the URL path(s) of your forum page(s) one per line with wildcard (.*) "
 "in the option textarea:"
 msgstr ""
 
-#: classes/Cache.php:519
+#: classes/Cache.php:549
 msgid "Please navigate in Dashboard to WP Fastest Cache > Exclude Tab"
 msgstr ""
 
-#: classes/Cache.php:520
+#: classes/Cache.php:550
 msgid "In the \"Exclude Pages\" section click the [Add New Rule] button"
 msgstr ""
 
-#: classes/Cache.php:521
+#: classes/Cache.php:551
 msgid ""
 "Select [Start with] option in the drop-down menu and insert the URL path(s) of "
 "your forum page(s) one per rule in the next field:"
 msgstr ""
 
-#: classes/Cache.php:522
+#: classes/Cache.php:552
 msgid ""
 "If you have more than one forum pages (boards) you should create separate "
 "rules for each forum board."
 msgstr ""
 
-#: classes/Cache.php:523
+#: classes/Cache.php:553
 msgid "Save rules and delete all caches."
 msgstr ""
 
-#: classes/Cache.php:528
+#: classes/Cache.php:558
 msgid "Please navigate in Dashboard to Performance > Page Cache admin page"
 msgstr ""
 
-#: classes/Cache.php:529
+#: classes/Cache.php:559
 msgid "Go to Advanced Tab, scroll down to Rejected URL Strings option"
 msgstr ""
 
-#: classes/Cache.php:530
+#: classes/Cache.php:560
 msgid ""
 "Scroll to Advanced section and insert the URL path(s) of your forum page(s) "
 "one per line in the \"Never cache the following pages\" textarea:"
 msgstr ""
 
-#: classes/Cache.php:536
+#: classes/Cache.php:566
 msgid "Please navigate in Dashboard to WP-Optimize > Cache admin page"
 msgstr ""
 
-#: classes/Cache.php:537
+#: classes/Cache.php:567
 msgid ""
 "Go to Advanced Settings Tab, find the \"URLs to exclude from caching\" option"
 msgstr ""
 
-#: classes/Cache.php:538
+#: classes/Cache.php:568
 msgid ""
 "Insert the URL path(s) of your forum page(s) one per line with wildcard [*] in "
 "the option textarea:"
 msgstr ""
 
-#: classes/Cache.php:544
+#: classes/Cache.php:574
 msgid "Please navigate in Dashboard to SG Optimizer > Caching admin page"
 msgstr ""
 
-#: classes/Cache.php:545
+#: classes/Cache.php:575
 msgid ""
 "Scroll to Exclude URLs from Caching section and click the \"pencil\" button, "
 "enable it, and click the button again"
 msgstr ""
 
-#: classes/Cache.php:546
+#: classes/Cache.php:576
 msgid ""
 "Insert the URL path(s) of your forum page(s) with wildcard [*] in the pop-up "
 "filed:"
@@ -8589,19 +9458,19 @@ msgid ""
 "another one."
 msgstr ""
 
-#: classes/Members.php:2296
+#: classes/Members.php:2371
 msgid "What should be done with wpForo content owned by this user?"
 msgstr ""
 
-#: classes/Members.php:2300
+#: classes/Members.php:2375
 msgid "What should be done with wpForo content owned by these users?"
 msgstr ""
 
-#: classes/Members.php:2307
+#: classes/Members.php:2382
 msgid "Delete all wpForo content."
 msgstr ""
 
-#: classes/Members.php:2309
+#: classes/Members.php:2384
 msgid "Attribute all content to:"
 msgstr ""
 
@@ -10362,7 +11231,7 @@ msgstr ""
 msgid "Display content excerpt for topics and replies."
 msgstr ""
 
-#: classes/Settings.php:2269 widgets/RecentPosts.php:367
+#: classes/Settings.php:2269 widgets/RecentPosts.php:388
 msgid "Excerpt Length"
 msgstr ""
 
@@ -10680,7 +11549,7 @@ msgstr ""
 msgid "Exclude file extensions"
 msgstr ""
 
-#: classes/Settings.php:2669 includes/hooks.php:3545
+#: classes/Settings.php:2669 includes/hooks.php:3577
 msgid "Google reCAPTCHA"
 msgstr ""
 
@@ -11952,7 +12821,7 @@ msgstr ""
 msgid "Minute"
 msgstr ""
 
-#: classes/Settings.php:4744 includes/hooks.php:2138 includes/phrases.php:433
+#: classes/Settings.php:4744 includes/hooks.php:2144 includes/phrases.php:433
 msgid "Rating Level"
 msgstr ""
 
@@ -11980,7 +12849,7 @@ msgstr ""
 msgid "Rating Icon"
 msgstr ""
 
-#: classes/Settings.php:4757 includes/hooks.php:2158 includes/phrases.php:344
+#: classes/Settings.php:4757 includes/hooks.php:2164 includes/phrases.php:344
 msgid "Level"
 msgstr ""
 
@@ -12321,7 +13190,7 @@ msgstr ""
 msgid "Front - Can see AI topic suggestion"
 msgstr ""
 
-#: classes/VectorStorageManager.php:1743
+#: classes/VectorStorageManager.php:1747
 msgid "No valid forum IDs provided."
 msgstr ""
 
@@ -12329,7 +13198,7 @@ msgstr ""
 msgid "wpForo Menu"
 msgstr ""
 
-#: includes/functions-template.php:2661
+#: includes/functions-template.php:2686
 msgid "No Title"
 msgstr ""
 
@@ -12381,16 +13250,16 @@ msgstr ""
 msgid "Adds Post Bookmark Feature For Posts"
 msgstr ""
 
-#: includes/functions.php:946 includes/phrases.php:327
+#: includes/functions.php:955 includes/phrases.php:327
 msgid "Items"
 msgstr ""
 
-#: includes/functions.php:1548
+#: includes/functions.php:1557
 #, php-format
 msgid "Could not write file %s"
 msgstr ""
 
-#: includes/functions.php:4013
+#: includes/functions.php:4103
 msgid ""
 "Sorry, this file couldn't be sanitized so for security reasons wasn't uploaded"
 msgstr ""
@@ -12409,66 +13278,66 @@ msgstr ""
 msgid "Uninstall"
 msgstr ""
 
-#: includes/hooks.php:1755
+#: includes/hooks.php:1761
 msgid "Clear"
 msgstr ""
 
-#: includes/hooks.php:1757
+#: includes/hooks.php:1763
 msgid "Select Color"
 msgstr ""
 
-#: includes/hooks.php:1782 includes/phrases.php:183
+#: includes/hooks.php:1788 includes/phrases.php:183
 msgid "Move"
 msgstr ""
 
-#: includes/hooks.php:1815
+#: includes/hooks.php:1821
 msgid "Please choose one reasons before sending a feedback!"
 msgstr ""
 
-#: includes/hooks.php:1818
+#: includes/hooks.php:1824
 msgid ""
 "With the email address, please check the \"I agree to receive email\" checkbox "
 "to proceed."
 msgstr ""
 
-#: includes/hooks.php:1821
+#: includes/hooks.php:1827
 msgid "Please fill your email address for feedback"
 msgstr ""
 
-#: includes/hooks.php:1822
+#: includes/hooks.php:1828
 msgid "Your email address is not valid"
 msgstr ""
 
-#: includes/hooks.php:1927
+#: includes/hooks.php:1933
 msgid ""
 "IMPORTANT: wpForo can't work with default permalink, please change permalink "
 "structure"
 msgstr ""
 
-#: includes/hooks.php:2014
+#: includes/hooks.php:2020
 msgid "Forum Profile Fields - wpForo"
 msgstr ""
 
-#: includes/hooks.php:2023
+#: includes/hooks.php:2029
 msgid "Forum - Usergroup"
 msgstr ""
 
-#: includes/hooks.php:2032
+#: includes/hooks.php:2038
 #, php-format
 msgid ""
 "Forum Usergroups are synched with User Roles based on the %s. When you change "
 "this user Role the Usergroup is automatically changed according to that table."
 msgstr ""
 
-#: includes/hooks.php:2043
+#: includes/hooks.php:2049
 msgid "Synced with user role"
 msgstr ""
 
-#: includes/hooks.php:2049
+#: includes/hooks.php:2055
 msgid "Role-Usergroup Synchronization is Turned ON!"
 msgstr ""
 
-#: includes/hooks.php:2055
+#: includes/hooks.php:2061
 msgid ""
 "This user Usergroup is automatically changed according to current Role. If you "
 "want to disable Role-Usergroup synchronization and manage Usergroups and User "
@@ -12477,19 +13346,19 @@ msgid ""
 "Synchronization\" option."
 msgstr ""
 
-#: includes/hooks.php:2073
+#: includes/hooks.php:2079
 msgid "Forum - Secondary Usergroups"
 msgstr ""
 
-#: includes/hooks.php:2099
+#: includes/hooks.php:2105
 msgid "Forum - User Timezone"
 msgstr ""
 
-#: includes/hooks.php:2110
+#: includes/hooks.php:2116
 msgid "User Reputation"
 msgstr ""
 
-#: includes/hooks.php:2113
+#: includes/hooks.php:2119
 msgid ""
 "By default all members get rating badges and titles based on number of posts. "
 "However, using this option you can grant lower or higher rating to certain "
@@ -12497,49 +13366,49 @@ msgid ""
 "be managed in Forums > Settings > Members Tab."
 msgstr ""
 
-#: includes/hooks.php:2122
+#: includes/hooks.php:2128
 msgid "Default Rating"
 msgstr ""
 
-#: includes/hooks.php:2129
+#: includes/hooks.php:2135
 msgid "Custom Rating"
 msgstr ""
 
-#: includes/hooks.php:2139 includes/phrases.php:868
+#: includes/hooks.php:2145 includes/phrases.php:868
 msgid "Rating Title"
 msgstr ""
 
-#: includes/hooks.php:2140 includes/phrases.php:430
+#: includes/hooks.php:2146 includes/phrases.php:430
 msgid "Rating Badge"
 msgstr ""
 
-#: includes/hooks.php:2952 includes/hooks.php:3006 includes/hooks.php:3159
-#: includes/hooks.php:3238
+#: includes/hooks.php:2984 includes/hooks.php:3038 includes/hooks.php:3191
+#: includes/hooks.php:3270
 msgid "Add New Forum"
 msgstr ""
 
-#: includes/hooks.php:2959 includes/hooks.php:3166
+#: includes/hooks.php:2991 includes/hooks.php:3198
 msgid "Add New User Group"
 msgstr ""
 
-#: includes/hooks.php:2968 includes/hooks.php:3105 includes/hooks.php:3175
-#: includes/hooks.php:3284
+#: includes/hooks.php:3000 includes/hooks.php:3137 includes/hooks.php:3207
+#: includes/hooks.php:3316
 msgid "Add New Phrase"
 msgstr ""
 
-#: includes/hooks.php:2977 includes/hooks.php:3221
+#: includes/hooks.php:3009 includes/hooks.php:3253
 msgid "Visit Forum"
 msgstr ""
 
-#: includes/hooks.php:3087 includes/hooks.php:3339
+#: includes/hooks.php:3119 includes/hooks.php:3371
 msgid "Add New Usergroup"
 msgstr ""
 
-#: includes/hooks.php:3307
+#: includes/hooks.php:3339
 msgid "Add New Board"
 msgstr ""
 
-#: includes/hooks.php:3537 includes/phrases.php:1128
+#: includes/hooks.php:3569 includes/phrases.php:1128
 #, php-format
 msgid ""
 "IMPORTANT! The forum registration form is probably under risk of spam attacks. "
@@ -12549,17 +13418,17 @@ msgid ""
 "dismiss this message."
 msgstr ""
 
-#: includes/hooks.php:3580
+#: includes/hooks.php:3612
 msgid "wpForo Polls addon is disabled!"
 msgstr ""
 
-#: includes/hooks.php:3583
+#: includes/hooks.php:3615
 msgid ""
 " Your addon version is not compatible with the current version of wpForo. "
 "Please update the addon or downgrade wpForo to 1.7.7"
 msgstr ""
 
-#: includes/hooks.php:3591
+#: includes/hooks.php:3623
 msgid "dismiss"
 msgstr ""
 
@@ -13611,10 +14480,6 @@ msgstr ""
 msgid "Descending order"
 msgstr ""
 
-#: includes/phrases.php:255
-msgid "Dismiss this notice."
-msgstr ""
-
 #: includes/phrases.php:256
 msgid "Display Avatars"
 msgstr ""
@@ -13625,10 +14490,6 @@ msgstr ""
 
 #: includes/phrases.php:260
 msgid "Edited: "
-msgstr ""
-
-#: includes/phrases.php:262
-msgid "Emails"
 msgstr ""
 
 #: includes/phrases.php:265
@@ -13781,10 +14642,6 @@ msgstr ""
 
 #: includes/phrases.php:325
 msgid "Insert member name or email"
-msgstr ""
-
-#: includes/phrases.php:326
-msgid "Install"
 msgstr ""
 
 #: includes/phrases.php:328
@@ -14813,10 +15670,6 @@ msgstr ""
 
 #: includes/phrases.php:673
 msgid "Subscribe options successfully updated, but previous value not changed"
-msgstr ""
-
-#: includes/phrases.php:674
-msgid "Success!"
 msgstr ""
 
 #: includes/phrases.php:675
@@ -16993,33 +17846,49 @@ msgstr ""
 msgid "Generate AI reply suggestion"
 msgstr ""
 
+#: includes/phrases.php:1421
+msgid "Sort tags"
+msgstr ""
+
+#: includes/phrases.php:1422
+msgid "Sort by"
+msgstr ""
+
+#: includes/phrases.php:1424
+msgid "A-Z"
+msgstr ""
+
+#: includes/phrases.php:1425
+msgid "Z-A"
+msgstr ""
+
 #: integrations/BuddyPress.php:34
 msgid "Search Forums..."
 msgstr ""
 
-#: integrations/UltimateMember.php:49 integrations/UltimateMember.php:432
+#: integrations/UltimateMember.php:49 integrations/UltimateMember.php:435
 msgid "User leaves a reply to wpForo topic"
 msgstr ""
 
-#: integrations/UltimateMember.php:51 integrations/UltimateMember.php:434
+#: integrations/UltimateMember.php:51 integrations/UltimateMember.php:437
 msgid "When a member replies to one of my forum topics"
 msgstr ""
 
-#: integrations/UltimateMember.php:54 integrations/UltimateMember.php:437
+#: integrations/UltimateMember.php:54 integrations/UltimateMember.php:440
 msgid "User replied to wpForo post"
 msgstr ""
 
-#: integrations/UltimateMember.php:56 integrations/UltimateMember.php:439
+#: integrations/UltimateMember.php:56 integrations/UltimateMember.php:442
 msgid "When a member replies to one of my post in forum topics"
 msgstr ""
 
-#: integrations/UltimateMember.php:433
+#: integrations/UltimateMember.php:436
 msgid ""
 "<strong>{member}</strong> has <strong>replied</strong> to a topic you started "
 "on the forum."
 msgstr ""
 
-#: integrations/UltimateMember.php:438
+#: integrations/UltimateMember.php:441
 msgid ""
 "<strong>{member}</strong> has <strong>replied</strong> to your post on the "
 "forum."
@@ -17051,22 +17920,22 @@ msgstr ""
 msgid "Display as dropdown"
 msgstr ""
 
-#: widgets/OnlineMembers.php:92
+#: widgets/OnlineMembers.php:110
 msgid "User Groups"
 msgstr ""
 
-#: widgets/OnlineMembers.php:102 widgets/RecentPosts.php:373
-#: widgets/RecentTopics.php:272
+#: widgets/OnlineMembers.php:120 widgets/RecentPosts.php:394
+#: widgets/RecentTopics.php:297
 msgid "Display with avatars"
 msgstr ""
 
-#: widgets/OnlineMembers.php:111 widgets/RecentPosts.php:415
-#: widgets/RecentTopics.php:294
+#: widgets/OnlineMembers.php:129 widgets/RecentPosts.php:436
+#: widgets/RecentTopics.php:319
 msgid "Auto Refresh Interval Seconds"
 msgstr ""
 
-#: widgets/OnlineMembers.php:113 widgets/RecentPosts.php:370
-#: widgets/RecentPosts.php:418 widgets/RecentTopics.php:297
+#: widgets/OnlineMembers.php:131 widgets/RecentPosts.php:391
+#: widgets/RecentPosts.php:439 widgets/RecentTopics.php:322
 msgid "Set 0 to disable autorefresh"
 msgstr ""
 
@@ -17122,35 +17991,35 @@ msgstr ""
 msgid "Random"
 msgstr ""
 
-#: widgets/RecentPosts.php:303 widgets/RecentTopics.php:219
+#: widgets/RecentPosts.php:324 widgets/RecentTopics.php:244
 msgid "Filter by forums"
 msgstr ""
 
-#: widgets/RecentPosts.php:321 widgets/RecentTopics.php:237
+#: widgets/RecentPosts.php:342 widgets/RecentTopics.php:262
 msgid "Autofilter by current forum"
 msgstr ""
 
-#: widgets/RecentPosts.php:335 widgets/RecentTopics.php:251
+#: widgets/RecentPosts.php:356 widgets/RecentTopics.php:276
 msgid "Order by"
 msgstr ""
 
-#: widgets/RecentPosts.php:353
+#: widgets/RecentPosts.php:374
 msgid "Limit Per Topic"
 msgstr ""
 
-#: widgets/RecentPosts.php:358
+#: widgets/RecentPosts.php:379
 msgid "set 0 to remove this limit"
 msgstr ""
 
-#: widgets/RecentPosts.php:384
+#: widgets/RecentPosts.php:405
 msgid "Exclude First Posts"
 msgstr ""
 
-#: widgets/RecentPosts.php:394
+#: widgets/RecentPosts.php:415
 msgid "Display Only Unread Posts"
 msgstr ""
 
-#: widgets/RecentPosts.php:404
+#: widgets/RecentPosts.php:425
 msgid "Display [new] indicator"
 msgstr ""
 
@@ -17162,7 +18031,7 @@ msgstr ""
 msgid "Views Count"
 msgstr ""
 
-#: widgets/RecentTopics.php:283
+#: widgets/RecentTopics.php:308
 msgid "Refer topics to first unread post"
 msgstr ""
 

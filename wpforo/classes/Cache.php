@@ -451,8 +451,9 @@ class Cache {
 		if( ! $filecount ) return;
 
 		// Dynamic limit based on online members (scales with forum activity)
-		$stats = WPF()->statistic();
-		$online = max( 2, intval( $stats['online_members_count'] ) );
+		// Use direct call to avoid recursion: statistic() calls post->get_url() which triggers cache->create() -> check() -> statistic()
+		$online = WPF()->member ? intval( WPF()->member->online_members_count() ) : 0;
+		$online = max( 2, $online );
 		$max = $online * 500;
 		$max = max( 1000, min( $max, 50000 ) );
 

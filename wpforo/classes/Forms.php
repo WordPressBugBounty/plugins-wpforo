@@ -321,7 +321,7 @@ class Forms {
 				} else {
 					$f    = $this->prepare_values( $f, WPF()->current_object['userid'] );
 					$html .= '<div class="wpf-field-wrap">';
-					$html .= $f['value'];
+					$html .= ( is_scalar( $f['value'] ) && ! $this->is_display_value_safe_html( $f ) ) ? esc_html( (string) $f['value'] ) : $f['value'];
 					$html .= '</div>';
 				}
 			} else {
@@ -1316,6 +1316,22 @@ class Forms {
 		return $value;
 	}
 	
+	/**
+	 * Whether prepare_values()/esc_field() already turned $f['value'] into trusted,
+	 * pre-escaped HTML for this field type/name (so it must NOT be esc_html()'d again
+	 * before being echoed).
+	 *
+	 * @param array $f field arguments (after prepare_values()/esc_field())
+	 *
+	 * @return bool
+	 */
+	public function is_display_value_safe_html( $f ) {
+		$safe_types = [ 'url', 'email', 'tel', 'file', 'avatar', 'color', 'textarea', 'tinymce', 'datetime', 'html' ];
+		$safe_names = [ 'skype', 'location', 'signature', 'about' ];
+
+		return in_array( wpfval( $f, 'type' ), $safe_types, true ) || in_array( wpfval( $f, 'name' ), $safe_names, true );
+	}
+
 	public function esc_field( $f ) {
 		if( wpfkey( $f, 'value' ) ) {
 			$f['value'] = wpforo_trim( $f['value'] );

@@ -2487,7 +2487,7 @@ function wpforo_apply_ucf_shortcode( $html ) {
                         $f['value'] = wpforo_member( $userid, $field_key );
                         $f          = WPF()->form->prepare_values( WPF()->form->esc_field( $f ), $userid );
 
-                        return $f['value'];
+                        return ( is_scalar( $f['value'] ) && ! WPF()->form->is_display_value_safe_html( $f ) ) ? esc_html( (string) $f['value'] ) : $f['value'];
                     }
                 }
             }

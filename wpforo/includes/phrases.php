@@ -1415,6 +1415,13 @@ $wpforo_phrases = [
     'Ask AI Bot to reply'  => __('Ask AI Bot to reply', 'wpforo'),
     'Bot Reply'  => __('Bot Reply', 'wpforo'),
     'Generate AI reply suggestion'  => __('Generate AI reply suggestion', 'wpforo'),
-    'Suggest Reply'  => __('Suggest Reply', 'wpforo')
+    'Suggest Reply'  => __('Suggest Reply', 'wpforo'),
+
+    // 3.1 Phrases
+    'Sort tags'  => __('Sort tags', 'wpforo'),
+    'Sort by'  => __('Sort by', 'wpforo'),
+    'Frequency'  => __('Frequency', 'wpforo'),
+    'A-Z'  => __('A-Z', 'wpforo'),
+    'Z-A'  => __('Z-A', 'wpforo')
 
 ];
