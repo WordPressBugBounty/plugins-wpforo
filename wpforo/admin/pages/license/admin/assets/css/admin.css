@@ -9,6 +9,16 @@
     margin: 20px 10px 20px;
 }
 
+#gvlicense-admin-wrap button{
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#gvlicense-admin-wrap button > .dashicons{
+    line-height: 1;
+}
+
 .logo-text {
     font-size: 22px;
     font-weight: 800;

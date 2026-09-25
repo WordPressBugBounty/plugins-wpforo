@@ -3637,6 +3637,11 @@ add_action( 'wpforo_after_init', function() {
 } );
 
 add_action( 'wpforo_after_init', function() {
+	add_action( 'wp_ajax_wpforo_dismiss_addons_store_promo', [ WPF()->notice, 'dismissAddonsStorePromo' ] );
+	add_action( 'admin_notices', [ WPF()->notice, 'addonsStorePromo' ] );
+} );
+
+add_action( 'wpforo_after_init', function() {
 	add_action( 'wp_ajax_dismiss_wpforo_cache_conflict_note', [ WPF()->notice, 'dismissCacheConflict' ] );
 } );
 

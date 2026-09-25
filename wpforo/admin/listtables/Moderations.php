@@ -296,7 +296,7 @@ class Moderations extends WP_List_Table {
 			$args['include'] = WPF()->moderation->search( $s );
 		}
 		$filter_by_userid = $this->get_filter_by_userid_var();
-		$orderby          = wpfval( $_REQUEST, 'orderby' );
+		$orderby          = (string) wpfval( $_REQUEST, 'orderby' );
 		$order            = strtoupper( (string) wpfval( $_REQUEST, 'order' ) );
 		if( $filter_by_userid !== - 1 ) $args['userid'] = $filter_by_userid;
 

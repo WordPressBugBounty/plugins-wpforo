@@ -297,5 +297,90 @@ class Notices {
 		wpforo_update_option( 'wpforo_excluded_cache', trim( (string) $excluded, ',' ) );
 		exit();
 	}
-	
+
+	/**
+	 * Addons Store Promo Box
+	 * Shows a dismissible info box promoting the new Addons Store page
+	 * where users can browse, purchase, and manage wpForo addons directly.
+	 *
+	 * @since 3.1.8
+	 */
+	public function addonsStorePromo() {
+		if( ! current_user_can( 'manage_options' ) ) return;
+
+		// Don't show on the addons page itself (they're already there)
+		if( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+			if( $screen && strpos( $screen->id, 'wpforo-addons' ) !== false ) return;
+		}
+
+		// Check if user has already dismissed this promo version
+		$promo_version = '3.2.0';
+		$dismissed     = get_user_meta( get_current_user_id(), 'wpforo_addons_store_promo_dismissed', true );
+		if( $dismissed === $promo_version ) return;
+
+		$addons_url = admin_url( 'admin.php?page=wpforo-addons' );
+		$addons     = wpforo_get_addons_info();
+		$addon_thumbs = array_slice( array_column( $addons, 'thumb' ), 0, 10 );
+		?>
+		<div class="notice notice-info wpforo-addons-store-promo is-dismissible" style="padding: 15px 12px; border-left-color: #00a0d2;">
+			<div style="display: flex; align-items: flex-start; gap: 15px;">
+				<div style="flex-shrink: 0;">
+					<span class="dashicons dashicons-store" style="font-size: 50px; width: 50px; height: 50px; color: #00a0d2;"></span>
+				</div>
+				<div style="flex: 1;">
+					<p style="font-size: 16px; font-weight: 600; margin: 0 0 6px 0; color: #1d2327;">
+						<?php
+							printf(
+								__( 'Get Your wpForo Addon Licenses %s', 'wpforo' ),
+								'<span style="background: linear-gradient(90deg, #1d2327, #ff6d00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">' . __( 'Directly in Your Dashboard', 'wpforo' ) . '</span>'
+							);
+						?>
+					</p>
+					<p style="font-size: 15px; margin: 0 0 12px 0; color: #50575e;">
+						<?php _e( 'You can now purchase, install, and manage all wpForo addons directly from the Addons page in your WordPress dashboard, no need to visit the gVectors Store. Activate licenses, get automatic updates, and extend your forum with just a few clicks.', 'wpforo' ); ?>
+					</p>
+					<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+						<?php foreach( $addon_thumbs as $thumb ) : ?>
+							<img src="<?php echo esc_url( $thumb ); ?>" alt="" style="width: 30px; height: 30px; border-radius: 3px; object-fit: cover;" />
+						<?php endforeach; ?>
+						<a href="<?php echo esc_url( $addons_url ); ?>" class="button" style="height: 30px; line-height: 28px; padding: 0 22px; font-size: 13px; min-height: 30px; border-color: #0283aa; color: #0283aa;">
+							<?php _e( 'Browse All', 'wpforo' ); ?> &rarr;
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+		jQuery(document).on('click', '.wpforo-addons-store-promo .notice-dismiss', function() {
+			jQuery.ajax({
+				url: ajaxurl,
+				data: {
+					action: 'wpforo_dismiss_addons_store_promo',
+					_wpnonce: '<?php echo wp_create_nonce( 'wpforo_dismiss_addons_store_promo' ); ?>'
+				}
+			});
+		});
+		</script>
+		<?php
+	}
+
+	/**
+	 * AJAX handler: dismiss the addons store promo for the current user.
+	 *
+	 * @since 3.1.8
+	 */
+	public function dismissAddonsStorePromo() {
+		check_ajax_referer( 'wpforo_dismiss_addons_store_promo', '_wpnonce' );
+
+		if( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 'Unauthorized', 403 );
+		}
+
+		$promo_version = '3.2.0';
+		update_user_meta( get_current_user_id(), 'wpforo_addons_store_promo_dismissed', $promo_version );
+
+		wp_send_json_success();
+	}
+
 }

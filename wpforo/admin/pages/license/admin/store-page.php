@@ -139,7 +139,6 @@ if( ! current_user_can( 'administrator' ) ) exit;
 						<# for (var p = 0; p < data.prices.length; p++) {
 							var optLabel = data.prices[p].formatted_price + ' ' + data.prices[p].interval_label;
 							if (data.prices[p].name) optLabel += ' \u2014 ' + data.prices[p].name;
-							if (data.prices[p].description) optLabel += ' (' + data.prices[p].description + ')';
 						#>
 						<option value="{{data.prices[p].id}}"
 							data-price="{{data.prices[p].formatted_price}}"
@@ -155,9 +154,6 @@ if( ! current_user_can( 'administrator' ) ) exit;
 						<span class="gvlicense-price-interval">{{data.prices[_mainPriceIdx].interval_label}}</span>
 						<# if (data.prices[_mainPriceIdx].name) { #>
 						<span class="gvlicense-price-name">{{data.prices[_mainPriceIdx].name}}</span>
-						<# } #>
-						<# if (data.prices[_mainPriceIdx].description) { #>
-						<span class="gvlicense-price-desc">{{data.prices[_mainPriceIdx].description}}</span>
 						<# } #>
 					</div>
 				</div>

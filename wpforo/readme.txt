@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 7.1
-Stable tag: 3.1.7
+Stable tag: 3.2.0
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -136,6 +136,18 @@ When using wpForo addons purchased from the gVectors store, the plugin communica
 [Terms of Service](https://gvectors.com/terms-and-conditions/)
 [Privacy Policy](https://gvectors.com/privacy-policy/)
 
+**gVectors Addons News & License Reminders** (store.gvectors.com)
+
+If the forum administrator explicitly enables the addon news service (it is disabled by default and requires opt-in), wpForo connects to store.gvectors.com once per day to:
+
+* Fetch news about new addons, new features and announcements (endpoint: /news) — this request sends no site-specific data beyond standard HTTP request information
+* Check for addon licenses that are close to expiration (endpoint: /at-risk-licenses) — this request sends your site address, an anonymous site identifier (an HMAC hash generated from your site domain and your WordPress security salts), and the slugs and installed versions of your gVectors addons
+
+No personal data, no email addresses, and no forum content is ever sent to this service. News notifications are shown as dismissible messages in the WordPress admin, and summary emails are sent by your own site (via your own mail server) to site administrators. The service can be disabled at any time from the wpForo Addons page, which stops all outbound requests immediately.
+
+[Terms of Service](https://gvectors.com/terms-and-conditions/)
+[Privacy Policy](https://gvectors.com/privacy-policy/)
+
 
 == Installation ==
 
@@ -232,8 +244,13 @@ IMPORTANT NOTES for UPDATE
  - After the update, please delete all caches and purge CDN if you have
  - After the update, please flush Redis Object Cache if you have this cache enabled
 
-[wpForo Forum v3.0 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-0-is-released/)
+[wpForo Forum v3.2 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-2-is-released/)
 
+
+
+= wpForo Forum 3.2.0 | 25.09.2026 =
+
+* Addons Store: Purchase and manage addon licenses directly in your WordPress dashboard. No need to go to gVectors Store, purchase, then download and install. Now you can do one-click purchase, install, and update addons directly in your wpForo > Addons admin page.
 
 
 = wpForo Forum 3.1.7 | 22.09.2026 =

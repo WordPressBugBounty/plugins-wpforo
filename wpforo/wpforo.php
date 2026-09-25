@@ -5,7 +5,7 @@
 * Description: WordPress Forum plugin. wpForo is the only AI powered forum solution for your community. Modern design and 5 forum layouts.
 * Author: gVectors Team
 * Author URI: https://gvectors.com/
-* Version: 3.1.7
+* Version: 3.2.0
 * Requires at least: 5.2
 * Requires PHP: 7.1
 * Text Domain: wpforo
@@ -14,14 +14,15 @@
 
 namespace wpforo;
 
-define( 'WPFORO_VERSION', '3.1.7' );
+define( 'WPFORO_VERSION', '3.2.0' );
 
 //Exit if accessed directly
 if( ! defined( 'ABSPATH' ) ) exit;
 
 define( 'WPFORO_DIR', rtrim( plugin_dir_path( __FILE__ ), '/' ) );
 define( 'WPFORO_URL', rtrim( plugins_url( '', __FILE__ ), '/' ) );
-define( 'WPFORO_BASENAME', plugin_basename( __FILE__ ) ); //wpforo/wpforo.php
+define( 'WPFORO_BASENAME', plugin_basename( __FILE__ ) ); // "wpforo/wpforo.php"
+define( 'WPFORO_BASEFOLDER', basename(WPFORO_DIR) ); // "wpforo"
 
 require_once WPFORO_DIR . "/autoload.php";
 
@@ -47,6 +48,7 @@ use wpforo\classes\Moderation;
 use wpforo\classes\Notices;
 use wpforo\classes\Permissions;
 use wpforo\classes\Phrases;
+use wpforo\classes\PluginsOrdering;
 use wpforo\classes\PostMeta;
 use wpforo\classes\Posts;
 use wpforo\classes\RamCache;
@@ -56,12 +58,14 @@ use wpforo\classes\TaskManager;
 use wpforo\classes\EmailQueue;
 use wpforo\classes\Template;
 use wpforo\classes\Topics;
-use wpforo\classes\VectorStorageManager;
 use wpforo\classes\UserGroups;
+use wpforo\classes\VectorStorageManager;
 use wpforo\modules\bookmarks\Bookmarks;
 use wpforo\modules\reactions\Reactions;
 use wpforo\modules\revisions\Revisions;
 use wpforo\modules\subscriptions\Subscriptions;
+
+new PluginsOrdering( WPFORO_BASENAME );
 
 final class wpforo {
 	private static $_instance = null;
@@ -213,7 +217,7 @@ final class wpforo {
 	public $topic;
 	/** @var UserGroups */
 	public $usergroup;
-	
+
 	public static function instance() {
 		if( is_null( self::$_instance ) ) self::$_instance = new self();
 		

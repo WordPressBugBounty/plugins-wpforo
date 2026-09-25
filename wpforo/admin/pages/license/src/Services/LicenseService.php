@@ -221,10 +221,12 @@ class LicenseService {
         // Process every license result — update local storage and notices
         foreach( $key_to_product as $license_key => $product_id ) {
             if( ! isset( $batch_results[ $license_key ] ) ) continue;
-            
-            $result  = $batch_results[ $license_key ];
-            $license = $licenses[ $product_id ];
-            
+
+            $result     = $batch_results[ $license_key ];
+            $license    = $licenses[ $product_id ];
+            $product_id = $this->sync_product_key( $product_id, $result );
+            if( $product_id === '' ) continue;
+
             if( ! empty( $result['success'] ) && ! empty( $result['data'] ) ) {
                 $this->save( $product_id, $result['data'] );
                 
@@ -347,6 +349,31 @@ class LicenseService {
     }
     
     /**
+     * If the server reports a real Paddle product_id different from the local key
+     * (e.g. a migrated legacy license stored under its plugin slug), move the local
+     * license to that key so the store UI treats it like any purchased license.
+     * Returns the key to continue with, or '' when the entry was dropped because an
+     * active license already exists under the server's product_id.
+     */
+    private function sync_product_key( string $product_id, array $result ): string {
+        $server_pid = $result['data']['product_id'] ?? '';
+        if( ! is_string( $server_pid ) || strpos( $server_pid, 'pro_' ) !== 0 || $server_pid === $product_id ) return $product_id;
+
+        $licenses = $this->get_all();
+        if( ! isset( $licenses[ $product_id ] ) ) return $product_id;
+
+        $keep_existing = isset( $licenses[ $server_pid ] ) && $this->is_active( $server_pid );
+        if( ! $keep_existing ) {
+            $licenses[ $server_pid ]               = $licenses[ $product_id ];
+            $licenses[ $server_pid ]['product_id'] = $server_pid;
+        }
+        unset( $licenses[ $product_id ] );
+        update_option( $this->option_key, $licenses );
+
+        return $keep_existing ? '' : $server_pid;
+    }
+
+    /**
      * Remove a license for a product
      */
     public function remove( string $product_id ): bool {
@@ -406,7 +433,9 @@ class LicenseService {
         
         $plugin_slug = $license['plugin_slug'] ?? '';
         if( empty( $plugin_slug ) ) return;
-        
+        // Addon not physically installed — no notice needed
+        if( ! is_dir( WP_PLUGIN_DIR . '/' . $plugin_slug ) ) return;
+
         $expired_notices                 = get_option( $this->expired_notice_option, [] );
         $expired_notices[ $plugin_slug ] = [
             'product_name' => $license['product_name'] ?? $plugin_slug,
@@ -466,6 +495,11 @@ class LicenseService {
             ];
         }
         
+        $product_id = $this->sync_product_key( $product_id, $response );
+        if( $product_id === '' ) {
+            return [ 'valid' => false, 'reason' => 'duplicate', 'error' => '', 'status' => '', 'removed' => true, 'addon_deleted' => false ];
+        }
+
         // License is valid on the server
         if( ! empty( $response['success'] ) && ! empty( $response['data'] ) ) {
             $this->save( $product_id, $response['data'] );
@@ -617,9 +651,11 @@ class LicenseService {
         foreach( $keys_to_validate as $license_key => $product_id ) {
             if( ! isset( $batch_results[ $license_key ] ) ) continue;
             
-            $result  = $batch_results[ $license_key ];
-            $license = $licenses[ $product_id ];
-            
+            $result     = $batch_results[ $license_key ];
+            $license    = $licenses[ $product_id ];
+            $product_id = $this->sync_product_key( $product_id, $result );
+            if( $product_id === '' ) continue;
+
             if( ! empty( $result['success'] ) && ! empty( $result['data'] ) ) {
                 // License is valid — update local data
                 $this->save( $product_id, $result['data'] );

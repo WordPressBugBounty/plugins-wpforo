@@ -505,6 +505,14 @@ function wpforo_uninstall() {
 	);
 	WPF()->db->query( "DELETE FROM `" . WPF()->db->usermeta . "` WHERE `meta_key` REGEXP '^" . WPF()->base_prefix . "'" );
 	foreach( WPF()->_base_tables as $table ) WPF()->db->query( "DROP TABLE IF EXISTS `" . wpforo_fix_table_name( $table ) . "`" );
+
+	// gVectors News module cleanup — shared gvectors_* data is removed only when
+	// no other gVectors plugin (wpDiscuz, ...) carrying the module remains installed
+	if( class_exists( \gVectors\News\NewsModule::class ) ) {
+		$gv_news_config = \gVectors\News\NewsModule::get( WPFORO_BASEFOLDER, 'config' );
+		if( $gv_news_config ) \gVectors\News\NewsModule::uninstall( $gv_news_config );
+	}
+
 	deactivate_plugins( WPFORO_BASENAME );
 }
 

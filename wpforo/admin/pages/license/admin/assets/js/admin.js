@@ -254,15 +254,6 @@
 					$nameEl.remove();
 				}
 
-				var desc = $opt.data('description') || '';
-				var $descEl = $detail.find('.gvlicense-price-desc');
-				if (desc) {
-					if ($descEl.length) { $descEl.text(desc); }
-					else { $detail.append('<span class="gvlicense-price-desc">' + $('<span>').text(desc).html() + '</span>'); }
-				} else {
-					$descEl.remove();
-				}
-
 				// Update buy button data attribute
 				$card.find('.gvlicense-buy-btn').data('price-id', $select.val());
 			});

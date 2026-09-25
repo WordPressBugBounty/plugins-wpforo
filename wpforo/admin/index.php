@@ -105,11 +105,6 @@ function wpforo_admin_menu(){
 				require( WPFORO_DIR . '/admin/pages/themes.php' );
 			} );
 		}
-		if( wpforo_current_user_is( 'admin' ) ) {
-			add_submenu_page( $parent_slug, __( 'Addons', 'wpforo' ), __( 'Addons', 'wpforo' ), 'read', wpforo_prefix_slug( 'addons' ), function() {
-				require( WPFORO_DIR . '/admin/pages/addons.php' );
-			} );
-		}
 
 		do_action( 'wpforo_admin_base_menu', $parent_slug );
 	}
@@ -169,11 +164,6 @@ function wpforo_admin_menu_multiboard(){
 		if( WPF()->usergroup->can( 'mth' ) || wpforo_current_user_is( 'admin' ) ) {
 			add_submenu_page( $parent_slug, __( 'Themes', 'wpforo' ), __( 'Themes', 'wpforo' ), 'read', wpforo_prefix_slug( 'themes' ), function() {
 				require( WPFORO_DIR . '/admin/pages/themes.php' );
-			} );
-		}
-		if( wpforo_current_user_is( 'admin' ) ) {
-			add_submenu_page( $parent_slug, __( 'Addons', 'wpforo' ), __( 'Addons', 'wpforo' ), 'read', wpforo_prefix_slug( 'addons' ), function() {
-				require( WPFORO_DIR . '/admin/pages/addons.php' );
 			} );
 		}
 

@@ -16,6 +16,9 @@ spl_autoload_register( function( $namespace ) {
 	}
 } );
 
+require_once __DIR__ . '/modules/license/bootstrap.php';
+require_once __DIR__ . '/modules/news/bootstrap.php';
+
 /**
  * Main instance of wpForo.
  *

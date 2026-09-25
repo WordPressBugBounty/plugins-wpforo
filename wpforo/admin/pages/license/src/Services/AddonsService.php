@@ -30,6 +30,7 @@ class AddonsService {
      * Expired licenses are NOT offered updates (addon keeps working but no new versions).
      */
     private $update_check_done = false;
+    private $pruned            = false;
     private $all_addons_transient_name;
     private $signature_check_hook;
     private $license_check_hook;
@@ -1360,6 +1361,8 @@ class AddonsService {
      * Uses a grace period: show FATAL notice first, deactivate after TAMPER_GRACE_DAYS.
      */
     public function verify_all_addon_signatures(): void {
+        $this->prune_missing_addons();
+
         // Skip all checks on development/local/staging environments
         if( LicenseModule::is_development_site() ) return;
         
@@ -1519,10 +1522,12 @@ class AddonsService {
      */
     public function track_tamper_notice_view(): void {
         if( ! current_user_can( 'administrator' ) ) return;
-        
+
+        $this->prune_missing_addons();
+
         $tampered = get_option( $this->tampered_option, [] );
         if( empty( $tampered ) ) return;
-        
+
         $seen    = get_option( $this->tamper_dismissed_option, [] );
         $updated = false;
         
@@ -1563,15 +1568,66 @@ class AddonsService {
     }
     
     /**
-     * When a plugin is deleted, clear its tamper flag if it had one.
+     * When a plugin is deleted, forget all stored notice/tamper/legacy data for it.
      */
     public function on_plugin_deleted( string $plugin_file, bool $deleted ): void {
         if( ! $deleted ) return;
-        
+
         $slug = dirname( $plugin_file );
         if( $slug && $slug !== '.' ) {
-            $this->clear_tamper_flag( $slug );
-            $this->clear_legacy_cache( $slug );
+            $this->forget_addon( $slug );
+        }
+    }
+
+    /**
+     * Check if an addon physically exists on disk as a real plugin.
+     * An empty leftover folder (no plugin header file) counts as not present.
+     */
+    private function is_addon_present( string $plugin_slug ): bool {
+        if( empty( $plugin_slug ) || ! is_dir( WP_PLUGIN_DIR . '/' . $plugin_slug ) ) return false;
+
+        return ! empty( $this->get_installed_plugin_file( $plugin_slug ) );
+    }
+
+    /**
+     * Remove all per-addon notice, tamper and legacy-cache data for a slug.
+     * License records are intentionally kept — they are paid entitlements used by the store page.
+     */
+    private function forget_addon( string $plugin_slug ): void {
+        $expired = get_option( $this->expired_notice_option, [] );
+        if( isset( $expired[ $plugin_slug ] ) ) {
+            unset( $expired[ $plugin_slug ] );
+            update_option( $this->expired_notice_option, $expired );
+        }
+
+        $this->clear_tamper_flag( $plugin_slug );
+        $this->clear_legacy_cache( $plugin_slug );
+
+        foreach( [ 'tampered', 'expired', 'legacy' ] as $type ) {
+            delete_transient( 'gvectors_' . $type . '_dismissed_' . $plugin_slug );
+        }
+    }
+
+    /**
+     * Rewind stored per-addon data for addons that no longer physically exist
+     * (e.g. deleted via FTP / file manager, bypassing the deleted_plugin hook).
+     * Runs once per request per instance.
+     */
+    public function prune_missing_addons(): void {
+        if( $this->pruned ) return;
+        $this->pruned = true;
+
+        $slugs = [];
+        foreach( [ $this->expired_notice_option, $this->tampered_option, $this->tamper_dismissed_option, $this->legacy_licenses_option, $this->legacy_notice_option ] as $option ) {
+            $data = get_option( $option, [] );
+            if( is_array( $data ) ) $slugs = array_merge( $slugs, array_keys( $data ) );
+        }
+
+        foreach( array_unique( $slugs ) as $slug ) {
+            $slug = (string) $slug;
+            if( ! $this->is_addon_present( $slug ) ) {
+                $this->forget_addon( $slug );
+            }
         }
     }
     
@@ -1601,15 +1657,20 @@ class AddonsService {
      * Does NOT deactivate addons for expired licenses - they keep working.
      */
     public function check_all_license_validity(): void {
+        $this->prune_missing_addons();
+
         $licenses = $this->licenseService->get_all();
         if( empty( $licenses ) ) return;
-        
+
         $expired_notices = get_option( $this->expired_notice_option, [] );
-        
+
         foreach( $licenses as $license ) {
             $plugin_slug = $license['plugin_slug'] ?? '';
             if( empty( $plugin_slug ) ) continue;
-            if( ! $this->is_installed( $plugin_slug ) ) continue;
+            if( ! $this->is_installed( $plugin_slug ) ) {
+                unset( $expired_notices[ $plugin_slug ] );
+                continue;
+            }
             
             $status     = $license['status'] ?? '';
             $expires_at = $license['expires_at'] ?? '';
@@ -1841,24 +1902,16 @@ class AddonsService {
     public function tampered_addon_notice(): void {
         if( ! $this->is_notice_page() ) return;
         if( ! current_user_can( 'administrator' ) ) return;
+
+        $this->prune_missing_addons();
+
         if( LicenseModule::is_development_site() ) return;
-        
+
         $tampered = get_option( $this->tampered_option, [] );
         if( empty( $tampered ) ) return;
-        
-        $changed = false;
+
         foreach( $tampered as $slug => $info ) {
-            if( ! is_dir( WP_PLUGIN_DIR . '/' . $slug ) ) {
-                unset( $tampered[ $slug ] );
-                $changed = true;
-            }
-        }
-        if( $changed ) {
-            update_option( $this->tampered_option, $tampered );
-        }
-        if( empty( $tampered ) ) return;
-        
-        foreach( $tampered as $slug => $info ) {
+            if( ! $this->is_addon_present( $slug ) ) continue;
             if( get_transient( 'gvectors_tampered_dismissed_' . $slug ) ) continue;
 
             $files       = $info['files'] ?? [];
@@ -2019,10 +2072,13 @@ class AddonsService {
         if( ! $this->is_notice_page() ) return;
         if( ! current_user_can( 'administrator' ) ) return;
         
+        $this->prune_missing_addons();
+
         $expired = get_option( $this->expired_notice_option, [] );
         if( empty( $expired ) ) return;
-        
+
         foreach( $expired as $slug => $info ) {
+            if( ! $this->is_addon_present( $slug ) ) continue;
             if( get_transient( 'gvectors_expired_dismissed_' . $slug ) ) continue;
 
             $product_name = $info['product_name'] ?? $slug;
@@ -2075,9 +2131,11 @@ class AddonsService {
         if( ! $this->is_notice_page() ) return;
         if( ! current_user_can( 'administrator' ) ) return;
         
+        $this->prune_missing_addons();
+
         $notices = get_option( $this->legacy_notice_option, [] );
         if( empty( $notices ) ) return;
-        
+
         $addons_page_url = admin_url( $this->config->get_dashboard_addons_store_url() );
         
         foreach( $notices as $slug => $info ) {
@@ -2085,7 +2143,7 @@ class AddonsService {
             if( empty( $info['status'] ) || $info['status'] !== 'expired' ) continue;
 
             // Verify the addon is still installed
-            if( ! is_dir( WP_PLUGIN_DIR . '/' . $slug ) ) continue;
+            if( ! $this->is_addon_present( $slug ) ) continue;
 
             if( get_transient( 'gvectors_legacy_dismissed_' . $slug ) ) continue;
 
