@@ -18,6 +18,8 @@ if( ! defined( 'ABSPATH' ) ) exit;
  *   - expiry_reminder                  (emails only — transactional)
  *   - renewal_offer                    (emails only — unused personal renewal
  *     discount reminders, unsubscribable separately from expiry warnings)
+ *   - blocked_update                   (emails only — WordPress found new versions of
+ *     licensed addons but this site blocks plugin installs)
  *   - new_addon, new_feature, announcement  (news content types)
  *   - addons_installed / addons_not_installed  (relevance filter — applies only
  *     to news items targeted at a specific addon via plugin_slug: news about an
@@ -45,7 +47,7 @@ class PrefsService {
     public const RELEVANCE_CATEGORIES = [ 'addons_installed', 'addons_not_installed' ];
 
     /** Categories that only exist on the emails channel. */
-    public const EMAIL_ONLY_CATEGORIES = [ 'expiry_reminder', 'renewal_offer', 'abandoned_checkout', 'recommendations' ];
+    public const EMAIL_ONLY_CATEGORIES = [ 'expiry_reminder', 'renewal_offer', 'abandoned_checkout', 'blocked_update', 'recommendations' ];
 
     private $config;
 

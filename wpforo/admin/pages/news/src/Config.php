@@ -142,6 +142,11 @@ class Config {
         return $this->get_prefix() . 'abandoned_emailed';
     }
 
+    /** User meta: "plugin_slug:version" keys of blocked-update notices already emailed to this admin. */
+    public function get_emailed_blocked_updates_meta(): string {
+        return $this->get_prefix() . 'emailed_blocked_updates';
+    }
+
     /** User meta: addon slugs already recommended to this admin (each at most once, ever). */
     public function get_emailed_recs_meta(): string {
         return $this->get_prefix() . 'emailed_recommendations';

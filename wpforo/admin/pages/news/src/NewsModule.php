@@ -71,6 +71,10 @@ class NewsModule {
             // that a checkout is still unpaid at a phase — email the purchaser.
             add_action( 'gvectors_abandoned_checkout_email', [ $email, 'handle_abandoned_checkout' ], 10, 4 );
 
+            // Blocked updates: license module's update check found new versions of licensed
+            // addons that this site can't install (file modifications blocked) — tell the admins.
+            add_action( 'gvectors_blocked_updates', [ $email, 'handle_blocked_updates' ], 10, 1 );
+
             self::$core = [
                 'config'     => $config,
                 'api'        => $api,

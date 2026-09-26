@@ -28,6 +28,7 @@ class AdminPage {
         'expiry_reminder'      => [ 'License expiry & billing reminders', 'Transactional — expiring/expired license warnings and failed-payment notices. Email only.' ],
         'renewal_offer'        => [ 'Renewal discount offers', 'Reminders about unused personal renewal discounts reserved for this site, before they expire. Email only.' ],
         'abandoned_checkout'   => [ 'Unfinished purchase reminders', 'Reminders when a checkout you started was not completed, including any recovery discount. Sent only to the administrator who started the purchase. Email only.' ],
+        'blocked_update'       => [ 'Addon updates blocked by site permissions', 'Notice when WordPress found new versions of your licensed addons but this site does not allow it to install plugins. Sent once per new version. Email only.' ],
         'recommendations'      => [ 'Addon recommendations', 'Personalized suggestions of addons other sites with a similar setup use. Each recommendation is sent at most once. Email only.' ],
         'new_addon'            => [ 'New addon announcements', 'Marketing — when a new addon is released.' ],
         'new_feature'          => [ 'New feature announcements', 'Marketing — when an addon gets a major new feature.' ],

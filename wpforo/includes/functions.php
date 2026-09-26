@@ -2987,6 +2987,33 @@ function wpforo_decode( $data ) {
 	return $data;
 }
 
+/**
+ * Build a REGEXP literal for searching inside a wp_json_encode() stored column.
+ *
+ * The haystack (profiles.fields, postmeta.metavalue) is written with wp_json_encode(),
+ * which escapes forward slashes ("S/4HANA" is stored as S\/4HANA) and non-ASCII
+ * characters (Ľ), so the needle must be encoded the same way or it can never match.
+ * Callers must still wrap the result in esc_sql() before putting it in a query.
+ *
+ * @param string $value Raw needle.
+ *
+ * @return string Regex-literal needle, without SQL escaping.
+ */
+function wpforo_json_regexp_needle( $value ): string {
+	$value = (string) $value;
+
+	// esc_sql() cannot reliably escape invalid UTF-8 on a utf8mb4 connection and
+	// wp_json_encode() returns false for it, so strip it before encoding.
+	$clean = wp_check_invalid_utf8( $value, true );
+	$json  = ( ! is_string( $clean ) || $clean === '' ) ? false : wp_json_encode( $clean );
+
+	// Never return an empty needle for a non-empty search term: in a substring
+	// pattern that would match every row. \u0000 cannot occur in stored field data.
+	if( ! is_string( $json ) || strlen( $json ) < 2 ) return ( $value === '' ) ? '' : preg_quote( '\u0000' );
+
+	return preg_quote( substr( $json, 1, -1 ) );
+}
+
 function wpforo_trim( $data ) {
 	$data = is_array( $data ) ? array_map( 'wpforo_trim', $data ) : trim( (string) $data );
 

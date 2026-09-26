@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 7.1
-Stable tag: 3.2.0
+Stable tag: 3.2.1
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -248,6 +248,17 @@ IMPORTANT NOTES for UPDATE
 
 
 
+= wpForo Forum 3.2.1 | 26.09.2026 =
+
+* Addons Store: Added product sections with structured grouping and navigation
+* Addons Store: Added support for manual plugin installation with signed ZIP links
+* Fixed: Member Search by custom fields returned no results for values with non-Latin characters (Cyrillic, Greek, Armenian, Chinese, Japanese, Korean, Arabic, Hebrew, Hindi, Thai) and for accented Latin characters (Slovak, Czech, Polish, German, French, Spanish)
+* Fixed: Member Search by custom fields returned no results for values containing special characters, such as / - . + * ? [ ] ( ) { } = ! < > | : ^ $ (e.g. S/4HANA, BW/4HANA, FI-CO)
+* Fixed: Topic Search by custom fields had the same no-result issue for values with non-Latin and special characters
+* Fixed: Member Search with multiple custom fields could return wrong results, as the search phrase was altered after the first field
+* Security: Hardened custom field search against malformed UTF-8 input in search values
+
+
 = wpForo Forum 3.2.0 | 25.09.2026 =
 
 * Addons Store: Purchase and manage addon licenses directly in your WordPress dashboard. No need to go to gVectors Store, purchase, then download and install. Now you can do one-click purchase, install, and update addons directly in your wpForo > Addons admin page.
@@ -257,6 +268,7 @@ IMPORTANT NOTES for UPDATE
 
 * Security: Fixed Stored XSS vulnerability in some text fields
 * Fixed: Infinite recursion causing fatal error and 504/508 timeouts on forum pages
+
 
 = wpForo Forum 3.1.6 | 18.09.2026 =
 

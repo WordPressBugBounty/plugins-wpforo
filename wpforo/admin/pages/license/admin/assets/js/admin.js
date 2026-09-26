@@ -15,8 +15,10 @@
 			var slug = $wrap.data('slug') || 'gvectors';
 			this.config = window[slug + 'License'] || {};
 			this.ajaxPrefix = this.config.ajaxPrefix || 'gvectors_';
+			this.slug = slug;
 
 			this.bindEvents();
+			this.bindSectionNav();
 			this.loadProducts();
 			this.loadLicenses();
 			this.resumePendingTransactions();
@@ -276,6 +278,12 @@
 				self.installAndActivateAddon(productId, $(this));
 			});
 
+			// Download addon ZIP (manual installation)
+			$(document).on('click', '.gvlicense-download-btn', function () {
+				const productId = $(this).data('product-id');
+				self.downloadAddon(productId, $(this));
+			});
+
 			// Manage button
 			$(document).on('click', '.gvlicense-manage-btn', function () {
 				const productId = $(this).data('product-id');
@@ -342,11 +350,12 @@
 		// ==========================================
 		loadProducts: function () {
 			const self = this;
-			const $grid = $('#gvlicense-products-grid');
+			const $status = $('#gvlicense-products-status');
 
-			if (!$grid.length) return;
+			if (!$status.length) return;
 
-			$grid.html('<div class="gvlicense-loading"><span class="spinner is-active" style="float:none;"></span> ' + this.config.i18n.loading + '</div>');
+			this.hideProductSections();
+			$status.html('<div class="gvlicense-loading"><span class="spinner is-active" style="float:none;"></span> ' + this.config.i18n.loading + '</div>').show();
 
 			this.ajax('get_products', {}, function (response) {
 				if (response.success && response.data) {
@@ -356,26 +365,68 @@
 					self.products = products;
 					self.checkoutMode = checkoutMode;
 					self.renderProducts(products);
+					self.scrollToHashSection();
 				} else {
-					$grid.html('<div class="gvlicense-no-products">' + self.config.i18n.noProducts + '</div>');
+					$status.html('<div class="gvlicense-no-products">' + self.config.i18n.noProducts + '</div>');
 				}
 			});
 		},
 
+		/**
+		 * Split products into the store sections by the Paddle product's parent_slug:
+		 * addons  = this host's addons (parent_slug === core slug)
+		 * bundles = bundles of this host or shared ones
+		 * pro     = shared products (empty / missing parent_slug = belongs to every host)
+		 * Products of another host are skipped (the proxy normally filters them out already).
+		 */
+		groupProducts: function (products) {
+			const groups = { addons: [], bundles: [], pro: [] };
+			for (let i = 0; i < products.length; i++) {
+				const parent = String((products[i].custom_data && products[i].custom_data.parent_slug) || '').trim();
+				if (parent && parent !== this.slug) continue;
+				if (products[i].is_bundle) {
+					groups.bundles.push(products[i]);
+				} else {
+					groups[parent ? 'addons' : 'pro'].push(products[i]);
+				}
+			}
+			return groups;
+		},
+
+		hideProductSections: function () {
+			$('.gvlicense-products-section, #gvlicense-section-nav').prop('hidden', true);
+		},
+
 		renderProducts: function (products) {
-			const $grid = $('#gvlicense-products-grid');
-			$grid.empty();
+			const $status = $('#gvlicense-products-status');
 
 			if (!products.length) {
-				$grid.html('<div class="gvlicense-no-products">' + this.config.i18n.noProducts + '</div>');
+				this.hideProductSections();
+				$status.html('<div class="gvlicense-no-products">' + this.config.i18n.noProducts + '</div>').show();
 				return;
 			}
+			$status.empty().hide();
 
 			const template = wp.template('gvlicense-product-card');
-			for (let i = 0; i < products.length; i++) {
-				products[i].checkout_mode = this.checkoutMode || 'both';
-				$grid.append(template(products[i]));
+			const groups = this.groupProducts(products);
+			let visibleSections = 0;
+			for (const key in groups) {
+				const $section = $('#gvlicense-section-' + key);
+				const $grid = $section.find('.gvlicense-products-grid').empty();
+				for (let i = 0; i < groups[key].length; i++) {
+					groups[key][i].checkout_mode = this.checkoutMode || 'both';
+					$grid.append(template(groups[key][i]));
+				}
+				const count = groups[key].length;
+				$section.prop('hidden', !count).find('.gvlicense-section-count').text(count);
+				$('#gvlicense-section-nav .gvlicense-section-nav-link[data-section="' + key + '"]').prop('hidden', !count)
+					.find('.gvlicense-section-count').text(count);
+				if (count) visibleSections++;
 			}
+
+			// Quick navigation is only useful with more than one section
+			$('#gvlicense-section-nav').prop('hidden', visibleSections < 2);
+			this.updateActiveSection();
 
 			// Populate the unified product select box
 			const $select = $('#gvlicense-unified-product');
@@ -387,6 +438,96 @@
 					}
 				}
 			}
+		},
+
+		// ==========================================
+		// Section quick navigation
+		// ==========================================
+		bindSectionNav: function () {
+			const self = this;
+			this.reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+			$(document).on('click', '.gvlicense-section-nav-link', function (e) {
+				const section = document.getElementById('gvlicense-section-' + $(this).data('section'));
+				if (!section || section.hidden) return;
+				e.preventDefault();
+				self.goToSection(section, true);
+				if (window.history && history.replaceState) history.replaceState(null, '', '#' + section.id);
+			});
+
+			$(document).on('click', '.gvlicense-section-nav-top', function () {
+				window.scrollTo({ top: 0, behavior: self.reducedMotion ? 'auto' : 'smooth' });
+				if (window.history && history.replaceState) history.replaceState(null, '', window.location.pathname + window.location.search);
+			});
+
+			let ticking = false;
+			$(window).on('scroll resize', function () {
+				// A nav click keeps its section highlighted until its (smooth) scroll settles
+				if (self._navLock) {
+					clearTimeout(self._navLockTimer);
+					self._navLockTimer = setTimeout(function () { self._navLock = false; }, 150);
+				}
+				if (ticking) return;
+				ticking = true;
+				window.requestAnimationFrame(function () {
+					ticking = false;
+					self.updateActiveSection();
+				});
+			});
+		},
+
+		goToSection: function (section, smooth) {
+			const self = this;
+			this._navLock = true;
+			clearTimeout(this._navLockTimer);
+			this._navLockTimer = setTimeout(function () { self._navLock = false; }, 150);
+			this.setActiveSection($(section).data('section'));
+			section.scrollIntoView({ behavior: smooth && !this.reducedMotion ? 'smooth' : 'auto', block: 'start' });
+			section.focus({ preventScroll: true });
+		},
+
+		// Deep link support (e.g. ...&page=wpforo-addons#gvlicense-section-bundles) — first load only
+		scrollToHashSection: function () {
+			if (this._hashHandled) return;
+			this._hashHandled = true;
+			const section = document.getElementById(window.location.hash.replace(/^#/, ''));
+			if (section && !section.hidden && $(section).hasClass('gvlicense-products-section')) {
+				this.goToSection(section, false);
+			}
+		},
+
+		updateActiveSection: function () {
+			const $nav = $('#gvlicense-section-nav');
+			if (!$nav.length || $nav.prop('hidden')) return;
+
+			$nav.find('.gvlicense-section-nav-top').toggleClass('is-visible', window.scrollY > 300);
+			if (this._navLock) return;
+
+			const $sections = $('.gvlicense-products-section').not('[hidden]');
+			let active = '';
+			const doc = document.documentElement;
+			if (window.scrollY > 0 && window.innerHeight + window.scrollY >= doc.scrollHeight - 2) {
+				// Bottom of the page: the last section can't reach the activation line
+				active = $sections.last().data('section');
+			} else {
+				const line = window.innerHeight * 0.35;
+				$sections.each(function () {
+					if (this.getBoundingClientRect().top <= line) active = $(this).data('section');
+				});
+			}
+			this.setActiveSection(active);
+		},
+
+		setActiveSection: function (key) {
+			$('#gvlicense-section-nav .gvlicense-section-nav-link').each(function () {
+				const isActive = $(this).data('section') === key;
+				$(this).toggleClass('is-active', isActive);
+				if (isActive) {
+					$(this).attr('aria-current', 'true');
+				} else {
+					$(this).removeAttr('aria-current');
+				}
+			});
 		},
 
 		// ==========================================
@@ -982,10 +1123,13 @@
 					// Install & Activate / Activate button (same as product grid)
 					const product = this.findProduct(pid);
 					if (product && (lic.status === 'active' || lic.status === 'trial')) {
-						if (product.addon_status === 'not_installed') {
+						if (product.addon_status === 'not_installed' && product.can_install !== false) {
 							actions += '<button type="button" class="button button-small button-primary gvlicense-install-btn" data-product-id="' + pid + '">' + (this.config.i18n.install || 'Install & Activate') + '</button> ';
 						} else if (product.addon_status === 'installed') {
 							actions += '<button type="button" class="button button-small button-primary gvlicense-activate-addon-btn" data-product-id="' + pid + '" data-plugin-slug="' + (product.plugin_slug || '') + '">' + (this.config.i18n.activate || 'Activate') + '</button> ';
+						}
+						if (!product.is_bundle) {
+							actions += this.downloadButtonHtml(pid, 'button-small' + (product.addon_status === 'not_installed' && product.can_install === false ? ' button-primary' : '')) + ' ';
 						}
 					}
 
@@ -1038,6 +1182,7 @@
 		// ==========================================
 		installAndActivateAddon: function (productId, $btn) {
 			const self = this;
+			const label = $btn.html();
 			this.setLoading($btn, true);
 			$btn.text(this.config.i18n.processing);
 
@@ -1059,10 +1204,75 @@
 						self.loadLicenses();
 					});
 				} else {
-					self.showToast(response.data.message, 'error');
-					$btn.text(self.config.i18n.install);
+					$btn.html(label);
+					// WordPress couldn't write the addon (file mods disabled, unwritable plugins folder, ...) — offer the ZIP
+					if (response.data && response.data.manual_install) {
+						self.showManualInstall(productId, response.data.message);
+					} else {
+						self.showToast(response.data.message, 'error');
+					}
 				}
 			});
+		},
+
+		downloadButtonHtml: function (productId, extraClass) {
+			return '<button type="button" class="button ' + (extraClass || '') + ' gvlicense-download-btn" data-product-id="' + productId + '">' +
+				'<span class="dashicons dashicons-download"></span> ' + this.config.i18n.downloadZip + '</button>';
+		},
+
+		/**
+		 * Fetch a signed one-time ZIP URL and let the browser download it straight from the store server
+		 * (Content-Disposition: attachment keeps this page), then show the manual install steps.
+		 */
+		downloadAddon: function (productId, $btn) {
+			const self = this;
+			this.setLoading($btn, true);
+
+			this.ajax('download_addon', {
+				product_id: productId,
+			}, function (response) {
+				self.setLoading($btn, false);
+				if (response.success && response.data && response.data.download_url) {
+					window.location.assign(response.data.download_url);
+					self.showToast(self.config.i18n.downloadStarted, 'success');
+					self.showManualInstall(productId, '', response.data.plugin_slug);
+				} else {
+					self.showToast((response.data && response.data.message) || self.config.i18n.error, 'error');
+				}
+			});
+		},
+
+		showManualInstall: function (productId, errorMsg, pluginSlug) {
+			const i18n = this.config.i18n;
+			const product = this.findProduct(productId) || {};
+			const slug = pluginSlug || product.plugin_slug || '';
+			const $body = $('<div class="gvlicense-manual-install"></div>');
+
+			if (errorMsg) {
+				$('<p class="gvlicense-manual-error"></p>').text(errorMsg).appendTo($body);
+			}
+			$('<p></p>').text(product.can_install === false ? i18n.manualInstallIntro : i18n.manualInstallHow).appendTo($body);
+
+			const $steps = $('<ol class="gvlicense-manual-steps"></ol>').appendTo($body);
+			$('<li></li>').text(i18n.manualStepDownload + ' ').append($(this.downloadButtonHtml(productId, 'button-small button-primary'))).appendTo($steps);
+			const unzip = i18n.manualStepUnzip.split('%s');
+			$('<li></li>').text(unzip[0]).append($('<code></code>').text(slug || '…'), document.createTextNode(unzip[1] || '')).appendTo($steps);
+			$('<li></li>').text(i18n.manualStepUpload).appendTo($steps);
+			$('<li></li>').text(i18n.manualStepActivate).appendTo($steps);
+			$('<p class="gvlicense-manual-note"></p>').text(i18n.manualInstallNote).appendTo($body);
+
+			// Site blocks plugin installs: updates can't arrive via WordPress — recommend restoring the default permissions
+			if (product.can_install === false || errorMsg) {
+				$('<p class="gvlicense-manual-note"></p>').text(i18n.manualUpdatesNotice).appendTo($body);
+				$('<div class="gvlicense-manual-recommend"></div>')
+					.append($('<strong></strong>').text(i18n.manualRecommendTitle), ' ', document.createTextNode(i18n.manualRecommend))
+					.append($('<div class="gvlicense-manual-recommend-tip"></div>').text(i18n.manualRecommendTip))
+					.appendTo($body);
+			}
+
+			$('#gvlicense-modal-title').text(i18n.manualInstallTitle + (product.name ? ' — ' + product.name : ''));
+			$('#gvlicense-modal-body').empty().append($body);
+			$('#gvlicense-manage-modal').show();
 		},
 
 		// ==========================================
@@ -1213,8 +1423,11 @@
 
 			// Actions
 			html += '<div class="gvlicense-manage-actions">';
-			if (product.addon_status === 'not_installed' && (product.is_licensed || product.is_trial)) {
+			if (product.addon_status === 'not_installed' && (product.is_licensed || product.is_trial) && product.can_install !== false) {
 				html += '<button type="button" class="button button-primary gvlicense-install-btn" data-product-id="' + productId + '">' + this.config.i18n.install + '</button>';
+			}
+			if ((product.is_licensed || product.is_trial) && !product.is_bundle) {
+				html += this.downloadButtonHtml(productId, product.addon_status === 'not_installed' && product.can_install === false ? 'button-primary' : '');
 			}
 			html += '<button type="button" class="button gvlicense-deactivate-btn" data-product-id="' + productId + '">' + this.config.i18n.deactivateLicense + '</button>';
 

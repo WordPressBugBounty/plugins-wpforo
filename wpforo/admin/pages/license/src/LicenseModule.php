@@ -38,6 +38,14 @@ class LicenseModule {
 	}
 
 	/**
+	 * Slugs of all host plugins running this module on the site (wpforo, wpdiscuz, ...).
+	 * Host plugins are updated from wordpress.org and must never be handled as store addons.
+	 */
+	public static function get_host_slugs(): array {
+		return array_keys( self::$instances );
+	}
+
+	/**
 	 * Generate a unique site token for authenticating with the proxy server.
 	 * Based on raw domain + WordPress auth salts - unique per installation, not guessable.
 	 * Uses AUTH_SALT + SECURE_AUTH_SALT for maximum entropy.

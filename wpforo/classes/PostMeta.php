@@ -375,9 +375,9 @@ class PostMeta {
 					foreach( $value as $v ) $wheres[] = "`metavalue` LIKE '%" . esc_sql( wp_unslash( $v ) ) . "%'";
 				} elseif( $field['type'] === 'checkbox' || ( $field['type'] === 'select' && wpfval( $field, 'isMultiChoice' ) ) || ( $field['type'] === 'autocomplete' && wpfval( $field, 'isMultiChoice' ) ) ) {
 					foreach( $value as $v ) {
-						// esc_sql() neutralizes SQL quotes/backslashes; preg_quote keeps the value a regex literal.
-						// Without esc_sql an apostrophe breaks out of the REGEXP string literal (unauthenticated SQLi).
-						$v        = esc_sql( preg_quote( preg_quote( wp_unslash( $v ) ) ) );
+						// esc_sql() neutralizes SQL quotes/backslashes; without it an apostrophe breaks
+						// out of the REGEXP string literal (unauthenticated SQLi).
+						$v        = esc_sql( wpforo_json_regexp_needle( wp_unslash( $v ) ) );
 						$wheres[] = "`metavalue` REGEXP '[\\\[,]\"" . $v . "\"[,\\\]]'";
 					}
 				} else {

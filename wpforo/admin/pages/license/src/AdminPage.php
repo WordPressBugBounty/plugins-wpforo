@@ -109,6 +109,21 @@ class AdminPage {
                 'refreshProducts'    => __( 'Refresh', 'gvectors' ),
                 'noProducts'         => __( 'No products available at this time.', 'gvectors' ),
                 'checkoutError'      => __( 'Checkout could not be opened. Please try again.', 'gvectors' ),
+                'downloadZip'        => __( 'Download ZIP', 'gvectors' ),
+                'downloadStarted'    => __( 'Your download has started.', 'gvectors' ),
+                'manualInstallTitle' => __( 'Manual Installation', 'gvectors' ),
+                'manualInstallIntro' => __( 'WordPress can\'t install plugins on this site, so install this addon manually:', 'gvectors' ),
+                'manualInstallHow'   => __( 'To install this addon manually:', 'gvectors' ),
+                'manualStepDownload' => __( 'Download the addon ZIP file.', 'gvectors' ),
+                /* translators: %s: addon folder name */
+                'manualStepUnzip'    => __( 'Unzip it on your computer. You will get a folder named %s.', 'gvectors' ),
+                'manualStepUpload'   => __( 'Upload the whole folder to wp-content/plugins/ on your server via FTP/SFTP. Use binary transfer mode and make sure the hidden .addon-signatures.json file is uploaded too (enable "show hidden files" in your FTP client) — without it the addon is treated as modified.', 'gvectors' ),
+                'manualStepActivate' => __( 'Reload this page and click "Activate" on the addon (or activate it on the Plugins page).', 'gvectors' ),
+                'manualInstallNote'  => __( 'The ZIP is signed for this website only.', 'gvectors' ),
+                'manualUpdatesNotice' => __( 'While WordPress can\'t install plugins on this site, new addon releases can\'t be delivered through the standard WordPress update process.', 'gvectors' ),
+                'manualRecommendTitle' => __( 'Recommended — get updates immediately:', 'gvectors' ),
+                'manualRecommend'    => __( 'restore the default WordPress permissions and let the built-in WordPress updater do the work. Remove DISALLOW_FILE_MODS from wp-config.php (or set it to false) and make sure WordPress can write to wp-content/plugins/ — your hosting provider can help with that. New versions then appear in Dashboard → Updates as soon as they are released and install with one click, like any other plugin, while your license is active.', 'gvectors' ),
+                'manualRecommendTip' => __( 'Tip: if you only want to block code editing in the dashboard, DISALLOW_FILE_EDIT does that without blocking updates.', 'gvectors' ),
             ],
         ] );
     }

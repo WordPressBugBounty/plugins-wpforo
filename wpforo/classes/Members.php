@@ -1669,14 +1669,15 @@ class Members {
                         $wheres[] = "`" . esc_sql( $field ) . "` LIKE '%" . esc_sql( $needle ) . "%'";
                     }
                 } else {
-                    $needle = preg_quote( preg_quote( $needle ) );
+                    // Local var: $needle must stay raw for the remaining fields of this loop
+                    $n = wpforo_json_regexp_needle( $needle );
                     if( in_array( $f['type'], [ 'text', 'search', 'textarea' ], true ) ) {
                         $wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"[^\"]*" . esc_sql(
-                                        $needle
+                                        $n
                                 ) . "[^\"]*\"'";
                     } else {
                         $wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"" . esc_sql(
-                                        $needle
+                                        $n
                                 ) . "\"'";
                     }
                 }
@@ -1721,29 +1722,25 @@ class Members {
                 } else {
                     if( in_array( $f['type'], [ 'text', 'search', 'textarea' ], true ) ) {
                         if( is_scalar( $needle ) ) {
-                            $needle   = preg_quote( preg_quote( wpforo_encode( $needle ) ) );
                             $wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"[^\"]*" . esc_sql(
-                                            $needle
+                                            wpforo_json_regexp_needle( wpforo_encode( $needle ) )
                                     ) . "[^\"]*\"'";
                         } elseif( is_array( $needle ) ) {
                             foreach( $needle as $n ) {
-                                $n        = preg_quote( preg_quote( wpforo_encode( $n ) ) );
                                 $wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"[^\"]*" . esc_sql(
-                                                $n
+                                                wpforo_json_regexp_needle( wpforo_encode( $n ) )
                                         ) . "[^\"]*\"'";
                             }
                         }
                     } else {
                         if( is_scalar( $needle ) ) {
-                            $needle   = preg_quote( preg_quote( wpforo_encode( $needle ) ) );
                             $wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"" . esc_sql(
-                                            $needle
+                                            wpforo_json_regexp_needle( wpforo_encode( $needle ) )
                                     ) . "\"'";
                         } elseif( is_array( $needle ) ) {
                             foreach( $needle as $n ) {
-                                $n        = preg_quote( preg_quote( wpforo_encode( $n ) ) );
                                 $wheres[] = "`fields` REGEXP '[{,]\"" . $field . "\":(\\\[[^\\\[]*)?\"" . esc_sql(
-                                                $n
+                                                wpforo_json_regexp_needle( wpforo_encode( $n ) )
                                         ) . "\"'";
                             }
                         }

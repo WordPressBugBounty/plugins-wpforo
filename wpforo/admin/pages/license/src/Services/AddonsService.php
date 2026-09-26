@@ -39,6 +39,9 @@ class AddonsService {
     private $tamper_dismissed_option;
     private $legacy_licenses_option;
     private $legacy_notice_option;
+    /** Last successfully fetched store addon list (slug => parent host slugs) — used while the store server is unreachable */
+    private $store_addons_option;
+    private $store_addons = null;
     /** Shared transient (not slug-prefixed) so one dismissing covers all plugin instances */
     private static $shared_dev_env_transient      = 'gvectors_dev_env_notice_dismissed';
     private static $shared_dev_licenses_transient = 'gvectors_dev_licenses_notice_dismissed';
@@ -47,6 +50,11 @@ class AddonsService {
     private static $dev_env_notice_shown    = false;
     private static $dev_licenses_collected  = [];
     private static $dev_licenses_registered = false;
+    /** Per-request "already rendered" markers so several host plugins never duplicate addon notices/rows */
+    private static $notices_shown = [];
+    /** Shared (not slug-prefixed) queue + single-event hook for "updates can't be installed" notices — one email for all hosts */
+    private const BLOCKED_UPDATES_OPTION = 'gvectors_blocked_updates_queue';
+    private const BLOCKED_UPDATES_HOOK   = 'gvectors_blocked_updates_notify';
     
     public function __construct( Config $config, LicenseService $licenseService ) {
         $this->config                        = $config;
@@ -59,6 +67,7 @@ class AddonsService {
         $this->tamper_dismissed_option       = $this->config->get_core_plugin_slug() . '_gvectors_tamper_notice_seen';
         $this->legacy_licenses_option        = $this->config->get_core_plugin_slug() . '_gvectors_legacy_addon_licenses';
         $this->legacy_notice_option          = $this->config->get_core_plugin_slug() . '_gvectors_legacy_license_notices';
+        $this->store_addons_option           = $this->config->get_core_plugin_slug() . '_gvectors_store_addons';
         $this->init_hooks();
     }
     
@@ -105,12 +114,39 @@ class AddonsService {
         
         // Clear tamper flag when a plugin is deleted
         add_action( 'deleted_plugin', [ $this, 'on_plugin_deleted' ], 10, 2 );
+
+        // Entitled updates the site can't install → email the admins (news module), from cron
+        add_action( self::BLOCKED_UPDATES_HOOK, [ self::class, 'notify_blocked_updates' ] );
     }
     
     /**
-     * Install and activate an addon in one step
+     * Install and activate an addon in one step.
+     * An addon already on disk (installed but inactive, or uploaded manually via FTP) is only activated —
+     * re-running the installer would attempt an update, which fails when none is pending or WordPress can't write plugins.
      */
     public function install_and_activate( string $product_id ): array {
+        $license     = $this->licenseService->get( $product_id );
+        $plugin_slug = self::sanitize_slug( $license['plugin_slug'] ?? '' );
+        $plugin_file = ! empty( $license['license_key'] ) ? $this->get_installed_plugin_file( $plugin_slug ) : '';
+        
+        if( $plugin_file ) {
+            // Verify here so a bad manual upload gets a clear JSON error instead of the activation gate's wp_die()
+            $sig_result = $this->verify_addon_signatures( $plugin_slug );
+            if( ! in_array( $sig_result, [ 'valid', 'legacy_valid' ], true ) ) {
+                return [
+                    'success'        => false,
+                    'error'          => self::signature_failure_reason( $sig_result ) . ' ' . sprintf(
+                        /* translators: %s: addon folder name */
+                        __( 'Please delete the "%s" folder from wp-content/plugins and upload the folder again from the ZIP you downloaded (including the hidden .addon-signatures.json file, using binary transfer mode).', 'gvectors' ),
+                        $plugin_slug
+                    ),
+                    'manual_install' => true,
+                ];
+            }
+            
+            return $this->activate( $plugin_file );
+        }
+        
         $install_result = $this->install( $product_id );
         if( empty( $install_result['success'] ) ) return $install_result;
         
@@ -132,11 +168,87 @@ class AddonsService {
     }
     
     /**
+     * Whether WordPress can install addons on this site from an AJAX request.
+     * False when file modifications are disabled (DISALLOW_FILE_MODS strips install_plugins), or when the
+     * plugins folder isn't directly writable and no FTP/SSH credentials are predefined (AJAX can't prompt for them).
+     * Such sites get the addon ZIP for a manual upload instead.
+     */
+    public function can_install_addons(): bool {
+        return current_user_can( 'install_plugins' ) && self::site_can_install_plugins();
+    }
+    
+    /**
+     * Site-level half of can_install_addons(), without any user context (safe in cron): file
+     * modifications allowed (DISALLOW_FILE_MODS / the file_mod_allowed filter) and a filesystem
+     * WordPress can write plugins to — direct access for the context the upgrader's fs_connect()
+     * uses plus a writable plugins folder, or predefined FTP/SSH credentials. Static per request.
+     */
+    public static function site_can_install_plugins(): bool {
+        static $can_install = null;
+        if( $can_install !== null ) return $can_install;
+        
+        if( ! wp_is_file_mod_allowed( 'gvectors_addon_install' ) ) return $can_install = false;
+        
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        if( get_filesystem_method( [], WP_CONTENT_DIR ) === 'direct' ) return $can_install = wp_is_writable( WP_PLUGIN_DIR );
+        
+        return $can_install = defined( 'FTP_HOST' ) && defined( 'FTP_USER' ) && ( defined( 'FTP_PASS' ) || defined( 'FTP_PRIKEY' ) );
+    }
+    
+    /**
+     * Signed, one-time addon ZIP URL for the admin's browser — the manual install path (FTP upload)
+     * for sites where WordPress can't write plugins. Needs an active license only, not install_plugins,
+     * and is allowed for tampered addons too: a clean copy is how those get fixed.
+     */
+    public function get_download_link( string $product_id ): array {
+        if( ! $this->licenseService->is_active( $product_id ) ) {
+            return [ 'success' => false, 'error' => __( 'No active license for this product', 'gvectors' ) ];
+        }
+        
+        $download = $this->request_download( $product_id );
+        if( empty( $download['success'] ) ) return $download;
+        
+        $download['file_name'] = ( $download['plugin_slug'] ?: 'addon' ) . '.zip';
+        
+        return $download;
+    }
+    
+    /**
+     * Request a signed, one-time download URL for a licensed addon from the proxy server
+     */
+    private function request_download( string $product_id ): array {
+        $license = $this->licenseService->get( $product_id );
+        if( empty( $license ) || empty( $license['license_key'] ) ) {
+            return [ 'success' => false, 'error' => __( 'No active license for this product', 'gvectors' ) ];
+        }
+        
+        $response = $this->licenseService->apiService->get_addon_download_url( $product_id, $license['license_key'] );
+        error_log( '[gVectors Addon] download-url response: ' . print_r( $response, true ) );
+        if( empty( $response['success'] ) || empty( $response['data']['download_url'] ) ) {
+            $error = $response['error'] ?? __( 'Failed to get download URL', 'gvectors' );
+            if( isset( $response['data']['error'] ) ) $error = $response['data']['error'];
+            error_log( '[gVectors Addon] Failed to get download URL: ' . $error );
+            
+            return [ 'success' => false, 'error' => $error ];
+        }
+        
+        $download_url = add_query_arg( 'site_domain', rawurlencode( LicenseModule::get_site_domain() ), $response['data']['download_url'] );
+        $plugin_slug  = self::sanitize_slug( $response['data']['plugin_slug'] ?? '' );
+        error_log( '[gVectors Addon] download_url: ' . $download_url . ' | plugin_slug: ' . $plugin_slug );
+        
+        return [ 'success' => true, 'download_url' => $download_url, 'plugin_slug' => $plugin_slug ];
+    }
+    
+    /**
      * Download and install an addon from the proxy server
      */
     public function install( string $product_id ): array {
-        if( ! current_user_can( 'install_plugins' ) ) {
-            return [ 'success' => false, 'error' => __( 'Permission denied', 'gvectors' ) ];
+        if( ! $this->can_install_addons() ) {
+            return [
+                'success'        => false,
+                'error'          => __( 'WordPress is not allowed to install plugins on this site (file modifications are disabled or the plugins folder is not writable). Download the addon ZIP and upload it manually.', 'gvectors' ),
+                'manual_install' => true,
+            ];
         }
         
         $license = $this->licenseService->get( $product_id );
@@ -157,20 +269,11 @@ class AddonsService {
         }
         
         // Get signed download URL from proxy
-        $response = $this->licenseService->apiService->get_addon_download_url( $product_id, $license['license_key'] );
-        error_log( '[gVectors Addon] download-url response: ' . print_r( $response, true ) );
-        if( empty( $response['success'] ) || empty( $response['data']['download_url'] ) ) {
-            $error = $response['error'] ?? __( 'Failed to get download URL', 'gvectors' );
-            if( isset( $response['data']['error'] ) ) $error = $response['data']['error'];
-            error_log( '[gVectors Addon] Failed to get download URL: ' . $error );
-            
-            return [ 'success' => false, 'error' => $error ];
-        }
+        $download = $this->request_download( $product_id );
+        if( empty( $download['success'] ) ) return $download;
         
-        $download_url = $response['data']['download_url'];
-        $download_url = add_query_arg( 'site_domain', rawurlencode( LicenseModule::get_site_domain() ), $download_url );
-        $plugin_slug  = $response['data']['plugin_slug'] ?? '';
-        error_log( '[gVectors Addon] download_url: ' . $download_url . ' | plugin_slug: ' . $plugin_slug );
+        $download_url = $download['download_url'];
+        $plugin_slug  = $download['plugin_slug'];
         
         // Use WordPress built-in plugin installer
         require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -189,10 +292,11 @@ class AddonsService {
             $result = $upgrader->install( $download_url );
         }
         
+        // Upgrader failures are mostly filesystem problems — offer the manual (ZIP + FTP) install path
         if( is_wp_error( $result ) ) {
             error_log( '[gVectors Addon] WP_Error from upgrader: ' . $result->get_error_message() );
             
-            return [ 'success' => false, 'error' => $result->get_error_message() ];
+            return [ 'success' => false, 'error' => $result->get_error_message(), 'manual_install' => true ];
         }
         
         if( $result === false ) {
@@ -201,7 +305,7 @@ class AddonsService {
             $skin_feedback = method_exists( $skin, 'get_upgrade_messages' ) ? $skin->get_upgrade_messages() : [];
             error_log( '[gVectors Addon] Install result=false. Error: ' . $error . ' | Feedback: ' . print_r( $skin_feedback, true ) );
             
-            return [ 'success' => false, 'error' => $error ];
+            return [ 'success' => false, 'error' => $error, 'manual_install' => true ];
         }
         
         error_log( '[gVectors Addon] Install result: ' . print_r( $result, true ) );
@@ -335,20 +439,135 @@ class AddonsService {
     /**
      * Fetch all addon info from the proxy server, keyed by slug.
      * Returns associative array: slug => [ name, version, description, author, requires, tested, requires_php, plugin_uri, ... ]
+     * Host plugins (wpForo, wpDiscuz, ...) are never part of the map — they update from wordpress.org.
      */
     private function get_proxy_addons_map(): array {
         $response = $this->licenseService->apiService->get_all_addons();
-        if( empty( $response['success'] ) || empty( $response['data']['addons'] ) ) {
+        if( empty( $response['success'] ) || empty( $response['data']['addons'] ) || ! is_array( $response['data']['addons'] ) ) {
             return [];
         }
         $map = [];
         foreach( $response['data']['addons'] as $addon ) {
-            if( ! empty( $addon['slug'] ) ) {
+            if( ! empty( $addon['slug'] ) && is_string( $addon['slug'] ) && ! $this->is_host_plugin( $addon['slug'] ) ) {
                 $map[ $addon['slug'] ] = $addon;
             }
         }
-        
+        $this->remember_store_addons( $map );
+
         return $map;
+    }
+
+    /**
+     * All addons sold in the gVectors store: slug => host plugin slugs the addon belongs to
+     * (from the products' Paddle `parent_slug`; [] = belongs to every host, e.g. wpForo AND wpDiscuz).
+     * This list is the ONLY way an installed plugin is recognized as one of our addons — plugin/folder
+     * names are never used. Falls back to the last successfully fetched list while the store is unreachable.
+     *
+     * @param bool $allow_remote false = never make an HTTP request (for page-load paths like admin_init)
+     */
+    private function get_store_addons( bool $allow_remote = true ): array {
+        if( $this->store_addons !== null ) return $this->store_addons;
+
+        if( $allow_remote ) {
+            $map = $this->get_proxy_addons_map();
+            if( ! empty( $map ) ) return $this->store_addons = self::extract_parent_slugs( $map );
+        }
+
+        $known = get_option( $this->store_addons_option, [] );
+        if( ! is_array( $known ) ) return [];
+
+        $addons = [];
+        foreach( $known as $slug => $parents ) {
+            if( is_string( $slug ) && $slug !== '' && ! $this->is_host_plugin( $slug ) ) {
+                $addons[ $slug ] = is_array( $parents ) ? $parents : [];
+            }
+        }
+
+        return $addons;
+    }
+
+    /**
+     * slug => sanitized host plugin slugs from the store's `parent_slugs` ([] or missing = all hosts).
+     */
+    private static function extract_parent_slugs( array $proxy_addons ): array {
+        $addons = [];
+        foreach( $proxy_addons as $slug => $addon ) {
+            $parents = isset( $addon['parent_slugs'] ) && is_array( $addon['parent_slugs'] ) ? $addon['parent_slugs'] : [];
+            $parents = array_values( array_unique( array_filter( $parents, function( $parent ) {
+                return is_string( $parent ) && $parent !== '';
+            } ) ) );
+            sort( $parents );
+            $addons[ (string) $slug ] = $parents;
+        }
+        ksort( $addons );
+
+        return $addons;
+    }
+
+    /**
+     * Persist the store addon list (not autoloaded) so addon checks keep working during store outages.
+     */
+    private function remember_store_addons( array $proxy_addons ): void {
+        if( empty( $proxy_addons ) ) return;
+        $addons = self::extract_parent_slugs( $proxy_addons );
+        if( get_option( $this->store_addons_option ) !== $addons ) {
+            update_option( $this->store_addons_option, $addons, false );
+        }
+    }
+
+    /**
+     * Does the addon belong to this host plugin? Products with an empty/missing Paddle `parent_slug`
+     * belong to every host; otherwise only to the listed host(s).
+     */
+    private function addon_belongs_to_host( string $plugin_slug, bool $allow_remote = true ): bool {
+        $parents = $this->get_store_addons( $allow_remote )[ $plugin_slug ] ?? [];
+
+        return empty( $parents ) || in_array( $this->config->get_core_plugin_slug(), $parents, true );
+    }
+
+    /**
+     * Should this host instance handle the addon (updates without own license, activation gate,
+     * integrity scan, notices)? Yes when this host holds a license for it; otherwise only when no
+     * other host holds a license and the addon belongs to this host (or to all hosts).
+     */
+    private function manages_addon( string $plugin_slug, bool $allow_remote = true ): bool {
+        if( $this->addon_has_license( $plugin_slug ) ) return true;
+        if( $this->is_licensed_by_other_host( $plugin_slug ) ) return false;
+
+        return $this->addon_belongs_to_host( $plugin_slug, $allow_remote );
+    }
+
+    /**
+     * Host plugins running this module (wpForo, wpDiscuz, ...) are distributed via wordpress.org.
+     * They must never be treated as store addons, so their core updates are never touched.
+     */
+    private function is_host_plugin( string $plugin_slug ): bool {
+        return $plugin_slug === $this->config->get_core_plugin_slug() || in_array( $plugin_slug, LicenseModule::get_host_slugs(), true );
+    }
+
+    /**
+     * Does another host plugin on this site (e.g. wpDiscuz when this instance is wpForo) hold a license for the addon?
+     * That host's instance then owns the addon's updates, activation gate and integrity checks.
+     */
+    private function is_licensed_by_other_host( string $plugin_slug ): bool {
+        foreach( LicenseModule::get_host_slugs() as $host ) {
+            if( $host === $this->config->get_core_plugin_slug() ) continue;
+            $actions = LicenseModule::getActionsService( $host );
+            if( $actions && $actions->addonsService->addon_has_license( $plugin_slug ) ) return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Claim the right to render a per-addon notice/row once per request across all host plugin instances.
+     */
+    private static function claim_notice( string $type, string $plugin_slug ): bool {
+        $key = $type . ':' . $plugin_slug;
+        if( isset( self::$notices_shown[ $key ] ) ) return false;
+        self::$notices_shown[ $key ] = true;
+
+        return true;
     }
     
     /**
@@ -888,11 +1107,10 @@ class AddonsService {
                 }
                 
                 $plugin_slug = $license['plugin_slug'] ?? '';
-                if( empty( $plugin_slug ) ) continue;
+                if( empty( $plugin_slug ) || $this->is_host_plugin( $plugin_slug ) ) continue;
                 
                 $plugin_file = $this->get_installed_plugin_file( $plugin_slug );
                 if( ! $plugin_file ) continue;
-                
                 
                 $current_version = $transient->checked[ $plugin_file ] ?? '0.0.0';
                 
@@ -947,6 +1165,9 @@ class AddonsService {
                 
                 // Only process known gVectors addons from the proxy
                 if( ! isset( $proxy_addons[ $plugin_slug ] ) ) continue;
+
+                // Licensed via / belongs to another host plugin — its instance builds this addon's update entry
+                if( ! $this->manages_addon( $plugin_slug ) ) continue;
                 
                 // Migrate legacy license to new system eagerly — even without a pending update.
                 // On success, save() stores the license in gvectors_licenses so the Paddle loop
@@ -1007,8 +1228,9 @@ class AddonsService {
         foreach( $all_plugins as $_pf => $_pd ) {
             if( in_array( $_pf, $licensed_plugin_files, true ) ) continue;
             $_slug = dirname( $_pf );
-            if( $_slug === '.' || $_slug === $this->config->get_core_plugin_slug() ) continue;
-            if( ! isset( $proxy_addons[ $_slug ] ) ) continue;
+            // Store addons only (host plugins are never in the proxy map)
+            if( $_slug === '.' || ! isset( $proxy_addons[ $_slug ] ) ) continue;
+            if( ! $this->manages_addon( $_slug ) ) continue;
             if( ! isset( $all_legacy[ $_slug ] ) ) $uncached_slugs[] = $_slug;
         }
         if( ! empty( $uncached_slugs ) ) {
@@ -1064,10 +1286,12 @@ class AddonsService {
             if( in_array( $plugin_file, $licensed_plugin_files, true ) ) continue;
             
             $slug = dirname( $plugin_file );
-            if( $slug === '.' || $slug === $this->config->get_core_plugin_slug() ) continue;
             
-            // Only process known gVectors addons from the proxy
-            if( ! isset( $proxy_addons[ $slug ] ) ) continue;
+            // Only process known gVectors addons from the proxy (host plugins are never in the map)
+            if( $slug === '.' || ! isset( $proxy_addons[ $slug ] ) ) continue;
+
+            // Licensed via / belongs to another host plugin — don't overwrite that host's update entry
+            if( ! $this->manages_addon( $slug ) ) continue;
             
             $proxy_info      = $proxy_addons[ $slug ];
             $latest_version  = ! empty( $proxy_info['version'] ) ? $proxy_info['version'] : '';
@@ -1089,6 +1313,19 @@ class AddonsService {
                 $transient->response[ $plugin_file ] = $update;
             }
         }
+        
+        // Entitled updates (licensed / legacy-licensed, with a download package) this site can't install
+        $entitled = [];
+        foreach( array_unique( $licensed_plugin_files ) as $plugin_file ) {
+            $update = $transient->response[ $plugin_file ] ?? null;
+            if( ! $update || empty( $update->package ) ) continue;
+            $entitled[ $update->slug ] = [
+                'name'            => ! empty( $all_plugins[ $plugin_file ]['Name'] ) ? $all_plugins[ $plugin_file ]['Name'] : ( $proxy_addons[ $update->slug ]['name'] ?? $update->slug ),
+                'current_version' => (string) ( $transient->checked[ $plugin_file ] ?? '' ),
+                'new_version'     => (string) $update->new_version,
+            ];
+        }
+        $this->queue_blocked_updates( $entitled );
         
         return $transient;
     }
@@ -1184,6 +1421,40 @@ class AddonsService {
     }
     
     /**
+     * WordPress's update check (twice-daily wp_update_plugins cron, or the Updates/Plugins screens)
+     * found new versions of licensed addons, but this site blocks plugin installs — so neither the
+     * auto-updater (disabled outright by DISALLOW_FILE_MODS) nor the Updates screen can install them.
+     * The versions are merged into a shared queue and a single cron event hands them to the news
+     * module (`gvectors_blocked_updates` → one email per admin, deduped per addon version). Never
+     * sends from here: the update check can run during a page load.
+     */
+    private function queue_blocked_updates( array $updates ): void {
+        if( ! $updates || self::site_can_install_plugins() ) return;
+        
+        $queued = get_option( self::BLOCKED_UPDATES_OPTION, [] );
+        $queued = is_array( $queued ) ? $queued : [];
+        $merged = array_merge( $queued, $updates );
+        if( $merged !== $queued ) {
+            update_option( self::BLOCKED_UPDATES_OPTION, $merged, false );
+        }
+        if( ! wp_next_scheduled( self::BLOCKED_UPDATES_HOOK ) ) {
+            wp_schedule_single_event( time() + MINUTE_IN_SECONDS, self::BLOCKED_UPDATES_HOOK );
+        }
+    }
+    
+    /**
+     * Cron: hand the queued blocked updates to the news module (sends the admin emails via wp_mail).
+     * Skipped when the site can install plugins again by now — WordPress will just update normally.
+     */
+    public static function notify_blocked_updates(): void {
+        $updates = get_option( self::BLOCKED_UPDATES_OPTION, [] );
+        delete_option( self::BLOCKED_UPDATES_OPTION );
+        if( ! is_array( $updates ) || ! $updates || self::site_can_install_plugins() ) return;
+        
+        do_action( 'gvectors_blocked_updates', $updates );
+    }
+    
+    /**
      * Intercept WordPress updater package downloads to block tampered addons with a visible error.
      * This hooks into 'upgrader_pre_download' so the user sees a clear message in the update UI.
      * The actual download is handled by the proxy server's addon/wp-download endpoint (302 redirect).
@@ -1257,17 +1528,19 @@ class AddonsService {
      */
     public function validate_on_activation( string $plugin_file ): void {
         $slug = dirname( $plugin_file );
-        if( $slug === '.' || $slug === $this->config->get_core_plugin_slug() ) return;
+        if( $slug === '.' || $this->is_host_plugin( $slug ) ) return;
         
         // Skip all checks on development/local/staging environments
         if( LicenseModule::is_development_site() ) return;
         
-        // Check if this is a known gVectors addon
-        $all_addon_slugs = $this->get_all_addon_slugs_from_proxy();
-        if( ! $this->is_known_addon( $slug, $all_addon_slugs ) ) return;
-        
+        // Check if this is an addon from the gVectors store list
+        if( ! $this->is_known_addon( $slug ) ) return;
+
+        // Licensed via / belongs to another host plugin (e.g. wpDiscuz) — that host's activation gate validates it
+        if( ! $this->manages_addon( $slug ) ) return;
+
         $reasons = [];
-        
+
         // 1) License check — new Paddle license OR legacy gVectors license
         $has_new_license    = $this->addon_has_license( $slug );
         $has_legacy_license = false;
@@ -1281,14 +1554,7 @@ class AddonsService {
         // 2) Signature & integrity checks
         $sig_result = $this->verify_addon_signatures( $slug );
         if( $sig_result !== 'valid' && $sig_result !== 'legacy_valid' ) {
-            $labels    = [
-                'no_manifest'     => __( 'Missing signature manifest — addon was not installed through the official channel.', 'gvectors' ),
-                'tampered'        => __( 'File integrity check failed — one or more addon files have been modified.', 'gvectors' ),
-                'domain_mismatch' => __( 'Domain mismatch — this addon copy is signed for a different website.', 'gvectors' ),
-                'no_signatures'   => __( 'Missing PHP header signatures — addon files lack required security headers.', 'gvectors' ),
-                'patched'         => __( 'Nulled/patched code detected — this addon appears to be a pirated copy.', 'gvectors' ),
-            ];
-            $reasons[] = $labels[ $sig_result ] ?? __( 'Addon verification failed.', 'gvectors' );
+            $reasons[] = self::signature_failure_reason( $sig_result );
         }
         
         if( ! empty( $reasons ) ) {
@@ -1307,28 +1573,31 @@ class AddonsService {
     }
     
     /**
-     * Fetch all known addon slugs from the proxy server.
-     * Returns array of slug strings.
+     * Human-readable reason for a failed verify_addon_signatures() result
      */
-    private function get_all_addon_slugs_from_proxy(): array {
-        $response = $this->licenseService->apiService->get_all_addons();
-        if( empty( $response['success'] ) || empty( $response['data']['addons'] ) ) {
-            return [];
-        }
+    private static function signature_failure_reason( string $sig_result ): string {
+        $labels = [
+            'no_manifest'     => __( 'Missing signature manifest — addon was not installed through the official channel.', 'gvectors' ),
+            'tampered'        => __( 'File integrity check failed — one or more addon files have been modified.', 'gvectors' ),
+            'domain_mismatch' => __( 'Domain mismatch — this addon copy is signed for a different website.', 'gvectors' ),
+            'no_signatures'   => __( 'Missing PHP header signatures — addon files lack required security headers.', 'gvectors' ),
+            'patched'         => __( 'Nulled/patched code detected — this addon appears to be a pirated copy.', 'gvectors' ),
+        ];
         
-        return array_column( $response['data']['addons'], 'slug' );
+        return $labels[ $sig_result ] ?? __( 'Addon verification failed.', 'gvectors' );
     }
     
     /**
-     * Check if a plugin slug is a known gVectors addon by querying the proxy's full addon list.
+     * Check if a plugin slug is a gVectors store addon — decided only by the store server's addon list,
+     * never by the plugin's name (e.g. "forums-censure-pro" is recognized just like "wpforo-polls").
+     * When no store list has ever been fetched, nothing is treated as an addon (fail open).
+     *
+     * @param bool $allow_remote false = never make an HTTP request (for page-load paths like admin_init)
      */
-    private function is_known_addon( string $plugin_slug, array $all_addon_slugs = [] ): bool {
-        if( ! empty( $all_addon_slugs ) ) {
-            return in_array( $plugin_slug, $all_addon_slugs, true );
-        }
+    private function is_known_addon( string $plugin_slug, bool $allow_remote = true ): bool {
+        if( $plugin_slug === '' || $this->is_host_plugin( $plugin_slug ) ) return false;
         
-        // Fallback: check by naming convention
-        return ( strpos( $plugin_slug, $this->config->get_core_plugin_slug() . '-' ) === 0 || strpos( $plugin_slug, $this->config->get_core_plugin_slug() . '_' ) === 0 );
+        return isset( $this->get_store_addons( $allow_remote )[ $plugin_slug ] );
     }
     
     /**
@@ -1366,9 +1635,6 @@ class AddonsService {
         // Skip all checks on development/local/staging environments
         if( LicenseModule::is_development_site() ) return;
         
-        // Get the full list of known addon slugs from the proxy server
-        $all_addon_slugs = $this->get_all_addon_slugs_from_proxy();
-        
         // Collect locally licensed plugin slugs
         $licenses       = $this->licenseService->get_all();
         $licensed_slugs = [];
@@ -1378,9 +1644,9 @@ class AddonsService {
         }
         
         // Scan for installed addons that are known to the proxy but have no license
-        $this->scan_unlicensed_addons( $licensed_slugs, $all_addon_slugs );
+        $this->scan_unlicensed_addons( $licensed_slugs );
         
-        // Verify signatures for all installed plugins that match known addon slugs
+        // Verify signatures for all installed plugins that are in the store addon list
         if( ! function_exists( 'get_plugins' ) ) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
@@ -1388,11 +1654,18 @@ class AddonsService {
         
         foreach( $all_plugins as $file => $data ) {
             $slug = dirname( $file );
-            if( $slug === '.' || $slug === $this->config->get_core_plugin_slug() ) continue;
+            if( $slug === '.' ) continue;
             
-            // Check against proxy's known addon list
-            if( ! $this->is_known_addon( $slug, $all_addon_slugs ) ) continue;
+            // Check against the store's addon list (host plugins excluded)
+            if( ! $this->is_known_addon( $slug ) ) continue;
             if( ! $this->is_installed( $slug ) ) continue;
+
+            // Licensed via / belongs to another host plugin — that host verifies it; drop this host's stale tracking
+            if( ! $this->manages_addon( $slug ) ) {
+                $this->clear_tamper_flag( $slug );
+                $this->clear_legacy_cache( $slug );
+                continue;
+            }
             
             $result = $this->verify_addon_signatures( $slug );
             if( $result !== 'valid' && $result !== 'legacy_valid' ) {
@@ -1406,7 +1679,7 @@ class AddonsService {
      * These could be pirated copies installed manually, OR legacy-licensed installations.
      * Checks legacy license before flagging as tampered.
      */
-    private function scan_unlicensed_addons( array $licensed_slugs, array $all_addon_slugs = [] ): void {
+    private function scan_unlicensed_addons( array $licensed_slugs ): void {
         if( ! function_exists( 'get_plugins' ) ) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
@@ -1422,9 +1695,10 @@ class AddonsService {
         $needs_legacy_refresh = [];
         foreach( $all_plugins as $file => $data ) {
             $slug = dirname( $file );
-            if( $slug === '.' || $slug === $this->config->get_core_plugin_slug() ) continue;
-            if( ! $this->is_known_addon( $slug, $all_addon_slugs ) ) continue;
+            if( $slug === '.' ) continue;
+            if( ! $this->is_known_addon( $slug ) ) continue;
             if( in_array( $slug, $licensed_slugs, true ) ) continue;
+            if( ! $this->manages_addon( $slug ) ) continue;
             if( ! is_plugin_active( $file ) ) continue;
             
             $manifest_file = WP_PLUGIN_DIR . '/' . $slug . '/.addon-signatures.json';
@@ -1913,6 +2187,7 @@ class AddonsService {
         foreach( $tampered as $slug => $info ) {
             if( ! $this->is_addon_present( $slug ) ) continue;
             if( get_transient( 'gvectors_tampered_dismissed_' . $slug ) ) continue;
+            if( ! self::claim_notice( 'tampered', $slug ) ) continue;
 
             $files       = $info['files'] ?? [];
             $reason      = $info['reason'] ?? 'tampered';
@@ -2023,17 +2298,22 @@ class AddonsService {
         
         foreach( $update_plugins->response as $plugin_file => $update_data ) {
             $slug = dirname( $plugin_file );
-            if( $slug === '.' || $slug === $this->config->get_core_plugin_slug() ) continue;
+            if( $slug === '.' ) continue;
             
             // Only for our addons that have empty package (no active license)
             $package = is_object( $update_data ) ? ( $update_data->package ?? '' ) : '';
             if( ! empty( $package ) ) continue;
             
-            // Confirm it's a known gVectors addon
-            if( ! $this->is_known_addon( $slug ) ) continue;
+            // Confirm it's an addon from the gVectors store list (no HTTP request on page load)
+            if( ! $this->is_known_addon( $slug, false ) ) continue;
             
             // Confirm no active license
             if( in_array( $slug, $active_licensed_slugs, true ) ) continue;
+
+            // Licensed via / belongs to another host plugin — that host's instance renders the row (and its store link)
+            if( ! $this->manages_addon( $slug, false ) ) continue;
+
+            if( ! self::claim_notice( 'unlicensed_row', $slug ) ) continue;
             
             add_action( "after_plugin_row_$plugin_file", [ $this, 'unlicensed_update_notice_row' ] );
         }
@@ -2080,6 +2360,7 @@ class AddonsService {
         foreach( $expired as $slug => $info ) {
             if( ! $this->is_addon_present( $slug ) ) continue;
             if( get_transient( 'gvectors_expired_dismissed_' . $slug ) ) continue;
+            if( ! self::claim_notice( 'expired', $slug ) ) continue;
 
             $product_name = $info['product_name'] ?? $slug;
             $has_update   = ! empty( $info['has_update'] );
@@ -2146,6 +2427,7 @@ class AddonsService {
             if( ! $this->is_addon_present( $slug ) ) continue;
 
             if( get_transient( 'gvectors_legacy_dismissed_' . $slug ) ) continue;
+            if( ! self::claim_notice( 'legacy', $slug ) ) continue;
 
             $plugin_name = $info['plugin_name'] ?? $slug;
 

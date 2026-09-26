@@ -64,12 +64,63 @@ if( ! current_user_can( 'administrator' ) ) exit;
 		</table>
 	</div>
 
-    <!-- Product Grid (loaded via AJAX) -->
-    <div id="gvlicense-products-grid" class="gvlicense-products-grid">
-        <div class="gvlicense-loading">
-            <span class="spinner is-active" style="float:none;"></span>
-            <?php esc_html_e( 'Loading products...', 'gvectors' ); ?>
+    <?php
+    // Product sections (filled via AJAX). Grouping by the Paddle product's parent_slug:
+    // addons = this host's addons, bundles = all bundles, pro = shared products (empty parent_slug)
+    $gvlicense_sections = [
+        'addons'  => [
+            'nav'   => __( 'Addons', 'gvectors' ),
+            'title' => __( 'Addons', 'gvectors' ),
+            'icon'  => '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/>',
+        ],
+        'bundles' => [
+            'nav'   => __( 'Addon Bundles', 'gvectors' ),
+            'title' => __( 'Addon Bundles', 'gvectors' ),
+            'icon'  => '<path d="M12 2.5 3 7.5v9l9 5 9-5v-9z"/><path d="m3 7.5 9 5 9-5M12 12.5v9M7.5 5l9 5"/>',
+        ],
+        'pro'     => [
+            'nav'   => __( 'Pro Plugins', 'gvectors' ),
+            'title' => __( 'Related PRO Plugins', 'gvectors' ),
+            'icon'  => '<path d="M3 7.5 7.5 12 12 5l4.5 7L21 7.5 19 17H5z"/><path d="M5 20.5h14"/>',
+        ],
+    ];
+    $gvlicense_svg = function( $paths ) {
+        return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' . $paths . '</svg>';
+    };
+    ?>
+    <!-- Products (loaded via AJAX) -->
+    <div id="gvlicense-products" class="gvlicense-products">
+        <div id="gvlicense-products-status" class="gvlicense-products-status">
+            <div class="gvlicense-loading">
+                <span class="spinner is-active" style="float:none;"></span>
+                <?php esc_html_e( 'Loading products...', 'gvectors' ); ?>
+            </div>
         </div>
+
+        <!-- Section quick navigation (sticky bar above the sections) -->
+        <nav id="gvlicense-section-nav" class="gvlicense-section-nav" aria-label="<?php esc_attr_e( 'Product sections', 'gvectors' ); ?>" hidden>
+            <?php foreach( $gvlicense_sections as $key => $section ): ?>
+            <a href="#gvlicense-section-<?php echo esc_attr( $key ); ?>" class="gvlicense-section-nav-link gvlicense-section-<?php echo esc_attr( $key ); ?>" data-section="<?php echo esc_attr( $key ); ?>">
+                <span class="gvlicense-section-icon"><?php echo $gvlicense_svg( $section['icon'] ); // phpcs:ignore WordPress.Security.EscapeOutput -- static markup ?></span>
+                <span class="gvlicense-section-nav-label"><?php echo esc_html( $section['nav'] ); ?></span>
+                <span class="gvlicense-section-count"></span>
+            </a>
+            <?php endforeach; ?>
+            <button type="button" class="gvlicense-section-nav-top" title="<?php esc_attr_e( 'Back to top', 'gvectors' ); ?>" aria-label="<?php esc_attr_e( 'Back to top', 'gvectors' ); ?>">
+                <?php echo $gvlicense_svg( '<path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/>' ); // phpcs:ignore WordPress.Security.EscapeOutput -- static markup ?>
+            </button>
+        </nav>
+
+        <?php foreach( $gvlicense_sections as $key => $section ): ?>
+        <section id="gvlicense-section-<?php echo esc_attr( $key ); ?>" class="gvlicense-products-section gvlicense-section-<?php echo esc_attr( $key ); ?>" data-section="<?php echo esc_attr( $key ); ?>" tabindex="-1" hidden>
+            <h2 class="gvlicense-section-title">
+                <span class="gvlicense-section-icon"><?php echo $gvlicense_svg( $section['icon'] ); // phpcs:ignore WordPress.Security.EscapeOutput -- static markup ?></span>
+                <?php echo esc_html( $section['title'] ); ?>
+                <span class="gvlicense-section-count"></span>
+            </h2>
+            <div class="gvlicense-products-grid"></div>
+        </section>
+        <?php endforeach; ?>
     </div>
 
 	<div style="clear:both;"></div>
@@ -176,10 +227,16 @@ if( ! current_user_can( 'administrator' ) ) exit;
  					<span class="gvlicense-addon-active"><span class="dashicons dashicons-yes-alt"></span> <?php esc_html_e( 'Active', 'gvectors' ); ?></span>
  					<# } else if (data.addon_status === 'installed') { #>
  					<button type="button" class="button button-primary gvlicense-activate-addon-btn" data-product-id="{{data.id}}" data-plugin-slug="{{data.plugin_slug}}"><?php esc_html_e( 'Activate', 'gvectors' ); ?></button>
+ 					<# } else if (data.can_install === false) { #>
+ 					<button type="button" class="button button-primary gvlicense-download-btn" data-product-id="{{data.id}}"><span class="dashicons dashicons-download"></span> <?php esc_html_e( 'Download ZIP', 'gvectors' ); ?></button>
  					<# } else { #>
  					<button type="button" class="button button-primary gvlicense-install-btn" data-product-id="{{data.id}}"><?php esc_html_e( 'Install & Activate', 'gvectors' ); ?></button>
+ 					<button type="button" class="button gvlicense-download-btn gvlicense-download-icon-btn" data-product-id="{{data.id}}" title="<?php esc_attr_e( 'Download ZIP for manual installation', 'gvectors' ); ?>" aria-label="<?php esc_attr_e( 'Download ZIP for manual installation', 'gvectors' ); ?>"><span class="dashicons dashicons-download"></span></button>
  					<# } #>
  					<button type="button" class="button gvlicense-manage-btn" data-product-id="{{data.id}}"><?php esc_html_e( 'Manage', 'gvectors' ); ?></button>
+ 					<# if (data.addon_status === 'not_installed' && data.can_install === false) { #>
+ 					<p class="gvlicense-manual-hint"><?php esc_html_e( 'WordPress can\'t install plugins on this site — download the ZIP and upload it manually.', 'gvectors' ); ?></p>
+ 					<# } #>
  				<# } else { #>
  					<# if (data.prices && data.prices.length) { #>
  					<button type="button" class="button button-primary gvlicense-buy-btn" data-price-id="{{_defaultPriceId}}" data-product-id="{{data.id}}"><?php esc_html_e( 'Buy Now', 'gvectors' ); ?></button>

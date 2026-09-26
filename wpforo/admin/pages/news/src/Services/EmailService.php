@@ -376,6 +376,105 @@ class EmailService {
     }
 
     /**
+     * Updates that can't be installed — fired by the license module (in cron) when
+     * WordPress's own update check found new versions of licensed addons while this
+     * site blocks plugin installs (DISALLOW_FILE_MODS / read-only plugins folder), so
+     * neither the auto-updater nor the Updates screen can install them.
+     *
+     * Every administrator gets ONE email listing the versions they were not told
+     * about yet — per-admin keys "plugin_slug:version", so each release notifies once
+     * and a later release notifies again. Own email-only category 'blocked_update'
+     * (allows() also covers the master unsubscribe). No proxy request: templates come
+     * from the cached daily payload or the local fallback, so consent is not involved.
+     *
+     * @param array $updates plugin_slug => [name, current_version, new_version]
+     */
+    public function handle_blocked_updates( array $updates ): void {
+        $clean = [];
+        foreach( $updates as $slug => $update ) {
+            if( ! is_array( $update ) || empty( $update['new_version'] ) ) continue;
+            $slug = sanitize_key( (string) $slug );
+            if( $slug === '' ) continue;
+            $new             = sanitize_text_field( (string) $update['new_version'] );
+            $clean[ $slug ] = [
+                'key'     => $slug . ':' . $new,
+                'name'    => sanitize_text_field( (string) ( $update['name'] ?? $slug ) ),
+                'current' => sanitize_text_field( (string) ( $update['current_version'] ?? '' ) ),
+                'new'     => $new,
+            ];
+        }
+        if( ! $clean ) return;
+
+        $templates = $this->get_blocked_update_templates();
+        $meta_key  = $this->config->get_emailed_blocked_updates_meta();
+
+        foreach( $this->get_recipients() as $user ) {
+            if( empty( $user->user_email ) ) continue;
+            if( ! $this->prefs->allows( $user->ID, PrefsService::CHANNEL_EMAILS, 'blocked_update' ) ) continue;
+
+            $sent  = get_user_meta( $user->ID, $meta_key, true );
+            $sent  = is_array( $sent ) ? $sent : [];
+            $fresh = array_filter( $clean, fn( $u ) => ! in_array( $u['key'], $sent, true ) );
+            if( ! $fresh ) continue;
+
+            $rows = '';
+            foreach( $fresh as $u ) {
+                $rows .= str_replace(
+                    [ '{product_name}', '{current_version}', '{new_version}' ],
+                    [ esc_html( $u['name'] ), esc_html( $u['current'] !== '' ? $u['current'] : '—' ), esc_html( $u['new'] ) ],
+                    $templates['row']
+                );
+            }
+            $count   = (string) count( $fresh );
+            $body    = str_replace( [ '{update_rows}', '{update_count}' ], [ $rows, $count ], $templates['body_html'] );
+            $subject = str_replace( '{update_count}', $count, $templates['subject'] );
+
+            if( $this->send( $user, $subject, $body ) ) {
+                $sent = array_merge( $sent, array_column( $fresh, 'key' ) );
+                update_user_meta( $user->ID, $meta_key, array_slice( array_values( array_unique( $sent ) ), -100 ) );
+            }
+        }
+    }
+
+    /**
+     * Blocked-update templates: proxy-editable versions from the cached daily news
+     * payload (`blocked_update_email`), with a complete local fallback.
+     */
+    private function get_blocked_update_templates(): array {
+        $payload = get_transient( $this->config->get_news_transient() );
+        $remote  = is_array( $payload ) && ! empty( $payload['blocked_update_email']['body_html'] ) ? $payload['blocked_update_email'] : null;
+        $row     = '<div style="border:1px solid #e2e4e8;border-left:4px solid #996800;border-radius:4px;padding:12px 18px;margin:0 0 12px;">'
+            . '<div style="font-size:14px;color:#1d2327;"><strong>{product_name}</strong></div>'
+            . '<div style="font-size:13px;color:#50575e;margin-top:4px;">Installed: {current_version} &rarr; new version: <strong>{new_version}</strong></div>'
+            . '</div>';
+
+        if( $remote ) {
+            return [
+                'subject'   => ! empty( $remote['subject'] ) ? $remote['subject'] : __( 'New addon versions can\'t be installed on {site_name}', 'gvectors' ),
+                'body_html' => $remote['body_html'],
+                'row'       => ! empty( $remote['row'] ) ? $remote['row'] : $row,
+            ];
+        }
+
+        return [
+            'subject'   => __( 'New addon versions can\'t be installed on {site_name}', 'gvectors' ),
+            'body_html' => '<div style="background:#f4f5f7;padding:24px 0;font-family:Arial,Helvetica,sans-serif;">'
+                . '<div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:8px;border:1px solid #e2e4e8;padding:28px;">'
+                . '<p style="margin:0 0 16px;color:#1d2327;font-size:15px;">Hi {admin_name},</p>'
+                . '<p style="margin:0 0 20px;color:#50575e;font-size:14px;line-height:1.6;">WordPress found new versions of your licensed gVectors addons on {site_name}, but it could not install them: this website does not allow WordPress to download and install plugins (for example <code>DISALLOW_FILE_MODS</code> in <code>wp-config.php</code> or a read-only plugins folder).</p>'
+                . '{update_rows}'
+                . '<div style="margin-top:20px;font-size:13px;line-height:1.6;color:#1d4d2b;background:#edfaef;border:1px solid #b8e6bf;border-radius:4px;padding:12px 16px;">'
+                . '<strong>Recommended &mdash; install the updates immediately:</strong> restore the default WordPress permissions: remove <code>DISALLOW_FILE_MODS</code> from <code>wp-config.php</code> (or set it to <code>false</code>) and make sure WordPress can write to <code>wp-content/plugins/</code> &mdash; your hosting provider can help with that. '
+                . 'The updates then appear in Dashboard &rarr; Updates and install with one click, and future releases arrive the same natural way.'
+                . '<div style="margin-top:6px;font-size:12px;">Tip: if you only want to block code editing in the dashboard, <code>DISALLOW_FILE_EDIT</code> does that without blocking updates.</div>'
+                . '</div>'
+                . '<p style="margin:16px 0 0;color:#8c8f94;font-size:12px;line-height:1.6;">If you can\'t change these settings, contact gVectors support to receive a manual download link for the new version(s).</p>'
+                . '</div></div>',
+            'row'       => $row,
+        ];
+    }
+
+    /**
      * Purchase templates: proxy-editable versions from the cached daily news
      * payload, with a complete local fallback (a purchase must never lose its
      * confirmation email because the cache is cold).

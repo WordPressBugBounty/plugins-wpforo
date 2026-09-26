@@ -50,6 +50,7 @@ class ActionsService {
         add_action( $p . 'activate_addon', [ $this, 'ajax_activate_addon' ] );
         add_action( $p . 'deactivate_addon', [ $this, 'ajax_deactivate_addon' ] );
         add_action( $p . 'install_activate_addon', [ $this, 'ajax_install_activate_addon' ] );
+        add_action( $p . 'download_addon', [ $this, 'ajax_download_addon' ] );
 
         // Subscription
         add_action( $p . 'cancel_subscription', [ $this, 'ajax_cancel_subscription' ] );
@@ -173,6 +174,21 @@ class ActionsService {
                 }
             }
             unset( $product );
+            
+            // Probe the filesystem only when a licensed addon still needs installing (the probe writes a temp file)
+            $needs_install = false;
+            foreach( $products as $product ) {
+                if( ( $product['is_licensed'] || $product['is_trial'] ) && empty( $product['is_bundle'] ) && $product['addon_status'] === 'not_installed' ) {
+                    $needs_install = true;
+                    break;
+                }
+            }
+            $can_install = ! $needs_install || $this->addonsService->can_install_addons();
+            foreach( $products as &$product ) {
+                $product['can_install'] = $can_install;
+            }
+            unset( $product );
+            
             $products = array_values( $products );
             wp_send_json_success( [ 'products' => $products, 'checkout_mode' => $checkout_mode ] );
         } else {
@@ -663,7 +679,10 @@ class ActionsService {
         if( ! empty( $result['success'] ) ) {
             wp_send_json_success( $result );
         } else {
-            wp_send_json_error( [ 'message' => $result['error'] ?? __( 'Installation failed', 'gvectors' ) ] );
+            wp_send_json_error( [
+                                    'message'        => $result['error'] ?? __( 'Installation failed', 'gvectors' ),
+                                    'manual_install' => ! empty( $result['manual_install'] ),
+                                ] );
         }
     }
     
@@ -717,7 +736,31 @@ class ActionsService {
         if( ! empty( $result['success'] ) ) {
             wp_send_json_success( $result );
         } else {
-            wp_send_json_error( [ 'message' => $result['error'] ?? __( 'Install & activate failed', 'gvectors' ) ] );
+            wp_send_json_error( [
+                                    'message'        => $result['error'] ?? __( 'Install & activate failed', 'gvectors' ),
+                                    'manual_install' => ! empty( $result['manual_install'] ),
+                                ] );
+        }
+    }
+    
+    /**
+     * Signed addon ZIP URL for a manual (FTP) install — the browser downloads it straight from the proxy
+     */
+    public function ajax_download_addon(): void {
+        if( ! $this->verify_admin() ) return;
+        
+        $product_id = isset( $_POST['product_id'] ) ? sanitize_text_field( $_POST['product_id'] ) : '';
+        if( empty( $product_id ) ) {
+            wp_send_json_error( [ 'message' => __( 'Product ID required', 'gvectors' ) ] );
+            
+            return;
+        }
+        
+        $result = $this->addonsService->get_download_link( $product_id );
+        if( ! empty( $result['success'] ) ) {
+            wp_send_json_success( $result );
+        } else {
+            wp_send_json_error( [ 'message' => $result['error'] ?? __( 'Failed to get download URL', 'gvectors' ) ] );
         }
     }
     
