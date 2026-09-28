@@ -485,6 +485,34 @@
     overflow: hidden;
 }
 
+/* Product page / demo links */
+.gvlicense-product-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 12px;
+}
+
+#gvlicense-admin-wrap .gvlicense-product-links .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#gvlicense-admin-wrap .gvlicense-product-link {
+    background: rgb(217, 237, 255);
+    border: none;
+    font-size: 13px;
+    min-height: 28px;
+}
+
+.gvlicense-product-links .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 1;
+}
+
 .gvlicense-product-price {
     margin-bottom: 12px;
 }
@@ -819,6 +847,13 @@
 
 .gvlicense-manual-steps code {
     font-size: 12px;
+}
+
+.gvlicense-manual-fallback {
+    margin: 0 0 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 600;
 }
 
 .gvlicense-manual-recommend {

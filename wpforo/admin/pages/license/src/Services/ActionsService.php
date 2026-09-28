@@ -51,6 +51,7 @@ class ActionsService {
         add_action( $p . 'deactivate_addon', [ $this, 'ajax_deactivate_addon' ] );
         add_action( $p . 'install_activate_addon', [ $this, 'ajax_install_activate_addon' ] );
         add_action( $p . 'download_addon', [ $this, 'ajax_download_addon' ] );
+        add_action( $p . 'install_verified_copy', [ $this, 'ajax_install_verified_copy' ] );
 
         // Subscription
         add_action( $p . 'cancel_subscription', [ $this, 'ajax_cancel_subscription' ] );
@@ -106,6 +107,10 @@ class ActionsService {
                 }
                 $pid       = $product['id'];
                 $is_bundle = ! empty( $product['is_bundle'] );
+                
+                // Marketing links from the Paddle product custom attributes (empty = no button on the card)
+                $product['product_url'] = $this->product_link( $product, 'product_url' );
+                $product['demo_url']    = $this->product_link( $product, 'demo_url' );
                 
                 // For bundle products, check if all included addons are licensed
                 if( $is_bundle && ! empty( $product['bundle_slugs'] ) ) {
@@ -186,6 +191,11 @@ class ActionsService {
             $can_install = ! $needs_install || $this->addonsService->can_install_addons();
             foreach( $products as &$product ) {
                 $product['can_install'] = $can_install;
+                // Download ZIP is offered only when WordPress can't install a licensed addon (admin.js also sets it after an install fails for that reason)
+                $product['offer_download'] = ! $can_install && ( $product['is_licensed'] || $product['is_trial'] ) && empty( $product['is_bundle'] ) && $product['addon_status'] === 'not_installed';
+                // "Reinstall Addon" for every installed licensed addon; emphasized when the installed copy isn't verified
+                $product['offer_verified_copy'] = ( $product['is_licensed'] || $product['is_trial'] ) && empty( $product['is_bundle'] ) && $product['addon_status'] !== 'not_installed';
+                $product['needs_verified_copy'] = $product['offer_verified_copy'] && $this->addonsService->needs_verified_copy( $product['plugin_slug'] ?? '' );
             }
             unset( $product );
             
@@ -194,6 +204,16 @@ class ActionsService {
         } else {
             wp_send_json_error( [ 'message' => __( 'Failed to load products', 'gvectors' ) ] );
         }
+    }
+    
+    /**
+     * A link from the product's Paddle custom data (http/https only) — '' when missing, empty or not a web URL.
+     */
+    private function product_link( array $product, string $key ): string {
+        $url = $product['custom_data'][ $key ] ?? '';
+        if( ! is_string( $url ) || ( $url = trim( $url ) ) === '' ) return '';
+        
+        return esc_url_raw( $url, [ 'http', 'https' ] );
     }
     
     private function verify_admin(): bool {
@@ -513,9 +533,10 @@ class ActionsService {
         if( ! empty( $response['success'] ) ) {
             // Revalidate all licenses to clear expired notices for newly purchased/renewed addons
             $this->addonsService->check_all_license_validity();
+            $this->addonsService->reverify_licensed_addons();
             wp_send_json_success( [
                                       'license' => $response['data'],
-                                      'message' => __( 'License activated successfully', 'gvectors' ),
+                                      'message' => self::activated_message( $response['data'] ),
                                   ] );
         } else {
             $error = $response['error'] ?? __( 'Failed to activate license', 'gvectors' );
@@ -538,6 +559,7 @@ class ActionsService {
         $response = $this->addonsService->licenseService->activate_by_transaction( $transaction_id, $product_id );
         if( ! empty( $response['success'] ) ) {
             $this->addonsService->check_all_license_validity();
+            $this->addonsService->reverify_licensed_addons();
             wp_send_json_success( [
                                       'activated' => $response['data']['activated'] ?? [],
                                       'errors'    => $response['data']['errors'] ?? [],
@@ -560,6 +582,7 @@ class ActionsService {
         
         if( ! empty( $response['success'] ) ) {
             $this->addonsService->check_all_license_validity();
+            $this->addonsService->reverify_licensed_addons();
             // Multi-license response (txn_* or by-domain)
             if( ! empty( $response['data']['activated'] ) ) {
                 wp_send_json_success( [
@@ -571,7 +594,7 @@ class ActionsService {
                 // Single license response (gvl_* or legacy key)
                 wp_send_json_success( [
                                           'license' => $response['data'],
-                                          'message' => __( 'License activated successfully', 'gvectors' ),
+                                          'message' => self::activated_message( $response['data'] ),
                                       ] );
             }
             
@@ -581,12 +604,25 @@ class ActionsService {
         wp_send_json_error( [ 'message' => $response['error'] ?? __( 'Could not activate. Please check your key.', 'gvectors' ) ] );
     }
     
+    /**
+     * Success message for a single activated license. An expired old-store key is still linked to the site
+     * (the addon keeps working), but it grants no updates until renewed.
+     */
+    private static function activated_message( $license ): string {
+        if( is_array( $license ) && ( $license['status'] ?? '' ) === 'expired' ) {
+            return __( 'Your license was linked to this site. It has expired: the addon keeps working, renew it to get updates.', 'gvectors' );
+        }
+        
+        return __( 'License activated successfully', 'gvectors' );
+    }
+    
     public function ajax_activate_by_domain(): void {
         if( ! $this->verify_admin() ) return;
         
         $response = $this->addonsService->licenseService->activate_by_domain();
         if( ! empty( $response['success'] ) ) {
             $this->addonsService->check_all_license_validity();
+            $this->addonsService->reverify_licensed_addons();
             wp_send_json_success( [
                                       'activated' => $response['data']['activated'] ?? [],
                                       'errors'    => $response['data']['errors'] ?? [],
@@ -738,6 +774,30 @@ class ActionsService {
         } else {
             wp_send_json_error( [
                                     'message'        => $result['error'] ?? __( 'Install & activate failed', 'gvectors' ),
+                                    'manual_install' => ! empty( $result['manual_install'] ),
+                                ] );
+        }
+    }
+    
+    /**
+     * "Reinstall Addon": replace an installed licensed addon with a fresh copy signed for this site
+     */
+    public function ajax_install_verified_copy(): void {
+        if( ! $this->verify_admin() ) return;
+        
+        $product_id = isset( $_POST['product_id'] ) ? sanitize_text_field( $_POST['product_id'] ) : '';
+        if( empty( $product_id ) ) {
+            wp_send_json_error( [ 'message' => __( 'Product ID required', 'gvectors' ) ] );
+            
+            return;
+        }
+        
+        $result = $this->addonsService->install_verified_copy( $product_id );
+        if( ! empty( $result['success'] ) ) {
+            wp_send_json_success( $result );
+        } else {
+            wp_send_json_error( [
+                                    'message'        => $result['error'] ?? __( 'Could not reinstall the addon', 'gvectors' ),
                                     'manual_install' => ! empty( $result['manual_install'] ),
                                 ] );
         }

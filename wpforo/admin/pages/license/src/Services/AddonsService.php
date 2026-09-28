@@ -133,11 +133,19 @@ class AddonsService {
             // Verify here so a bad manual upload gets a clear JSON error instead of the activation gate's wp_die()
             $sig_result = $this->verify_addon_signatures( $plugin_slug );
             if( ! in_array( $sig_result, [ 'valid', 'legacy_valid' ], true ) ) {
+                // Sites that can install get a clean copy the normal way; only blocked sites are sent to the ZIP
+                if( $this->can_install_addons() ) {
+                    return [
+                        'success' => false,
+                        'error'   => self::signature_failure_reason( $sig_result ) . ' ' . __( 'Click "Reinstall Addon" for this addon here to replace its files with a clean copy.', 'gvectors' ),
+                    ];
+                }
+
                 return [
                     'success'        => false,
                     'error'          => self::signature_failure_reason( $sig_result ) . ' ' . sprintf(
                         /* translators: %s: addon folder name */
-                        __( 'Please delete the "%s" folder from wp-content/plugins and upload the folder again from the ZIP you downloaded (including the hidden .addon-signatures.json file, using binary transfer mode).', 'gvectors' ),
+                        __( 'Please install a clean copy with the steps below. When uploading the ZIP in WordPress, choose "Replace current with uploaded"; when using FTP/SFTP, delete the "%s" folder from wp-content/plugins first.', 'gvectors' ),
                         $plugin_slug
                     ),
                     'manual_install' => true,
@@ -193,6 +201,20 @@ class AddonsService {
         if( get_filesystem_method( [], WP_CONTENT_DIR ) === 'direct' ) return $can_install = wp_is_writable( WP_PLUGIN_DIR );
         
         return $can_install = defined( 'FTP_HOST' ) && defined( 'FTP_USER' ) && ( defined( 'FTP_PASS' ) || defined( 'FTP_PRIKEY' ) );
+    }
+    
+    /**
+     * Whether an upgrader error means WordPress couldn't write the addon (filesystem access / permissions) —
+     * the only failures that offer the manual ZIP download. Codes from WP_Upgrader::fs_connect(),
+     * install_package(), unzip_file() and copy_dir().
+     */
+    private static function is_filesystem_error( $error ): bool {
+        if( ! is_wp_error( $error ) ) return false;
+        foreach( $error->get_error_codes() as $code ) {
+            if( preg_match( '/^(fs_|mkdir_failed|copy_failed|files?_not_writable|unable_to_write|remove_old_failed|source_read_failed|new_source_read_failed|dirlist_failed|destination_not_deleted)/', (string) $code ) ) return true;
+        }
+        
+        return false;
     }
     
     /**
@@ -262,7 +284,7 @@ class AddonsService {
             return [
                 'success' => false,
                 'error'   => __(
-                    'This addon cannot be updated because its files have been modified or are not original. To resolve this, please: 1) Go to Plugins and deactivate, then delete this addon. 2) Visit the gVectors Store Addons page and make sure your license is active. 3) Re-install the addon from the gVectors Store Addons page. Once re-installed, everything will work normally again.',
+                    'This addon cannot be updated because its files have been modified or are not original. To resolve this, open the gVectors Addons page and click "Reinstall Addon" for this addon (your license must be active): its files are replaced with a clean copy and everything works normally again.',
                     'gvectors'
                 ),
             ];
@@ -292,20 +314,22 @@ class AddonsService {
             $result = $upgrader->install( $download_url );
         }
         
-        // Upgrader failures are mostly filesystem problems — offer the manual (ZIP + FTP) install path
+        // Only filesystem/permission failures offer the manual (ZIP + FTP) install path; others (download, archive...) just report the error
         if( is_wp_error( $result ) ) {
             error_log( '[gVectors Addon] WP_Error from upgrader: ' . $result->get_error_message() );
             
-            return [ 'success' => false, 'error' => $result->get_error_message(), 'manual_install' => true ];
+            return [ 'success' => false, 'error' => $result->get_error_message(), 'manual_install' => self::is_filesystem_error( $result ) ];
         }
         
         if( $result === false ) {
             $errors        = $skin->get_errors();
-            $error         = is_wp_error( $errors ) ? $errors->get_error_message() : __( 'Installation failed', 'gvectors' );
+            $has_errors    = is_wp_error( $errors ) && $errors->has_errors();
+            $error         = $has_errors ? $errors->get_error_message() : __( 'Installation failed', 'gvectors' );
             $skin_feedback = method_exists( $skin, 'get_upgrade_messages' ) ? $skin->get_upgrade_messages() : [];
             error_log( '[gVectors Addon] Install result=false. Error: ' . $error . ' | Feedback: ' . print_r( $skin_feedback, true ) );
             
-            return [ 'success' => false, 'error' => $error, 'manual_install' => true ];
+            // false without errors: WP_Upgrader::fs_connect() needed filesystem credentials, which an AJAX request can't ask for
+            return [ 'success' => false, 'error' => $error, 'manual_install' => ! $has_errors || self::is_filesystem_error( $errors ) ];
         }
         
         error_log( '[gVectors Addon] Install result: ' . print_r( $result, true ) );
@@ -354,6 +378,93 @@ class AddonsService {
             'success'     => true,
             'plugin_file' => $plugin_file,
             'message'     => __( 'Addon installed successfully', 'gvectors' ),
+        ];
+    }
+    
+    /**
+     * Is the installed copy unverified for this site — no signature manifest (e.g. installed from the old
+     * gVectors store) or flagged by the integrity check? Side-effect free (no verification run, no API call).
+     * Always false on development sites, where signatures aren't checked.
+     */
+    public function needs_verified_copy( string $plugin_slug ): bool {
+        $plugin_slug = self::sanitize_slug( $plugin_slug );
+        if( $plugin_slug === '' || LicenseModule::is_development_site() || ! $this->is_installed( $plugin_slug ) ) return false;
+        
+        return ! file_exists( WP_PLUGIN_DIR . '/' . $plugin_slug . '/.addon-signatures.json' ) || $this->is_addon_tampered( $plugin_slug );
+    }
+    
+    /**
+     * "Reinstall Addon": replace an installed licensed addon with a fresh copy from the store, signed for this
+     * site — WordPress's "Replace current with uploaded". Settings and data (database) are kept; the addon keeps
+     * its active state. Allowed for flagged addons too: a clean copy is how those get fixed.
+     */
+    public function install_verified_copy( string $product_id ): array {
+        if( ! $this->licenseService->is_active( $product_id ) ) {
+            return [ 'success' => false, 'error' => __( 'Your license isn\'t active. Renew it to reinstall the addon — it keeps working in the meantime.', 'gvectors' ) ];
+        }
+        
+        $license     = $this->licenseService->get( $product_id );
+        $plugin_slug = self::sanitize_slug( $license['plugin_slug'] ?? '' );
+        if( ! $plugin_slug || ! $this->is_installed( $plugin_slug ) ) {
+            return [ 'success' => false, 'error' => __( 'This addon is not installed on this site.', 'gvectors' ) ];
+        }
+        
+        if( ! $this->can_install_addons() ) {
+            return [
+                'success'        => false,
+                'error'          => __( 'WordPress is not allowed to replace plugin files on this site. Download the addon ZIP and upload it manually — when uploading the ZIP in WordPress, choose "Replace current with uploaded".', 'gvectors' ),
+                'manual_install' => true,
+            ];
+        }
+        
+        $download = $this->request_download( $product_id );
+        if( empty( $download['success'] ) ) return $download;
+        
+        require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+        require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/misc.php';
+        
+        $skin     = new WP_Ajax_Upgrader_Skin();
+        $upgrader = new Plugin_Upgrader( $skin );
+        // install() + overwrite, not upgrade(): works without a pending update and replaces the folder in place
+        $result = $upgrader->install( $download['download_url'], [ 'overwrite_package' => true ] );
+        
+        if( is_wp_error( $result ) ) {
+            return [ 'success' => false, 'error' => $result->get_error_message(), 'manual_install' => self::is_filesystem_error( $result ) ];
+        }
+        if( $result === false ) {
+            $errors     = $skin->get_errors();
+            $has_errors = is_wp_error( $errors ) && $errors->has_errors();
+            
+            return [
+                'success'        => false,
+                'error'          => $has_errors ? $errors->get_error_message() : __( 'Installation failed', 'gvectors' ),
+                'manual_install' => ! $has_errors || self::is_filesystem_error( $errors ),
+            ];
+        }
+        
+        wp_cache_delete( 'plugins', 'plugins' );
+        
+        // A fresh signed copy must verify — this also clears a tamper flag and re-activates an addon the check had deactivated
+        if( $this->verify_addon_signatures( $plugin_slug ) !== 'valid' ) {
+            return [
+                'success' => false,
+                'error'   => __( 'Addon installed but signature verification failed. The download may have been corrupted. Please try again.', 'gvectors' ),
+            ];
+        }
+        $this->clear_legacy_cache( $plugin_slug );
+        
+        $plugin_file = $this->get_installed_plugin_file( $plugin_slug );
+        $plugin_data = $plugin_file ? get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_file, false, false ) : [];
+        
+        return [
+            'success' => true,
+            'message' => sprintf(
+                /* translators: %s: addon name */
+                __( '%s was reinstalled and is now verified for this site.', 'gvectors' ),
+                ! empty( $plugin_data['Name'] ) ? $plugin_data['Name'] : $plugin_slug
+            ),
         ];
     }
     
@@ -593,16 +704,27 @@ class AddonsService {
                 return $patch_check;
             }
             
+            // Licensed on this site (a purchase, or an old-store key linked on the Addons page) —
+            // a copy installed before the signature system is not piracy
+            if( $this->addon_has_license( $plugin_slug ) ) {
+                $this->clear_tamper_flag( $plugin_slug, true );
+                
+                return 'legacy_valid';
+            }
+            
             // Check if this addon has a legacy license from the old gVectors system
             $legacy = $this->check_legacy_license( $plugin_slug );
             if( ! empty( $legacy['has_license'] ) ) {
                 // Legacy licensed addon — clear any previous tamper flags
-                $this->clear_tamper_flag( $plugin_slug );
+                $this->clear_tamper_flag( $plugin_slug, true );
                 // Track expired legacy licenses for admin notice
                 $this->update_legacy_notice( $plugin_slug, $legacy );
                 
                 return 'legacy_valid';
             }
+            
+            // Store unreachable and nothing known about this addon yet — never flag on missing data
+            if( ! empty( $legacy['unknown'] ) ) return 'legacy_valid';
             
             // No legacy license either — this is an unauthorized copy
             $this->mark_addon_tampered( $plugin_slug, [ 'Missing signature manifest' ], 'no_manifest' );
@@ -737,7 +859,7 @@ class AddonsService {
         }
         
         // All checks passed - clear any previous tamper flags
-        $this->clear_tamper_flag( $plugin_slug );
+        $this->clear_tamper_flag( $plugin_slug, true );
         
         return 'valid';
     }
@@ -855,31 +977,53 @@ class AddonsService {
         $response = $this->licenseService->apiService->check_legacy_license( $plugin_slug );
         
         if( ! empty( $response['success'] ) && ! empty( $response['data'] ) ) {
-            $data        = $response['data'];
-            $legacy_data = [
-                'has_license'  => ! empty( $data['has_legacy_license'] ),
-                'status'       => $data['status'] ?? '',
-                'expired'      => ! empty( $data['expired'] ),
-                'expired_time' => isset( $data['expired_time'] ) ? (int) $data['expired_time'] : 0,
-                'last_checked' => time(),
-            ];
-            $this->save_cached_legacy_license( $plugin_slug, $legacy_data );
-            
-            return $legacy_data;
+            return $this->save_cached_legacy_license( $plugin_slug, self::legacy_result_from_api( $response['data'] ) );
         }
         
-        // API call failed — cache a negative result with a shorter TTL (1 hour)
-        // so we retry sooner, but don't hammer the server on every cron run
-        $negative = [
+        // API call failed — keep the last known answer, or record "unknown" (callers never flag on it).
+        // Either way retry in an hour instead of hammering the server on every check.
+        $all_legacy = get_option( $this->legacy_licenses_option, [] );
+        $known      = $all_legacy[ $plugin_slug ] ?? [
             'has_license'  => false,
+            'unknown'      => true,
             'status'       => '',
             'expired'      => false,
             'expired_time' => 0,
-            'last_checked' => time() - $this->config->get_legacy_check_period() + HOUR_IN_SECONDS,
         ];
-        $this->save_cached_legacy_license( $plugin_slug, $negative );
+        $known['last_checked']      = time() - $this->config->get_legacy_check_period() + HOUR_IN_SECONDS;
+        $all_legacy[ $plugin_slug ] = $known;
+        update_option( $this->legacy_licenses_option, $all_legacy );
         
-        return $negative;
+        return $known;
+    }
+    
+    /**
+     * Normalize a proxy legacy-check result (single or batch entry) into the local cache format.
+     */
+    private static function legacy_result_from_api( array $data ): array {
+        return [
+            'has_license'  => ! empty( $data['has_legacy_license'] ),
+            'status'       => $data['status'] ?? '',
+            'expired'      => ! empty( $data['expired'] ),
+            'expired_time' => isset( $data['expired_time'] ) ? (int) $data['expired_time'] : 0,
+            'last_checked' => time(),
+        ];
+    }
+
+    /**
+     * Merge a fresh legacy-check result into the cached one. Legitimacy is sticky: once a legacy license
+     * was confirmed for this site, a later negative answer never revokes it — the legacy database is a
+     * frozen snapshot, so a negative can only come from a server-side problem. forget_addon() (addon
+     * deleted) is the only way to drop it.
+     */
+    private static function merge_legacy_result( array $previous, array $fresh ): array {
+        if( empty( $fresh['has_license'] ) && ! empty( $previous['has_license'] ) ) {
+            $previous['last_checked'] = $fresh['last_checked'] ?? time();
+        
+            return $previous;
+        }
+        
+        return $fresh;
     }
     
     /**
@@ -904,12 +1048,14 @@ class AddonsService {
     // ==========================================
     
     /**
-     * Save legacy license check result to the persistent cache.
+     * Save a legacy license check result to the persistent cache (see merge_legacy_result()) and return what was stored.
      */
-    private function save_cached_legacy_license( string $plugin_slug, array $data ): void {
+    private function save_cached_legacy_license( string $plugin_slug, array $data ): array {
         $all_legacy                 = get_option( $this->legacy_licenses_option, [] );
-        $all_legacy[ $plugin_slug ] = $data;
+        $all_legacy[ $plugin_slug ] = self::merge_legacy_result( $all_legacy[ $plugin_slug ] ?? [], $data );
         update_option( $this->legacy_licenses_option, $all_legacy );
+        
+        return $all_legacy[ $plugin_slug ];
     }
     
     // ==========================================
@@ -918,12 +1064,17 @@ class AddonsService {
     
     /**
      * Clear tamper flag for an addon
+     *
+     * @param bool $restore The addon now verifies: re-activate it if the tamper check had deactivated it
+     *                      (e.g. an old-store license that wasn't recognized before)
      */
-    private function clear_tamper_flag( string $plugin_slug ): void {
+    private function clear_tamper_flag( string $plugin_slug, bool $restore = false ): void {
         $tampered = get_option( $this->tampered_option, [] );
         if( isset( $tampered[ $plugin_slug ] ) ) {
+            $deactivated = ! empty( $tampered[ $plugin_slug ]['deactivated_at'] );
             unset( $tampered[ $plugin_slug ] );
             update_option( $this->tampered_option, $tampered );
+            if( $restore && $deactivated ) $this->reactivate_addon( $plugin_slug );
         }
         
         // Also clear the seen flag
@@ -932,6 +1083,27 @@ class AddonsService {
             unset( $seen[ $plugin_slug ] );
             update_option( $this->tamper_dismissed_option, $seen );
         }
+    }
+    
+    /**
+     * Re-activate an addon the tamper check had deactivated but that now verifies.
+     * Activated silently (the activation gate would wp_die() in cron on its own checks), then its own
+     * activation hook runs — deactivating it ran the deactivation hook. Skipped while a plugin
+     * activation is in progress: WordPress is activating it right now (nesting would duplicate it).
+     */
+    private function reactivate_addon( string $plugin_slug ): void {
+        if( doing_action( 'activate_plugin' ) ) return;
+        if( ! function_exists( 'activate_plugin' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+        
+        $plugin_file = $this->get_installed_plugin_file( $plugin_slug );
+        if( ! $plugin_file || is_plugin_active( $plugin_file ) ) return;
+        
+        // A WP_Error for unexpected output still leaves the plugin active — check the result, not the return value
+        activate_plugin( $plugin_file, '', false, true );
+        if( ! is_plugin_active( $plugin_file ) ) return;
+        do_action( 'activate_' . $plugin_file, false );
     }
     
     /**
@@ -1386,35 +1558,19 @@ class AddonsService {
     
     /**
      * Batch-check legacy licenses for multiple addon slugs.
-     * Populates the local cache for all slugs in one API call.
+     * Populates the local cache for all slugs in one API call (slugs the server didn't return count as negative).
+     * When the store can't be reached the cache is left untouched.
      */
     private function check_legacy_licenses_batch( array $plugin_slugs ): void {
         if( empty( $plugin_slugs ) ) return;
         
         $response = $this->licenseService->apiService->check_legacy_licenses_batch( $plugin_slugs );
         
-        if( ! empty( $response['success'] ) && ! empty( $response['data']['addons'] ) ) {
+        if( ! empty( $response['success'] ) && ! empty( $response['data']['addons'] ) && is_array( $response['data']['addons'] ) ) {
             $all_legacy = get_option( $this->legacy_licenses_option, [] );
-            foreach( $response['data']['addons'] as $slug => $data ) {
-                $all_legacy[ $slug ] = [
-                    'has_license'  => ! empty( $data['has_legacy_license'] ),
-                    'status'       => $data['status'] ?? '',
-                    'expired'      => ! empty( $data['expired'] ),
-                    'expired_time' => isset( $data['expired_time'] ) ? (int) $data['expired_time'] : 0,
-                    'last_checked' => time(),
-                ];
-            }
-            // Also cache negative results for slugs not returned by the server
             foreach( $plugin_slugs as $slug ) {
-                if( ! isset( $all_legacy[ $slug ] ) || $all_legacy[ $slug ]['last_checked'] < time() - 60 ) {
-                    $all_legacy[ $slug ] = [
-                        'has_license'  => false,
-                        'status'       => '',
-                        'expired'      => false,
-                        'expired_time' => 0,
-                        'last_checked' => time(),
-                    ];
-                }
+                $data                = $response['data']['addons'][ $slug ] ?? [];
+                $all_legacy[ $slug ] = self::merge_legacy_result( $all_legacy[ $slug ] ?? [], self::legacy_result_from_api( is_array( $data ) ? $data : [] ) );
             }
             update_option( $this->legacy_licenses_option, $all_legacy );
         }
@@ -1485,7 +1641,7 @@ class AddonsService {
             return new WP_Error(
                 'tampered_addon',
                 __(
-                    'This addon cannot be updated because its files have been modified or are not original. To resolve this, please: 1) Go to Plugins and deactivate, then delete this addon. 2) Visit the gVectors Store Addons page and make sure your license is active. 3) Re-install the addon from the gVectors Store Addons page. Once re-installed, everything will work normally again.',
+                    'This addon cannot be updated because its files have been modified or are not original. To resolve this, open the gVectors Addons page and click "Reinstall Addon" for this addon (your license must be active): its files are replaced with a clean copy and everything works normally again.',
                     'gvectors'
                 )
             );
@@ -1577,7 +1733,7 @@ class AddonsService {
      */
     private static function signature_failure_reason( string $sig_result ): string {
         $labels = [
-            'no_manifest'     => __( 'Missing signature manifest — addon was not installed through the official channel.', 'gvectors' ),
+            'no_manifest'     => __( 'No license was found for this copy on this site. If you bought it on our old gVectors store, enter your old license key on the Addons page to link it to this site.', 'gvectors' ),
             'tampered'        => __( 'File integrity check failed — one or more addon files have been modified.', 'gvectors' ),
             'domain_mismatch' => __( 'Domain mismatch — this addon copy is signed for a different website.', 'gvectors' ),
             'no_signatures'   => __( 'Missing PHP header signatures — addon files lack required security headers.', 'gvectors' ),
@@ -1615,13 +1771,25 @@ class AddonsService {
     }
     
     /**
+     * Does this host hold an active (or trial, not expired) license for the addon?
+     */
+    private function has_active_license( string $plugin_slug ): bool {
+        foreach( $this->licenseService->get_all() as $product_id => $license ) {
+            if( ( $license['plugin_slug'] ?? '' ) === $plugin_slug && $this->licenseService->is_active( (string) $product_id ) ) return true;
+        }
+        
+        return false;
+    }
+    
+    /**
      * Quick check: does this addon have a legacy license (from cache)?
-     * Returns true if the cached legacy license exists and is valid.
+     * Returns true if the cached legacy license exists and is valid, or when the store couldn't be
+     * asked yet (unknown — fail open, never block a customer on missing data).
      */
     private function has_legacy_license( string $plugin_slug ): bool {
         $legacy = $this->check_legacy_license( $plugin_slug );
         
-        return ! empty( $legacy['has_license'] );
+        return ! empty( $legacy['has_license'] ) || ! empty( $legacy['unknown'] );
     }
     
     /**
@@ -1675,6 +1843,25 @@ class AddonsService {
     }
     
     /**
+     * Right after licenses were activated on the Addons page: re-verify this host's licensed addons that
+     * are flagged, so an addon flagged only for lacking a license (e.g. installed from the old store and
+     * now linked by its old key) is cleared — and re-activated if the tamper check deactivated it —
+     * at once instead of on the next cron run.
+     */
+    public function reverify_licensed_addons(): void {
+        if( LicenseModule::is_development_site() ) return;
+        
+        $tampered = get_option( $this->tampered_option, [] );
+        if( empty( $tampered ) ) return;
+        
+        foreach( $this->licenseService->get_all() as $license ) {
+            $slug = self::sanitize_slug( (string) ( $license['plugin_slug'] ?? '' ) );
+            if( $slug === '' || ! isset( $tampered[ $slug ] ) || ! $this->is_installed( $slug ) ) continue;
+            $this->verify_addon_signatures( $slug );
+        }
+    }
+    
+    /**
      * Scan for installed plugins that are known gVectors addons (from the proxy list) but have no license.
      * These could be pirated copies installed manually, OR legacy-licensed installations.
      * Checks legacy license before flagging as tampered.
@@ -1720,7 +1907,7 @@ class AddonsService {
             $legacy = $this->get_cached_legacy_license( $slug );
             if( $legacy !== false && ! empty( $legacy['has_license'] ) ) {
                 // Legacy licensed — not piracy. Track for admin notice if expired.
-                $this->clear_tamper_flag( $slug );
+                $this->clear_tamper_flag( $slug, true );
                 $this->update_legacy_notice( $slug, $legacy );
                 
                 // Proactively migrate active legacy licenses to the new system.
@@ -1732,6 +1919,9 @@ class AddonsService {
                 
                 continue;
             }
+            
+            // The store couldn't be asked (no fresh answer) — never flag on missing data, retry next run
+            if( $legacy === false || ! empty( $legacy['unknown'] ) ) continue;
             
             // No legacy license — suspicious, flag as tampered
             $this->mark_addon_tampered( $slug, [
@@ -2194,9 +2384,11 @@ class AddonsService {
             $detected    = $info['detected_at'] ?? '';
             $deactivated = $info['deactivated_at'] ?? '';
             
+            // No license found (often a copy from the old gVectors store) — not proof of piracy: gentler text + how to link the old key
+            $unlicensed    = $reason === 'no_manifest';
             $reason_labels = [
                 'tampered'        => __( 'File integrity check failed — files have been modified.', 'gvectors' ),
-                'no_manifest'     => __( 'Missing signature manifest — this copy was not obtained through an authorized license.', 'gvectors' ),
+                'no_manifest'     => __( 'We couldn\'t find a license for this addon on this domain.', 'gvectors' ),
                 'domain_mismatch' => __( 'Domain signature mismatch — this addon was licensed for a different website.', 'gvectors' ),
                 'no_signatures'   => __( 'Missing file header signatures — files have been stripped of authorization data.', 'gvectors' ),
                 'patched'         => __( 'Suspicious code patterns detected — this appears to be a nulled or patched version.', 'gvectors' ),
@@ -2240,22 +2432,44 @@ class AddonsService {
                 'gvectors_dismiss_tampered_' . $slug
             );
 
+            $store_link = '<a href="' . admin_url( $this->config->get_dashboard_addons_store_url() ) . '">Addons Store</a>';
+            // A paying customer's copy that fails verification: one click on the Addons page replaces it with a clean copy
+            $licensed = ! $unlicensed && $this->has_active_license( $slug );
+            if( $licensed ) {
+                $title       = esc_html__( 'gVectors Security Alert — Addon Files Not Verified', 'gvectors' );
+                $action_text = sprintf(
+                    /* translators: %s: Addons Store page link */
+                    esc_html__( 'Your license is active: open the %s page and click "Reinstall Addon" for this addon to replace its files with a clean copy.', 'gvectors' ),
+                    $store_link
+                );
+            } elseif( $unlicensed ) {
+                $title       = esc_html__( 'gVectors — License Not Found for This Site', 'gvectors' );
+                $action_text = sprintf(
+                    esc_html__( 'If you bought this addon on our old gVectors store, enter your old license key in the license field of the %s page: it will be linked to this site and this notice disappears. Otherwise, please purchase a license there.', 'gvectors' ),
+                    $store_link
+                );
+            } else {
+                $title       = esc_html__( 'gVectors Security Alert — Unauthorized Addon Detected', 'gvectors' );
+                $action_text = sprintf(
+                    esc_html__( 'Please purchase a valid license at %s or remove the unauthorized addon.', 'gvectors' ),
+                    $store_link
+                );
+            }
             printf(
-                '<div class="notice notice-error" style="border-left-color:#dc3232;border-left-width:4px;">'
+                '<div class="notice %s" style="border-left-width:4px;%s">'
                 . '<p><strong style="font-size:14px;">⚠️ %s</strong> %s</p>'
                 . '<p>%s</p>'
                 . '<p>%s</p>'
                 . '<p>%s</p>'
                 . '<p><a href="%s">%s</a></p>'
                 . '</div>',
-                esc_html__( 'gVectors Security Alert — Unauthorized Addon Detected', 'gvectors' ),
+                $unlicensed ? 'notice-warning' : 'notice-error',
+                $unlicensed ? '' : 'border-left-color:#dc3232;',
+                $title,
                 '<code>' . esc_html( $slug ) . '</code>',
                 esc_html( $reason_text ),
                 $status_text,
-                sprintf(
-                    esc_html__( 'Please purchase a valid license at %s or remove the unauthorized addon.', 'gvectors' ),
-                    '<a href="' . admin_url( $this->config->get_dashboard_addons_store_url() ) . '">Addons Store</a>'
-                ),
+                $action_text,
                 esc_url( $dismiss_url ),
                 esc_html__( 'Dismiss for 5 days', 'gvectors' )
             );

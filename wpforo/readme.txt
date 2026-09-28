@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 7.1
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -246,6 +246,13 @@ IMPORTANT NOTES for UPDATE
 
 [wpForo Forum v3.2 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-2-is-released/)
 
+
+
+= wpForo Forum 3.2.2 | 28.09.2026 =
+
+* Addons Store: Improved addons' legacy license handling
+* Addons Store: Added 'View Features' button to see addons features
+* Addons Store: Various bug fixes and improvements
 
 
 = wpForo Forum 3.2.1 | 26.09.2026 =

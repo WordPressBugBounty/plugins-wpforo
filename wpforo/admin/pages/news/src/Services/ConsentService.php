@@ -39,6 +39,7 @@ class ConsentService {
      * First-activation opt-in notice: what connects, what is sent, why.
      */
     public function render_optin_notice(): void {
+        return; // Temporarily disabled - re-enable in a future release
         if( ! NewsModule::is_notice_page() ) return;
         if( ! $this->should_show_optin_notice() ) return;
         ?>

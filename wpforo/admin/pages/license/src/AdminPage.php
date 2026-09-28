@@ -77,6 +77,7 @@ class AdminPage {
             'checkout_loading_url' => $this->config->get_proxy_checkout_loading_url(),
             'checkout_url'         => $this->config->get_proxy_checkout_base_url(),
             'siteDomain'           => LicenseModule::get_site_domain(),
+            'pluginUploadUrl'      => is_multisite() ? network_admin_url( 'plugin-install.php?tab=upload' ) : admin_url( 'plugin-install.php?tab=upload' ),
             'i18n'                 => [
                 'loading'            => __( 'Loading...', 'gvectors' ),
                 'buy'                => __( 'Buy Now', 'gvectors' ),
@@ -111,10 +112,16 @@ class AdminPage {
                 'checkoutError'      => __( 'Checkout could not be opened. Please try again.', 'gvectors' ),
                 'downloadZip'        => __( 'Download ZIP', 'gvectors' ),
                 'downloadStarted'    => __( 'Your download has started.', 'gvectors' ),
+                'verifiedCopy'       => __( 'Reinstall Addon', 'gvectors' ),
+                'verifiedCopyConfirm' => __( 'Reinstall this addon with a fresh copy from gVectors? Your settings and data are kept; changes made directly to the addon\'s files are lost.', 'gvectors' ),
                 'manualInstallTitle' => __( 'Manual Installation', 'gvectors' ),
-                'manualInstallIntro' => __( 'WordPress can\'t install plugins on this site, so install this addon manually:', 'gvectors' ),
+                'manualInstallIntro' => __( 'WordPress can\'t install this addon automatically on this site, so install it manually:', 'gvectors' ),
                 'manualInstallHow'   => __( 'To install this addon manually:', 'gvectors' ),
                 'manualStepDownload' => __( 'Download the addon ZIP file.', 'gvectors' ),
+                /* translators: %s: "Plugins → Add New Plugin → Upload Plugin" link */
+                'manualStepDashboard' => __( 'Upload it in WordPress: go to %s, choose the ZIP file (don\'t unzip it), click "Install Now" and then "Activate Plugin".', 'gvectors' ),
+                'manualUploadPath'   => __( 'Plugins → Add New Plugin → Upload Plugin', 'gvectors' ),
+                'manualFtpIntro'     => __( 'If that doesn\'t work (the Upload Plugin button is missing or the upload fails), install it via FTP/SFTP instead, using the same ZIP file:', 'gvectors' ),
                 /* translators: %s: addon folder name */
                 'manualStepUnzip'    => __( 'Unzip it on your computer. You will get a folder named %s.', 'gvectors' ),
                 'manualStepUpload'   => __( 'Upload the whole folder to wp-content/plugins/ on your server via FTP/SFTP. Use binary transfer mode and make sure the hidden .addon-signatures.json file is uploaded too (enable "show hidden files" in your FTP client) — without it the addon is treated as modified.', 'gvectors' ),

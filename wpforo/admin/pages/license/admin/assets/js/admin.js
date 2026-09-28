@@ -284,6 +284,12 @@
 				self.downloadAddon(productId, $(this));
 			});
 
+			// Reinstall Addon (replace the installed addon with a fresh copy signed for this site)
+			$(document).on('click', '.gvlicense-verified-copy-btn', function () {
+				const productId = $(this).data('product-id');
+				self.installVerifiedCopy(productId, $(this));
+			});
+
 			// Manage button
 			$(document).on('click', '.gvlicense-manage-btn', function () {
 				const productId = $(this).data('product-id');
@@ -1128,8 +1134,11 @@
 						} else if (product.addon_status === 'installed') {
 							actions += '<button type="button" class="button button-small button-primary gvlicense-activate-addon-btn" data-product-id="' + pid + '" data-plugin-slug="' + (product.plugin_slug || '') + '">' + (this.config.i18n.activate || 'Activate') + '</button> ';
 						}
-						if (!product.is_bundle) {
-							actions += this.downloadButtonHtml(pid, 'button-small' + (product.addon_status === 'not_installed' && product.can_install === false ? ' button-primary' : '')) + ' ';
+						if (product.offer_download) {
+							actions += this.downloadButtonHtml(pid, 'button-small' + (product.can_install === false ? ' button-primary' : '')) + ' ';
+						}
+						if (product.offer_verified_copy) {
+							actions += this.verifiedCopyButtonHtml(pid, 'button-small' + (product.needs_verified_copy ? ' button-primary' : '')) + ' ';
 						}
 					}
 
@@ -1207,9 +1216,61 @@
 					$btn.html(label);
 					// WordPress couldn't write the addon (file mods disabled, unwritable plugins folder, ...) — offer the ZIP
 					if (response.data && response.data.manual_install) {
+						const product = self.findProduct(productId);
+						if (product && !product.offer_download && product.addon_status === 'not_installed') {
+							// Keep Download ZIP next to Install & Activate in the card and licenses table from now on
+							product.offer_download = true;
+							self.renderProducts(self.products);
+							self.loadLicenses();
+						}
 						self.showManualInstall(productId, response.data.message);
 					} else {
 						self.showToast(response.data.message, 'error');
+					}
+				}
+			});
+		},
+
+		verifiedCopyButtonHtml: function (productId, extraClass) {
+			return '<button type="button" class="button ' + (extraClass || '') + ' gvlicense-verified-copy-btn" data-product-id="' + productId + '">' +
+				'<span class="dashicons dashicons-update"></span> ' + this.config.i18n.verifiedCopy + '</button>';
+		},
+
+		/**
+		 * Replace the installed addon's files with a fresh copy signed for this site (settings/data are kept).
+		 * Sites where WordPress can't write plugins get the manual install guide instead.
+		 */
+		installVerifiedCopy: function (productId, $btn) {
+			const self = this;
+			if (!confirm(this.config.i18n.verifiedCopyConfirm)) return;
+
+			const label = $btn.html();
+			this.setLoading($btn, true);
+			$btn.text(this.config.i18n.processing);
+
+			this.ajax('install_verified_copy', {
+				product_id: productId,
+			}, function (response) {
+				self.setLoading($btn, false);
+				if (response.success) {
+					self.showToast(response.data.message, 'success');
+					$('#gvlicense-manage-modal').hide();
+					// Reload products first (updates the verified flags), then licenses — renderLicenses reads them via findProduct()
+					self.ajax('get_products', {}, function (prodResponse) {
+						if (prodResponse.success && prodResponse.data) {
+							const data = prodResponse.data;
+							self.products = data.products || data;
+							self.checkoutMode = data.checkout_mode || 'both';
+							self.renderProducts(self.products);
+						}
+						self.loadLicenses();
+					});
+				} else {
+					$btn.html(label);
+					if (response.data && response.data.manual_install) {
+						self.showManualInstall(productId, response.data.message);
+					} else {
+						self.showToast((response.data && response.data.message) || self.config.i18n.error, 'error');
 					}
 				}
 			});
@@ -1253,12 +1314,22 @@
 			}
 			$('<p></p>').text(product.can_install === false ? i18n.manualInstallIntro : i18n.manualInstallHow).appendTo($body);
 
+			// First the normal WordPress way: upload the ZIP on Plugins → Add New Plugin → Upload Plugin
 			const $steps = $('<ol class="gvlicense-manual-steps"></ol>').appendTo($body);
 			$('<li></li>').text(i18n.manualStepDownload + ' ').append($(this.downloadButtonHtml(productId, 'button-small button-primary'))).appendTo($steps);
+			const dashboard = i18n.manualStepDashboard.split('%s');
+			$('<li></li>').text(dashboard[0]).append(
+				$('<a target="_blank" rel="noopener noreferrer"></a>').attr('href', this.config.pluginUploadUrl).text(i18n.manualUploadPath),
+				document.createTextNode(dashboard[1] || '')
+			).appendTo($steps);
+
+			// Fallback when WordPress can't write plugins at all (Upload Plugin missing or failing): FTP/SFTP
+			$('<p class="gvlicense-manual-fallback"></p>').text(i18n.manualFtpIntro).appendTo($body);
+			const $ftp = $('<ol class="gvlicense-manual-steps"></ol>').appendTo($body);
 			const unzip = i18n.manualStepUnzip.split('%s');
-			$('<li></li>').text(unzip[0]).append($('<code></code>').text(slug || '…'), document.createTextNode(unzip[1] || '')).appendTo($steps);
-			$('<li></li>').text(i18n.manualStepUpload).appendTo($steps);
-			$('<li></li>').text(i18n.manualStepActivate).appendTo($steps);
+			$('<li></li>').text(unzip[0]).append($('<code></code>').text(slug || '…'), document.createTextNode(unzip[1] || '')).appendTo($ftp);
+			$('<li></li>').text(i18n.manualStepUpload).appendTo($ftp);
+			$('<li></li>').text(i18n.manualStepActivate).appendTo($ftp);
 			$('<p class="gvlicense-manual-note"></p>').text(i18n.manualInstallNote).appendTo($body);
 
 			// Site blocks plugin installs: updates can't arrive via WordPress — recommend restoring the default permissions
@@ -1426,8 +1497,11 @@
 			if (product.addon_status === 'not_installed' && (product.is_licensed || product.is_trial) && product.can_install !== false) {
 				html += '<button type="button" class="button button-primary gvlicense-install-btn" data-product-id="' + productId + '">' + this.config.i18n.install + '</button>';
 			}
-			if ((product.is_licensed || product.is_trial) && !product.is_bundle) {
-				html += this.downloadButtonHtml(productId, product.addon_status === 'not_installed' && product.can_install === false ? 'button-primary' : '');
+			if (product.offer_download) {
+				html += this.downloadButtonHtml(productId, product.can_install === false ? 'button-primary' : '');
+			}
+			if (product.offer_verified_copy) {
+				html += this.verifiedCopyButtonHtml(productId, product.needs_verified_copy ? 'button-primary' : '');
 			}
 			html += '<button type="button" class="button gvlicense-deactivate-btn" data-product-id="' + productId + '">' + this.config.i18n.deactivateLicense + '</button>';
 

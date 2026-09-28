@@ -33,7 +33,7 @@ if( ! current_user_can( 'administrator' ) ) exit;
 	<div class="gvlicense-license-bar">
 		<h3><?php esc_html_e( 'Activate License', 'gvectors' ); ?></h3>
 		<p class="description" style="margin:0 0 10px;color:#666;font-size:13px;">
-			<?php esc_html_e( 'Enter your license key or transaction ID, or leave empty to automatically find and activate all licenses registered to this domain.', 'gvectors' ); ?>
+			<?php esc_html_e( 'Enter your license key or transaction ID, or leave empty to automatically find and activate all licenses registered to this domain. License keys from our old gVectors store work too.', 'gvectors' ); ?>
 		</p>
 		<div class="gvlicense-license-form">
 			<input type="text" id="gvlicense-unified-key" placeholder="<?php esc_attr_e( 'License key, transaction ID, or leave empty for auto-detect...', 'gvectors' ); ?>" class="regular-text">
@@ -175,6 +175,16 @@ if( ! current_user_can( 'administrator' ) ) exit;
 				</ul>
 			</div>
 			<# } #>
+			<# if (data.product_url || data.demo_url) { #>
+			<div class="gvlicense-product-links">
+				<# if (data.product_url) { #>
+				<a class="button button-small gvlicense-product-link" href="{{data.product_url}}" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-external"></span> <?php esc_html_e( 'View Features', 'gvectors' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'gvectors' ); ?></span></a>
+				<# } #>
+				<# if (data.demo_url) { #>
+				<a class="button button-small gvlicense-demo-link" href="{{data.demo_url}}" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-visibility"></span> <?php esc_html_e( 'Live Demo', 'gvectors' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'gvectors' ); ?></span></a>
+				<# } #>
+			</div>
+			<# } #>
  		<div class="gvlicense-product-price">
  			<# if (data.is_licensed || data.is_trial) { #>
  				<# if (data.active_plan_name) { #>
@@ -231,11 +241,19 @@ if( ! current_user_can( 'administrator' ) ) exit;
  					<button type="button" class="button button-primary gvlicense-download-btn" data-product-id="{{data.id}}"><span class="dashicons dashicons-download"></span> <?php esc_html_e( 'Download ZIP', 'gvectors' ); ?></button>
  					<# } else { #>
  					<button type="button" class="button button-primary gvlicense-install-btn" data-product-id="{{data.id}}"><?php esc_html_e( 'Install & Activate', 'gvectors' ); ?></button>
+ 					<# if (data.offer_download) { #>
  					<button type="button" class="button gvlicense-download-btn gvlicense-download-icon-btn" data-product-id="{{data.id}}" title="<?php esc_attr_e( 'Download ZIP for manual installation', 'gvectors' ); ?>" aria-label="<?php esc_attr_e( 'Download ZIP for manual installation', 'gvectors' ); ?>"><span class="dashicons dashicons-download"></span></button>
  					<# } #>
+ 					<# } #>
+ 					<# if (data.offer_verified_copy) { #>
+ 					<button type="button" class="button<# if (data.needs_verified_copy) { #> button-primary<# } #> gvlicense-verified-copy-btn" data-product-id="{{data.id}}"><span class="dashicons dashicons-update"></span> <?php esc_html_e( 'Reinstall Addon', 'gvectors' ); ?></button>
+ 					<# } #>
  					<button type="button" class="button gvlicense-manage-btn" data-product-id="{{data.id}}"><?php esc_html_e( 'Manage', 'gvectors' ); ?></button>
- 					<# if (data.addon_status === 'not_installed' && data.can_install === false) { #>
- 					<p class="gvlicense-manual-hint"><?php esc_html_e( 'WordPress can\'t install plugins on this site — download the ZIP and upload it manually.', 'gvectors' ); ?></p>
+ 					<# if (data.offer_download) { #>
+ 					<p class="gvlicense-manual-hint"><?php esc_html_e( 'WordPress can\'t install addons automatically on this site — download the ZIP and install it manually.', 'gvectors' ); ?></p>
+ 					<# } #>
+ 					<# if (data.needs_verified_copy) { #>
+ 					<p class="gvlicense-manual-hint"><?php esc_html_e( 'This copy isn\'t verified for this site (installed outside the Addons page, or its files were changed). Reinstall it from the store — your settings and data are kept.', 'gvectors' ); ?></p>
  					<# } #>
  				<# } else { #>
  					<# if (data.prices && data.prices.length) { #>

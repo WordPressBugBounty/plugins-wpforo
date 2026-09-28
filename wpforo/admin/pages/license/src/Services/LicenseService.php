@@ -305,7 +305,9 @@ class LicenseService {
                        || in_array( $server_status, self::TERMINAL_STATUSES, true )
                        || $server_reason === 'not_found';
         
-        if( $is_terminal ) {
+        if( $is_terminal && self::is_legacy_license( $license ) ) {
+            $this->keep_legacy_license( $product_id, $license );
+        } elseif( $is_terminal ) {
             $plugin_slug = $license['plugin_slug'] ?? '';
             $this->remove( $product_id );
             
@@ -346,6 +348,24 @@ class LicenseService {
                 $this->update_expired_notice( $product_id );
             }
         }
+    }
+    
+    /**
+     * A license migrated from the old gVectors store (legacy activation key).
+     */
+    private static function is_legacy_license( array $license ): bool {
+        return ( $license['plan_name'] ?? '' ) === 'Legacy License';
+    }
+    
+    /**
+     * A legacy license the server no longer knows or reports invalid: old-store owners keep using their
+     * addon for life, so the license is kept as expired (no updates) and the addon is never deactivated or deleted.
+     */
+    private function keep_legacy_license( string $product_id, array $license ): void {
+        $license['status']         = 'expired';
+        $license['last_validated'] = time();
+        $this->save( $product_id, $license );
+        $this->update_expired_notice( $product_id );
     }
     
     /**
@@ -542,6 +562,19 @@ class LicenseService {
         $is_terminal = in_array( $server_reason, self::REFUND_REASONS, true )
                        || in_array( $server_status, self::TERMINAL_STATUSES, true )
                        || $server_reason === 'not_found';
+        
+        if( $is_terminal && self::is_legacy_license( $license ) ) {
+            $this->keep_legacy_license( $product_id, $license );
+            
+            return [
+                'valid'         => false,
+                'reason'        => $server_reason ?: $server_status,
+                'error'         => $server_error,
+                'status'        => 'expired',
+                'removed'       => false,
+                'addon_deleted' => false,
+            ];
+        }
         
         $removed       = false;
         $addon_deleted = false;
