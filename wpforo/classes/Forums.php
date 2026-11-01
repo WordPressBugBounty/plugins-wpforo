@@ -1082,7 +1082,9 @@ class Forums {
 					$this->forum_list( $parentids, $type, $selected, $cats, $disabled );
 					$html       = ob_get_clean();
 					$cache_html = ( $type === 'select_box' ? preg_replace( $pattern_strip_selected, '$1$2', (string) $html ) : $html );
-					if( $type !== 'drag_menu' ) wpforo_update_option( 'forum_tree_' . $key, $cache_html );
+					// Store non-autoloaded: this HTML blob is only read on forum pages via wpforo_get_option(),
+					// so autoloading it on every request wastes memory. Keeps autoload=no across cache rebuilds (#1150).
+					if( $type !== 'drag_menu' ) wpforo_update_option( 'forum_tree_' . $key, $cache_html, false );
 					echo $html;
 				}
 			} else {

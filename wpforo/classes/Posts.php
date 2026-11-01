@@ -94,8 +94,7 @@ class Posts {
 	
 	public function add( $args = [] ) {
 		
-		$guestposting = false;
-		$root_exists  = wpforo_root_exist();
+		$root_exists = wpforo_root_exist();
 		
 		if( empty( $args ) && empty( $_REQUEST['post'] ) ) {
 			WPF()->notice->add( 'Reply request error', 'error' );
@@ -113,9 +112,8 @@ class Posts {
 		}
 		$args['name']  = ( isset( $args['name'] ) ? strip_tags( (string) $args['name'] ) : '' );
 		$args['email'] = ( isset( $args['email'] ) ? sanitize_email( $args['email'] ) : '' );
-		if( isset( $args['userid'] ) && $args['userid'] == 0 && $args['name'] && $args['email'] ) $guestposting = true;
 
-		// Security: extract only expected keys to prevent variable injection (e.g., $guestposting override)
+		// Security: read only expected keys from the request-supplied $args to prevent variable injection
 		$topicid  = isset( $args['topicid'] ) ? $args['topicid'] : null;
 		$parentid = isset( $args['parentid'] ) ? $args['parentid'] : null;
 		$title    = isset( $args['title'] ) ? $args['title'] : null;
@@ -149,15 +147,18 @@ class Posts {
 			return false;
 		}
 		
-		if( ! $guestposting && ! ( WPF()->perm->forum_can( 'cr', $topic['forumid'] ) || ( wpforo_is_owner( $topic['userid'], $topic['email'] ) && WPF()->perm->forum_can(
+		// Enforce reply permission server-side for every submission, including guest (name/email) posts and
+		// direct POSTs: the current usergroup must have 'cr' (or 'ocr' on its own topic) on this forum. The
+		// presence of name/email must never bypass this check. Mirrors the unconditional 'ct' gate in Topics::add().
+		if( ! ( WPF()->perm->forum_can( 'cr', $topic['forumid'] ) || ( wpforo_is_owner( $topic['userid'], $topic['email'] ) && WPF()->perm->forum_can(
 						'ocr',
 						$topic['forumid']
 					) ) ) ) {
 			WPF()->notice->add( 'You don\'t have permission to create post in this forum', 'error' );
-			
+
 			return false;
 		}
-		
+
 		// Skip flood check for AI-generated content (created by AI Tasks)
 		if ( empty( $args['is_ai_generated'] ) ) {
 			$flood_reason = '';
@@ -340,7 +341,9 @@ class Posts {
 		$args['userid'] = $post['userid'];
 		$args['status'] = $post['status'];
 		
-		if( isset( $args['userid'] ) && $args['userid'] == 0 && isset( $args['name'] ) && isset( $args['email'] ) ) $guestposting = true;
+		// Only a logged-out guest whose ownership of this post was verified above may skip the edit permission check.
+		// Logged-in users always go through it, even when the request carries name/email for a guest-authored post.
+		if( ! is_user_logged_in() && isset( $args['userid'] ) && $args['userid'] == 0 && isset( $args['name'] ) && isset( $args['email'] ) ) $guestposting = true;
 		
 		$args = apply_filters( 'wpforo_edit_post_data_filter', $args );
 		if( empty( $args ) ) return false;

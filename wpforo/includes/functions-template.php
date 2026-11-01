@@ -2765,6 +2765,12 @@ function wpforo_schema( $forum, $topic, $post, $type = '' ) {
                     $topic['topicid'],
                     $suggested_answers_count
             );
+            // QAPage requires an answer, an unanswered question is a regular discussion
+            if( empty( $best_answer ) && empty( $suggested_answers ) ) {
+                $type = 'DiscussionForumPosting';
+            }
+        }
+        if( $type === 'QAPage' && wpfval( $topic, 'topicid' ) ) {
             $schema                  .= '
          <script type="application/ld+json">
             {
@@ -2782,7 +2788,7 @@ function wpforo_schema( $forum, $topic, $post, $type = '' ) {
                     ) . 'Z",
                     "author": {
                         "@type": "Person",
-                        "name": "' . wpforo_member( $post['created'], 'display_name' ) . '"
+                        "name": "' . wpforo_member( $post['userid'], 'display_name' ) . '"
                     }';
             if( ! empty( $best_answer ) ) {
                 $schema .= ',

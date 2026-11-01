@@ -536,6 +536,44 @@ function wpforo_meta_wp_title( $title ) {
 
 add_filter( 'wp_title', 'wpforo_meta_wp_title', 100 );
 
+function wpforo_get_current_tag_name() {
+	// current_object['args'] is built in WPF::init_current_object(); reuse its parsed and sanitized values
+	if( wpfval( WPF()->current_object, 'template' ) !== 'search' ) return '';
+	if( wpfval( WPF()->current_object, 'args', 'type' ) !== 'tag' ) return '';
+
+	return (string) wpfval( WPF()->current_object, 'args', 'needle' );
+}
+
+function wpforo_get_current_recent_view() {
+	if( wpfval( WPF()->current_object, 'template' ) !== 'recent' ) return '';
+
+	return (string) wpfval( WPF()->current_object, 'args', 'view' );
+}
+
+function wpforo_get_canonical_url() {
+	$canonical = (string) strtok( (string) WPF()->canonical_url, '?' );
+	$args      = [];
+	$tag       = wpforo_get_current_tag_name();
+	$view      = wpforo_get_current_recent_view();
+	if( $tag ) {
+		// Normalize to the stored tag spelling so letter-case variants share one canonical
+		$stored_tag = wpfval( WPF()->topic->get_tag( $tag ), 'tag' );
+		$args       = [ 'wpfin' => 'tag', 'wpfs' => $stored_tag ?: $tag ];
+	} elseif( $view ) {
+		$args = [ 'view' => $view ];
+		if( $view === 'prefix' && ( $prefixid = (int) wpfval( WPF()->current_object, 'args', 'prefixid' ) ) ) {
+			$args['prefixid'] = $prefixid;
+		}
+	}
+	if( $args ) {
+		if( WPF()->current_object['paged'] > 1 ) $args['wpfpaged'] = (int) WPF()->current_object['paged'];
+		// Same ?wpfin=tag&wpfs=<urlencode> shape wpForo uses for every tag link it prints
+		$canonical .= '?' . http_build_query( $args );
+	}
+
+	return $canonical;
+}
+
 function wpforo_add_meta_tags() {
 	if( ! wpforo_setting( 'seo', 'seo_meta' ) ) {
 		return;
@@ -550,29 +588,31 @@ function wpforo_add_meta_tags() {
 		$template    = '';
 		$description = '';
 		$udata       = [];
+		$canonical       = wpforo_get_canonical_url();
+		$noindex_targets = [ $canonical ];
+		// Noindex rules saved earlier may target dynamic pages by their home-based URL (community/?view=unread)
 		if( preg_match( '#\?.*$#is', (string) WPF()->canonical_url, $requests ) ) {
-			if( strpos( (string) $requests[0], 'orderby' ) !== false ) {
-				$canonical = preg_replace( '#\?.*$#is', '', (string) WPF()->canonical_url );
-			} else {
-				$canonical = wpforo_home_url( $requests[0] );
-			}
-		} else {
-			$canonical = WPF()->canonical_url;
+			$noindex_targets[] = wpforo_home_url( $requests[0] );
 		}
 		$noindex_urls = wpforo_setting( 'seo', 'noindex' );
 		$image        = '';
 		foreach( $noindex_urls as $noindex_url ) {
 			$noindex_url = strtok( $noindex_url, "#" );
-			if( strpos( (string) $noindex_url, '*' ) !== false ) {
-				$noindex_url = strtok( $noindex_url, "*" );
-				if( preg_match( '|^' . preg_quote( $noindex_url ) . '|is', (string) $canonical ) ) {
+			foreach( $noindex_targets as $noindex_target ) {
+				if( strpos( (string) $noindex_url, '*' ) !== false ) {
+					if( preg_match( '|^' . preg_quote( strtok( $noindex_url, "*" ) ) . '|is', (string) $noindex_target ) ) {
+						$noindex = "<meta name=\"robots\" content=\"noindex\">\r\n";
+						break 2;
+					}
+				} elseif( $noindex_target == $noindex_url ) {
 					$noindex = "<meta name=\"robots\" content=\"noindex\">\r\n";
-					break;
+					break 2;
 				}
-			} elseif( $canonical == $noindex_url ) {
-				$noindex = "<meta name=\"robots\" content=\"noindex\">\r\n";
-				break;
 			}
+		}
+		// Unread Posts content depends on the visitor's own read state
+		if( wpforo_get_current_recent_view() === 'unread' ) {
+			$noindex = "<meta name=\"robots\" content=\"noindex\">\r\n";
 		}
 		$paged = ( WPF()->current_object['paged'] > 1 ) ? wpforo_phrase( 'page', false ) . ' ' . WPF()->current_object['paged'] . ' | ' : '';
 		if( isset( WPF()->current_object['template'] ) ) {
@@ -655,6 +695,9 @@ function wpforo_add_meta_tags() {
 					                                                                         false
 				                                                                         ) . ' ' . $_GET['wpfpaged'] . ' | ' : '';
 				$description = $wpfpaged . wpforo_phrase( 'Tags', false );
+			} elseif( $tag = wpforo_get_current_tag_name() ) {
+				$title       = $paged . trim( (string) wpforo_phrase( 'Topic Tag:', false ) ) . ' ' . $tag;
+				$description = $title . ' - ' . WPF()->board->get_current( 'settings' )['title'];
 			} else {
 				if( isset( WPF()->board->get_current( 'settings' )['title'] ) ) {
 					$title = $paged . WPF()->board->get_current( 'settings' )['title'];
@@ -672,6 +715,7 @@ function wpforo_add_meta_tags() {
 				$og_img = '<meta property="og:image" content="' . $image . '" />' . "\r\n";
 				$tw_img = '<meta property="twitter:image" content="' . $image . '" />' . "\r\n";
 			}
+			$canonical = esc_url( $canonical );
 			$meta_tags = "\r\n<!-- wpForo SEO -->\r\n" . $noindex . "<link rel=\"canonical\" href=\"" . $canonical . "\" />\r\n<meta name=\"description\" content=\"" . esc_html(
 					$description
 				) . "\" />\r\n<meta property=\"og:title\" content=\"" . esc_html(

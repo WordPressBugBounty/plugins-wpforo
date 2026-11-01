@@ -282,22 +282,22 @@ class Boards {
 		
 		$wheres = [];
 		
-		if( ! is_null( $args['title_like'] ) ) $wheres[] = "`title` LIKE '%" . WPF()->db->esc_like( $args['title_like'] ) . "%'";
-		if( ! is_null( $args['title_notlike'] ) ) {
-			$wheres[] = "`title` NOT LIKE '%" . WPF()->db->esc_like(
-					$args['title_notlike']
-				) . "%'";
+		if( ! is_null( $args['title_like'] ) ) {
+			$wheres[] = WPF()->db->prepare( "`title` LIKE %s", '%' . WPF()->db->esc_like( (string) $args['title_like'] ) . '%' );
 		}
-		
+		if( ! is_null( $args['title_notlike'] ) ) {
+			$wheres[] = WPF()->db->prepare( "`title` NOT LIKE %s", '%' . WPF()->db->esc_like( (string) $args['title_notlike'] ) . '%' );
+		}
+
 		if( ! is_null( $args['locale_like'] ) ) {
-			$locale_like = "`locale` LIKE '%" . WPF()->db->esc_like( $args['locale_like'] ) . "%'";
+			$locale_like = WPF()->db->prepare( "`locale` LIKE %s", '%' . WPF()->db->esc_like( (string) $args['locale_like'] ) . '%' );
 			if( $args['locale_empty'] ) {
 				$locale_like = "( `locale` = '' OR `locale` IS NULL OR " . $locale_like . " )";
 			}
 			$wheres[] = $locale_like;
 		}
 		if( ! is_null( $args['locale_notlike'] ) ) {
-			$locale_notlike = "`locale` NOT LIKE '%" . WPF()->db->esc_like( $args['locale_notlike'] ) . "%'";
+			$locale_notlike = WPF()->db->prepare( "`locale` NOT LIKE %s", '%' . WPF()->db->esc_like( (string) $args['locale_notlike'] ) . '%' );
 			if( ! is_null( $args['locale_empty'] ) ) {
 				if( $args['locale_empty'] ) {
 					$locale_notlike = "( `locale` = '' OR `locale` IS NULL OR " . $locale_notlike . " )";

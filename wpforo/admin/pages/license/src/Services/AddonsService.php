@@ -2231,7 +2231,7 @@ class AddonsService {
             $slug = sanitize_key( $_GET['gvectors_notice_slug'] );
             if( in_array( $type, [ 'tampered', 'expired', 'legacy' ], true ) ) {
                 check_admin_referer( 'gvectors_dismiss_' . $type . '_' . $slug );
-                set_transient( 'gvectors_' . $type . '_dismissed_' . $slug, 1, 5 * DAY_IN_SECONDS );
+                set_transient( 'gvectors_' . $type . '_dismissed_' . $slug, 1, 30 * DAY_IN_SECONDS );
                 wp_safe_redirect( remove_query_arg( [ 'gvectors_dismiss_addon_notice', 'gvectors_notice_slug', '_wpnonce' ] ) );
                 exit;
             }
@@ -2471,7 +2471,7 @@ class AddonsService {
                 $status_text,
                 $action_text,
                 esc_url( $dismiss_url ),
-                esc_html__( 'Dismiss for 5 days', 'gvectors' )
+                esc_html__( 'Dismiss for 1 month', 'gvectors' )
             );
         }
     }
@@ -2612,7 +2612,7 @@ class AddonsService {
                     '<a href="' . admin_url( $this->config->get_dashboard_addons_store_url() ) . '">Addons Store</a>'
                 ),
                 esc_url( $dismiss_url ),
-                esc_html__( 'Dismiss for 5 days', 'gvectors' )
+                esc_html__( 'Dismiss for 1 month', 'gvectors' )
             );
         }
     }
@@ -2672,7 +2672,7 @@ class AddonsService {
                     '<a href="' . esc_url( $addons_page_url ) . '">' . esc_html__( 'Addons Store', 'gvectors' ) . '</a>'
                 ),
                 esc_url( $dismiss_url ),
-                esc_html__( 'Dismiss for 5 days', 'gvectors' )
+                esc_html__( 'Dismiss for 1 month', 'gvectors' )
             );
         }
     }

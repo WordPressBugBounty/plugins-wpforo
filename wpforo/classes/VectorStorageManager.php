@@ -1613,14 +1613,33 @@ class VectorStorageManager {
 
 		// Build CASE statement for indexed hash updates
 		// Hash is MD5 of "topicid_postcount"
+		// The hash is computed in PHP, the MD5() SQL function is not available on all database servers
 		$topic_ids = array_map( 'intval', $topic_ids );
 		$ids_list = implode( ',', $topic_ids );
+
+		$topics = $wpdb->get_results(
+			"SELECT `topicid`, `posts` FROM `" . WPF()->tables->topics . "` WHERE topicid IN ($ids_list)",
+			ARRAY_A
+		);
+		if ( empty( $topics ) ) {
+			return 0;
+		}
+
+		$case_parts = [];
+		$found_ids = [];
+		foreach ( $topics as $topic ) {
+			$topic_id = (int) $topic['topicid'];
+			$found_ids[] = $topic_id;
+			$case_parts[] = "WHEN {$topic_id} THEN '" . md5( $topic_id . '_' . (int) $topic['posts'] ) . "'";
+		}
+		$ids_list = implode( ',', $found_ids );
+		$case_statement = implode( ' ', $case_parts );
 
 		// Update indexed hash and local column in a single query
 		// The hash is calculated as MD5(topicid + '_' + posts)
 		$updated = $wpdb->query(
 			"UPDATE `" . WPF()->tables->topics . "`
-			SET `indexed` = MD5(CONCAT(topicid, '_', posts)),
+			SET `indexed` = CASE topicid {$case_statement} END,
 			    `local` = 1
 			WHERE topicid IN ($ids_list)"
 		);

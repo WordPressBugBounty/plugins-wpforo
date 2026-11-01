@@ -1294,9 +1294,9 @@ class Template {
                                     }
                                     ?>
                                     <li>
-                                        <label title="<?php echo $title ?>">
+                                        <label title="<?php echo esc_attr( $title ) ?>">
                                             <input type="checkbox" name="wpforo[posts][]" value="<?php echo $post['postid'] ?>">
-                                            <?php echo $value ?>
+                                            <?php echo esc_html( $value ) ?>
                                         </label>
                                     </li>
                                 <?php endforeach; ?>
@@ -1370,9 +1370,9 @@ class Template {
                                     }
                                     ?>
                                     <li>
-                                        <label title="<?php echo $title ?>">
+                                        <label title="<?php echo esc_attr( $title ) ?>">
                                             <input type="checkbox" name="wpforo[posts][]" value="<?php echo $post['postid'] ?>">
-                                            <?php echo $value ?>
+                                            <?php echo esc_html( $value ) ?>
                                         </label>
                                     </li>
                                 <?php endforeach; ?>
@@ -2766,6 +2766,14 @@ class Template {
         return ! wpfkey( $_theme, 'error' );
     }
 
+    /**
+     * Whether $theme is the exact folder name of an installed theme (a find_themes() entry, as listed on
+     * the Themes page). Unlike theme_exists() it never accepts a path, so request input is safe to use after it.
+     */
+    public function theme_folder_exists( $theme ) {
+        return is_string( $theme ) && isset( $this->find_themes()[ $theme . '/style.css' ] );
+    }
+
     public function copyright() {
         if( wpforo_setting( 'components', 'copyright' ) ): ?>
             <div id="wpforo-poweredby">
@@ -2783,7 +2791,8 @@ class Template {
 
     public function ajx_active_tab_content() {
         wpforo_verify_nonce( 'wpforo_active_tab_content_ajax' );
-        if( ! empty( $_POST['active_tab_id'] ) ) {
+        // Every tab served below is a topic moderation tool, shown in wpforo_moderation_tools() only to users with 'mt'.
+        if( WPF()->perm->forum_can( 'mt' ) && ! empty( $_POST['active_tab_id'] ) ) {
             $active_tab_id = sanitize_textarea_field( $_POST['active_tab_id'] );
             switch( $active_tab_id ) {
                 case 'topic_merge_form':

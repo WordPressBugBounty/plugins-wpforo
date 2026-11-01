@@ -96,6 +96,9 @@ class UserGroups {
             'ai_translation' => __( 'Front - Can use AI post translation', 'wpforo' ),
             'ai_suggestion'  => __( 'Front - Can see AI topic suggestion', 'wpforo' ),
 		];
+
+		// The "Dashboard - ..." capabilities above (wp-admin access); everything else is front-end.
+		$this->default->dashboard_cans = [ 'mf', 'ms', 'mai', 'mt', 'vm', 'aum', 'vmg', 'mp', 'mth', 'em', 'bm', 'dm' ];
 	}
 
 	private function init_options() {
@@ -585,6 +588,14 @@ class UserGroups {
 		}
 
 		return 0;
+	}
+
+	public function has_dashboard_caps( $groupid ) {
+		foreach( $this->default->dashboard_cans as $cap ) {
+			if( $this->can( $cap, $groupid ) ) return true;
+		}
+
+		return false;
 	}
 
 	public function get_groupids_by_can( $do ) {

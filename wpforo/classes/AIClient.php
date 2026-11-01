@@ -6860,12 +6860,27 @@ class AIClient {
 
 		// Update indexed hash based on current post count
 		// Hash formula: MD5(topicid + '_' + posts)
+		// The hash is computed in PHP, the MD5() SQL function is not available on all database servers
+		$posts = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT `posts` FROM `" . WPF()->tables->topics . "` WHERE `topicid` = %d",
+				$topicid
+			)
+		);
+		if ( $posts === null ) {
+			return;
+		}
+		$posts = (int) $posts;
+
+		// The posts condition skips the update if the post count changed in the meantime
 		$updated = $wpdb->query(
 			$wpdb->prepare(
 				"UPDATE `" . WPF()->tables->topics . "`
-				SET `indexed` = MD5(CONCAT(topicid, '_', posts))
-				WHERE `topicid` = %d",
-				$topicid
+				SET `indexed` = %s
+				WHERE `topicid` = %d AND `posts` = %d",
+				md5( (int) $topicid . '_' . $posts ),
+				$topicid,
+				$posts
 			)
 		);
 

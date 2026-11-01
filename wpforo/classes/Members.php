@@ -837,38 +837,7 @@ class Members {
                 }
             }
 
-            if( $sgids = array_filter( array_map( 'intval', (array) wpfval( $user, 'secondary_groupids' ) ) ) ) {
-                $participant_fields_list = $this->get_participant_fields_list( $form_fields, true );
-                $f                       = $this->get_field( 'secondary_groupids' );
-                if(
-                        in_array( 'secondary_groupids', $participant_fields_list )
-                        && ( WPF()->current_object['template'] === 'register'
-                             || ( WPF()->form->owner() && $f['isEditable'] )
-                             || ( ! WPF()->form->owner() && in_array( WPF()->current_user_groupid, (array) $f['canEdit'] ) )
-                             || wpforo_current_user_is( 'admin' )
-                        )
-                ) {
-                    if( ! empty( $sgids ) ) {
-                        $privileged_roles = [ 'administrator', 'editor', 'author' ];
-                        $safe_groupids = [];
-                        foreach( WPF()->usergroup->get_secondary_groups() as $group ) {
-                            if( ! in_array( $group['role'], $privileged_roles, true ) ) {
-                                $safe_groupids[] = (int) $group['groupid'];
-                            }
-                        }
-                        foreach( $sgids as $sgid ) {
-                            if( in_array( $sgid, [ 1, 2, 4 ], true ) ) {
-                                $user['secondary_groupids'] = array_diff( $user['secondary_groupids'], [ $sgid ] );
-                            }
-                            if( ! in_array( $sgid, $safe_groupids, true ) ) {
-                                $user['secondary_groupids'] = array_diff( $user['secondary_groupids'], [ $sgid ] );
-                            }
-                        }
-                    }
-                } else {
-                    unset( $user['secondary_groupids'] );
-                }
-            }
+            $user = $this->filter_secondary_groupids( $user, $userid, $form_fields );
 
             //Sanitize fields
             $user = WPF()->form->sanitize( $user, $form_fields );
@@ -927,6 +896,72 @@ class Members {
         }
 
         return false;
+    }
+
+    /**
+     * Drops the secondary usergroups the current user may not set from a profile update.
+     *
+     * The submitted value can be an array of checkboxes or a comma-separated string, and decode() stores both.
+     * It is parsed once here and written back as a list of ints, so the groups checked below are exactly the
+     * groups that get stored. The checks run whenever the key is present, also when it parses to no groups.
+     *
+     * @param array $user        profile update data
+     * @param int   $userid      the edited user
+     * @param array $form_fields fields of the submitted form
+     *
+     * @return array
+     */
+    private function filter_secondary_groupids( $user, $userid, $form_fields ) {
+        if( ! wpfkey( $user, 'secondary_groupids' ) ) return $user;
+
+        $raw                        = $user['secondary_groupids'];
+        $sgids                      = array_filter( wp_parse_id_list( is_scalar( $raw ) ? $raw : (array) $raw ) );
+        $user['secondary_groupids'] = $sgids;
+
+        $participant_fields_list = $this->get_participant_fields_list( $form_fields, true );
+        $f                       = $this->get_field( 'secondary_groupids' );
+        if(
+                in_array( 'secondary_groupids', $participant_fields_list )
+                && ( WPF()->current_object['template'] === 'register'
+                     || ( WPF()->form->owner() && wpfval( $f, 'isEditable' ) )
+                     || ( ! WPF()->form->owner() && in_array( WPF()->current_user_groupid, (array) wpfval( $f, 'canEdit' ) ) )
+                     || wpforo_current_user_is( 'admin' )
+                )
+        ) {
+            if( ! empty( $sgids ) ) {
+                $privileged_roles = [ 'administrator', 'editor', 'author' ];
+                $safe_groupids = [];
+                foreach( WPF()->usergroup->get_secondary_groups() as $group ) {
+                    if( ! in_array( $group['role'], $privileged_roles, true ) ) {
+                        $safe_groupids[] = (int) $group['groupid'];
+                    }
+                }
+                // Without usergroup-management rights, only groups the field offers can be added, never ones with dashboard caps.
+                $can_assign_any   = wpforo_current_user_is( 'admin' ) || WPF()->usergroup->can( 'vmg' );
+                $allowed_groupids = array_filter( array_map( 'intval', (array) wpforo_parse_args( wpfval( $f, 'allowedGroupIds' ) ) ) );
+                $held_groupids    = $can_assign_any ? [] : array_map( 'intval', (array) $this->get_secondary_groupids( $userid ) );
+                foreach( $sgids as $sgid ) {
+                    if( in_array( $sgid, [ 1, 2, 4 ], true ) ) {
+                        $user['secondary_groupids'] = array_diff( $user['secondary_groupids'], [ $sgid ] );
+                    }
+                    if( ! in_array( $sgid, $safe_groupids, true ) ) {
+                        $user['secondary_groupids'] = array_diff( $user['secondary_groupids'], [ $sgid ] );
+                    }
+                    if( ! $can_assign_any && ! in_array( $sgid, $held_groupids, true ) && (
+                            ( $allowed_groupids && ! in_array( $sgid, $allowed_groupids, true ) )
+                            || WPF()->usergroup->has_dashboard_caps( $sgid )
+                    ) ) {
+                        $user['secondary_groupids'] = array_diff( $user['secondary_groupids'], [ $sgid ] );
+                    }
+                }
+                // array_diff() keeps keys; reindex so the copy update_custom_fields() saves stays a JSON list.
+                $user['secondary_groupids'] = array_values( $user['secondary_groupids'] );
+            }
+        } else {
+            unset( $user['secondary_groupids'] );
+        }
+
+        return $user;
     }
 
     public function update_user_fields( $userid, $data, $check_permissions = true ) {
@@ -1425,7 +1460,8 @@ class Members {
                                                        ),
                                                ] );
 
-        if( $return !== false && ( $secondary_groupids = wpfval( $_POST, 'wpforo_secondary_groupids' ) ) ) {
+        // user_register fires for every signup route; only an administrator's wp-admin form sends this field.
+        if( $return !== false && ( $secondary_groupids = wpfval( $_POST, 'wpforo_secondary_groupids' ) ) && current_user_can( 'administrator' ) ) {
             $secondary_groupids = array_filter( array_map( 'intval', (array) $secondary_groupids ) );
             $privileged_roles = [ 'administrator', 'editor', 'author' ];
             $safe_groupids = [];

@@ -1992,7 +1992,11 @@ class Actions {
 	public function get_member_template() {
 		wpforo_verify_nonce( 'wpforo_get_member_template' );
 		$href = wpfval( $_POST, 'href' );
-		WPF()->init_current_url( $href );
+		// The frontend (ajax.js) only ever sends a URL string here. Reject any non-scalar value so an
+		// array cannot be routed into init_current_url() as shortcode attributes, which is the shape
+		// init_current_url() reserves for the trusted [wpforo] shortcode, not for request input.
+		if( ! is_scalar( $href ) ) $href = '';
+		WPF()->init_current_url( (string) $href );
 		WPF()->init_current_object();
 		if( wpforo_is_member_template() ) {
 			if( ( $template = WPF()->tpl->get_template(
@@ -2373,9 +2377,9 @@ class Actions {
 		
 		$notice      = __( 'Theme file not readable', 'wpforo' );
 		$notice_type = 'error';
-		if( ( $theme = trim( sanitize_text_field( (string) wpfval( $_GET, 'theme' ) ) ) ) && WPF()->tpl->theme_exists(
+		if( ( $theme = trim( sanitize_text_field( (string) wpfval( $_GET, 'theme' ) ) ) ) && WPF()->tpl->theme_folder_exists(
 				$theme
-			) ) {
+			) && WPF()->tpl->theme_exists( $theme ) ) {
 			$general                  = WPF()->settings->general;
 			$general['current_theme'] = $theme;
 			wpforo_update_option( 'wpforo_general', $general );
@@ -2402,15 +2406,12 @@ class Actions {
 		
 		$notice      = __( 'Theme delete error', 'wpforo' );
 		$notice_type = 'error';
-		if( $theme = trim( sanitize_text_field( (string) wpfval( $_GET, 'theme' ) ) ) ) {
-			if( WPF()->tpl->theme !== $theme ) {
-				$remove_dir = WPFORO_THEME_DIR . '/' . $theme;
-				if( is_dir( $remove_dir ) ) {
-					wpforo_remove_directory( $remove_dir );
-					$notice      = __( 'Theme delete success', 'wpforo' );
-					$notice_type = 'success';
-				}
-			}
+		$theme = trim( sanitize_text_field( (string) wpfval( $_GET, 'theme' ) ) );
+		// strcasecmp: on case-insensitive filesystems "Classic" and "classic" are the same folder.
+		if( WPF()->tpl->theme_folder_exists( $theme ) && strcasecmp( (string) WPF()->tpl->theme, $theme ) !== 0 ) {
+			wpforo_remove_directory( WPFORO_THEME_DIR . '/' . $theme );
+			$notice      = __( 'Theme delete success', 'wpforo' );
+			$notice_type = 'success';
 		}
 		
 		WPF()->notice->add( $notice, $notice_type );
