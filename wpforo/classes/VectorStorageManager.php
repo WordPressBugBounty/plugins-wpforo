@@ -2393,6 +2393,8 @@ class VectorStorageManager {
 	 * @return void
 	 */
 	public function cron_process_queue_mode( $board_id = 0, $mode = 'local' ) {
+		$run_started_at = microtime( true );
+
 		// Set the board context to ensure board-specific options are read correctly
 		WPF()->change_board( $board_id );
 
@@ -2481,6 +2483,21 @@ class VectorStorageManager {
 			// Clear queue so page reload doesn't auto-resume indexing
 			delete_option( $queue_key );
 			return;
+		}
+
+		// Cloud ingestion stops starting new API requests once its time budget is
+		// spent (large threads are sent in several requests). Put the topics it
+		// did not attempt back in the queue so the next run picks them up, unless
+		// indexing was stopped (or a database clear started) during this run.
+		if ( ! is_wp_error( $result ) && ! empty( $result['topics_not_attempted'] )
+			&& ! $this->get_ai_client()->is_indexing_halted_since( $run_started_at ) ) {
+			$queued    = get_option( $queue_key, [] );
+			$queued    = is_array( $queued ) ? $queued : [];
+			$remaining = array_values( array_unique( array_merge(
+				array_map( 'intval', (array) $result['topics_not_attempted'] ),
+				$queued
+			) ) );
+			update_option( $queue_key, $remaining, false );
 		}
 
 		// If more topics remain, reschedule ourselves

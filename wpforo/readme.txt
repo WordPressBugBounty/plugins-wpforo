@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 7.1
-Stable tag: 3.2.3
+Stable tag: 3.2.4
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -246,6 +246,14 @@ IMPORTANT NOTES for UPDATE
 
 [wpForo Forum v3.2 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-2-is-released/)
 
+
+
+= wpForo Forum 3.2.4 | 02.11.2026 =
+
+* AI Indexing: Large forums are now sent to the cloud in smaller requests, fixing "413 Request Entity Too Large" errors and timeouts
+* AI Indexing: Each indexing run is time-limited and remaining topics are queued for the next run
+* AI Indexing: Stop and Clear actions now halt an indexing run that is already in progress
+* Fixed: Fatal error in widgets on pages whose URL contains "/wp-json/"
 
 
 = wpForo Forum 3.2.3 | 01.11.2026 =

@@ -4320,6 +4320,8 @@ class AIClient {
 	 * @return array|WP_Error Response data or error object
 	 */
 	public function ingest_topics( $topic_ids, $chunk_size = 512, $overlap_percent = 20 ) {
+		$run_started_at = microtime( true );
+
 		// Check if database clearing is in progress
 		if ( $this->is_clearing_in_progress() ) {
 			$remaining = $this->get_clearing_time_remaining();
@@ -4402,6 +4404,106 @@ class AIClient {
 		$parsed   = wp_parse_url( $site_url );
 		$domain   = $parsed['host'] ?? '';
 
+		// Send size-limited groups of topics, so a few very long threads can't push
+		// the whole batch over the API request size/time limits (HTTP 413,
+		// "Endpoint request timed out") and block the other topics with them.
+		$groups = $this->group_threads_for_ingest( $threads );
+		if ( count( $groups ) === 1 ) {
+			return $this->send_ingest_request( $threads, $topic_ids, $chunk_size, $overlap_percent, $domain );
+		}
+
+		// Stop starting new requests once this budget is spent, so a batch of very
+		// long threads can't run into the PHP time limit (which would kill the cron
+		// run before it reschedules itself). Skipped topics are returned in
+		// 'topics_not_attempted'; they keep cloud = 0 and are indexed by a later run.
+		$time_budget   = (float) apply_filters( 'wpforo_ai_ingest_time_budget', 120 );
+		$started_at    = microtime( true );
+		$not_attempted = [];
+		$halted        = false;
+
+		$responses = [];
+		$errors    = [];
+		foreach ( $groups as $index => $group ) {
+			$group_topic_ids = array_map( 'intval', wp_list_pluck( $group, 'thread_id' ) );
+
+			// Stop / Clear Database while this run is sending: send nothing more,
+			// and don't hand the rest back for re-queueing
+			if ( $index > 0 && $this->is_indexing_halted_since( $run_started_at ) ) {
+				$halted = true;
+				break;
+			}
+
+			// Always send the first group, then respect the budget
+			if ( $index > 0 && $time_budget > 0 && ( microtime( true ) - $started_at ) > $time_budget ) {
+				$not_attempted = array_merge( $not_attempted, $group_topic_ids );
+				continue;
+			}
+
+			$response = $this->send_ingest_request( $group, $group_topic_ids, $chunk_size, $overlap_percent, $domain );
+			if ( is_wp_error( $response ) ) {
+				$errors[] = $response;
+				// Out of credits: the remaining groups would fail the same way
+				$message = $response->get_error_message();
+				if ( stripos( $message, 'insufficient credits' ) !== false || stripos( $message, '402' ) !== false ) {
+					break;
+				}
+				continue;
+			}
+			$responses[] = $response;
+		}
+
+		if ( $halted ) {
+			$this->log_info( 'ingest_halted', [
+				'groups_sent'  => count( $responses ) + count( $errors ),
+				'groups_total' => count( $groups ),
+			] );
+		}
+
+		if ( empty( $responses ) ) {
+			return $errors[0];
+		}
+
+		// Same shape as a single response; failed groups are listed in 'errors' so
+		// callers (e.g. the cron queue's credit check) still see them
+		$merged                     = end( $responses );
+		$merged['indexed_hashes']   = [];
+		$merged['credits_consumed'] = 0;
+		$merged['threads_indexed']  = 0;
+		foreach ( $responses as $response ) {
+			$merged['indexed_hashes']    = array_replace( $merged['indexed_hashes'], (array) ( $response['indexed_hashes'] ?? [] ) );
+			$merged['credits_consumed'] += (int) ( $response['credits_consumed'] ?? 0 );
+			$merged['threads_indexed']  += (int) ( $response['threads_indexed'] ?? 0 );
+		}
+		$merged['errors'] = (array) ( $merged['errors'] ?? [] );
+		foreach ( $errors as $error ) {
+			$merged['errors'][] = $error->get_error_message();
+		}
+		if ( $not_attempted ) {
+			$merged['topics_not_attempted'] = $not_attempted;
+			$this->log_info( 'ingest_time_budget_reached', [
+				'topics_not_attempted' => count( $not_attempted ),
+				'seconds'              => round( microtime( true ) - $started_at, 1 ),
+			] );
+		}
+
+		return $merged;
+	}
+
+	/**
+	 * Send one /rag/ingest request and record its result
+	 *
+	 * Marks the returned topics as indexed (indexed hash + cloud column), fires
+	 * wpforo_ai_topics_ingested and writes the AI Logs entry.
+	 *
+	 * @param array  $threads         Threads built by format_thread_data()
+	 * @param array  $topic_ids       Topic IDs of these threads
+	 * @param int    $chunk_size      Chunk size in tokens
+	 * @param int    $overlap_percent Overlap percentage
+	 * @param string $domain          Site domain for image/document URL validation
+	 *
+	 * @return array|\WP_Error API response or error
+	 */
+	private function send_ingest_request( $threads, $topic_ids, $chunk_size, $overlap_percent, $domain ) {
 		$data = [
 			'threads'         => $threads,
 			'chunk_size'      => (int) $chunk_size,
@@ -4506,6 +4608,46 @@ class AIClient {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Split threads into groups that fit the cloud ingest request limits
+	 *
+	 * Keeps the order and never splits a thread; a thread over the limits on its
+	 * own is sent alone.
+	 *
+	 * @param array $threads Threads built by format_thread_data()
+	 *
+	 * @return array[] Groups of threads
+	 */
+	private function group_threads_for_ingest( $threads ) {
+		// API Gateway accepts 10MB and Lambda 6MB per request
+		$max_bytes = (int) apply_filters( 'wpforo_ai_ingest_max_request_bytes', 3000000 );
+		// Keeps /rag/ingest well under the 29s API Gateway timeout
+		$max_posts = (int) apply_filters( 'wpforo_ai_ingest_max_request_posts', 2000 );
+
+		$groups      = [];
+		$group       = [];
+		$group_bytes = 0;
+		$group_posts = 0;
+		foreach ( $threads as $thread ) {
+			$bytes = strlen( (string) wp_json_encode( $thread ) );
+			$posts = 1 + count( $thread['replies'] ?? [] );
+			if ( $group && ( $group_bytes + $bytes > $max_bytes || $group_posts + $posts > $max_posts ) ) {
+				$groups[]    = $group;
+				$group       = [];
+				$group_bytes = 0;
+				$group_posts = 0;
+			}
+			$group[]      = $thread;
+			$group_bytes += $bytes;
+			$group_posts += $posts;
+		}
+		if ( $group ) {
+			$groups[] = $group;
+		}
+
+		return $groups;
 	}
 
 	/**
@@ -4906,6 +5048,37 @@ class AIClient {
 	 */
 	public function is_clearing_in_progress() {
 		return (bool) get_transient( 'wpforo_ai_clearing_in_progress' );
+	}
+
+	/**
+	 * Check if forum indexing was stopped, or a database clear started, after a time
+	 *
+	 * Used by cloud indexing runs that send several requests, so Stop / Clear
+	 * Database also halt a run that is already in progress. Reads the values
+	 * directly: a long-running cron request would otherwise keep the cached
+	 * result of its first read and never see the change.
+	 *
+	 * @param float $since microtime( true ) when the run started
+	 *
+	 * @return bool
+	 */
+	public function is_indexing_halted_since( $since ) {
+		$board_id = WPF()->board->get_current( 'boardid' ) ?: 0;
+		$option   = 'wpforo_ai_indexing_stopped_at_' . $board_id;
+		wp_cache_delete( $option, 'options' );
+		wp_cache_delete( 'notoptions', 'options' );
+		if ( (float) get_option( $option, 0 ) > (float) $since ) {
+			return true;
+		}
+
+		$transient = 'wpforo_ai_clearing_in_progress';
+		if ( wp_using_ext_object_cache() ) {
+			return (bool) wp_cache_get( $transient, 'transient', true );
+		}
+		wp_cache_delete( '_transient_' . $transient, 'options' );
+		wp_cache_delete( '_transient_timeout_' . $transient, 'options' );
+
+		return (bool) get_transient( $transient );
 	}
 
 	/**
@@ -5370,6 +5543,10 @@ class AIClient {
 		$cleared_jobs = 0;
 		$cleared_topics = 0;
 		$board_id = WPF()->board->get_current( 'boardid' ) ?: 0;
+
+		// Lets a cloud indexing run that is already sending requests stop before
+		// its next request (see is_indexing_halted_since())
+		update_option( 'wpforo_ai_indexing_stopped_at_' . $board_id, microtime( true ), false );
 
 		// Clear queue-based pattern: mode-specific keys (current) and legacy key
 		foreach ( [ 'local', 'cloud', '' ] as $mode ) {
