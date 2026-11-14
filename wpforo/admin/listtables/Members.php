@@ -58,7 +58,7 @@ class Members extends WP_List_Table {
 
                 return ! empty( $usergroup['name'] ) ? esc_html( $usergroup['name'] ) : __( 'default', 'wpforo' );
             case 'secondary_groupids':
-                return implode( ', ', WPF()->usergroup->get_secondary_group_names( $item[ $column_name ] ) );
+                return esc_html( implode( ', ', WPF()->usergroup->get_secondary_group_names( $item[ $column_name ] ) ) );
             case 'blog_posts':
                 return WPF()->member->blog_posts( $item['userid'] );
             case 'blog_comments':
@@ -66,7 +66,7 @@ class Members extends WP_List_Table {
             case 'online_time':
                 return ( $item['online_time'] ) ? wpforo_date_raw( $item['online_time'], 'datetime', false ) : '-';
             default:
-                return $item[ $column_name ];
+                return esc_html( (string) $item[ $column_name ] );
         }
     }
 
@@ -146,7 +146,7 @@ class Members extends WP_List_Table {
         //Return the title contents
         return sprintf(
                          '%1$s %2$s',
-                /*$1%s*/ $item['userid'],
+                /*$1%s*/ (int) $item['userid'],
                 /*$2%s*/ $this->row_actions( $actions )
         );
     }

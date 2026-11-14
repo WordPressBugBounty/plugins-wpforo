@@ -1282,6 +1282,11 @@ class Forms {
 				$value = sanitize_text_field( $value );
 			} elseif( $type === 'textarea' ) {
 				$value = stripslashes( wpforo_kses( trim( (string) $value ), 'user_description' ) );
+			} elseif( $type === 'tinymce' ) {
+				// Rich-text fields (about, signature) keep post-level markup, but event
+				// handlers and scripts must not reach storage: these values are also read
+				// outside wpForo, e.g. by the core post-author-biography block.
+				$value = wpforo_kses( trim( (string) $value ), 'post' );
 			} elseif( $type === 'email' ) {
 				$value = sanitize_email( $value );
 			} elseif( $type === 'password' ) {

@@ -3061,12 +3061,13 @@ class Template {
                     '<blockquote data-userid="%1$d" data-postid="%2$d" data-mention="%3$s"><div class="wpforo-post-quote-head">%4$s %5$s</div>',
                     $userid,
                     $postid,
-                    $mention,
-                    ( $posted_by ? sprintf( '<div class="wpforo-post-quote-author"><strong> %1$s: %2$s </strong></div>', wpforo_phrase( 'Posted by', false ), $posted_by ) : '' ),
+                    // display_name comes from the WP profile and may contain quotes or markup.
+                    esc_attr( $mention ),
+                    ( $posted_by ? sprintf( '<div class="wpforo-post-quote-author"><strong> %1$s: %2$s </strong></div>', wpforo_phrase( 'Posted by', false ), esc_html( $posted_by ) ) : '' ),
                     ( $postid ? sprintf(
                             '<div class="wpforo-post-quote-link"><a href="%1$s" title="%2$s">&uarr;</a></div>',
-                            WPF()->post->get_url( $postid ),
-                            wpforo_phrase( 'go to original post', false )
+                            esc_url( WPF()->post->get_url( $postid ) ),
+                            esc_attr( wpforo_phrase( 'go to original post', false ) )
                     ) : '' )
             );
         },                             (string) $text );

@@ -653,6 +653,11 @@ class Members {
                     'user_pass2',
                     'userid',
                     'ID',
+                    'display_name',
+                    'user_nicename',
+                    'user_url',
+                    'first_name',
+                    'last_name',
                 ] as $reserved ) {
                     unset( $data['data'][ $reserved ] );
                 }
@@ -969,31 +974,29 @@ class Members {
         if( $check_permissions ) WPF()->perm->can_edit_user( $userid );
 
         //User Fields
-        if( wpfkey( $data, 'display_name' ) ) {
-            $user_fields['display_name'] = $data['display_name'];
+        if( wpfkey( $data, 'display_name' ) && ( $display_name = sanitize_text_field( (string) $data['display_name'] ) ) !== '' ) {
+            $user_fields['display_name'] = $display_name;
             $user_fields_types[]         = '%s';
         }
         if( wpfkey( $data, 'user_email' ) ) {
             $user_fields['user_email'] = $data['user_email'];
             $user_fields_types[]       = '%s';
         }
-        if( wpfkey( $data, 'user_nicename' ) ) {
-            if( ! wpfval( $data, 'user_nicename' ) ) {
-                $user_info             = get_userdata( $userid );
-                $data['user_nicename'] = sanitize_title( sanitize_user( $user_info->user_nicename, true ) );
-            }
-            $user_fields['user_nicename'] = $data['user_nicename'];
+        // Keep the current nicename when the new value sanitizes to nothing, so a
+        // non-Latin or markup-only input can't blank the profile URL.
+        if( wpfkey( $data, 'user_nicename' ) && ( $user_nicename = sanitize_title( sanitize_user( (string) $data['user_nicename'], true ) ) ) !== '' ) {
+            $user_fields['user_nicename'] = $user_nicename;
             $user_fields_types[]          = '%s';
-            update_user_meta( $userid, 'nickname', $data['user_nicename'] );
+            update_user_meta( $userid, 'nickname', $user_nicename );
         }
         if( wpfkey( $data, 'first_name' ) ) {
-            update_user_meta( $userid, 'first_name', $data['first_name'] );
+            update_user_meta( $userid, 'first_name', sanitize_text_field( (string) $data['first_name'] ) );
         }
         if( wpfkey( $data, 'last_name' ) ) {
-            update_user_meta( $userid, 'last_name', $data['last_name'] );
+            update_user_meta( $userid, 'last_name', sanitize_text_field( (string) $data['last_name'] ) );
         }
         if( wpfkey( $data, 'user_url' ) ) {
-            $user_fields['user_url'] = $data['user_url'];
+            $user_fields['user_url'] = esc_url_raw( (string) $data['user_url'] );
             $user_fields_types[]     = '%s';
         }
 
@@ -1074,9 +1077,12 @@ class Members {
             $profile_fields_types[]      = '%s';
         }
         if( wpfkey( $data, 'about' ) ) {
-            $profile_fields['about'] = $member['about'];
+            // Callers that skip Forms::sanitize() (registration, imports) must not be
+            // able to store scripts here: WordPress renders this meta outside wpForo.
+            $about                   = wpforo_kses( (string) $member['about'], 'post' );
+            $profile_fields['about'] = $about;
             $profile_fields_types[]  = '%s';
-            update_user_meta( $userid, 'description', $member['about'] );
+            update_user_meta( $userid, 'description', $about );
         }
         if( wpfkey( $data, 'occupation' ) ) {
             $profile_fields['occupation'] = $member['occupation'];

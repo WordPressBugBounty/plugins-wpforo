@@ -2279,6 +2279,11 @@ function wpforo_do_hook_user_register( $userid ) {
 				'user_pass2',
 				'userid',
 				'ID',
+				'display_name',
+				'user_nicename',
+				'user_url',
+				'first_name',
+				'last_name',
 			] as $reserved ) {
 				unset( $data['data'][ $reserved ] );
 			}
@@ -2582,7 +2587,7 @@ function wpforo_default_attachments_filter( $text ) {
 					$attach_html .= '<br/><div class="wpfa-item wpfa-file"><a class="attach_cant_view" style="cursor: pointer;"><span style="color: #666;">' . wpforo_phrase(
 							'Attachment',
 							false
-						) . ' : </span> ' . urldecode( basename( $match[2] ) ) . '</a></div>';
+						) . ' : </span> ' . esc_html( urldecode( basename( $match[2] ) ) ) . '</a></div>';
 				}
 			}
 			if( $attach_html ) {

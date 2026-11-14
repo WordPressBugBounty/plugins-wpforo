@@ -3,7 +3,7 @@ Contributors: gVectors Team
 Tags: forum, forums, forum plugin, bbpress, community
 Requires at least: 5.2
 Tested up to: 7.1
-Stable tag: 3.2.4
+Stable tag: 3.2.5
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -246,6 +246,16 @@ IMPORTANT NOTES for UPDATE
 
 [wpForo Forum v3.2 Release Summary](https://wpforo.com/community/wpforo-announcements/wpforo-3-2-is-released/)
 
+
+
+= wpForo Forum 3.2.5 | 11.13.2026 =
+
+* Security: Fixed stored XSS via display name and nickname submitted through the registration form
+* Security: Rich-text profile fields (About Me, Signature and custom editor fields) are now filtered before being saved
+* Security: Fixed XSS in the default attachment link text shown to users without attachment access
+* Security: Fixed XSS in the author name and mention of quoted posts
+* Security: Escaped member names in the admin Members list
+* Fixed: Saving the account form no longer blanks a non-Latin nickname
 
 
 = wpForo Forum 3.2.4 | 02.11.2026 =
